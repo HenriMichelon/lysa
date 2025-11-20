@@ -9,27 +9,24 @@ module;
 #include <ctime>
 module lysa.log;
 
-import lysa.application;
 import lysa.exception;
 
 namespace lysa {
 
-    void Log::open(const std::shared_ptr<Log>&log) {
-        const auto& appConfig = Application::getConfiguration();
-        loggingStreams = log;
-        if (appConfig.loggingMode & LOGGING_MODE_FILE) {
+    void Log::init(const LoggingConfiguration &loggingConfiguration) {
+        loggingStreams = std::make_unique<Log>(loggingConfiguration);
+        if (loggingStreams->loggingConfiguration.loggingMode & LOGGING_MODE_FILE) {
             loggingStreams->logFile = fopen("log.txt", "w");
             if(loggingStreams->logFile == nullptr) {
                 throw Exception("Error opening log.txt file");
             }
         }
-        _LOG("START OF LOG");
+        log("START OF LOG");
     }
 
-    void Log::close() {
-        _LOG("END OF LOG");
-        const auto& appConfig = Application::getConfiguration();
-        if (appConfig.loggingMode & LOGGING_MODE_FILE) {
+    void Log::shutdown() {
+        log("END OF LOG");
+        if (loggingStreams->loggingConfiguration.loggingMode & LOGGING_MODE_FILE) {
             fclose(loggingStreams->logFile);
         }
         loggingStreams.reset();
@@ -54,7 +51,7 @@ namespace lysa {
     LogStream::LogStream(const LogLevel level) : std::ostream{&logStreamBuf} { logStreamBuf.setLevel(level); }
 
     void LogStreamBuf::log(const std::string& message) {
-        const auto& config = Application::getConfiguration();
+        auto& config = Log::loggingStreams->loggingConfiguration;
         if (config.loggingMode == LOGGING_MODE_NONE || config.logLevelMin > level) {
             return;
         }

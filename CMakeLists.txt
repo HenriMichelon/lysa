@@ -163,7 +163,6 @@ target_sources(${LYSA_TARGET}
     PUBLIC
     FILE_SET CXX_MODULES
     FILES
-        ${ENGINE_SRC_DIR}/Application.ixx
         ${ENGINE_SRC_DIR}/Configuration.ixx
         ${ENGINE_SRC_DIR}/Constants.ixx
         ${ENGINE_SRC_DIR}/Enums.ixx

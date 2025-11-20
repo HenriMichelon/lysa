@@ -42,7 +42,7 @@ export namespace lysa {
         }
 
         /** Request the application to exit its main loop at the next opportunity. */
-        static bool& quit() {
+        static bool quit() {
             assert([&]{ return instance != nullptr;}, "Global Application instance not set");
             return instance->exit = true;
         }
