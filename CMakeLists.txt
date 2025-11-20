@@ -151,7 +151,7 @@ endif ()
 
 #######################################################
 add_library(${LYSA_TARGET} STATIC
-
+        ${ENGINE_SRC_DIR}/Math.cpp
 
         ${OS_SRC}
         ${PHYSICS_SRC}
@@ -161,8 +161,11 @@ target_sources(${LYSA_TARGET}
     PUBLIC
     FILE_SET CXX_MODULES
     FILES
+        ${ENGINE_SRC_DIR}/Constants.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
+        ${ENGINE_SRC_DIR}/Math.ixx
+        ${ENGINE_SRC_DIR}/Types.ixx
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}
