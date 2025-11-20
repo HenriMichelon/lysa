@@ -12,6 +12,7 @@ export module lysa.resources.rendering_window;
 
 import vireo;
 import lysa.manager;
+import lysa.renderer;
 import lysa.types;
 
 export namespace lysa {
@@ -102,14 +103,19 @@ export namespace lysa {
 
     class RenderingWindowManager : public Manager<RenderingWindowId, RenderingWindow> {
     public:
+        RenderingWindowManager(Renderer& renderer) : renderer(renderer) {}
+
         RenderingWindow& create(const RenderingWindowConfiguration& configuration);
 
-        void close(RenderingWindow& window) const;
+        void close(RenderingWindow& window);
 
         void resize(const RenderingWindow& window) const;
 
         /** Makes the OS window visible. */
         void show(const RenderingWindow& window) const;
+
+    private:
+        Renderer& renderer;
     };
 
 }

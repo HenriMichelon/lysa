@@ -17,6 +17,8 @@ export namespace lysa {
 
         ResourceType& create();
 
+        bool destroy(const ResourceType& resource);
+
         ResourceType& get(const TypeId id) { return resources.at(id); }
 
         const ResourceType& get(const TypeId id) const { return resources.at(id); }
@@ -32,6 +34,12 @@ export namespace lysa {
         auto& resource = resources[id];
         resource.id = id;
         return resource;
+    }
+
+    template<typename TypeId, typename ResourceType>
+    bool Manager<TypeId, ResourceType>::destroy(const ResourceType& resource) {
+        resources.erase(resource.id);
+        return resources.empty();
     }
 
 }

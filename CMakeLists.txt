@@ -128,8 +128,9 @@ compile_options(xxhash)
 #######################################################
 if(WIN32)
     set(OS_SRC
-        ${ENGINE_SRC_DIR}/os/win32/Main.cpp
-        ${ENGINE_SRC_DIR}/os/win32/RenderingWindow.cpp
+            ${ENGINE_SRC_DIR}/os/win32/Main.cpp
+            ${ENGINE_SRC_DIR}/os/win32/Renderer.cpp
+            ${ENGINE_SRC_DIR}/os/win32/RenderingWindow.cpp
     )
     set(OS_MODULES ""
     )
@@ -155,6 +156,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
+        ${ENGINE_SRC_DIR}/Renderer.cpp
 
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
 

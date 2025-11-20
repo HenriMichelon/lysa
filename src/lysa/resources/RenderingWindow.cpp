@@ -8,9 +8,13 @@ module lysa.resources.rendering_window;
 
 namespace lysa {
 
-    void RenderingWindowManager::close(RenderingWindow& window) const {
+    void RenderingWindowManager::close(RenderingWindow& window) {
         window.stopped = true;
         if (window.onEvent) window.onEvent({window.id, RenderingWindowEventType::CLOSE});
+        if (destroy(window)) {
+            renderer.quit();
+        }
+
     }
 
     void RenderingWindowManager::resize(const RenderingWindow& window) const {
