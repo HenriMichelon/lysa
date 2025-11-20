@@ -10,16 +10,18 @@ module;
 #endif
 module lysa.global;
 
+import lysa.exception;
+
 namespace lysa {
 
-    std::string sanitizeName(const std::string &name) {
+    std::string sanitize_name(const std::string &name) {
         auto newName = name;
         std::ranges::replace(newName, '/', '_');
         std::ranges::replace(newName, ':', '_');
         return newName;
     }
 
-    float getCurrentTimeMilliseconds() {
+    float get_current_time_milliseconds() {
         using namespace std::chrono;
         return static_cast<float>(duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count());
     }
@@ -111,12 +113,14 @@ namespace lysa {
         return result;
     }
 
-#ifdef _WIN32
-    bool dirExists(const std::string& dirName) {
-        const DWORD ftyp = GetFileAttributesA(dirName.c_str());
-        return (ftyp != INVALID_FILE_ATTRIBUTES) && (ftyp & FILE_ATTRIBUTE_DIRECTORY);
+    bool dir_exists(const std::string& dirName) {
+        if constexpr (is_windows()) {
+            const DWORD ftyp = GetFileAttributesA(dirName.c_str());
+            return (ftyp != INVALID_FILE_ATTRIBUTES) && (ftyp & FILE_ATTRIBUTE_DIRECTORY);
+        } else {
+            throw Exception("Not implemented");
+        }
     }
-#endif
 
     std::string to_hexstring(const void* ptr) {
         std::stringstream ss;

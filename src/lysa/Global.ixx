@@ -12,12 +12,20 @@ import lysa.types;
 
 export namespace lysa {
 
+    consteval bool is_windows() {
+#if defined(_WIN32)
+        return true;
+#else
+        return false;
+#endif
+    }
+
     /**
      * Returns the current time in milliseconds.
      *
      * @return Elapsed time in milliseconds as a floating‑point value.
      */
-    float getCurrentTimeMilliseconds();
+    float get_current_time_milliseconds();
 
     /**
      * Produces a sanitized version of a name suitable for identifiers or paths.
@@ -28,7 +36,7 @@ export namespace lysa {
      * @param name Input name to sanitize.
      * @return A sanitized, ASCII‑safe string.
      */
-    std::string sanitizeName(const std::string &name);
+    std::string sanitize_name(const std::string &name);
 
     /**
      * Tests whether a directory exists at the given path.
@@ -36,7 +44,7 @@ export namespace lysa {
      * @param dirName OS path to check.
      * @return True if the directory exists; false otherwise.
      */
-    bool dirExists(const std::string& dirName);
+    bool dir_exists(const std::string& dirName);
 
     /**
      * Parses a float3 from a textual representation.

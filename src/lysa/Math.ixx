@@ -37,7 +37,11 @@ using uint32 = uint32_t;
 
 #include "hlsl++/data_packing.h"
 
+import std;
+
 export namespace lysa {
+
+    constexpr float HALF_PI = std::numbers::pi_v<float> / 2.0f;
 
     /**
      * @brief Convert a unit quaternion to Euler angles (XYZ order).
@@ -51,7 +55,7 @@ export namespace lysa {
      * @note Angles are wrapped to the principal values typically produced by
      *       atan2/asin and may exhibit gimbal lock at +/- 90 degrees pitch.
      */
-    float3 eulerAngles(quaternion q);
+    float3 euler_angles(quaternion q);
 
     /**
      * @brief Convert a scalar angle in degrees to radians.
@@ -72,7 +76,7 @@ export namespace lysa {
      * @param f2 Second value.
      * @return true if the values are approximately equal; false otherwise.
      */
-    inline bool almostEquals(const float f1, const float f2) {
+    inline bool almost_equals(const float f1, const float f2) {
         return (std::fabs(f1 - f2) <=  0.0001 * std::fmax(std::fabs(f1), std::fabs(f2)));
     }
 
@@ -85,11 +89,11 @@ export namespace lysa {
      * @param f2 Second quaternion.
      * @return true if all components are approximately equal; false otherwise.
      */
-    inline bool almostEquals(const quaternion& f1, const quaternion& f2) {
-        return almostEquals(f1.x, f2.x) &&
-            almostEquals(f1.y, f2.y) &&
-            almostEquals(f1.z, f2.z) &&
-            almostEquals(f1.w, f2.w);
+    inline bool almost_equals(const quaternion& f1, const quaternion& f2) {
+        return almost_equals(f1.x, f2.x) &&
+            almost_equals(f1.y, f2.y) &&
+            almost_equals(f1.z, f2.z) &&
+            almost_equals(f1.w, f2.w);
     }
 
     /**
@@ -100,7 +104,7 @@ export namespace lysa {
      * @param up World up direction.
      * @return 4x4 view matrix.
      */
-    float4x4 lookAt(const float3& eye, const float3& center, const float3& up);
+    float4x4 look_at(const float3& eye, const float3& center, const float3& up);
 
     /**
      * @brief Build a right-handed perspective projection matrix.

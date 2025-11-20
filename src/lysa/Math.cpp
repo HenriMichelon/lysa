@@ -7,11 +7,10 @@
 module lysa.math;
 
 import std;
-import lysa.constants;
 
 namespace lysa {
 
-    float4x4 lookAt(const float3& eye, const float3& center, const float3& up) {
+    float4x4 look_at(const float3& eye, const float3& center, const float3& up) {
         const auto z = normalize(eye - center);
         const auto x = normalize(cross(up, z));
         const auto y = cross(z, x);
@@ -59,7 +58,7 @@ namespace lysa {
         };
     }
 
-    float3 eulerAngles(quaternion q) {
+    float3 euler_angles(quaternion q) {
         q = normalize(q);
 
         float3 angles;
