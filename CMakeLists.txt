@@ -161,6 +161,7 @@ target_sources(${LYSA_TARGET}
     PUBLIC
     FILE_SET CXX_MODULES
     FILES
+        ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
 
         ${OS_MODULES}
