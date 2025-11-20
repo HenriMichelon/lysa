@@ -11,10 +11,12 @@ module;
 export module lysa.resources.rendering_window;
 
 import vireo;
-import lysa.math;
+import lysa.manager;
 import lysa.types;
 
 export namespace lysa {
+
+    using RenderingWindowId = unique_id;
 
     /**
     * Rendering Window mode
@@ -50,34 +52,64 @@ export namespace lysa {
         int32 monitor{0};
     };
 
+    /**
+    * Rendering window events type
+    */
     enum class RenderingWindowEventType : uint32 {
+        //! Called once the window is fully created and ready to display.
         READY,
+        //! Called when the window is about to close (release resources here).
         CLOSE,
+        //! Called after the window/swap chain has been resized.
         RESIZE,
     };
 
-    using RenderingWindowId = unique_id;
-
-    struct RenderingWindow {
-        /** Unique ID  */
+    /**
+    * Rendering window events data
+    */
+    struct RenderingWindowEvent {
         RenderingWindowId id;
-        /** Window configuration (extent, title, rendering config). */
-        RenderingWindowConfiguration configuration;
-        /** Opaque OS window handle used for presentation. */
-        void* windowHandle;
-        /** True once the window has been requested to stop/close. */
-        bool stopped{false};
-#ifdef _WIN32
-#endif
+        RenderingWindowEventType type;
     };
 
-    class RenderingWindowManager {
+    class RenderingWindowManager;
+
+    /**
+    * Operating system window that serve as rendering surface.
+    */
+    struct RenderingWindow {
+        /*! Unique ID  */
+        RenderingWindowId id{INVALID_ID};
+        /*! Top-Left corner x position in pixels*/
+        int32 x{0};
+        /*! Top-Left corner Y position in pixels*/
+        int32 y{0};
+        /*! Width in pixels */
+        uint32 width{0};
+        /*! Height in pixels */
+        uint32 height{0};
+        /*! True once the window has been requested to stop/close. */
+        bool stopped{false};
+        /*! Window configuration (extent, title, rendering config). */
+        RenderingWindowConfiguration configuration;
+        /*! Opaque OS window handle used for presentation. */
+        void* platformHandle{nullptr};
+        /*! Associated manager for global, platform specific, procedures */
+        RenderingWindowManager* manager{nullptr};
+
+        std::function<void(const RenderingWindowEvent&)> onEvent{};
+    };
+
+    class RenderingWindowManager : public Manager<RenderingWindowId, RenderingWindow> {
     public:
+        RenderingWindow& create(const RenderingWindowConfiguration& configuration);
 
+        void close(RenderingWindow& window) const;
 
-    private:
+        void resize(const RenderingWindow& window) const;
 
-
+        /** Makes the OS window visible. */
+        void show(const RenderingWindow& window) const;
     };
 
 }

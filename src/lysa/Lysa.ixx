@@ -13,3 +13,5 @@ export import lysa.global;
 export import lysa.log;
 export import lysa.math;
 export import lysa.types;
+
+export import lysa.resources.rendering_window;

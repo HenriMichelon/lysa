@@ -129,6 +129,7 @@ compile_options(xxhash)
 if(WIN32)
     set(OS_SRC
         ${ENGINE_SRC_DIR}/os/win32/Main.cpp
+        ${ENGINE_SRC_DIR}/os/win32/RenderingWindow.cpp
     )
     set(OS_MODULES ""
     )
@@ -155,6 +156,8 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Log.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
 
+        ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
+
         ${OS_SRC}
         ${PHYSICS_SRC}
         ${DEPENDS_SRC_DIR}/stb/stb.cpp
@@ -167,11 +170,13 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
+        ${ENGINE_SRC_DIR}/Manager.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/Renderer.ixx
 
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
+        ${ENGINE_SRC_DIR}/resources/Resources.ixx
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}
