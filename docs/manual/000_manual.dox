@@ -1,0 +1,14 @@
+/*!
+\page manual Manual
+
+This series will describe the various concepts to build an application with Lysa.
+
+Coordinate system
+===========================================================================
+Lysa use a right-handled, y-up coordinate system :
+
+![Coordinate system](images/coordinate_system.png)
+
+Note : The in-game debug can display the coordinate system at run-time.
+
+*/
