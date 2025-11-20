@@ -152,6 +152,7 @@ endif ()
 #######################################################
 add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Global.cpp
+        ${ENGINE_SRC_DIR}/Log.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
 
         ${OS_SRC}
@@ -162,9 +163,13 @@ target_sources(${LYSA_TARGET}
     PUBLIC
     FILE_SET CXX_MODULES
     FILES
+        ${ENGINE_SRC_DIR}/Application.ixx
+        ${ENGINE_SRC_DIR}/Configuration.ixx
         ${ENGINE_SRC_DIR}/Constants.ixx
+        ${ENGINE_SRC_DIR}/Enums.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Global.ixx
+        ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
