@@ -13,6 +13,7 @@ export import lysa.event;
 export import lysa.exception;
 export import lysa.global;
 export import lysa.log;
+export import lysa.lua;
 export import lysa.math;
 export import lysa.types;
 export import lysa.renderer;

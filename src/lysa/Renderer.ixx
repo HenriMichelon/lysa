@@ -14,6 +14,8 @@ export namespace lysa {
 
     class Renderer {
     public:
+        Renderer();
+
         /** Run until quit() is requested. */
         void run(const std::function<void()>& onProcess);
 

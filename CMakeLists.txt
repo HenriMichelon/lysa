@@ -156,9 +156,11 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
+        ${ENGINE_SRC_DIR}/Lua.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
         ${ENGINE_SRC_DIR}/Renderer.cpp
 
+        ${ENGINE_SRC_DIR}/resources/ResourcesLocator.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
 
         ${OS_SRC}
@@ -173,6 +175,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
+        ${ENGINE_SRC_DIR}/Lua.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx

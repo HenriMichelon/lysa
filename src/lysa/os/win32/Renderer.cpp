@@ -15,7 +15,7 @@ namespace lysa {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        EventManager::process();
+        EventManager::_process();
     }
 
 

@@ -6,6 +6,8 @@
 */
 export module lysa.event;
 
+import std;
+import lysa.lua;
 import lysa.types;
 
 export namespace lysa {
@@ -25,9 +27,11 @@ export namespace lysa {
 
         static void subscribe(event_type type, EventHandler& handler);
 
-        static void process();
+        static void _process();
 
-        static void reset();
+        static void _init();
+
+        static void _shutdown();
 
     private:
         static inline std::vector<Event> queue{};

@@ -28,8 +28,10 @@ export namespace lysa {
             managers[name] = &manager;
         }
 
+        static void _init();
+
     private:
-        static inline std::unordered_map<const char*, void*> managers{};
+        static std::unordered_map<const char*, void*> managers;
     };
 
 }

@@ -104,7 +104,7 @@ export namespace lysa {
         /** Makes the OS window visible. */
         void show(unique_id id) const;
 
-
+        static void _init();
 
     private:
         Renderer& renderer;
