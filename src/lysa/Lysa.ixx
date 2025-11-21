@@ -14,9 +14,9 @@ export import lysa.exception;
 export import lysa.global;
 export import lysa.log;
 export import lysa.lua;
+export import lysa.lysa;
 export import lysa.math;
 export import lysa.types;
-export import lysa.renderer;
 
 export import lysa.resources.locator;
 export import lysa.resources.manager;

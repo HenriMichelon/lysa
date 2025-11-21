@@ -14,7 +14,7 @@ import lysa.lua;
 
 namespace lysa {
 
-    RenderingWindowManager::RenderingWindowManager(Renderer& renderer, const unique_id capacity) :
+    RenderingWindowManager::RenderingWindowManager(Lysa& renderer, const unique_id capacity) :
         ResourcesManager(capacity),
         renderer{renderer} {
         ResourcesLocator::enroll(RENDERING_WINDOW, *this);
@@ -85,7 +85,7 @@ namespace lysa {
 
         lua.new_usertype<RenderingWindowManager>(
             "RenderingWindowManager",
-            sol::constructors<RenderingWindowManager(Renderer&, unique_id)>(),
+            sol::constructors<RenderingWindowManager(Lysa&, unique_id)>(),
             "create", &RenderingWindowManager::create,
             "show", &RenderingWindowManager::show,
             "get", &RenderingWindowManager::getById

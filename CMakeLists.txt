@@ -129,7 +129,6 @@ compile_options(xxhash)
 if(WIN32)
     set(OS_SRC
             ${ENGINE_SRC_DIR}/os/win32/Main.cpp
-            ${ENGINE_SRC_DIR}/os/win32/Renderer.cpp
             ${ENGINE_SRC_DIR}/os/win32/RenderingWindow.cpp
     )
     set(OS_MODULES ""
@@ -157,8 +156,8 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
         ${ENGINE_SRC_DIR}/Lua.cpp
+        ${ENGINE_SRC_DIR}/Main.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
-        ${ENGINE_SRC_DIR}/Renderer.cpp
 
         ${ENGINE_SRC_DIR}/resources/ResourcesLocator.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
@@ -177,9 +176,9 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lua.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
+        ${ENGINE_SRC_DIR}/Main.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
-        ${ENGINE_SRC_DIR}/Renderer.ixx
 
         ${ENGINE_SRC_DIR}/resources/ResourcesLocator.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx

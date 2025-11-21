@@ -102,18 +102,9 @@ export namespace lysa {
      */
     class Log {
     public:
-        /**
-           * @brief Initialize logging infrastructure and open required sinks.
-           * @param loggingConfiguration configuration parameters
-           * @note Writes a "START OF LOG" entry upon initialization.
-           */
-        static void init(const LoggingConfiguration &loggingConfiguration);
+        static void _init(const LoggingConfiguration &loggingConfiguration);
 
-        /**
-         * @brief Close the infrastructure and associated files.
-         * @note Writes an "END OF LOG" entry before closing.
-         */
-        static void shutdown();
+        static void _shutdown();
 
         /**
          * @brief Compile-time switch indicating whether logging produces output.

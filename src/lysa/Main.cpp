@@ -6,14 +6,16 @@
 */
 module;
 #include <sol/sol.hpp>
-module lysa.renderer;
+module lysa.lysa;
 
+import lysa.event;
 import lysa.lua;
 import lysa.resources.locator;
 
 namespace lysa {
 
-    Renderer::Renderer() {
+    Lysa::Lysa(const LysaConfiguration& lysaConfiguration) {
+        Log::_init(lysaConfiguration.loggingConfiguration);
         Lua::_init();
         EventManager::_init();
         ResourcesLocator::_init();
@@ -21,12 +23,14 @@ namespace lysa {
         Lua::get()["renderer"] = std::ref(*this);
     }
 
-    void Renderer::run(const std::function<void()>& onProcess) {
+    void Lysa::run(const std::function<void()>& onProcess) {
         while (!exit) {
             if (onProcess) onProcess();
             processPlatformEvents();
         }
         EventManager::_shutdown();
+        Log::_shutdown();
+
     }
 
 }

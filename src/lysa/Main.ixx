@@ -4,17 +4,22 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.renderer;
+export module lysa.lysa;
 
 import std;
 import vireo;
-import lysa.event;
 
-export namespace lysa {
+import lysa.log;
 
-    class Renderer {
+export namespace  lysa {
+
+    struct LysaConfiguration {
+        LoggingConfiguration loggingConfiguration;
+    };
+
+    class Lysa {
     public:
-        Renderer();
+        Lysa(const LysaConfiguration& lysaConfiguration);
 
         /** Run until quit() is requested. */
         void run(const std::function<void()>& onProcess);

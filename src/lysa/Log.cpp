@@ -13,7 +13,7 @@ import lysa.exception;
 
 namespace lysa {
 
-    void Log::init(const LoggingConfiguration &loggingConfiguration) {
+    void Log::_init(const LoggingConfiguration &loggingConfiguration) {
         loggingStreams = std::make_unique<Log>(loggingConfiguration);
         if (loggingStreams->loggingConfiguration.loggingMode & LOGGING_MODE_FILE) {
             loggingStreams->logFile = fopen("log.txt", "w");
@@ -24,7 +24,7 @@ namespace lysa {
         log("START OF LOG");
     }
 
-    void Log::shutdown() {
+    void Log::_shutdown() {
         log("END OF LOG");
         if (loggingStreams->loggingConfiguration.loggingMode & LOGGING_MODE_FILE) {
             fclose(loggingStreams->logFile);

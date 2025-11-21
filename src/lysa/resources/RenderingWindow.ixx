@@ -12,7 +12,7 @@ export module lysa.resources.rendering_window;
 
 import vireo;
 import lysa.event;
-import lysa.renderer;
+import lysa.lysa;
 import lysa.resources.manager;
 import lysa.types;
 
@@ -93,7 +93,7 @@ export namespace lysa {
 
     class RenderingWindowManager : public ResourcesManager<RenderingWindow> {
     public:
-        RenderingWindowManager(Renderer& renderer, unique_id capacity = 5);
+        RenderingWindowManager(Lysa& lysa, unique_id capacity = 5);
 
         unique_id create(const RenderingWindowConfiguration& configuration);
 
@@ -107,7 +107,7 @@ export namespace lysa {
         static void _init();
 
     private:
-        Renderer& renderer;
+        Lysa& renderer;
     };
 
 }
