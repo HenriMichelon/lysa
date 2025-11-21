@@ -16,19 +16,19 @@ namespace lysa {
         ResourcesLocator::enroll(RENDERING_WINDOW, *this);
     }
 
-    void RenderingWindowManager::close(const unique_id id) {
+    void RenderingWindowManager::closing(const unique_id id) {
         auto& window = get(id);
         window.stopped = true;
-        // EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::CLOSE)});
+        EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::CLOSING)});
         if (destroy(id)) {
             renderer.quit();
         }
     }
 
-    void RenderingWindowManager::resize(const unique_id id) const {
+    void RenderingWindowManager::resized(const unique_id id) const {
         const auto& window = get(id);
         if (window.stopped) { return; }
-        // EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::RESIZE)});
+        EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::RESIZED)});
     }
 
 }

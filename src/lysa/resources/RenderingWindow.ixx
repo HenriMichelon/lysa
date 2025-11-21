@@ -41,9 +41,9 @@ export namespace lysa {
         //! Called once the window is fully created and ready to display.
         READY,
         //! Called when the window is about to close (release resources here).
-        CLOSE,
+        CLOSING,
         //! Called after the window/swap chain has been resized.
-        RESIZE,
+        RESIZED,
     };
 
     /**
@@ -97,12 +97,14 @@ export namespace lysa {
 
         unique_id create(const RenderingWindowConfiguration& configuration);
 
-        void close(unique_id id);
+        void closing(unique_id id);
 
-        void resize(unique_id id) const;
+        void resized(unique_id id) const;
 
         /** Makes the OS window visible. */
         void show(unique_id id) const;
+
+
 
     private:
         Renderer& renderer;
