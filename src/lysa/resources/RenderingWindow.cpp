@@ -6,18 +6,27 @@
 */
 module lysa.resources.rendering_window;
 
+import lysa.resources.locator;
+
 namespace lysa {
 
-    void RenderingWindowManager::close(RenderingWindow& window) {
-        window.stopped = true;
-        if (window.onEvent) window.onEvent({window.id, RenderingWindowEventType::CLOSE});
-        if (destroy(window)) {
-            renderer.quit();
-        }
-
+    RenderingWindowManager::RenderingWindowManager(Renderer& renderer, const unique_id capacity) :
+        ResourcesManager(capacity),
+        renderer{renderer} {
+        ResourcesLocator::enroll(RENDERING_WINDOW, *this);
     }
 
-    void RenderingWindowManager::resize(const RenderingWindow& window) const {
+    void RenderingWindowManager::close(const unique_id id) {
+        auto& window = get(id);
+        window.stopped = true;
+        if (window.onEvent) window.onEvent({id, RenderingWindowEventType::CLOSE});
+        if (destroy(id)) {
+            renderer.quit();
+        }
+    }
+
+    void RenderingWindowManager::resize(const unique_id id) const {
+        const auto& window = get(id);
         if (window.stopped) { return; }
         if (window.onEvent) window.onEvent({window.id, RenderingWindowEventType::RESIZE});
     }

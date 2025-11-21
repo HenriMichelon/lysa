@@ -15,4 +15,6 @@ export import lysa.math;
 export import lysa.types;
 export import lysa.renderer;
 
+export import lysa.resources.locator;
+export import lysa.resources.manager;
 export import lysa.resources.rendering_window;

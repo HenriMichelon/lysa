@@ -11,13 +11,13 @@ module;
 export module lysa.resources.rendering_window;
 
 import vireo;
-import lysa.manager;
+import lysa.resources.manager;
 import lysa.renderer;
 import lysa.types;
 
 export namespace lysa {
 
-    using RenderingWindowId = unique_id;
+    constexpr auto RENDERING_WINDOW = "RenderingWindow";
 
     /**
     * Rendering Window mode
@@ -69,18 +69,16 @@ export namespace lysa {
     * Rendering window events data
     */
     struct RenderingWindowEvent {
-        RenderingWindowId id;
+        unique_id id;
         RenderingWindowEventType type;
     };
-
-    class RenderingWindowManager;
 
     /**
     * Operating system window that serve as rendering surface.
     */
     struct RenderingWindow {
         /*! Unique ID  */
-        RenderingWindowId id{INVALID_ID};
+        unique_id id{INVALID_ID};
         /*! Top-Left corner x position in pixels*/
         int32 x{0};
         /*! Top-Left corner Y position in pixels*/
@@ -95,27 +93,26 @@ export namespace lysa {
         RenderingWindowConfiguration configuration;
         /*! Opaque OS window handle used for presentation. */
         void* platformHandle{nullptr};
-        /*! Associated manager for global, platform specific, procedures */
-        RenderingWindowManager* manager{nullptr};
 
         std::function<void(const RenderingWindowEvent&)> onEvent{};
     };
 
-    class RenderingWindowManager : public Manager<RenderingWindowId, RenderingWindow> {
+    class RenderingWindowManager : public ResourcesManager<RenderingWindow> {
     public:
-        RenderingWindowManager(Renderer& renderer) : renderer(renderer) {}
+        RenderingWindowManager(Renderer& renderer, unique_id capacity = 5);
 
-        RenderingWindow& create(const RenderingWindowConfiguration& configuration);
+        unique_id create(const RenderingWindowConfiguration& configuration);
 
-        void close(RenderingWindow& window);
+        void close(unique_id id);
 
-        void resize(const RenderingWindow& window) const;
+        void resize(unique_id id) const;
 
         /** Makes the OS window visible. */
-        void show(const RenderingWindow& window) const;
+        void show(unique_id id) const;
 
     private:
         Renderer& renderer;
+
     };
 
 }

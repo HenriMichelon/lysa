@@ -172,13 +172,13 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
-        ${ENGINE_SRC_DIR}/Manager.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/Renderer.ixx
 
+        ${ENGINE_SRC_DIR}/resources/ResourcesLocator.ixx
+        ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
-        ${ENGINE_SRC_DIR}/resources/Resources.ixx
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}
