@@ -191,6 +191,7 @@ target_include_directories(${LYSA_TARGET} PUBLIC
         ${DEPENDS_SRC_DIR}/stb
         ${xxhash_SOURCE_DIR}
         ${DEPENDS_SRC_DIR}/json
+        ${DEPENDS_SRC_DIR}
         ${freetype_SOURCE_DIR}/include
         ${harfbuzz_SOURCE_DIR}/src
         ${msdfgen_SOURCE_DIR}
@@ -201,6 +202,7 @@ target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         xxhash
         Freetype::Freetype
         harfbuzz
+        lua
 )
 add_dependencies(${LYSA_TARGET} ${VIREO_TARGET})
 target_precompile_headers(${LYSA_TARGET} PRIVATE

@@ -8,7 +8,7 @@ module lysa.renderer;
 
 namespace lysa {
 
-    void Renderer::run() {
+    void Renderer::run(const std::function<void()>& onUpdate) {
         while (!exit) {
             if (onUpdate) onUpdate();
             processPlaformEvents();
