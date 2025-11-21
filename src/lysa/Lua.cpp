@@ -19,8 +19,25 @@ namespace lysa {
         lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::table, sol::lib::string);
     }
 
+    sol::protected_function Lua::getFunction(const std::string& name) {
+        sol::protected_function func = lua[name];
+        if (!func.valid()) {
+            throw Exception("No ", name, " function in Lua scripts");
+        }
+        return func;
+    }
+
     sol::load_result Lua::load(const std::string& filename) {
         sol::load_result res = lua.load(loadScript(filename));
+        if (!res.valid()) {
+            const sol::error err = res;
+            throw Exception("Lua error: ", err.what());
+        }
+        return res;
+    }
+
+    sol::protected_function_result Lua::execute(const std::string& filename) {
+        sol::protected_function_result res = lua.script(loadScript(filename));
         if (!res.valid()) {
             const sol::error err = res;
             throw Exception("Lua error: ", err.what());

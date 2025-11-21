@@ -19,15 +19,19 @@ namespace lysa {
         Lua::_init();
         EventManager::_init();
         ResourcesLocator::_init();
-
-        Lua::get()["renderer"] = std::ref(*this);
+        Lua::get()["lysa"] = std::ref(*this);
     }
 
-    void Lysa::run(const std::function<void()>& onProcess) {
+    void Lysa::run(
+        const std::function<void()>& onInit,
+        const std::function<void()>& onProcess,
+        const std::function<void()>& onShutdown) {
+        onInit();
         while (!exit) {
-            if (onProcess) onProcess();
+            onProcess();
             processPlatformEvents();
         }
+        if (onShutdown) onShutdown();
         EventManager::_shutdown();
         Log::_shutdown();
 

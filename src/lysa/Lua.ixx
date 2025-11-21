@@ -14,7 +14,11 @@ export namespace lysa {
     public:
         static sol::state& get() { return lua; }
 
+        static sol::protected_function getFunction(const std::string& name);
+
         static sol::load_result load(const std::string& filename);
+
+        static sol::protected_function_result execute(const std::string& filename);
 
         static void _init();
 

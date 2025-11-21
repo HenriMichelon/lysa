@@ -22,7 +22,10 @@ export namespace  lysa {
         Lysa(const LysaConfiguration& lysaConfiguration);
 
         /** Run until quit() is requested. */
-        void run(const std::function<void()>& onProcess);
+        void run(
+            const std::function<void()>& onInit,
+            const std::function<void()>& onProcess,
+            const std::function<void()>& onShutdown = {});
 
         /** Request the renderer to exit its main loop at the next opportunity. */
         bool quit() { return exit = true; }
