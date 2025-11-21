@@ -11,8 +11,9 @@ module;
 export module lysa.resources.rendering_window;
 
 import vireo;
-import lysa.resources.manager;
+import lysa.event;
 import lysa.renderer;
+import lysa.resources.manager;
 import lysa.types;
 
 export namespace lysa {
@@ -34,11 +35,28 @@ export namespace lysa {
     };
 
     /**
+    * Rendering window events type
+    */
+    enum class RenderingWindowEventType : event_type {
+        //! Called once the window is fully created and ready to display.
+        READY,
+        //! Called when the window is about to close (release resources here).
+        CLOSE,
+        //! Called after the window/swap chain has been resized.
+        RESIZE,
+    };
+
+    /**
+    * Rendering window events data
+    */
+    struct RenderingWindowEvent : Event {};
+
+    /**
     * Rendering window configuration
     */
     struct RenderingWindowConfiguration {
         //! Window title bar
-        std::string title{};
+        std::string title{"Lysa Window"};
         //! State of the display Window
         RenderingWindowMode mode{RenderingWindowMode::WINDOWED};
         //! Start up X position (top-left corner)
@@ -54,47 +72,23 @@ export namespace lysa {
     };
 
     /**
-    * Rendering window events type
-    */
-    enum class RenderingWindowEventType : uint32 {
-        //! Called once the window is fully created and ready to display.
-        READY,
-        //! Called when the window is about to close (release resources here).
-        CLOSE,
-        //! Called after the window/swap chain has been resized.
-        RESIZE,
-    };
-
-    /**
-    * Rendering window events data
-    */
-    struct RenderingWindowEvent {
-        unique_id id;
-        RenderingWindowEventType type;
-    };
-
-    /**
     * Operating system window that serve as rendering surface.
     */
     struct RenderingWindow {
-        /*! Unique ID  */
+        //! Unique ID
         unique_id id{INVALID_ID};
-        /*! Top-Left corner x position in pixels*/
+        //! Top-Left corner x position in pixels
         int32 x{0};
-        /*! Top-Left corner Y position in pixels*/
+        //! Top-Left corner Y position in pixels
         int32 y{0};
-        /*! Width in pixels */
+        //! Width in pixels
         uint32 width{0};
-        /*! Height in pixels */
+        //! Height in pixels
         uint32 height{0};
-        /*! True once the window has been requested to stop/close. */
+        //! True once the window has been requested to stop/close.
         bool stopped{false};
-        /*! Window configuration (extent, title, rendering config). */
-        RenderingWindowConfiguration configuration;
-        /*! Opaque OS window handle used for presentation. */
+        //! Opaque OS window handle used for presentation.
         void* platformHandle{nullptr};
-
-        std::function<void(const RenderingWindowEvent&)> onEvent{};
     };
 
     class RenderingWindowManager : public ResourcesManager<RenderingWindow> {
@@ -112,7 +106,6 @@ export namespace lysa {
 
     private:
         Renderer& renderer;
-
     };
 
 }

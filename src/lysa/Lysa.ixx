@@ -9,6 +9,8 @@ export module lysa;
 export import std;
 export import vireo;
 
+export import lysa.event;
+export import lysa.exception;
 export import lysa.global;
 export import lysa.log;
 export import lysa.math;

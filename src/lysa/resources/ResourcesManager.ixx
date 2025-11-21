@@ -19,6 +19,8 @@ export namespace lysa {
 
         inline T& get(const unique_id id) { return resources.at(id); }
 
+        inline T& getById(const unique_id id) { return resources.at(id); }
+
         inline const T& get(const unique_id id) const { return resources.at(id); }
 
         inline T& operator[](const unique_id id) { return resources[id]; }

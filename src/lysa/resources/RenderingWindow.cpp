@@ -19,7 +19,7 @@ namespace lysa {
     void RenderingWindowManager::close(const unique_id id) {
         auto& window = get(id);
         window.stopped = true;
-        if (window.onEvent) window.onEvent({id, RenderingWindowEventType::CLOSE});
+        // EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::CLOSE)});
         if (destroy(id)) {
             renderer.quit();
         }
@@ -28,7 +28,7 @@ namespace lysa {
     void RenderingWindowManager::resize(const unique_id id) const {
         const auto& window = get(id);
         if (window.stopped) { return; }
-        if (window.onEvent) window.onEvent({window.id, RenderingWindowEventType::RESIZE});
+        // EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::RESIZE)});
     }
 
 }
