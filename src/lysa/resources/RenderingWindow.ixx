@@ -11,6 +11,8 @@ module;
 export module lysa.resources.rendering_window;
 
 import vireo;
+import lua_bridge;
+
 import lysa.context;
 import lysa.event;
 import lysa.lua;
@@ -107,10 +109,13 @@ export namespace lysa {
         /** Makes the OS window visible. */
         void show(unique_id id) const;
 
-        static void _register(Lua& lua);
+        static void _register(const Lua& lua);
 
     private:
         Context& ctx;
     };
 
 }
+
+template <>
+struct luabridge::Stack<lysa::RenderingWindowMode> : Enum<lysa::RenderingWindowMode> {};

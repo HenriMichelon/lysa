@@ -5,10 +5,14 @@
 * https://opensource.org/licenses/MIT
 */
 module;
-#include <sol/sol.hpp>
+#include "lua.h"
 export module lysa.lua;
 
+import std;
+export import lua_bridge;
+
 export namespace lysa {
+
 
     /**
      * @brief Wrapper around a single global %Lua state.
@@ -21,31 +25,16 @@ export namespace lysa {
      */
     class Lua {
     public:
+
+        luabridge::Namespace beginNamespace() const;
+
+        luabridge::LuaRef getGlobal(const std::string & name) const;
+
         /**
          * @brief Get the global Lua state.
          * @return Reference to the unique sol::state managed by this class.
          */
-        sol::state& get() { return lua; }
-
-        /**
-         * @brief Retrieve a Lua function by its global name.
-         * Looks up a global symbol in the Lua state and returns it as a protected function. The
-         * caller should check the returned function for validity before invoking it.
-         *
-         * @param name Global function name to retrieve (e.g., "update").
-         * @return sol::protected_function The function handle; may be invalid (nil) if not found.
-         */
-        sol::protected_function getFunction(const std::string& name);
-
-        /**
-         * @brief Load (but do not execute) a Lua script file.
-         * The script is read from disk and compiled by Lua. The returned object can later be
-         * executed by the caller.
-         *
-         * @param filename Path to the Lua script file.
-         * @return sol::load_result The load/compile result; check for validity and errors before use.
-         */
-        sol::load_result load(const std::string& filename);
+        //sol::state& get() { return lua; }
 
         /**
          * @brief Execute a Lua script file in the current state.
@@ -55,16 +44,15 @@ export namespace lysa {
          * @param filename Path to the Lua script file to execute.
          * @return sol::protected_function_result Execution result; check for validity and errors.
          */
-        sol::protected_function_result execute(const std::string& filename);
+        void execute(const std::string& filename) const;
 
         Lua();
 
+        ~Lua();
+
     private:
         // The single Lua state instance used by the application.
-        sol::state lua;
-
-        // Load a script file content from disk.
-        std::string loadScript(const std::string& path);
+        lua_State* L;
     };
 
 }

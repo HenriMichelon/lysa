@@ -5,53 +5,55 @@
 * https://opensource.org/licenses/MIT
 */
 module;
-#include <sol/sol.hpp>
+extern "C"
+{
+    #define LUA_LIB
+    #include "lua.h"
+    #include "lualib.h"
+    #include "lauxlib.h"
+}
 module lysa.lua;
 
 import std;
+//import lua_bridge;
+
 import lysa.exception;
+import lysa.virtual_fs;
 
 namespace lysa {
 
     Lua::Lua() {
-        lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::table, sol::lib::string);
+        L = luaL_newstate();
+        luaL_openlibs(L);
+        luabridge::enableExceptions(L);
     }
 
-    sol::protected_function Lua::getFunction(const std::string& name) {
-        sol::protected_function func = lua[name];
-        if (!func.valid()) {
-            throw Exception("No ", name, " function in Lua scripts");
+    Lua::~Lua() {
+        lua_close(L);
+    }
+
+    luabridge::Namespace Lua::beginNamespace() const {
+        return luabridge::getGlobalNamespace(L).beginNamespace ("lysa");
+    }
+
+    luabridge::LuaRef Lua::getGlobal(const std::string & name) const {
+        return luabridge::getGlobal(L, name.c_str());
+    }
+
+    void Lua::execute(const std::string& filename) const{
+        std::vector<char> data;
+        VirtualFS::loadBinaryData(filename, data);
+        const auto script = std::string(data.begin(), data.end());
+        if (script.empty()) {
+            throw Exception("Lua error: failed to load script '", filename, "'");
         }
-        return func;
-    }
 
-    sol::load_result Lua::load(const std::string& filename) {
-        sol::load_result res = lua.load(loadScript(filename));
-        if (!res.valid()) {
-            const sol::error err = res;
-            throw Exception("Lua error: ", err.what());
+        if (luaL_dostring(L, script.c_str()) != LUA_OK) {
+            const char* err = lua_tostring(L, -1);
+            std::string msg = err ? err : "(unknown error)";
+            lua_pop(L, 1);
+            throw Exception("Lua error in '", filename, "': ", msg);
         }
-        return res;
     }
 
-    sol::protected_function_result Lua::execute(const std::string& filename) {
-        sol::protected_function_result res = lua.script(loadScript(filename));
-        if (!res.valid()) {
-            const sol::error err = res;
-            throw Exception("Lua error: ", err.what());
-        }
-        return res;
-    }
-
-    std::string Lua::loadScript(const std::string& path) {
-        std::ifstream file(path, std::ios::binary | std::ios::ate);
-        if (!file) return {};
-
-        const std::streamsize size = file.tellg();
-        std::string buffer(size, '\0');
-
-        file.seekg(0);
-        file.read(buffer.data(), size);
-        return buffer;
-    }
 }

@@ -5,7 +5,6 @@
 * https://opensource.org/licenses/MIT
 */
 module;
-#include <sol/sol.hpp>
 module lysa.event;
 
 import lysa.exception;
@@ -23,10 +22,11 @@ namespace lysa {
         handlers[type].push_back(std::move(handler));
     }
 
-    void EventManager::subscribeLua(const event_type type, sol::function fn) {
-        Log::trace();
-        handlersLua[type].push_back(std::move(fn));
-    }
+    // void EventManager::subscribeLua(const event_type type, sol::function fn) {
+    //     Log::trace();
+    //     handlersLua[type].push_back(std::move(fn));
+    // }
+
     void EventManager::_process() {
         for (const Event& e : queue) {
             Log::trace();
@@ -46,15 +46,15 @@ namespace lysa {
     }
 
     void EventManager::_register(Lua& lua) {
-        lua.get().new_usertype<Event>(
-            "Event",
-            "id", &Event::id,
-            "type", &Event::type
-        );
-
-        sol::table event_manager = lua.get().create_named_table("EventManager");
-        event_manager.set_function("push", &EventManager::push);
-        event_manager.set_function("subscribe", &EventManager::subscribeLua);
+        // lua.get().new_usertype<Event>(
+        //     "Event",
+        //     "id", &Event::id,
+        //     "type", &Event::type
+        // );
+        //
+        // sol::table event_manager = lua.get().create_named_table("EventManager");
+        // event_manager.set_function("push", &EventManager::push);
+        // event_manager.set_function("subscribe", &EventManager::subscribeLua);
     }
 
 }

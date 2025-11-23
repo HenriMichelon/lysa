@@ -5,7 +5,6 @@
 * https://opensource.org/licenses/MIT
 */
 module;
-#include <sol/sol.hpp>
 module lysa.resources.rendering_window;
 
 import lysa.resources.locator;
@@ -18,58 +17,37 @@ namespace lysa {
     RenderingWindowManager::RenderingWindowManager(Context& ctx, const unique_id capacity) :
         ResourcesManager(capacity),
         ctx{ctx} {
-        Log::log("foo");
         ctx.resourcesLocator.enroll(RENDERING_WINDOW, *this);
     }
 
-    void RenderingWindowManager::_register(Lua& lua) {
-        auto& l = lua.get();
-        l.new_enum("RenderingWindowMode",
-            "WINDOWED",   RenderingWindowMode::WINDOWED,
-            "WINDOWED_FULLSCREEN", RenderingWindowMode::WINDOWED_FULLSCREEN,
-            "WINDOWED_MAXIMIZED", RenderingWindowMode::WINDOWED_MAXIMIZED,
-            "FULLSCREEN", RenderingWindowMode::FULLSCREEN
-        );
-        l.new_enum("RenderingWindowEventType",
-            "READY", RenderingWindowEventType::READY,
-            "CLOSING", RenderingWindowEventType::CLOSING,
-            "RESIZED", RenderingWindowEventType::RESIZED
-        );
-        l.new_usertype<RenderingWindowEvent>(
-            "RenderingWindowEvent",
-            "id", &RenderingWindowEvent::id,
-            "type", &RenderingWindowEvent::type
-        );
-        l.new_usertype<RenderingWindowConfiguration>(
-            "RenderingWindowConfiguration",
-            sol::constructors<
-                RenderingWindowConfiguration(),
-                RenderingWindowConfiguration(const std::string&, RenderingWindowMode, int32_t, int32_t, uint32_t, uint32_t, int32_t)
-            >(),
-            "title",   &RenderingWindowConfiguration::title,
-            "mode",    &RenderingWindowConfiguration::mode,
-            "x",       &RenderingWindowConfiguration::x,
-            "y",       &RenderingWindowConfiguration::y,
-            "width",   &RenderingWindowConfiguration::width,
-            "height",  &RenderingWindowConfiguration::height,
-            "monitor", &RenderingWindowConfiguration::monitor
-        );
-        l.new_usertype<RenderingWindow>("RenderingWindow",
-            "id", &RenderingWindow::id,
-            "x", &RenderingWindow::x,
-            "y", &RenderingWindow::y,
-            "width", &RenderingWindow::width,
-            "height", &RenderingWindow::height,
-            "stopped", &RenderingWindow::stopped,
-            "platform_handle", &RenderingWindow::platformHandle
-        );
-        l.new_usertype<RenderingWindowManager>(
-            "RenderingWindowManager",
-            sol::constructors<RenderingWindowManager(Context&, unique_id)>(),
-            "create", &RenderingWindowManager::create,
-            "show", &RenderingWindowManager::show,
-            "get", &RenderingWindowManager::getById
-        );
+    void RenderingWindowManager::_register(const Lua& lua) {
+        lua.beginNamespace()
+            .beginNamespace("RenderingWindowMode")
+                .addVariable("WINDOWED", RenderingWindowMode::WINDOWED)
+                .addVariable("WINDOWED_FULLSCREEN", RenderingWindowMode::WINDOWED_FULLSCREEN)
+            .endNamespace()
+            .beginNamespace("RenderingWindowEventType")
+                .addVariable("READY", RenderingWindowEventType::READY)
+            .endNamespace()
+            .beginClass<RenderingWindowEvent>("RenderingWindowEvent")
+                .addProperty("id", &RenderingWindowEvent::id)
+            .endClass()
+            .beginClass<RenderingWindowConfiguration>("RenderingWindowConfiguration")
+                .addConstructor<void()>()
+                .addProperty("title", &RenderingWindowConfiguration::title)
+                .addProperty("mode", &RenderingWindowConfiguration::mode)
+                .addProperty("width", &RenderingWindowConfiguration::width)
+                .addProperty("height", &RenderingWindowConfiguration::height)
+            .endClass()
+            .beginClass<RenderingWindow>("RenderingWindow")
+               .addProperty("id", &RenderingWindow::id)
+            .endClass()
+            .beginClass<RenderingWindowManager>("RenderingWindowManager")
+                .addConstructor<void(Context&, unique_id)>()
+               .addFunction("create", &RenderingWindowManager::create)
+               .addFunction("show", &RenderingWindowManager::show)
+            .endClass()
+        .endNamespace();
     }
 
     void RenderingWindowManager::closing(const unique_id id) {

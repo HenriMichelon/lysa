@@ -5,7 +5,6 @@
 * https://opensource.org/licenses/MIT
 */
 module;
-#include <sol/sol.hpp>
 export module lysa.event;
 
 import std;
@@ -28,7 +27,8 @@ export namespace lysa {
         void push(const Event& e);
 
         void subscribe(event_type type, EventHandler& handler);
-        void subscribeLua(event_type type, sol::function fn);
+
+        // void subscribeLua(event_type type, sol::function fn);
 
         void _process();
 
@@ -39,7 +39,7 @@ export namespace lysa {
     private:
         std::vector<Event> queue{};
         std::unordered_map<event_type, std::vector<EventHandler>> handlers{};
-        std::unordered_map<event_type, std::vector<sol::function>> handlersLua{};
+        // std::unordered_map<event_type, std::vector<sol::function>> handlersLua{};
     };
 
 }

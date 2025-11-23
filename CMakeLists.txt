@@ -158,6 +158,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Lua.cpp
         ${ENGINE_SRC_DIR}/Lysa.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
+        ${ENGINE_SRC_DIR}/VirtualFS.cpp
 
         ${ENGINE_SRC_DIR}/resources/ResourcesLocator.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
@@ -179,6 +180,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Lysa.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
+        ${ENGINE_SRC_DIR}/VirtualFS.ixx
 
         ${ENGINE_SRC_DIR}/resources/ResourcesLocator.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx
@@ -186,6 +188,8 @@ target_sources(${LYSA_TARGET}
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}
+        ${DEPENDS_SRC_DIR}/LuaBridge/LuaBridge.ixx
+
 )
 
 compile_options(${LYSA_TARGET})
@@ -200,7 +204,7 @@ target_include_directories(${LYSA_TARGET} PUBLIC
         ${harfbuzz_SOURCE_DIR}/src
         ${msdfgen_SOURCE_DIR}
         ${msdf_atlas_gen_SOURCE_DIR}
-        ${lua_SOURCE_DIR/upstream}
+        ${lua_SOURCE_DIR}/upstream
 )
 target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         std-cxx-modules

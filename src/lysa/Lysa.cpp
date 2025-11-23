@@ -5,7 +5,6 @@
 * https://opensource.org/licenses/MIT
 */
 module;
-#include <sol/sol.hpp>
 module lysa;
 
 namespace lysa {
@@ -13,13 +12,15 @@ namespace lysa {
     Lysa::Lysa(const LysaConfiguration& lysaConfiguration) {
         Log::_init(lysaConfiguration.loggingConfiguration);
         ctx.eventManager._register(lua);
+        lua.beginNamespace()
+            .beginClass<Context>("Context")
+                .addProperty("exit", &Context::exit)
+                .addProperty("event_manager", &Context::eventManager)
+                .addProperty("resources_locator", &Context::resourcesLocator)
+            .endClass()
+            .addProperty("ctx", &ctx)
+        .endNamespace();
         ResourcesLocator::_register(lua);
-        lua.get().new_usertype<Context>("Context",
-           "exit", &Context::exit,
-           "event_manager", &Context::eventManager,
-           "resources_locator", &Context::resourcesLocator
-        );
-        lua.get()["ctx"] = std::ref(ctx);
     }
 
     void Lysa::run(
