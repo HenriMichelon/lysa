@@ -39,21 +39,17 @@ export namespace lysa {
     };
 
     /**
-    * Rendering window events type
-    */
-    enum class RenderingWindowEventType : event_type {
-        //! Called once the window is fully created and ready to display.
-        READY,
-        //! Called when the window is about to close (release resources here).
-        CLOSING,
-        //! Called after the window/swap chain has been resized.
-        RESIZED,
-    };
-
-    /**
     * Rendering window events data
     */
-    struct RenderingWindowEvent : Event {};
+    struct RenderingWindowEvent : Event {
+        /**
+        * Rendering window events type
+        */
+        static constexpr auto READY{"RENDERING_WINDOW_READY"};
+        static constexpr auto CLOSING{"RENDERING_WINDOW_CLOSING"};
+        static constexpr auto RESIZED{"RENDERING_WINDOW_RESIZED"};
+
+    };
 
     /**
     * Rendering window configuration
@@ -119,5 +115,3 @@ export namespace lysa {
 
 template <>
 struct luabridge::Stack<lysa::RenderingWindowMode> : Enum<lysa::RenderingWindowMode> {};
-template <>
-struct luabridge::Stack<lysa::RenderingWindowEventType> : Enum<lysa::RenderingWindowEventType> {};

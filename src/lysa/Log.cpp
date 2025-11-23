@@ -13,7 +13,10 @@ import lysa.exception;
 
 namespace lysa {
 
+    std::unique_ptr<Log> Log::loggingStreams{nullptr};
+
     void Log::_init(const LoggingConfiguration &loggingConfiguration) {
+        if (loggingStreams != nullptr) { return; }
         loggingStreams = std::make_unique<Log>(loggingConfiguration);
         if (loggingStreams->loggingConfiguration.loggingMode & LOGGING_MODE_FILE) {
             loggingStreams->logFile = fopen("log.txt", "w");

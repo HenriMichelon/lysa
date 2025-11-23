@@ -97,8 +97,7 @@ export namespace lysa {
     /**
      * @brief Global manager exposing one stream per log level.
      *
-     * The effective outputs (stdout/file) are controlled by the application
-     * configuration.
+     * The effective outputs (stdout/file) are controlled by the first Lysa instance configuration
      */
     class Log {
     public:
@@ -181,7 +180,7 @@ export namespace lysa {
         LoggingConfiguration loggingConfiguration;
 
         // Active global @ref Log instance.
-        static inline std::unique_ptr<Log> loggingStreams{nullptr};
+        static std::unique_ptr<Log> loggingStreams;
 
     };
 

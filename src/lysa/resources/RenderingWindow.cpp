@@ -25,7 +25,7 @@ namespace lysa {
                 .addVariable("WINDOWED_FULLSCREEN", RenderingWindowMode::WINDOWED_FULLSCREEN)
             .endNamespace()
             .beginNamespace("RenderingWindowEventType")
-                .addVariable("READY", RenderingWindowEventType::READY)
+                .addVariable("READY", &RenderingWindowEvent::READY)
             .endNamespace()
             .beginClass<RenderingWindowEvent>("RenderingWindowEvent")
                 .addProperty("id", &RenderingWindowEvent::id)
@@ -51,7 +51,7 @@ namespace lysa {
     void RenderingWindowManager::closing(const unique_id id) {
         auto& window = get(id);
         window.stopped = true;
-        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEventType::CLOSING)});
+        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
         if (destroy(id)) {
             ctx.exit = true;
         }
@@ -60,7 +60,7 @@ namespace lysa {
     void RenderingWindowManager::resized(const unique_id id) const {
         const auto& window = get(id);
         if (window.stopped) { return; }
-        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEventType::RESIZED)});
+        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
     }
 
 }

@@ -122,7 +122,7 @@ namespace lysa {
         window.height = h;
         window.platformHandle = hwnd;
         window.locator = &ctx.resourcesLocator;
-        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEventType::READY)});
+        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::READY)});
         return window.id;
     }
 

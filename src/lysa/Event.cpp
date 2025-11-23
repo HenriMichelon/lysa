@@ -16,11 +16,11 @@ namespace lysa {
         queue.push_back(e);
     }
 
-    void EventManager::subscribe(const event_type type, EventHandler& handler) {
+    void EventManager::subscribe(const event_type& type, EventHandler& handler) {
         handlers[type].push_back(std::move(handler));
     }
 
-    void EventManager::subscribe(const event_type type, luabridge::LuaRef handler) {
+    void EventManager::subscribe(const event_type& type, luabridge::LuaRef handler) {
         handlersLua[type].push_back(std::move(handler));
     }
 
@@ -59,7 +59,7 @@ namespace lysa {
             .endClass()
             .beginClass<EventManager>("EventManager")
                 .addFunction("push", &EventManager::push)
-                .addFunction("subscribe", luabridge::overload<event_type, luabridge::LuaRef>(&EventManager::subscribe))
+                .addFunction("subscribe", luabridge::overload<const event_type&, luabridge::LuaRef>(&EventManager::subscribe))
             .endClass()
         .endNamespace();
 
