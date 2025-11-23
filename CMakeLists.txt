@@ -156,7 +156,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
         ${ENGINE_SRC_DIR}/Lua.cpp
-        ${ENGINE_SRC_DIR}/Main.cpp
+        ${ENGINE_SRC_DIR}/Lysa.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
 
         ${ENGINE_SRC_DIR}/resources/ResourcesLocator.cpp
@@ -170,13 +170,13 @@ target_sources(${LYSA_TARGET}
     PUBLIC
     FILE_SET CXX_MODULES
     FILES
+        ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lua.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
-        ${ENGINE_SRC_DIR}/Main.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
 
@@ -200,6 +200,7 @@ target_include_directories(${LYSA_TARGET} PUBLIC
         ${harfbuzz_SOURCE_DIR}/src
         ${msdfgen_SOURCE_DIR}
         ${msdf_atlas_gen_SOURCE_DIR}
+        ${lua_SOURCE_DIR/upstream}
 )
 target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         std-cxx-modules

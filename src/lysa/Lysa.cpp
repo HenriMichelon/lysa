@@ -6,20 +6,20 @@
 */
 module;
 #include <sol/sol.hpp>
-module lysa.lysa;
-
-import lysa.event;
-import lysa.lua;
-import lysa.resources.locator;
+module lysa;
 
 namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& lysaConfiguration) {
         Log::_init(lysaConfiguration.loggingConfiguration);
-        Lua::_init();
-        EventManager::_init();
-        ResourcesLocator::_init();
-        Lua::get()["lysa"] = std::ref(*this);
+        ctx.eventManager._register(lua);
+        ResourcesLocator::_register(lua);
+        lua.get().new_usertype<Context>("Context",
+           "exit", &Context::exit,
+           "event_manager", &Context::eventManager,
+           "resources_locator", &Context::resourcesLocator
+        );
+        lua.get()["ctx"] = std::ref(ctx);
     }
 
     void Lysa::run(
@@ -27,12 +27,11 @@ namespace lysa {
         const std::function<void()>& onProcess,
         const std::function<void()>& onShutdown) {
         onInit();
-        while (!exit) {
+        while (!ctx.exit) {
             onProcess();
             processPlatformEvents();
         }
         if (onShutdown) onShutdown();
-        EventManager::_shutdown();
         Log::_shutdown();
 
     }

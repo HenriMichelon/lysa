@@ -8,8 +8,8 @@ export module lysa.resources.locator;
 
 import std;
 import lysa.exception;
+import lysa.lua;
 import lysa.resources.manager;
-import lysa.resources.rendering_window;
 
 export namespace lysa {
 
@@ -44,7 +44,7 @@ export namespace lysa {
          * to avoid mismatches.
          */
         template<typename T>
-        static T& get(const char* name) {
+        T& get(const char* name) {
             if (managers.contains(name)) {
                 return *(static_cast<T*>(managers[name]));
             }
@@ -64,15 +64,15 @@ export namespace lysa {
          *                any subsequent lookups.
          */
         template<typename T>
-        static void enroll(const char* name, ResourcesManager<T>& manager) {
+        void enroll(const char* name, ResourcesManager<T>& manager) {
             managers[name] = &manager;
         }
 
-        static void _init();
+        static void _register(Lua& lua);
 
     private:
         // Internal registry mapping names to manager instances.
-        static std::unordered_map<const char*, void*> managers;
+        std::unordered_map<const char*, void*> managers{};
     };
 
 }

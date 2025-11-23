@@ -9,6 +9,7 @@ module;
 module lysa.resources.rendering_window;
 
 import lysa.exception;
+import lysa.log;
 import lysa.resources.locator;
 
 namespace lysa {
@@ -32,6 +33,7 @@ namespace lysa {
 
     unique_id RenderingWindowManager::create(const RenderingWindowConfiguration& config) {
         auto& window = ResourcesManager::create();
+            Log::trace();
 
         const auto hInstance = GetModuleHandle(nullptr);
 
@@ -114,13 +116,14 @@ namespace lysa {
             nullptr);
         if (hwnd == nullptr) { throw Exception("Error creating window", std::to_string(GetLastError())); }
 
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, window.id);
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&window));
         window.x = x;
         window.y = y;
         window.width = w;
         window.height = h;
         window.platformHandle = hwnd;
-        EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::READY)});
+        window.locator = &ctx.resourcesLocator;
+        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEventType::READY)});
         return window.id;
     }
 
@@ -135,20 +138,22 @@ namespace lysa {
     }
 
     LRESULT CALLBACK windowProcedure(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam) {
-        const unique_id id = GetWindowLongPtr(hWnd, GWLP_USERDATA);
-        auto& manager = ResourcesLocator::get<RenderingWindowManager>(RENDERING_WINDOW);
-        auto& window = manager[id];
+        auto* window = reinterpret_cast<RenderingWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+        if (window == nullptr) {
+            return DefWindowProc(hWnd, message, wParam, lParam);
+        }
+        auto& manager = window->locator->get<RenderingWindowManager>(RENDERING_WINDOW);
         switch (message) {
         case WM_SIZE:
             if (IsIconic(hWnd)) {
-                window.stopped = true;
+                window->stopped = true;
             } else {
-                window.stopped = false;
-                manager.resized(id);
+                window->stopped = false;
+                manager.resized(window->id);
             }
             return 0;
         case WM_CLOSE:
-            manager.closing(id);
+            manager.closing(window->id);
             break;
         case WM_KEYDOWN:
         case WM_KEYUP:

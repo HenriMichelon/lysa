@@ -10,55 +10,37 @@ module lysa.resources.rendering_window;
 
 import lysa.resources.locator;
 
+import lysa.log;
 import lysa.lua;
 
 namespace lysa {
 
-    RenderingWindowManager::RenderingWindowManager(Lysa& renderer, const unique_id capacity) :
+    RenderingWindowManager::RenderingWindowManager(Context& ctx, const unique_id capacity) :
         ResourcesManager(capacity),
-        renderer{renderer} {
-        ResourcesLocator::enroll(RENDERING_WINDOW, *this);
+        ctx{ctx} {
+        Log::log("foo");
+        ctx.resourcesLocator.enroll(RENDERING_WINDOW, *this);
     }
 
-    void RenderingWindowManager::closing(const unique_id id) {
-        auto& window = get(id);
-        window.stopped = true;
-        EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::CLOSING)});
-        if (destroy(id)) {
-            renderer.quit();
-        }
-    }
-
-    void RenderingWindowManager::resized(const unique_id id) const {
-        const auto& window = get(id);
-        if (window.stopped) { return; }
-        EventManager::push({window.id, static_cast<event_type>(RenderingWindowEventType::RESIZED)});
-    }
-
-    void RenderingWindowManager::_init() {
-        auto& lua = Lua::get();
-         lua.new_enum("RenderingWindowMode",
-        "WINDOWED",   RenderingWindowMode::WINDOWED,
-        "WINDOWED_FULLSCREEN", RenderingWindowMode::WINDOWED_FULLSCREEN,
-        "WINDOWED_MAXIMIZED", RenderingWindowMode::WINDOWED_MAXIMIZED,
-        "FULLSCREEN", RenderingWindowMode::FULLSCREEN
+    void RenderingWindowManager::_register(Lua& lua) {
+        auto& l = lua.get();
+        l.new_enum("RenderingWindowMode",
+            "WINDOWED",   RenderingWindowMode::WINDOWED,
+            "WINDOWED_FULLSCREEN", RenderingWindowMode::WINDOWED_FULLSCREEN,
+            "WINDOWED_MAXIMIZED", RenderingWindowMode::WINDOWED_MAXIMIZED,
+            "FULLSCREEN", RenderingWindowMode::FULLSCREEN
         );
-
-        lua.new_enum("RenderingWindowEventType",
+        l.new_enum("RenderingWindowEventType",
             "READY", RenderingWindowEventType::READY,
             "CLOSING", RenderingWindowEventType::CLOSING,
             "RESIZED", RenderingWindowEventType::RESIZED
         );
-
-        lua.new_usertype<RenderingWindowEvent>(
+        l.new_usertype<RenderingWindowEvent>(
             "RenderingWindowEvent",
             "id", &RenderingWindowEvent::id,
             "type", &RenderingWindowEvent::type
         );
-
-
-
-        lua.new_usertype<RenderingWindowConfiguration>(
+        l.new_usertype<RenderingWindowConfiguration>(
             "RenderingWindowConfiguration",
             sol::constructors<
                 RenderingWindowConfiguration(),
@@ -72,8 +54,7 @@ namespace lysa {
             "height",  &RenderingWindowConfiguration::height,
             "monitor", &RenderingWindowConfiguration::monitor
         );
-
-        lua.new_usertype<RenderingWindow>("RenderingWindow",
+        l.new_usertype<RenderingWindow>("RenderingWindow",
             "id", &RenderingWindow::id,
             "x", &RenderingWindow::x,
             "y", &RenderingWindow::y,
@@ -82,13 +63,28 @@ namespace lysa {
             "stopped", &RenderingWindow::stopped,
             "platform_handle", &RenderingWindow::platformHandle
         );
-
-        lua.new_usertype<RenderingWindowManager>(
+        l.new_usertype<RenderingWindowManager>(
             "RenderingWindowManager",
-            sol::constructors<RenderingWindowManager(Lysa&, unique_id)>(),
+            sol::constructors<RenderingWindowManager(Context&, unique_id)>(),
             "create", &RenderingWindowManager::create,
             "show", &RenderingWindowManager::show,
             "get", &RenderingWindowManager::getById
         );
     }
+
+    void RenderingWindowManager::closing(const unique_id id) {
+        auto& window = get(id);
+        window.stopped = true;
+        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEventType::CLOSING)});
+        if (destroy(id)) {
+            ctx.exit = true;
+        }
+    }
+
+    void RenderingWindowManager::resized(const unique_id id) const {
+        const auto& window = get(id);
+        if (window.stopped) { return; }
+        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEventType::RESIZED)});
+    }
+
 }

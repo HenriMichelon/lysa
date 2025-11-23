@@ -11,8 +11,10 @@ module;
 export module lysa.resources.rendering_window;
 
 import vireo;
+import lysa.context;
 import lysa.event;
-import lysa.lysa;
+import lysa.lua;
+import lysa.resources.locator;
 import lysa.resources.manager;
 import lysa.types;
 
@@ -89,11 +91,12 @@ export namespace lysa {
         bool stopped{false};
         //! Opaque OS window handle used for presentation.
         void* platformHandle{nullptr};
+        ResourcesLocator *locator{nullptr};
     };
 
     class RenderingWindowManager : public ResourcesManager<RenderingWindow> {
     public:
-        RenderingWindowManager(Lysa& lysa, unique_id capacity = 5);
+        RenderingWindowManager(Context& ctx, unique_id capacity = 5);
 
         unique_id create(const RenderingWindowConfiguration& configuration);
 
@@ -104,10 +107,10 @@ export namespace lysa {
         /** Makes the OS window visible. */
         void show(unique_id id) const;
 
-        static void _init();
+        static void _register(Lua& lua);
 
     private:
-        Lysa& renderer;
+        Context& ctx;
     };
 
 }

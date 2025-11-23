@@ -6,11 +6,12 @@
 */
 module lysa.resources.locator;
 
+import lysa.resources.rendering_window;
+
 namespace lysa {
 
-    void ResourcesLocator::_init() {
-        RenderingWindowManager::_init();
+    void ResourcesLocator::_register(Lua& lua) {
+        RenderingWindowManager::_register(lua);
     }
 
-    std::unordered_map<const char*, void*> ResourcesLocator::managers{};
 }

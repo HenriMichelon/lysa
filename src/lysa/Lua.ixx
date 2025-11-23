@@ -25,7 +25,7 @@ export namespace lysa {
          * @brief Get the global Lua state.
          * @return Reference to the unique sol::state managed by this class.
          */
-        static sol::state& get() { return lua; }
+        sol::state& get() { return lua; }
 
         /**
          * @brief Retrieve a Lua function by its global name.
@@ -35,7 +35,7 @@ export namespace lysa {
          * @param name Global function name to retrieve (e.g., "update").
          * @return sol::protected_function The function handle; may be invalid (nil) if not found.
          */
-        static sol::protected_function getFunction(const std::string& name);
+        sol::protected_function getFunction(const std::string& name);
 
         /**
          * @brief Load (but do not execute) a Lua script file.
@@ -45,7 +45,7 @@ export namespace lysa {
          * @param filename Path to the Lua script file.
          * @return sol::load_result The load/compile result; check for validity and errors before use.
          */
-        static sol::load_result load(const std::string& filename);
+        sol::load_result load(const std::string& filename);
 
         /**
          * @brief Execute a Lua script file in the current state.
@@ -55,16 +55,16 @@ export namespace lysa {
          * @param filename Path to the Lua script file to execute.
          * @return sol::protected_function_result Execution result; check for validity and errors.
          */
-        static sol::protected_function_result execute(const std::string& filename);
+        sol::protected_function_result execute(const std::string& filename);
 
-        static void _init();
+        Lua();
 
     private:
         // The single Lua state instance used by the application.
-        static sol::state lua;
+        sol::state lua;
 
         // Load a script file content from disk.
-        static std::string loadScript(const std::string& path);
+        std::string loadScript(const std::string& path);
     };
 
 }

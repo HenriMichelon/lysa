@@ -13,9 +13,7 @@ import lysa.exception;
 
 namespace lysa {
 
-    sol::state Lua::lua;
-
-    void Lua::_init() {
+    Lua::Lua() {
         lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::table, sol::lib::string);
     }
 
