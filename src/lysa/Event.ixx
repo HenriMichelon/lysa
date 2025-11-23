@@ -4,7 +4,6 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-module;
 export module lysa.event;
 
 import std;
@@ -28,18 +27,18 @@ export namespace lysa {
 
         void subscribe(event_type type, EventHandler& handler);
 
-        // void subscribeLua(event_type type, sol::function fn);
+        void subscribe(event_type type, luabridge::LuaRef handler);
 
         void _process();
 
         ~EventManager();
 
-        void _register(Lua& lua);
+        static void _register(const Lua& lua);
 
     private:
         std::vector<Event> queue{};
         std::unordered_map<event_type, std::vector<EventHandler>> handlers{};
-        // std::unordered_map<event_type, std::vector<sol::function>> handlersLua{};
+        std::unordered_map<event_type, std::vector<luabridge::LuaRef>> handlersLua{};
     };
 
 }

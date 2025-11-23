@@ -119,3 +119,5 @@ export namespace lysa {
 
 template <>
 struct luabridge::Stack<lysa::RenderingWindowMode> : Enum<lysa::RenderingWindowMode> {};
+template <>
+struct luabridge::Stack<lysa::RenderingWindowEventType> : Enum<lysa::RenderingWindowEventType> {};

@@ -33,7 +33,6 @@ namespace lysa {
 
     unique_id RenderingWindowManager::create(const RenderingWindowConfiguration& config) {
         auto& window = ResourcesManager::create();
-            Log::trace();
 
         const auto hInstance = GetModuleHandle(nullptr);
 

@@ -11,7 +11,7 @@ namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& lysaConfiguration) {
         Log::_init(lysaConfiguration.loggingConfiguration);
-        ctx.eventManager._register(lua);
+        EventManager::_register(lua);
         lua.beginNamespace()
             .beginClass<Context>("Context")
                 .addProperty("exit", &Context::exit)

@@ -4,13 +4,11 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-module;
 module lysa.resources.rendering_window;
-
-import lysa.resources.locator;
 
 import lysa.log;
 import lysa.lua;
+import lysa.resources.locator;
 
 namespace lysa {
 
