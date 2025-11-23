@@ -89,25 +89,59 @@ export namespace lysa {
         bool stopped{false};
         //! Opaque OS window handle used for presentation.
         void* platformHandle{nullptr};
+        //! Resource locator object used by global OS functions
         ResourcesLocator *locator{nullptr};
     };
 
+    /**
+     * @brief Manager for creating and controlling @ref RenderingWindow resources.
+     */
     class RenderingWindowManager : public ResourcesManager<RenderingWindow> {
     public:
+        /**
+         * @brief Construct a manager bound to the given runtime context.
+         * @param ctx Reference to the application @ref Context (used for events and access to the @ref ResourcesLocator).
+         * @param capacity Optional initial capacity for window resources.
+         */
         RenderingWindowManager(Context& ctx, unique_id capacity = 5);
 
+        /**
+         * @brief Create a new rendering window resource.
+         * @param configuration Window creation parameters (title, size, mode, position, monitor).
+         * @return The unique @ref unique_id of the newly created window.
+         */
         unique_id create(const RenderingWindowConfiguration& configuration);
 
+        /**
+         * @brief Notify the manager that a window is closing.
+         *
+         * Typically called by the platform layer when a close event is received.
+         * Dispatch a @ref RenderingWindowEvent with type @ref RenderingWindowEvent::CLOSING.
+         *
+         * @param id Unique identifier of the window to mark as closing.
+         */
         void closing(unique_id id);
 
+        /**
+         * @brief Notify the manager that a window has been resized.
+         *
+         * Typically called by the platform layer when a resize event is received.
+         * Dispatch a @ref RenderingWindowEvent with type @ref RenderingWindowEvent::RESIZED.
+         *
+         * @param id Unique identifier of the window that was resized.
+         */
         void resized(unique_id id) const;
 
-        /** Makes the OS window visible. */
+        /**
+         * @brief Make a previously created window visible on screen.
+         * @param id Unique identifier of the window to show.
+         */
         void show(unique_id id) const;
 
         static void _register(const Lua& lua);
 
     private:
+        // Reference to the owning application context.
         Context& ctx;
     };
 

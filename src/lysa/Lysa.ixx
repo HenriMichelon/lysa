@@ -41,7 +41,7 @@ export namespace  lysa {
      *
      * This class owns the application @ref Context and the embedded @ref Lua
      * scripting environment. It provides the run loop and basic integration
-     * points for both C++ and Lua code.
+     * points for both C++ and %Lua code.
      */
     class Lysa {
     public:

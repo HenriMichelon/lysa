@@ -10,7 +10,7 @@ import lysa.resources.rendering_window;
 
 namespace lysa {
 
-    void ResourcesLocator::_register(Lua& lua) {
+    void ResourcesLocator::_register(const Lua& lua) {
         RenderingWindowManager::_register(lua);
     }
 

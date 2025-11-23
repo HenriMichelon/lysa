@@ -18,6 +18,21 @@ namespace lysa {
         ctx.resourcesLocator.enroll(RENDERING_WINDOW, *this);
     }
 
+    void RenderingWindowManager::closing(const unique_id id) {
+        auto& window = get(id);
+        window.stopped = true;
+        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
+        if (destroy(id)) {
+            ctx.exit = true;
+        }
+    }
+
+    void RenderingWindowManager::resized(const unique_id id) const {
+        const auto& window = get(id);
+        if (window.stopped) { return; }
+        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
+    }
+
     void RenderingWindowManager::_register(const Lua& lua) {
         lua.beginNamespace()
             .beginNamespace("RenderingWindowMode")
@@ -46,21 +61,6 @@ namespace lysa {
                .addFunction("show", &RenderingWindowManager::show)
             .endClass()
         .endNamespace();
-    }
-
-    void RenderingWindowManager::closing(const unique_id id) {
-        auto& window = get(id);
-        window.stopped = true;
-        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
-        if (destroy(id)) {
-            ctx.exit = true;
-        }
-    }
-
-    void RenderingWindowManager::resized(const unique_id id) const {
-        const auto& window = get(id);
-        if (window.stopped) { return; }
-        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
     }
 
 }

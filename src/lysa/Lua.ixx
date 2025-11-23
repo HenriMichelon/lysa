@@ -13,36 +13,27 @@ export import lua_bridge;
 
 export namespace lysa {
 
-
     /**
-     * @brief Wrapper around a single global %Lua state.
+     * @brief Wrapper around a %Lua state.
      *
-     * This utility class exposes a global sol::state used by the engine to load and execute
-     * Lua scripts, and to retrieve Lua functions. All members are static and the class is not
-     * intended to be instantiated.
-     *
-     * @note The implementation relies on the Sol2 library (sol/sol.hpp).
+     * @note The implementation relies on the [LuaBridge3 library](https://kunitoki.github.io/LuaBridge3/Manual)
      */
     class Lua {
     public:
-
+        /**
+         * @brief Returns the LuaBridge3 "lysa" namespace
+         */
         luabridge::Namespace beginNamespace() const;
 
+        /**
+         * @brief Returns a global Lua object (function, variable, ...)
+         */
         luabridge::LuaRef getGlobal(const std::string & name) const;
 
         /**
-         * @brief Get the global Lua state.
-         * @return Reference to the unique sol::state managed by this class.
-         */
-        //sol::state& get() { return lua; }
-
-        /**
          * @brief Execute a Lua script file in the current state.
-         * Convenience function that loads and immediately runs the specified script. Errors are
-         * captured in the returned protected_function_result.
          *
-         * @param filename Path to the Lua script file to execute.
-         * @return sol::protected_function_result Execution result; check for validity and errors.
+         * @param filename URI to the Lua script file to execute.
          */
         void execute(const std::string& filename) const;
 

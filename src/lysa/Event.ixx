@@ -14,17 +14,16 @@ export namespace lysa {
 
     /**
      * @brief Alias representing an application-defined event kind.
-     * specific subscribers.
      */
     using event_type = std::string;
 
     /**
-     * @brief Event message.
+     * @brief %Event message.
      */
     struct Event {
         //! Target object of resource unique id
         unique_id id;
-        //! Event type
+        //! Event type name
         event_type type;
     };
 
@@ -37,9 +36,9 @@ export namespace lysa {
     /**
      * @brief Simple event manager.
      *
-     * Supports both C++ and Lua handlers. Events are queued via @ref push
+     * Supports both C++ and %Lua handlers. Events are queued via @ref push
      * and delivered in FIFO order each frame.
-     * The C++ handlers are called before the Lua ones.
+     * The C++ handlers are called before the %Lua ones.
      */
     class EventManager {
     public:
