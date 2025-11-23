@@ -35,9 +35,13 @@ export namespace  lysa {
 
         /** Run until quit() is requested. */
         void run(
-            const std::function<void()>& onInit,
             const std::function<void()>& onProcess,
-            const std::function<void()>& onShutdown = {});
+            const std::function<void()>& onQuit = {});
+        void run(
+            const luabridge::LuaRef& onProcess,
+            const luabridge::LuaRef& onQuit = nullptr) {
+            run([&]{onProcess();}, [&]{if (onQuit) onQuit();});
+        }
 
         Context& getContext() { return ctx; }
 

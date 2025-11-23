@@ -24,15 +24,13 @@ namespace lysa {
     }
 
     void Lysa::run(
-        const std::function<void()>& onInit,
         const std::function<void()>& onProcess,
-        const std::function<void()>& onShutdown) {
-        onInit();
+        const std::function<void()>& onQuit) {
         while (!ctx.exit) {
             onProcess();
             processPlatformEvents();
         }
-        if (onShutdown) onShutdown();
+        if (onQuit) onQuit();
         Log::_shutdown();
 
     }
