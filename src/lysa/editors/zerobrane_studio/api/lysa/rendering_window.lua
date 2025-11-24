@@ -56,7 +56,7 @@ return {
           height = { type = 'number', description = 'Current height in pixels.' },
           stopped = { type = 'boolean', description = 'True when the window has been requested to close.' },
           platformHandle = { type = 'lightuserdata', description = 'Opaque OS window handle used for presentation.' },
-          locator = { type = 'userdata', description = 'Resource locator object (engine-internal).' },
+          locator = { type = 'userdata', description = 'Resource locator object.' },
         }
       },
 

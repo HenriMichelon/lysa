@@ -20,7 +20,8 @@ local function deepmerge(target, source)
     end
 end
 
-deepmerge(M, require('./api/lua/lysa/rendering_window'))
 deepmerge(M, require('./api/lua/lysa/context'))
+deepmerge(M, require('./api/lua/lysa/event'))
+deepmerge(M, require('./api/lua/lysa/rendering_window'))
 
 return M
