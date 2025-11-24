@@ -147,11 +147,11 @@ namespace lysa {
                 window->stopped = true;
             } else {
                 window->stopped = false;
-                manager.resized(window->id);
+                manager._resized(window->id);
             }
             return 0;
         case WM_CLOSE:
-            manager.closing(window->id);
+            manager._closing(window->id);
             break;
         case WM_KEYDOWN:
         case WM_KEYUP:

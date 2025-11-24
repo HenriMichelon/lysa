@@ -30,6 +30,8 @@ export namespace lysa {
     struct RenderTarget {
         //! Unique ID
         unique_id id{INVALID_ID};
+        //! Set to true to pause the rendering in this target
+        bool paused{false};
         //! Swap chain presenting the render target in memory.
         std::shared_ptr<vireo::SwapChain> swapChain{nullptr};
     };
@@ -53,6 +55,14 @@ export namespace lysa {
         unique_id create(const RenderTargetConfiguration& configuration);
 
         void destroy(RenderTarget& renderTarget) override;
+
+    private:
+        friend class Lysa;
+        friend class ResourcesLocator;
+
+        void update() const;
+
+        void drawFrame();
 
         static void _register(const Lua& lua);
     };

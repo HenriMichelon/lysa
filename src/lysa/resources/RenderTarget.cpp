@@ -35,6 +35,15 @@ namespace lysa {
         renderTarget.swapChain.reset();
     }
 
+    void RenderTargetManager::update() const {
+        for (auto& renderTarget : getResources()) {
+            if (renderTarget.paused) continue;
+            const auto frameIndex = renderTarget.swapChain->getCurrentFrameIndex();
+            //...
+        }
+    }
+
+
     void RenderTargetManager::_register(const Lua& lua) {
         lua.beginNamespace()
             .beginClass<RenderTargetConfiguration>("RenderTargetConfiguration")

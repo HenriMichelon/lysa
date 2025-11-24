@@ -90,6 +90,7 @@ export namespace lysa {
         }
 
         Manager(Manager&) = delete;
+
         Manager& operator=(Manager&) = delete;
 
     protected:
@@ -116,6 +117,8 @@ export namespace lysa {
             resources[id].id = INVALID_ID;
             freeList.push_back(id);
         }
+
+        const std::vector<T>& getResources() const { return resources; }
 
     private:
         // Contiguous storage for all resources managed by this instance.

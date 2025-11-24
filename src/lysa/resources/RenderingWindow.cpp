@@ -15,14 +15,14 @@ namespace lysa {
         ResourcesManager(ctx, ID, capacity) {
     }
 
-    void RenderingWindowManager::closing(const unique_id id) {
+    void RenderingWindowManager::_closing(const unique_id id) {
         auto& window = get(id);
         window.stopped = true;
         ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
         release(id);
     }
 
-    void RenderingWindowManager::resized(const unique_id id) const {
+    void RenderingWindowManager::_resized(const unique_id id) const {
         const auto& window = get(id);
         if (window.stopped) { return; }
         ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});

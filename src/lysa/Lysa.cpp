@@ -44,14 +44,11 @@ namespace lysa {
         const std::function<void(float)>& onPhysicsProcess,
         const std::function<void()>& onQuit) {
         while (!ctx.exit) {
+            // https://gafferongames.com/post/fix_your_timestep/
             const double newTime = std::chrono::duration_cast<std::chrono::duration<double>>(
                 std::chrono::steady_clock::now().time_since_epoch()).count();
             double frameTime = newTime - currentTime;
-
-            // https://gafferongames.com/post/fix_your_timestep/
-            if (frameTime > 0.25) {
-                frameTime = 0.25; // Note: Max frame time to avoid spiral of death
-            }
+            if (frameTime > 0.25) frameTime = 0.25; // Note: Max frame time to avoid spiral of death
             currentTime = newTime;
             accumulator += frameTime;
             while (accumulator >= FIXED_DELTA_TIME) {
@@ -59,6 +56,9 @@ namespace lysa {
                 accumulator -= FIXED_DELTA_TIME;
             }
             onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
+
+            renderTargetManager.update();
+
             processPlatformEvents();
         }
         if (onQuit) onQuit();
