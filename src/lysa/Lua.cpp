@@ -163,10 +163,30 @@ end
                 .addProperty("BC7_UNORM",              []{ return (int)vireo::ImageFormat::BC7_UNORM; })
                 .addProperty("BC7_UNORM_SRGB",         []{ return (int)vireo::ImageFormat::BC7_UNORM_SRGB; })
             .endNamespace()
+
             .beginNamespace("PresentMode")
                 .addProperty("IMMEDIATE", []{ return (int)vireo::PresentMode::IMMEDIATE; })
                 .addProperty("VSYNC",     []{ return (int)vireo::PresentMode::VSYNC; })
             .endNamespace()
+
+            .beginClass<vireo::Rect>("Rect")
+                .addConstructor<void()>()
+                .addProperty("x", &vireo::Rect::x)
+                .addProperty("y", &vireo::Rect::y)
+                .addProperty("width", &vireo::Rect::width)
+                .addProperty("height", &vireo::Rect::height)
+            .endClass()
+
+            .beginClass<vireo::Viewport>("Viewport")
+                .addConstructor<void()>()
+                .addProperty("x", &vireo::Viewport::x)
+                .addProperty("y", &vireo::Viewport::y)
+                .addProperty("width", &vireo::Viewport::width)
+                .addProperty("height", &vireo::Viewport::height)
+                .addProperty("min_depth", &vireo::Viewport::minDepth)
+                .addProperty("max_depth", &vireo::Viewport::maxDepth)
+            .endClass()
+
         .endNamespace();
     }
 

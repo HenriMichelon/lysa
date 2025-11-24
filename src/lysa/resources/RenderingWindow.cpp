@@ -62,7 +62,7 @@ namespace lysa {
                .addProperty("width", &RenderingWindow::width)
                .addProperty("height", &RenderingWindow::height)
                .addProperty("stopped", &RenderingWindow::stopped)
-               .addProperty("platformHandle", &RenderingWindow::platformHandle)
+               .addProperty("platform_handle", &RenderingWindow::platformHandle)
             .endClass()
             .beginClass<RenderingWindowManager>("RenderingWindowManager")
                 .addConstructor<void(Context&, unique_id)>()

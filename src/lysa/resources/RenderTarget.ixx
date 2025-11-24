@@ -13,6 +13,7 @@ import lysa.context;
 import lysa.lua;
 import lysa.types;
 import lysa.resources.manager;
+import lysa.resources.viewport;
 
 export namespace lysa {
 
@@ -33,6 +34,10 @@ export namespace lysa {
             std::shared_ptr<vireo::Fence> inFlightFence;
             /** Command allocator for this frame (resets between frames). */
             std::shared_ptr<vireo::CommandAllocator> commandAllocator;
+            /** Semaphore signaled when pre‑render stage is finished. */
+            std::shared_ptr<vireo::Semaphore> prepareSemaphore;
+            /** Command list used for rendering into the swap chain. */
+            std::shared_ptr<vireo::CommandList> prepareCommandList;
             /** Command list used for rendering into the swap chain. */
             std::shared_ptr<vireo::CommandList> renderCommandList;
         };
@@ -71,9 +76,11 @@ export namespace lysa {
         friend class Lysa;
         friend class ResourcesLocator;
 
+        ViewportManager& viewportManager;
+
         void update() const;
 
-        void drawFrame() const;
+        void render() const;
 
         static void _register(const Lua& lua);
     };

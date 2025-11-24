@@ -13,7 +13,8 @@ namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& lysaConfiguration) :
         lua(lysaConfiguration.luaConfiguration),
-        renderTargetManager(ctx, lysaConfiguration.renderTargetMax) {
+        viewportManager(ctx, lysaConfiguration.resourcesCapacity.viewports),
+        renderTargetManager(ctx, lysaConfiguration.resourcesCapacity.renderTarget) {
 
         // Graphic backend objects
         ctx.vireo = vireo::Vireo::create(lysaConfiguration.backend);
@@ -34,6 +35,7 @@ namespace lysa {
     }
 
     Lysa::~Lysa() {
+        viewportManager.cleanup();
         renderTargetManager.cleanup();
         ctx.graphicQueue->waitIdle();
         ctx.vireo.reset();
@@ -58,7 +60,7 @@ namespace lysa {
             onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
 
             renderTargetManager.update();
-            renderTargetManager.drawFrame();
+            renderTargetManager.render();
 
             processPlatformEvents();
         }

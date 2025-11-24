@@ -163,6 +163,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
         ${ENGINE_SRC_DIR}/resources/ResourcesLocator.cpp
+        ${ENGINE_SRC_DIR}/resources/Viewport.cpp
 
         ${OS_SRC}
         ${PHYSICS_SRC}
@@ -201,6 +202,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/resources/RenderTarget.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesLocator.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx
+        ${ENGINE_SRC_DIR}/resources/Viewport.ixx
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}

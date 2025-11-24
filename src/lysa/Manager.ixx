@@ -90,8 +90,8 @@ export namespace lysa {
         // Construct a manager with a fixed number of slots.
         Manager(const unique_id capacity) :
             resources(capacity) {
-            for (auto id = 0; id < capacity; ++id) {
-                freeList.push_back(id);
+            for (auto id = capacity; id > 0; --id) {
+                freeList.push_back(id-1);
             }
         }
 
@@ -120,7 +120,12 @@ export namespace lysa {
             freeList.push_back(id);
         }
 
-        const std::vector<T>& getResources() const { return resources; }
+        const auto& getResources() const { return resources; }
+
+        template<typename Predicate>
+        auto filter(Predicate&& predicate) const {
+            return resources | std::views::filter(std::forward<Predicate>(predicate));
+        }
 
     private:
         // Contiguous storage for all resources managed by this instance.

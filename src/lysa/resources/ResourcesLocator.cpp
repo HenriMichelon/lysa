@@ -6,8 +6,9 @@
 */
 module lysa.resources.locator;
 
-import lysa.resources.rendering_window;
 import lysa.resources.render_target;
+import lysa.resources.rendering_window;
+import lysa.resources.viewport;
 
 namespace lysa {
 
@@ -18,13 +19,18 @@ namespace lysa {
                 .addFunction("getRenderTargetManager", +[](ResourcesLocator* rl) -> RenderTargetManager& {
                         return rl->get<RenderTargetManager>(RenderTargetManager::ID);
                     })
+                .addFunction("getViewportManager", +[](ResourcesLocator* rl) -> ViewportManager& {
+                        return rl->get<ViewportManager>(ViewportManager::ID);
+                    })
                 .addFunction("getRenderingWindowManager", +[](ResourcesLocator* rl) -> RenderingWindowManager& {
                     return rl->get<RenderingWindowManager>(RenderingWindowManager::ID);
                 })
             .endClass()
         .endNamespace();
+
         RenderTargetManager::_register(lua);
         RenderingWindowManager::_register(lua);
+        ViewportManager::_register(lua);
     }
 
 }

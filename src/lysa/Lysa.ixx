@@ -20,11 +20,17 @@ export import lysa.types;
 
 export import lysa.resources.locator;
 export import lysa.resources.manager;
-export import lysa.resources.rendering_window;
 export import lysa.resources.render_target;
-
+export import lysa.resources.viewport;
 
 export namespace  lysa {
+
+    struct ResourcesCapacity {
+        //! Maximum number of render targets
+        unique_id renderTarget{1};
+        //! Maximum number of viewports
+        unique_id viewports{5};
+    };
 
     /**
      * @brief Configuration object used to initialize a Lysa instance.
@@ -32,8 +38,8 @@ export namespace  lysa {
     struct LysaConfiguration {
         //! Graphic API used by the graphic backend
         vireo::Backend backend{vireo::Backend::VULKAN};
-        //! Maximum number of render targets
-        unique_id renderTargetMax{1};
+        //! Resource capacity configuration
+        ResourcesCapacity resourcesCapacity;
         //! Configuration for Lua integration and tooling.
         LuaConfiguration luaConfiguration;
     };
@@ -103,6 +109,7 @@ export namespace  lysa {
         double currentTime{0.0};
         double accumulator{0.0};
 
+        ViewportManager viewportManager;
         RenderTargetManager renderTargetManager;
 
         // Consume platform-specific events.

@@ -13,7 +13,8 @@ import lysa.resources.locator;
 namespace lysa {
 
     RenderTargetManager::RenderTargetManager(Context& ctx, const unique_id capacity) :
-        ResourcesManager(ctx, ID, capacity) {
+        ResourcesManager(ctx, ID, capacity),
+        viewportManager{ctx.resourcesLocator.get<ViewportManager>(ViewportManager::ID)} {
     }
 
     unique_id RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
@@ -34,6 +35,8 @@ namespace lysa {
         for (auto& frame : renderTarget.framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
+            frame.prepareSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY);
+            frame.prepareCommandList = frame.commandAllocator->createCommandList();
             frame.renderCommandList = frame.commandAllocator->createCommandList();
         }
         return renderTarget.id;
@@ -49,11 +52,11 @@ namespace lysa {
         for (auto& renderTarget : getResources()) {
             if (renderTarget.paused) continue;
             const auto frameIndex = renderTarget.swapChain->getCurrentFrameIndex();
-            //...
+            viewportManager.update(renderTarget.id, frameIndex);
         }
     }
 
-    void RenderTargetManager::drawFrame() const {
+    void RenderTargetManager::render() const {
         for (auto& renderTarget : getResources()) {
             if (renderTarget.paused) continue;
             const auto frameIndex = renderTarget.swapChain->getCurrentFrameIndex();
@@ -63,13 +66,24 @@ namespace lysa {
             if (!swapChain->acquire(frame.inFlightFence)) { return; }
             frame.commandAllocator->reset();
 
+            frame.prepareCommandList->begin();
+            viewportManager.prepare(renderTarget.id, frameIndex);
+            frame.prepareCommandList->end();
+            ctx.graphicQueue->submit(
+                       vireo::WaitStage::ALL_COMMANDS,
+                       frame.prepareSemaphore,
+                       {frame.prepareCommandList});
+
             auto& commandList = frame.renderCommandList;
             commandList->begin();
+            viewportManager.render(renderTarget.id, frameIndex);
             commandList->barrier(swapChain, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);
             commandList->barrier(swapChain, vireo::ResourceState::COPY_DST, vireo::ResourceState::PRESENT);
             commandList->end();
 
             ctx.graphicQueue->submit(
+                frame.prepareSemaphore,
+                vireo::WaitStage::VERTEX_INPUT,
                 frame.inFlightFence,
                 swapChain,
                 {commandList});
@@ -78,14 +92,13 @@ namespace lysa {
         }
     }
 
-
     void RenderTargetManager::_register(const Lua& lua) {
         lua.beginNamespace()
             .beginClass<RenderTargetConfiguration>("RenderTargetConfiguration")
                 .addConstructor<void()>()
-        .       addProperty("renderingWindowHandle", &RenderTargetConfiguration::renderingWindowHandle)
-                .addProperty("swapChainFormat", &RenderTargetConfiguration::swapChainFormat)
-                .addProperty("presentMode", &RenderTargetConfiguration::presentMode)
+        .       addProperty("rendering_window_handle", &RenderTargetConfiguration::renderingWindowHandle)
+                .addProperty("swap_chain_format", &RenderTargetConfiguration::swapChainFormat)
+                .addProperty("present_mode", &RenderTargetConfiguration::presentMode)
             .endClass()
             .beginClass<RenderTarget>("RenderTarget")
                .addProperty("id", &RenderTarget::id)
