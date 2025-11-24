@@ -44,6 +44,9 @@ export namespace  lysa {
      */
     class Lysa {
     public:
+        /** Fixed time step used by the physics update loop (in seconds). */
+        static constexpr float FIXED_DELTA_TIME{1.0f/60.0f};
+
         /**
          * @brief Construct the runtime and initialize subsystems.
          * @param lysaConfiguration Configuration values used during startup.
@@ -54,22 +57,25 @@ export namespace  lysa {
          * @brief Run the main loop until quit is requested.
          *
          * @param onProcess Callback invoked every iteration (i.e. each frame).
+         * @param onPhysicsProcess Callback invoked every physics update
          * @param onQuit Optional callback invoked once after the loop exits, before the instance shutdown
          */
         void run(
-            const std::function<void()>& onProcess,
+            const std::function<void(float)>& onProcess,
+            const std::function<void(float)>& onPhysicsProcess = {},
             const std::function<void()>& onQuit = {});
+
         /**
-         * @brief Run the main loop using Lua callbacks.
+         * @brief Run the main loop until quit is requested.
          *
-         * @param onProcess Lua function called every iteration.
-         * @param onQuit Optional Lua function called after the loop exits, before the instance shutdown
+         * @param onProcess Callback invoked every iteration (i.e. each frame).
+         * @param onPhysicsProcess Callback invoked every physics update
+         * @param onQuit Optional callback invoked once after the loop exits, before the instance shutdown
          */
         void run(
             const luabridge::LuaRef& onProcess,
-            const luabridge::LuaRef& onQuit = nullptr) {
-            run([&]{onProcess();}, [&]{if (onQuit) onQuit();});
-        }
+            const luabridge::LuaRef& onPhysicsProcess = nullptr,
+            const luabridge::LuaRef& onQuit = nullptr);
 
         /**
          * @brief Get the mutable application context.
@@ -88,6 +94,10 @@ export namespace  lysa {
         Lua lua;
         // Global runtime context (events, resources, etc.).
         Context ctx;
+        // Fixed delta time bookkeeping for the physics update loop
+        double currentTime{0.0};
+        double accumulator{0.0};
+
 
         // Consume platform-specific events.
         void processPlatformEvents();
