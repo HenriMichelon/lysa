@@ -9,8 +9,8 @@ module lysa;
 
 namespace lysa {
 
-    Lysa::Lysa(const LysaConfiguration& lysaConfiguration) {
-        Log::_init(lysaConfiguration.loggingConfiguration);
+    Lysa::Lysa(const LysaConfiguration& lysaConfiguration) :
+        lua(lysaConfiguration.luaConfiguration) {
         EventManager::_register(lua);
         lua.beginNamespace()
             .beginClass<Context>("Context")
@@ -31,8 +31,6 @@ namespace lysa {
             processPlatformEvents();
         }
         if (onQuit) onQuit();
-        Log::_shutdown();
-
     }
 
 }

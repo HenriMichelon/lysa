@@ -52,3 +52,11 @@ FetchContent_Declare(
         GIT_TAG        master
 )
 FetchContent_MakeAvailable(lua_cmake)
+
+message(NOTICE "Fetching LuaSocket...")
+FetchContent_Declare(
+        lua_socket
+        GIT_REPOSITORY https://github.com/lunarmodules/luasocket.git
+        GIT_TAG        v3.1.0
+)
+FetchContent_MakeAvailable(lua_socket)

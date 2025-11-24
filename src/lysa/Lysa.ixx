@@ -30,10 +30,9 @@ export namespace  lysa {
      */
     struct LysaConfiguration {
         /**
-         * @brief Logging subsystem configuration applied at startup.
-         * When creating multiple Lysa instances, only the first instance configure the Logging subsystem.
+         * @brief Configuration for Lua integration and tooling.
          */
-        LoggingConfiguration loggingConfiguration;
+        LuaConfiguration luaConfiguration;
     };
 
     /**

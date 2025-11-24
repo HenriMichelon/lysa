@@ -166,6 +166,19 @@ add_library(${LYSA_TARGET} STATIC
         ${OS_SRC}
         ${PHYSICS_SRC}
         ${DEPENDS_SRC_DIR}/stb/stb.cpp
+        ${lua_socket_SOURCE_DIR}/src/except.c
+        ${lua_socket_SOURCE_DIR}/src/luasocket.c
+        ${lua_socket_SOURCE_DIR}/src/timeout.c
+        ${lua_socket_SOURCE_DIR}/src/buffer.c
+        ${lua_socket_SOURCE_DIR}/src/io.c
+        ${lua_socket_SOURCE_DIR}/src/auxiliar.c
+        ${lua_socket_SOURCE_DIR}/src/options.c
+        ${lua_socket_SOURCE_DIR}/src/inet.c
+        ${lua_socket_SOURCE_DIR}/src/tcp.c
+        ${lua_socket_SOURCE_DIR}/src/udp.c
+        ${lua_socket_SOURCE_DIR}/src/select.c
+        ${lua_socket_SOURCE_DIR}/src/wsocket.c
+        ${lua_socket_SOURCE_DIR}/src/luasocket.h
 )
 target_sources(${LYSA_TARGET}
     PUBLIC
@@ -189,7 +202,6 @@ target_sources(${LYSA_TARGET}
         ${OS_MODULES}
         ${PHYSICS_MODULES}
         ${DEPENDS_SRC_DIR}/LuaBridge/LuaBridge.ixx
-
 )
 
 compile_options(${LYSA_TARGET})
@@ -204,7 +216,7 @@ target_include_directories(${LYSA_TARGET} PUBLIC
         ${harfbuzz_SOURCE_DIR}/src
         ${msdfgen_SOURCE_DIR}
         ${msdf_atlas_gen_SOURCE_DIR}
-        ${lua_SOURCE_DIR}/upstream
+        ${lua_cmake_SOURCE_DIR}/upstream
 )
 target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         std-cxx-modules
@@ -222,6 +234,7 @@ set_property(TARGET ${LYSA_TARGET} PROPERTY COMPILE_WARNING_AS_ERROR ON)
 #######################################################
 if(WIN32)
     target_compile_definitions(${LYSA_TARGET} PRIVATE WIN32_LEAN_AND_MEAN)
+    target_link_libraries(${LYSA_TARGET} Ws2_32)
     if (DIRECTX_BACKEND)
         target_link_libraries(${LYSA_TARGET} d3d12)
     endif ()

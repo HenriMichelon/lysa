@@ -11,21 +11,43 @@ extern "C"
     #include "lua.h"
     #include "lualib.h"
     #include "lauxlib.h"
+    int luaopen_socket_core(lua_State* L);
 }
 module lysa.lua;
 
 import std;
-//import lua_bridge;
 
 import lysa.exception;
+import lysa.log;
 import lysa.virtual_fs;
 
 namespace lysa {
 
-    Lua::Lua() {
+    Lua::Lua(const LuaConfiguration& luaConfiguration) {
         L = luaL_newstate();
         luaL_openlibs(L);
+        luaL_requiref(L, "socket", luaopen_socket_core, 1);
+        lua_pop(L, 1);
+        luaL_requiref(L, "socket.core", luaopen_socket_core, 1);
+        lua_pop(L, 1);
         luabridge::enableExceptions(L);
+
+        if (luaConfiguration.startRemoteDebug) {
+             std::string mobdebug_chunk = R"(
+package.path = package.path .. ";./scripts/?.lua;./?.lua"
+local ok, mobdebug = pcall(require, 'mobdebug')
+if not ok then
+    error('mobdebug not found: ' .. tostring(mobdebug))
+end
+)";
+            mobdebug_chunk +=
+                "mobdebug.start([[" + luaConfiguration.remoteDebugHosts + "]], " +
+                std::to_string(luaConfiguration.remoteDebugPort) + ")\n";
+            if (luaL_dostring(L, mobdebug_chunk.c_str()) != LUA_OK) {
+                Log::warning("[Lua/mobdebug] error: ", std::string(lua_tostring(L, -1)));
+                lua_pop(L, 1);
+            }
+        }
     }
 
     Lua::~Lua() {
