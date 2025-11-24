@@ -7,7 +7,10 @@
 export module lysa.resources.manager;
 
 import std;
+
+import lysa.context;
 import lysa.exception;
+import lysa.manager;
 import lysa.types;
 
 export namespace lysa {
@@ -27,83 +30,16 @@ export namespace lysa {
      *           named 'id' of type unique_id that will be assigned upon creation.
      */
     template<typename T>
-    class ResourcesManager {
-    public:
-        virtual ~ResourcesManager() = default;
-
-        /**
-         * @brief Retrieve a mutable reference to the resource with the given ID.
-         * @param id The unique identifier of the resource.
-         * @return T& Reference to the resource.
-         * @throws std::out_of_range if id is invalid (as thrown by std::vector::at).
-         */
-        inline T& get(const unique_id id) { return resources.at(id); }
-
-        /**
-         * @brief Alias for get(id): retrieve a mutable reference by unique ID.
-         * @param id The unique identifier of the resource.
-         * @return T& Reference to the resource.
-         * @throws std::out_of_range if id is invalid (as thrown by std::vector::at).
-         */
-        inline T& getById(const unique_id id) { return resources.at(id); }
-
-        /**
-         * @brief Retrieve a read-only reference to the resource with the given ID.
-         * @param id The unique identifier of the resource.
-         * @return const T& Const reference to the resource.
-         * @throws std::out_of_range if id is invalid (as thrown by std::vector::at).
-         */
-        inline const T& get(const unique_id id) const { return resources.at(id); }
-
-        /**
-         * @brief Bracket operator for mutable access without bounds checking.
-         * @param id The unique identifier of the resource.
-         * @return T& Reference to the resource.
-         * @warning No bounds checking is performed (uses vector::operator[]). Prefer get() when
-         *          you need range checking.
-         */
-        inline T& operator[](const unique_id id) { return resources[id]; }
-
-        /**
-         * @brief Bracket operator for const access without bounds checking.
-         * @param id The unique identifier of the resource.
-         * @return const T& Const reference to the resource.
-         * @warning No bounds checking is performed (uses vector::operator[]). Prefer const get()
-         *          when you need range checking.
-         */
-        inline const T& operator[](const unique_id id) const { return resources[id]; }
-
+    class ResourcesManager : public Manager<T> {
     protected:
+        // Reference to the owning application context.
+        Context& ctx;
+
         // Construct a manager with a fixed number of slots.
-        ResourcesManager(const unique_id capacity) : resources(capacity) {
-            for (auto i = 0; i < capacity; ++i) {
-                freeList.push_back(i);
-            }
+        ResourcesManager(Context& ctx, const std::string& ID, const unique_id capacity) : Manager<T>(capacity), ctx{ctx} {
+            ctx.resourcesLocator.enroll(ID, *this);
         }
 
-        //
-        virtual T& create() {
-            if (freeList.empty()) throw Exception("ResourcesManager : no more free slots");
-            auto id = freeList.back();
-            freeList.pop_back();
-            resources[id] = T{};
-            resources[id].id = id;
-            return resources[id];
-        }
-
-        // Destroy (release) a resource, returning its slot to the free list.
-        virtual bool destroy(const unique_id id) {
-            if (id >= resources.size()) return false;
-            freeList.push_back(id);
-            return true;
-        }
-
-    private:
-        // Contiguous storage for all resources managed by this instance.
-        std::vector<T> resources;
-
-        // Stack-like list of free slot IDs available for future creations.
-        std::vector<unique_id> freeList;
     };
 
 }

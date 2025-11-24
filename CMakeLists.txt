@@ -160,8 +160,9 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Math.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
 
-        ${ENGINE_SRC_DIR}/resources/ResourcesLocator.cpp
+        ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
+        ${ENGINE_SRC_DIR}/resources/ResourcesLocator.cpp
 
         ${OS_SRC}
         ${PHYSICS_SRC}
@@ -191,13 +192,15 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lua.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
+        ${ENGINE_SRC_DIR}/Manager.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
 
+        ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
+        ${ENGINE_SRC_DIR}/resources/RenderTarget.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesLocator.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx
-        ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}

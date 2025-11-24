@@ -6,6 +6,7 @@
 */
 export module lysa.context;
 
+import vireo;
 import lysa.event;
 import lysa.resources.locator;
 
@@ -32,6 +33,16 @@ export namespace  lysa {
          * @brief Resource resolution and access facility.
          */
         ResourcesLocator resourcesLocator;
+
+        /**
+         * @brief Backend object owning the device/instance and factory for GPU resources.
+         */
+        std::shared_ptr<vireo::Vireo> vireo;
+
+        /**
+         * @brief Submit queue used for graphics/rendering work.
+         */
+        std::shared_ptr<vireo::SubmitQueue> graphicQueue;
     };
 
 }

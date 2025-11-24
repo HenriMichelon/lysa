@@ -9,7 +9,7 @@ export module lysa.resources.locator;
 import std;
 import lysa.exception;
 import lysa.lua;
-import lysa.resources.manager;
+import lysa.manager;
 
 export namespace lysa {
 
@@ -37,6 +37,13 @@ export namespace lysa {
             throw Exception("ResourcesLocator could not find manager " + name);
         }
 
+        void* getManager(const std::string& name) {
+            if (managers.contains(name)) {
+                return managers[name];
+            }
+            throw Exception("ResourcesLocator could not find manager " + name);
+        }
+
         /**
          * @brief Enroll a resources manager instance under a given name.
          *
@@ -50,7 +57,7 @@ export namespace lysa {
          *                any subsequent lookups.
          */
         template<typename T>
-        void enroll(const std::string& name, ResourcesManager<T>& manager) {
+        void enroll(const std::string& name, Manager<T>& manager) {
             managers[name] = &manager;
         }
 

@@ -10,6 +10,7 @@ module;
 export module lysa.lua;
 
 import std;
+import vireo;
 export import lua_bridge;
 
 import lysa.types;
@@ -54,6 +55,11 @@ export namespace lysa {
         luabridge::Namespace beginNamespace() const;
 
         /**
+         * @brief Returns a LuaBridge3 namespace
+         */
+        luabridge::Namespace beginNamespace(const std::string& name) const;
+
+        /**
          * @brief Returns a global Lua object (function, variable, ...)
          */
         luabridge::LuaRef getGlobal(const std::string & name) const;
@@ -74,4 +80,12 @@ export namespace lysa {
         lua_State* L;
     };
 
+    class LuaVireo {
+    public:
+        static void _register(const Lua& lua);
+    };
+
 }
+
+template <> struct luabridge::Stack<vireo::ImageFormat> : Enum<vireo::ImageFormat> {};
+template <> struct luabridge::Stack<vireo::PresentMode> : Enum<vireo::PresentMode> {};

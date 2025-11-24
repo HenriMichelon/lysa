@@ -141,7 +141,7 @@ namespace lysa {
         if (window == nullptr) {
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
-        auto& manager = window->locator->get<RenderingWindowManager>(RENDERING_WINDOW);
+        auto& manager = window->locator->get<RenderingWindowManager>(RenderingWindowManager::ID);
         switch (message) {
         case WM_SIZE:
             if (IsIconic(hWnd)) {

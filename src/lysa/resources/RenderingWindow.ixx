@@ -22,8 +22,6 @@ import lysa.types;
 
 export namespace lysa {
 
-    constexpr auto RENDERING_WINDOW = "RenderingWindow";
-
     /**
     * Rendering Window mode
     */
@@ -98,6 +96,8 @@ export namespace lysa {
      */
     class RenderingWindowManager : public ResourcesManager<RenderingWindow> {
     public:
+        static constexpr auto ID = "RenderingWindow";
+
         /**
          * @brief Construct a manager bound to the given runtime context.
          * @param ctx Reference to the application @ref Context (used for events and access to the @ref ResourcesLocator).
@@ -139,10 +139,6 @@ export namespace lysa {
         void show(unique_id id) const;
 
         static void _register(const Lua& lua);
-
-    private:
-        // Reference to the owning application context.
-        Context& ctx;
     };
 
 }

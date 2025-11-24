@@ -21,6 +21,7 @@ export import lysa.types;
 export import lysa.resources.locator;
 export import lysa.resources.manager;
 export import lysa.resources.rendering_window;
+export import lysa.resources.render_target;
 
 
 export namespace  lysa {
@@ -29,9 +30,11 @@ export namespace  lysa {
      * @brief Configuration object used to initialize a Lysa instance.
      */
     struct LysaConfiguration {
-        /**
-         * @brief Configuration for Lua integration and tooling.
-         */
+        //! Graphic API used by the graphic backend
+        vireo::Backend backend{vireo::Backend::VULKAN};
+        //! Maximum number of render targets
+        unique_id renderTargetMax{1};
+        //! Configuration for Lua integration and tooling.
         LuaConfiguration luaConfiguration;
     };
 
@@ -42,7 +45,7 @@ export namespace  lysa {
      * scripting environment. It provides the run loop and basic integration
      * points for both C++ and %Lua code.
      */
-    class Lysa {
+    class Lysa final {
     public:
         /** Fixed time step used by the physics update loop (in seconds). */
         static constexpr float FIXED_DELTA_TIME{1.0f/60.0f};
@@ -52,6 +55,8 @@ export namespace  lysa {
          * @param lysaConfiguration Configuration values used during startup.
          */
         Lysa(const LysaConfiguration& lysaConfiguration);
+
+        ~Lysa();
 
         /**
          * @brief Run the main loop until quit is requested.
@@ -98,6 +103,7 @@ export namespace  lysa {
         double currentTime{0.0};
         double accumulator{0.0};
 
+        RenderTargetManager renderTargetManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();

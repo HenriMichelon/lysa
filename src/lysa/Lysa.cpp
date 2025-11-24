@@ -7,10 +7,20 @@
 module;
 module lysa;
 
+
+
 namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& lysaConfiguration) :
-        lua(lysaConfiguration.luaConfiguration) {
+        lua(lysaConfiguration.luaConfiguration),
+        renderTargetManager(ctx, lysaConfiguration.renderTargetMax) {
+
+        // Graphic backend objects
+        ctx.vireo = vireo::Vireo::create(lysaConfiguration.backend);
+        ctx.graphicQueue = ctx.vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue"),
+
+        // Lua bindings
+        LuaVireo::_register(lua);
         EventManager::_register(lua);
         lua.beginNamespace()
             .beginClass<Context>("Context")
@@ -21,6 +31,11 @@ namespace lysa {
             .addProperty("ctx", &ctx)
         .endNamespace();
         ResourcesLocator::_register(lua);
+    }
+
+    Lysa::~Lysa() {
+        ctx.graphicQueue->waitIdle();
+        ctx.vireo.reset();
     }
 
     void Lysa::run(

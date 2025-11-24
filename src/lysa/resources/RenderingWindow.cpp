@@ -7,15 +7,12 @@
 module lysa.resources.rendering_window;
 
 import lysa.log;
-import lysa.lua;
 import lysa.resources.locator;
 
 namespace lysa {
 
-    RenderingWindowManager::RenderingWindowManager(Context& ctx, const unique_id capacity) :
-        ResourcesManager(capacity),
-        ctx{ctx} {
-        ctx.resourcesLocator.enroll(RENDERING_WINDOW, *this);
+    RenderingWindowManager::RenderingWindowManager(Context& ctx,const unique_id capacity) :
+        ResourcesManager(ctx, ID, capacity) {
     }
 
     void RenderingWindowManager::closing(const unique_id id) {
@@ -57,8 +54,11 @@ namespace lysa {
             .endClass()
             .beginClass<RenderingWindowManager>("RenderingWindowManager")
                 .addConstructor<void(Context&, unique_id)>()
+                .addStaticProperty("ID", &RenderingWindowManager::ID)
                .addFunction("create", &RenderingWindowManager::create)
+               .addFunction("get", &RenderingWindowManager::getById)
                .addFunction("show", &RenderingWindowManager::show)
+               .addFunction("destroy", &RenderingWindowManager::destroy)
             .endClass()
         .endNamespace();
     }
