@@ -3,19 +3,19 @@
 --]]--
 editor.autoactivate = true
 editor.fontname = "Fira Code"
-editor.fontsize = 12
+editor.fontsize = 11
 editor.tabwidth = 4
 editor.usetabs = true
 editor.backspaceunindent = true
 
 console.fontname = "Fira Code"
-console.fontsize = 12
+console.fontsize = 11
 
 output.fontname = "Fira Code"
-output.fontsize = 12
+output.fontsize = 11
 
 filetree.fontname = "Fira Code"
-filetree.fontsize = 10
+filetree.fontsize = 11
 
 debugger.runonstart = false
 

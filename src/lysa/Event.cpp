@@ -16,29 +16,35 @@ namespace lysa {
         queue.push_back(e);
     }
 
-    void EventManager::subscribe(const event_type& type, EventHandler& handler) {
-        handlers[type].push_back(std::move(handler));
+    void EventManager::subscribe(const event_type& type, const unique_id id, EventHandler& handler) {
+        handlers[type][id].push_back(std::move(handler));
     }
 
-    void EventManager::subscribe(const event_type& type, luabridge::LuaRef handler) {
-        handlersLua[type].push_back(std::move(handler));
+    void EventManager::subscribe(const event_type& type, const unique_id id, luabridge::LuaRef handler) {
+        handlersLua[type][id].push_back(std::move(handler));
     }
 
     void EventManager::_process() {
         for (const Event& e : queue) {
             {
-                const auto it = handlers.find(e.type);
-                if (it != handlers.end()) {
-                    for (auto& handler : it->second) {
-                        handler(e);
+                const auto itType = handlers.find(e.type);
+                if (itType != handlers.end()) {
+                    const auto itId = itType->second.find(e.id);
+                    if (itId != itType->second.end()) {
+                        for (auto& handler : itId->second) {
+                            handler(e);
+                        }
                     }
                 }
             }
             {
-                const auto it = handlersLua.find(e.type);
-                if (it != handlersLua.end()) {
-                    for (auto& handler : it->second) {
-                        handler(e);
+                const auto itType = handlersLua.find(e.type);
+                if (itType != handlersLua.end()) {
+                    const auto itId = itType->second.find(e.id);
+                    if (itId != itType->second.end()) {
+                        for (auto& handler : itId->second) {
+                            handler(e);
+                        }
                     }
                 }
             }
@@ -49,6 +55,7 @@ namespace lysa {
     EventManager::~EventManager() {
         queue.clear();
         handlers.clear();
+        handlersLua.clear();
     }
 
     void EventManager::_register(const Lua& lua) {
@@ -59,7 +66,9 @@ namespace lysa {
             .endClass()
             .beginClass<EventManager>("EventManager")
                 .addFunction("push", &EventManager::push)
-                .addFunction("subscribe", luabridge::overload<const event_type&, luabridge::LuaRef>(&EventManager::subscribe))
+                .addFunction("subscribe", luabridge::overload<
+                    const event_type&, unique_id, luabridge::LuaRef
+                >(&EventManager::subscribe))
             .endClass()
         .endNamespace();
 

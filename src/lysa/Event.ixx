@@ -49,45 +49,34 @@ export namespace lysa {
         void push(const Event& e);
 
         /**
-         * @brief Subscribe a C++ handler to a given event type.
+         * @brief Subscribe a C++ handler to a given event type and target id.
          * @param type The event kind to listen to.
+         * @param id The specific target id to filter on.
          * @param handler Reference to a callable receiving the event.
          */
-        void subscribe(const event_type& type, EventHandler& handler);
+        void subscribe(const event_type& type, unique_id id, EventHandler& handler);
 
         /**
-         * @brief Subscribe a Lua handler to a given event type.
+         * @brief Subscribe a Lua handler to a given event type and target id.
          * @param type The event kind to listen to.
+         * @param id The specific target id to filter on.
          * @param handler Lua function to be called with the event.
          */
-        void subscribe(const event_type& type, luabridge::LuaRef handler);
+        void subscribe(const event_type& type, unique_id id, luabridge::LuaRef handler);
 
-        /**
-         * @brief Deliver all queued events to matching subscribers.
-         *
-         * Calls C++ and Lua handlers registered for each event type,
-         * in the order subscriptions were added.
-         */
         void _process();
 
-        /**
-         * @brief Destructor that clears handlers and pending events.
-         */
         ~EventManager();
 
-        /**
-         * @brief Register Event and EventManager bindings in the Lua state.
-         * @param lua The Lua instance used to expose the API.
-         */
         static void _register(const Lua& lua);
 
     private:
-        /** @brief Pending events waiting to be processed. */
+        // Pending events waiting to be processed.
         std::vector<Event> queue{};
-        /** @brief C++ subscribers keyed by event type. */
-        std::unordered_map<event_type, std::vector<EventHandler>> handlers{};
-        /** @brief Lua subscribers keyed by event type. */
-        std::unordered_map<event_type, std::vector<luabridge::LuaRef>> handlersLua{};
+        // C++ subscribers keyed by event type then id.
+        std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<EventHandler>>> handlers{};
+        // Lua subscribers keyed by event type then id.
+        std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<luabridge::LuaRef>>> handlersLua{};
     };
 
 }
