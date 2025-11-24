@@ -32,8 +32,6 @@ namespace lysa {
     }
 
     unique_id RenderingWindowManager::create(const RenderingWindowConfiguration& config) {
-        auto& window = ResourcesManager::create();
-
         const auto hInstance = GetModuleHandle(nullptr);
 
         const auto windowClass = WNDCLASSEX {
@@ -115,6 +113,7 @@ namespace lysa {
             nullptr);
         if (hwnd == nullptr) { throw Exception("Error creating window", std::to_string(GetLastError())); }
 
+        auto& window = allocate();
         SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&window));
         window.x = x;
         window.y = y;

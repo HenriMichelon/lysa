@@ -52,7 +52,7 @@ export namespace lysa {
          */
         unique_id create(const RenderTargetConfiguration& configuration);
 
-        bool destroy(unique_id id);
+        void destroy(RenderTarget& renderTarget) override;
 
         static void _register(const Lua& lua);
     };

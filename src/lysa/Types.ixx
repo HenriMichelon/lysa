@@ -20,9 +20,9 @@ export namespace lysa {
     using int32 = std::int32_t;
     using int64 = std::int64_t;
 
-    using unique_id = uint64;
+    using unique_id = int64;
 
-    constexpr unique_id INVALID_ID{0};
+    constexpr unique_id INVALID_ID{-1};
 
 
 }

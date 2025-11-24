@@ -40,13 +40,12 @@ export namespace lysa {
     * Rendering window events data
     */
     struct RenderingWindowEvent : Event {
-        /**
-        * Rendering window events type
-        */
+        //! The window is ready to be shown
         static constexpr auto READY{"RENDERING_WINDOW_READY"};
+        //! The window is about to close
         static constexpr auto CLOSING{"RENDERING_WINDOW_CLOSING"};
+        //! The window has been resized
         static constexpr auto RESIZED{"RENDERING_WINDOW_RESIZED"};
-
     };
 
     /**
@@ -83,7 +82,7 @@ export namespace lysa {
         uint32 width{0};
         //! Height in pixels
         uint32 height{0};
-        //! True once the window has been requested to stop/close.
+        //! True once the window has been requested to pause rendering or close.
         bool stopped{false};
         //! Opaque OS window handle used for presentation.
         void* platformHandle{nullptr};

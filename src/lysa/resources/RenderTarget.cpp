@@ -20,7 +20,7 @@ namespace lysa {
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
-        auto& renderTarget = ResourcesManager::create();
+        auto& renderTarget = allocate();
         renderTarget.swapChain = ctx.vireo->createSwapChain(
             configuration.swapChainFormat,
             ctx.graphicQueue,
@@ -30,10 +30,9 @@ namespace lysa {
         return renderTarget.id;
     }
 
-    bool RenderTargetManager::destroy(const unique_id id) {
-        const auto& renderTarget = get(id);
+    void RenderTargetManager::destroy(RenderTarget& renderTarget) {
         renderTarget.swapChain->waitIdle();
-        return ResourcesManager::destroy(id);
+        renderTarget.swapChain.reset();
     }
 
     void RenderTargetManager::_register(const Lua& lua) {

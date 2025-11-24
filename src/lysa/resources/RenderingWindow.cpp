@@ -19,9 +19,7 @@ namespace lysa {
         auto& window = get(id);
         window.stopped = true;
         ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
-        if (destroy(id)) {
-            ctx.exit = true;
-        }
+        release(id);
     }
 
     void RenderingWindowManager::resized(const unique_id id) const {
@@ -34,23 +32,37 @@ namespace lysa {
         lua.beginNamespace()
             .beginNamespace("RenderingWindowMode")
                 .addVariable("WINDOWED", RenderingWindowMode::WINDOWED)
+                .addVariable("WINDOWED_MAXIMIZED", RenderingWindowMode::WINDOWED_MAXIMIZED)
                 .addVariable("WINDOWED_FULLSCREEN", RenderingWindowMode::WINDOWED_FULLSCREEN)
+                .addVariable("FULLSCREEN", RenderingWindowMode::FULLSCREEN)
             .endNamespace()
             .beginNamespace("RenderingWindowEventType")
                 .addVariable("READY", &RenderingWindowEvent::READY)
+                .addVariable("CLOSING", &RenderingWindowEvent::CLOSING)
+                .addVariable("RESIZED", &RenderingWindowEvent::RESIZED)
             .endNamespace()
             .beginClass<RenderingWindowEvent>("RenderingWindowEvent")
                 .addProperty("id", &RenderingWindowEvent::id)
+                .addProperty("type", &RenderingWindowEvent::type)
             .endClass()
             .beginClass<RenderingWindowConfiguration>("RenderingWindowConfiguration")
                 .addConstructor<void()>()
                 .addProperty("title", &RenderingWindowConfiguration::title)
                 .addProperty("mode", &RenderingWindowConfiguration::mode)
+                .addProperty("x", &RenderingWindowConfiguration::x)
+                .addProperty("y", &RenderingWindowConfiguration::y)
                 .addProperty("width", &RenderingWindowConfiguration::width)
                 .addProperty("height", &RenderingWindowConfiguration::height)
+                .addProperty("monitor", &RenderingWindowConfiguration::monitor)
             .endClass()
             .beginClass<RenderingWindow>("RenderingWindow")
                .addProperty("id", &RenderingWindow::id)
+               .addProperty("x", &RenderingWindow::x)
+               .addProperty("y", &RenderingWindow::y)
+               .addProperty("width", &RenderingWindow::width)
+               .addProperty("height", &RenderingWindow::height)
+               .addProperty("stopped", &RenderingWindow::stopped)
+               .addProperty("platformHandle", &RenderingWindow::platformHandle)
             .endClass()
             .beginClass<RenderingWindowManager>("RenderingWindowManager")
                 .addConstructor<void(Context&, unique_id)>()

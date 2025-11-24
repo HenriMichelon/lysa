@@ -15,10 +15,10 @@ namespace lysa {
         lua.beginNamespace()
             .beginClass<ResourcesLocator>("ResourcesLocator")
                 .addFunction("get", &ResourcesLocator::getManager)
-                .addFunction("getRenderTargetManager", +[](ResourcesLocator* rl) {
+                .addFunction("getRenderTargetManager", +[](ResourcesLocator* rl) -> RenderTargetManager& {
                         return rl->get<RenderTargetManager>(RenderTargetManager::ID);
                     })
-                .addFunction("getRenderingWindowManager", +[](ResourcesLocator* rl) {
+                .addFunction("getRenderingWindowManager", +[](ResourcesLocator* rl) -> RenderingWindowManager& {
                     return rl->get<RenderingWindowManager>(RenderingWindowManager::ID);
                 })
             .endClass()

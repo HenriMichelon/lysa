@@ -13,6 +13,8 @@ import lysa.types;
 
 export namespace lysa {
 
+    using DestroyHandler = std::function<void(unique_id)>;
+
     /**
      * @brief Generic object/resources manager using ID-based access.
      *
@@ -73,21 +75,34 @@ export namespace lysa {
         inline const T& operator[](const unique_id id) const { return resources[id]; }
 
         virtual ~Manager() {
-            for (T& resource : resources) {
-                Manager::destroy(resource.id);
+            assert([&]{ return freeList.size() == resources.size(); }, "ResourcesManager : cleanup() not called");
+        }
+
+        virtual void destroy(T&) {}
+
+        virtual void cleanup() {
+            for (auto& resource : resources) {
+                if (resource.id != INVALID_ID) {
+                    destroy(resource);
+                    release(resource.id);
+                }
             }
         }
+
+        Manager(Manager&) = delete;
+        Manager& operator=(Manager&) = delete;
 
     protected:
         // Construct a manager with a fixed number of slots.
-        Manager(const unique_id capacity) : resources(capacity) {
-            for (auto i = 0; i < capacity; ++i) {
-                freeList.push_back(i);
+        Manager(const unique_id capacity) :
+            resources(capacity) {
+            for (auto id = 0; id < capacity; ++id) {
+                freeList.push_back(id);
             }
         }
 
-        //
-        virtual T& create() {
+        // Allocate a new resource
+        T& allocate() {
             if (freeList.empty()) throw Exception("ResourcesManager : no more free slots");
             auto id = freeList.back();
             freeList.pop_back();
@@ -96,11 +111,10 @@ export namespace lysa {
             return resources[id];
         }
 
-        // Destroy (release) a resource, returning its slot to the free list.
-        virtual bool destroy(const unique_id id) {
-            if (id >= resources.size()) return false;
+        // Release a resource, returning its slot to the free list.
+        void release(const unique_id id) {
+            resources[id].id = INVALID_ID;
             freeList.push_back(id);
-            return true;
         }
 
     private:

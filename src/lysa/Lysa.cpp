@@ -34,6 +34,7 @@ namespace lysa {
     }
 
     Lysa::~Lysa() {
+        renderTargetManager.cleanup();
         ctx.graphicQueue->waitIdle();
         ctx.vireo.reset();
     }
