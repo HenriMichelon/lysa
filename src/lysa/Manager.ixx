@@ -80,25 +80,27 @@ export namespace lysa {
 
         virtual void destroy(T&) {}
 
-        virtual void cleanup() {
-            for (auto& resource : resources) {
-                if (resource.id != INVALID_ID) {
-                    destroy(resource);
-                    release(resource.id);
-                }
-            }
-        }
-
         Manager(Manager&) = delete;
 
         Manager& operator=(Manager&) = delete;
 
     protected:
+        friend class Lysa;
+
         // Construct a manager with a fixed number of slots.
         Manager(const unique_id capacity) :
             resources(capacity) {
             for (auto id = 0; id < capacity; ++id) {
                 freeList.push_back(id);
+            }
+        }
+
+        void cleanup() {
+            for (auto& resource : resources) {
+                if (resource.id != INVALID_ID) {
+                    destroy(resource);
+                    release(resource.id);
+                }
             }
         }
 

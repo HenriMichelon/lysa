@@ -28,10 +28,21 @@ export namespace lysa {
     };
 
     struct RenderTarget {
+        struct FrameData {
+            /** Fence signaled when the frame's work has completed on GPU. */
+            std::shared_ptr<vireo::Fence> inFlightFence;
+            /** Command allocator for this frame (resets between frames). */
+            std::shared_ptr<vireo::CommandAllocator> commandAllocator;
+            /** Command list used for rendering into the swap chain. */
+            std::shared_ptr<vireo::CommandList> renderCommandList;
+        };
+
         //! Unique ID
         unique_id id{INVALID_ID};
         //! Set to true to pause the rendering in this target
         bool paused{false};
+        /** Array of per‑frame resource bundles (size = frames in flight). */
+        std::vector<FrameData> framesData;
         //! Swap chain presenting the render target in memory.
         std::shared_ptr<vireo::SwapChain> swapChain{nullptr};
     };
@@ -62,7 +73,7 @@ export namespace lysa {
 
         void update() const;
 
-        void drawFrame();
+        void drawFrame() const;
 
         static void _register(const Lua& lua);
     };

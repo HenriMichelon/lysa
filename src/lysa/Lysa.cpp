@@ -58,6 +58,7 @@ namespace lysa {
             onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
 
             renderTargetManager.update();
+            renderTargetManager.drawFrame();
 
             processPlatformEvents();
         }

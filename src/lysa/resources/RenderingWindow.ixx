@@ -117,7 +117,6 @@ export namespace lysa {
          */
         void show(unique_id id) const;
 
-
         void _closing(unique_id id);
 
         void _resized(unique_id id) const;
