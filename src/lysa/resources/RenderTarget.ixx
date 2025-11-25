@@ -46,10 +46,12 @@ export namespace lysa {
         unique_id id{INVALID_ID};
         //! Set to true to pause the rendering in this target
         bool paused{false};
-        /** Array of per‑frame resource bundles (size = frames in flight). */
+        //! Array of per‑frame resource bundles (size = frames in flight).
         std::vector<FrameData> framesData;
         //! Swap chain presenting the render target in memory.
         std::shared_ptr<vireo::SwapChain> swapChain{nullptr};
+        // Configuration used for creating the RenderTarget
+        RenderTargetConfiguration configuration;
     };
 
     class RenderTargetManager : public ResourcesManager<RenderTarget> {
@@ -71,6 +73,8 @@ export namespace lysa {
         unique_id create(const RenderTargetConfiguration& configuration);
 
         void destroy(RenderTarget& renderTarget) override;
+
+        void destroy(const void* renderingWindowHandle);
 
     private:
         friend class Lysa;

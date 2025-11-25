@@ -121,6 +121,7 @@ export namespace lysa {
         }
 
         const auto& getResources() const { return resources; }
+        auto& getResources() { return resources; }
 
         template<typename Predicate>
         auto filter(Predicate&& predicate) const {

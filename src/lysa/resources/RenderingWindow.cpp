@@ -8,6 +8,7 @@ module lysa.resources.rendering_window;
 
 import lysa.log;
 import lysa.resources.locator;
+import lysa.resources.render_target;
 
 namespace lysa {
 
@@ -15,9 +16,15 @@ namespace lysa {
         ResourcesManager(ctx, ID, capacity) {
     }
 
+    void RenderingWindowManager::destroy(RenderingWindow& renderingWindow) {
+        close(renderingWindow.id);
+    }
+
     void RenderingWindowManager::_closing(const unique_id id) {
         auto& window = get(id);
+        if (window.stopped) { return; }
         window.stopped = true;
+        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).destroy(window.platformHandle);
         ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
         release(id);
     }
@@ -70,6 +77,7 @@ namespace lysa {
                .addFunction("create", &RenderingWindowManager::create)
                .addFunction("get", &RenderingWindowManager::getById)
                .addFunction("show", &RenderingWindowManager::show)
+               .addFunction("close", &RenderingWindowManager::close)
                .addFunction("destroy", &RenderingWindowManager::destroy)
             .endClass()
         .endNamespace();

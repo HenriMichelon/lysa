@@ -31,6 +31,11 @@ namespace lysa {
         ShowWindow(static_cast<HWND>(window.platformHandle), SW_SHOW);
     }
 
+    void RenderingWindowManager::close(const unique_id id) const {
+        const auto& window = get(id);
+        PostMessage(static_cast<HWND>(window.platformHandle), WM_CLOSE, 0, 0);
+    }
+
     unique_id RenderingWindowManager::create(const RenderingWindowConfiguration& config) {
         const auto hInstance = GetModuleHandle(nullptr);
 

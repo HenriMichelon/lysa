@@ -26,6 +26,10 @@ export namespace lysa {
     };
 
     struct Viewport {
+        /** Per‑frame state and deferred operations processed at frame boundaries. */
+        struct FrameData {
+
+        };
         //! Unique ID
         unique_id id{INVALID_ID};
         //! Parent render target
@@ -34,6 +38,8 @@ export namespace lysa {
         vireo::Viewport viewport{};
         //! Scissors rectangle limiting rendering to a sub‑area.
         vireo::Rect scissors{};
+        /** Array of per‑frame resource bundles (size = frames in flight). */
+        std::vector<FrameData> framesData;
         //! Configuration used when creating the viewport
         ViewportConfiguration configuration;
     };
@@ -56,7 +62,7 @@ export namespace lysa {
          */
         unique_id create(const ViewportConfiguration& configuration);
 
-        void destroy(Viewport& renderTarget) override;
+        void destroy(Viewport& viewport) override;
 
     private:
         friend class RenderTargetManager;

@@ -25,6 +25,7 @@ namespace lysa {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
         auto& renderTarget = allocate();
+        renderTarget.configuration = configuration;
         renderTarget.swapChain = ctx.vireo->createSwapChain(
             configuration.swapChainFormat,
             ctx.graphicQueue,
@@ -40,6 +41,14 @@ namespace lysa {
             frame.renderCommandList = frame.commandAllocator->createCommandList();
         }
         return renderTarget.id;
+    }
+
+    void RenderTargetManager::destroy(const void* renderingWindowHandle) {
+        for (RenderTarget& renderTarget : getResources()) {
+            if (renderTarget.configuration.renderingWindowHandle == renderingWindowHandle) {
+                destroy(renderTarget);
+            }
+        }
     }
 
     void RenderTargetManager::destroy(RenderTarget& renderTarget) {
@@ -108,7 +117,7 @@ namespace lysa {
                 .addStaticProperty("ID", &RenderTargetManager::ID)
                .addFunction("create", &RenderTargetManager::create)
                 .addFunction("get", &RenderTargetManager::getById)
-               .addFunction("destroy", &RenderTargetManager::destroy)
+               //.addFunction("destroy", &RenderTargetManager::destroy)
             .endClass()
         .endNamespace();
     }

@@ -26,6 +26,9 @@ namespace lysa {
         auto& viewport = allocate();
         viewport.renderTarget = configuration.renderTarget;
         viewport.configuration = configuration;
+        viewport.framesData.resize(renderTarget.swapChain->getFramesInFlight());
+        for (auto& frame : viewport.framesData) {
+        }
         resize(viewport, renderTarget.swapChain->getExtent());
         return viewport.id;
     }
@@ -48,30 +51,31 @@ namespace lysa {
     }
 
     void ViewportManager::destroy(Viewport& viewport) {
+        viewport.framesData.clear();
     }
 
     void ViewportManager::update(const unique_id renderTarget, const uint32 frameIndex) const {
-        for (auto& viewport : filter([renderTarget](const auto& v) {
-            return v.renderTarget == renderTarget;
-        })) {
+        for (auto& viewport : getResources()) {
+            if (viewport.renderTarget == renderTarget) {
 
+            }
         }
     }
 
     void ViewportManager::prepare(const unique_id renderTarget, const uint32 frameIndex) const {
-        for (auto& viewport : filter([renderTarget](const auto& v) {
-           return v.renderTarget == renderTarget;
-       })) {
+        for (auto& viewport : getResources()) {
+            if (viewport.renderTarget == renderTarget) {
 
-       }
+            }
+        }
     }
 
     void ViewportManager::render(const unique_id renderTarget, const uint32 frameIndex) const {
-        for (auto& viewport : filter([renderTarget](const auto& v) {
-           return v.renderTarget == renderTarget;
-       })) {
+        for (auto& viewport : getResources()) {
+            if (viewport.renderTarget == renderTarget) {
 
-       }
+            }
+        }
     }
 
     void ViewportManager::_register(const Lua& lua) {

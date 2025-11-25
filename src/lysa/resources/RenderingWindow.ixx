@@ -111,11 +111,15 @@ export namespace lysa {
          */
         unique_id create(const RenderingWindowConfiguration& configuration);
 
+        void destroy(RenderingWindow& renderingWindow) override;
+
         /**
          * @brief Make a previously created window visible on screen.
          * @param id Unique identifier of the window to show.
          */
         void show(unique_id id) const;
+
+        void close(unique_id id) const;
 
         void _closing(unique_id id);
 
