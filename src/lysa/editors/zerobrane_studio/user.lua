@@ -21,7 +21,8 @@ debugger.runonstart = false
 
 api = {
     'baselib',
-    'lysa'
+    'lysa',
+    'vireo'
 }
 autocomplete = true
 
