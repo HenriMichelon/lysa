@@ -50,7 +50,7 @@ namespace lysa {
         }
     }
 
-    void ViewportManager::destroy(const unique_id renderTarget) {
+    void ViewportManager::destroyAll(const unique_id renderTarget) {
         for (auto& viewport : getResources()) {
             if (viewport.renderTarget == renderTarget) {
                 destroy(viewport);
@@ -102,9 +102,15 @@ namespace lysa {
             .beginClass<ViewportManager>("ViewportManager")
                 .addConstructor<void(Context&, unique_id)>()
                 .addStaticProperty("ID", &ViewportManager::ID)
-               .addFunction("create", &ViewportManager::create)
-                .addFunction("get", &ViewportManager::getById)
-               //.addFunction("destroy", &ViewportManager::destroy)
+                .addFunction("create", &ViewportManager::create)
+                .addFunction("get",
+                    luabridge::nonConstOverload<const unique_id>(&ViewportManager::get),
+                    luabridge::constOverload<const unique_id>(&ViewportManager::get)
+                )
+                .addFunction("destroyAll", &ViewportManager::destroyAll)
+                .addFunction("destroy",
+                  luabridge::overload<Viewport&> (&ViewportManager::destroy),
+                  luabridge::overload<const unique_id>(&Manager::destroy))
             .endClass()
         .endNamespace();
     }

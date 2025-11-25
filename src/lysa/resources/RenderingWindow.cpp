@@ -24,7 +24,7 @@ namespace lysa {
         auto& window = get(id);
         if (window.stopped) { return; }
         window.stopped = true;
-        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).destroy(window.platformHandle);
+        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).destroyAll(window.platformHandle);
         ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
         release(id);
     }
@@ -75,10 +75,16 @@ namespace lysa {
                 .addConstructor<void(Context&, unique_id)>()
                 .addStaticProperty("ID", &RenderingWindowManager::ID)
                .addFunction("create", &RenderingWindowManager::create)
-               .addFunction("get", &RenderingWindowManager::getById)
+               .addFunction("get",
+                   luabridge::nonConstOverload<const unique_id>(&RenderingWindowManager::get),
+                   luabridge::constOverload<const unique_id>(&RenderingWindowManager::get)
+                   )
                .addFunction("show", &RenderingWindowManager::show)
                .addFunction("close", &RenderingWindowManager::close)
-               .addFunction("destroy", &RenderingWindowManager::destroy)
+               .addFunction("destroy",
+                   luabridge::overload<RenderingWindow&>(&RenderingWindowManager::destroy),
+                   luabridge::overload<const unique_id>(&Manager::destroy)
+                   )
             .endClass()
         .endNamespace();
     }

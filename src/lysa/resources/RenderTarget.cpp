@@ -43,7 +43,7 @@ namespace lysa {
         return renderTarget.id;
     }
 
-    void RenderTargetManager::destroy(const void* renderingWindowHandle) {
+    void RenderTargetManager::destroyAll(const void* renderingWindowHandle) {
         for (RenderTarget& renderTarget : getResources()) {
             if (renderTarget.configuration.renderingWindowHandle == renderingWindowHandle) {
                 destroy(renderTarget);
@@ -53,7 +53,7 @@ namespace lysa {
 
     void RenderTargetManager::destroy(RenderTarget& renderTarget) {
         renderTarget.swapChain->waitIdle();
-        viewportManager.destroy(renderTarget.id);
+        viewportManager.destroyAll(renderTarget.id);
         renderTarget.swapChain.reset();
         renderTarget.framesData.clear();
         release(renderTarget.id);
@@ -117,9 +117,16 @@ namespace lysa {
             .beginClass<RenderTargetManager>("RenderTargetManager")
                 .addConstructor<void(Context&, unique_id)>()
                 .addStaticProperty("ID", &RenderTargetManager::ID)
-               .addFunction("create", &RenderTargetManager::create)
-                .addFunction("get", &RenderTargetManager::getById)
-               //.addFunction("destroy", &RenderTargetManager::destroy)
+                .addFunction("create", &RenderTargetManager::create)
+                .addFunction("get",
+                    luabridge::nonConstOverload<const unique_id>(&RenderTargetManager::get),
+                    luabridge::constOverload<const unique_id>(&RenderTargetManager::get)
+                    )
+                .addFunction("destroyAll", &RenderTargetManager::destroyAll)
+                .addFunction("destroy",
+                   luabridge::overload<RenderTarget&> (&RenderTargetManager::destroy),
+                   luabridge::overload<const unique_id>(&Manager::destroy)
+                )
             .endClass()
         .endNamespace();
     }

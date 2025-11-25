@@ -74,7 +74,7 @@ export namespace lysa {
 
         void destroy(RenderTarget& renderTarget) override;
 
-        void destroy(const void* renderingWindowHandle);
+        void destroyAll(const void* renderingWindowHandle);
 
     private:
         friend class Lysa;

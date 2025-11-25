@@ -41,14 +41,6 @@ export namespace lysa {
         inline T& get(const unique_id id) { return resources.at(id); }
 
         /**
-         * @brief Alias for get(id): retrieve a mutable reference by unique ID.
-         * @param id The unique identifier of the resource.
-         * @return T& Reference to the resource.
-         * @throws std::out_of_range if id is invalid (as thrown by std::vector::at).
-         */
-        inline T& getById(const unique_id id) { return resources.at(id); }
-
-        /**
          * @brief Retrieve a read-only reference to the resource with the given ID.
          * @param id The unique identifier of the resource.
          * @return const T& Const reference to the resource.
@@ -78,7 +70,9 @@ export namespace lysa {
             assert([&]{ return freeList.size() == resources.size(); }, "ResourcesManager : cleanup() not called");
         }
 
-        virtual void destroy(T&) {}
+        virtual void destroy(T&) = 0;
+
+        void destroy(const unique_id id) { destroy(get(id)); }
 
         Manager(Manager&) = delete;
 
@@ -128,7 +122,7 @@ export namespace lysa {
         // Contiguous storage for all resources managed by this instance.
         std::vector<T> resources;
         // Stack-like list of free slot IDs available for future creations.
-        std::vector<unique_id> freeList;
+        std::vector<unique_id> freeList{};
     };
 
 }
