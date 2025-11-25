@@ -19,6 +19,14 @@ return {
             type = 'userdata',
             description = 'Resource resolution and access facility (lysa.ResourcesLocator).'
           },
+          vireo = {
+            type = 'userdata',
+            description = 'Backend object owning the device/instance and factory for GPU resources.'
+          },
+          graphicQueue = {
+            type = 'userdata',
+            description = 'Submit queue used for graphics/rendering work.'
+          },
         }
       },
 
@@ -35,6 +43,14 @@ return {
           resources_locator = {
             type = 'userdata',
             description = 'Resource resolution and access facility (lysa.ResourcesLocator).'
+          },
+          vireo = {
+            type = 'userdata',
+            description = 'Backend object owning the device/instance and factory for GPU resources.'
+          },
+          graphicQueue = {
+            type = 'userdata',
+            description = 'Submit queue used for graphics/rendering work.'
           },
         }
       },

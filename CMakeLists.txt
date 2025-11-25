@@ -19,6 +19,7 @@ endif()
 #######################################################
 set(LYSA_TARGET ${PROJECT_NAME})
 set(DIRECTX_BACKEND ON)
+set(LUA_BINDINGS ON)
 set(PHYSIC_ENGINE_JOLT ON)
 set(PHYSIC_ENGINE_PHYSX OFF)
 set(CMAKE_CXX_STANDARD 23)
@@ -206,7 +207,6 @@ target_sources(${LYSA_TARGET}
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}
-        ${DEPENDS_SRC_DIR}/LuaBridge/LuaBridge.ixx
 )
 
 compile_options(${LYSA_TARGET})

@@ -6,7 +6,6 @@
 */
 module;
 #include "lua.h"
-#include "Jolt/Core/Core.h"
 export module lysa.lua;
 
 import std;
@@ -75,17 +74,11 @@ export namespace lysa {
 
         ~Lua();
 
+        lua_State* get() const { return L; };
+
     private:
         // The single Lua state instance used by the application.
         lua_State* L;
     };
 
-    class LuaVireo {
-    public:
-        static void _register(const Lua& lua);
-    };
-
 }
-
-template <> struct luabridge::Stack<vireo::ImageFormat> : Enum<vireo::ImageFormat> {};
-template <> struct luabridge::Stack<vireo::PresentMode> : Enum<vireo::PresentMode> {};
