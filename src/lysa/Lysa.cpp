@@ -7,7 +7,7 @@
 module;
 module lysa;
 
-
+import vireo.lua;
 
 namespace lysa {
 
@@ -20,7 +20,7 @@ namespace lysa {
         ctx.graphicQueue = ctx.vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue"),
 
         // Lua bindings
-        LuaVireo::_register(lua);
+        vireo::LuaBindings::_register(lua.get());
         EventManager::_register(lua);
         lua.beginNamespace()
             .beginClass<Context>("Context")
