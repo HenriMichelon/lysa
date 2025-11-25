@@ -22,6 +22,7 @@ end
 
 deepmerge(M, require('./api/lua/lysa/context'))
 deepmerge(M, require('./api/lua/lysa/event'))
+deepmerge(M, require('./api/lua/lysa/render_target'))
 deepmerge(M, require('./api/lua/lysa/rendering_window'))
 
 return M
