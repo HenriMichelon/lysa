@@ -6,7 +6,6 @@
 */
 module;
 #include "lua.h"
-#include "Jolt/Core/Core.h"
 export module lysa.lua;
 
 import std;
