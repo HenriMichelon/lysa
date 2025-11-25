@@ -64,6 +64,8 @@ export namespace lysa {
 
         void destroy(Viewport& viewport) override;
 
+        void destroy(unique_id renderTarget);
+
     private:
         friend class RenderTargetManager;
         friend class ResourcesLocator;

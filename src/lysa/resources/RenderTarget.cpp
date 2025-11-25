@@ -53,8 +53,10 @@ namespace lysa {
 
     void RenderTargetManager::destroy(RenderTarget& renderTarget) {
         renderTarget.swapChain->waitIdle();
+        viewportManager.destroy(renderTarget.id);
         renderTarget.swapChain.reset();
         renderTarget.framesData.clear();
+        release(renderTarget.id);
     }
 
     void RenderTargetManager::update() const {

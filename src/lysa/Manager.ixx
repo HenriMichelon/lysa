@@ -120,13 +120,9 @@ export namespace lysa {
             freeList.push_back(id);
         }
 
-        const auto& getResources() const { return resources; }
-        auto& getResources() { return resources; }
+        auto getResources() { return resources | std::views::filter([](auto& res) { return res.id != INVALID_ID; }); }
 
-        template<typename Predicate>
-        auto filter(Predicate&& predicate) const {
-            return resources | std::views::filter(std::forward<Predicate>(predicate));
-        }
+        auto getResources() const { return resources | std::views::filter([](auto& res) { return res.id != INVALID_ID; }); }
 
     private:
         // Contiguous storage for all resources managed by this instance.

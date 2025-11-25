@@ -46,6 +46,8 @@ namespace lysa {
         const std::function<void(float)>& onPhysicsProcess,
         const std::function<void()>& onQuit) {
         while (!ctx.exit) {
+            processPlatformEvents();
+
             // https://gafferongames.com/post/fix_your_timestep/
             const double newTime = std::chrono::duration_cast<std::chrono::duration<double>>(
                 std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -61,8 +63,6 @@ namespace lysa {
 
             renderTargetManager.update();
             renderTargetManager.render();
-
-            processPlatformEvents();
         }
         if (onQuit) onQuit();
     }

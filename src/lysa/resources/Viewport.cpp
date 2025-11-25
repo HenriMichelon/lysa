@@ -50,8 +50,17 @@ namespace lysa {
         }
     }
 
+    void ViewportManager::destroy(const unique_id renderTarget) {
+        for (auto& viewport : getResources()) {
+            if (viewport.renderTarget == renderTarget) {
+                destroy(viewport);
+            }
+        }
+    }
+
     void ViewportManager::destroy(Viewport& viewport) {
         viewport.framesData.clear();
+        release(viewport.id);
     }
 
     void ViewportManager::update(const unique_id renderTarget, const uint32 frameIndex) const {
@@ -95,7 +104,7 @@ namespace lysa {
                 .addStaticProperty("ID", &ViewportManager::ID)
                .addFunction("create", &ViewportManager::create)
                 .addFunction("get", &ViewportManager::getById)
-               .addFunction("destroy", &ViewportManager::destroy)
+               //.addFunction("destroy", &ViewportManager::destroy)
             .endClass()
         .endNamespace();
     }
