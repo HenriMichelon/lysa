@@ -59,6 +59,34 @@ namespace lysa {
         release(renderTarget.id);
     }
 
+    void RenderTargetManager::pause(const void* renderingWindowHandle, const bool pause) {
+        for (auto& renderTarget : getResources()) {
+            if (renderTarget.configuration.renderingWindowHandle != renderingWindowHandle) continue;
+            renderTarget.paused = pause;
+            ctx.eventManager.push({renderTarget.id, static_cast<event_type>(
+                renderTarget.paused ? RenderTargetEvent::PAUSED : RenderTargetEvent::RESUMED)});
+        }
+    }
+
+    void RenderTargetManager::resize(const void* renderingWindowHandle) const {
+        for (auto& renderTarget : getResources()) {
+            if (renderTarget.configuration.renderingWindowHandle != renderingWindowHandle) continue;
+            const auto previousExtent = renderTarget.swapChain->getExtent();
+            renderTarget.swapChain->recreate();
+            const auto newExtent = renderTarget.swapChain->getExtent();
+            if (previousExtent.width != newExtent.width || previousExtent.height != newExtent.height) {
+                const auto& frame = renderTarget.framesData[0];
+                viewportManager.resize(renderTarget.id, newExtent);
+                /*frame.commandAllocator->reset();
+                frame.prepareCommandList->begin();
+                frame.prepareCommandList->end();
+                ctx.graphicQueue->submit({frame.prepareCommandList});
+                ctx.graphicQueue->waitIdle();*/
+            }
+            ctx.eventManager.push({renderTarget.id, static_cast<event_type>(RenderTargetEvent::RESIZED)});
+        }
+    }
+
     void RenderTargetManager::update() const {
         for (auto& renderTarget : getResources()) {
             if (renderTarget.paused) continue;
@@ -110,6 +138,15 @@ namespace lysa {
         .       addProperty("rendering_window_handle", &RenderTargetConfiguration::renderingWindowHandle)
                 .addProperty("swap_chain_format", &RenderTargetConfiguration::swapChainFormat)
                 .addProperty("present_mode", &RenderTargetConfiguration::presentMode)
+            .endClass()
+            .beginNamespace("RenderTargetEventType")
+                .addVariable("PAUSED", &RenderTargetEvent::PAUSED)
+                .addVariable("RESUMED", &RenderTargetEvent::RESUMED)
+                .addVariable("RESIZED", &RenderTargetEvent::RESIZED)
+            .endNamespace()
+            .beginClass<RenderTargetEvent>("RenderTargetEvent")
+                .addProperty("id", &RenderTargetEvent::id)
+                .addProperty("type", &RenderTargetEvent::type)
             .endClass()
             .beginClass<RenderTarget>("RenderTarget")
                .addProperty("id", &RenderTarget::id)

@@ -78,6 +78,8 @@ export namespace lysa {
 
         void resize(Viewport& viewport, const vireo::Extent &extent) const;
 
+        void resize(unique_id renderTarget, const vireo::Extent &extent);
+
         static void _register(const Lua& lua);
     };
 

@@ -32,6 +32,7 @@ namespace lysa {
     void RenderingWindowManager::_resized(const unique_id id) const {
         const auto& window = get(id);
         if (window.stopped) { return; }
+        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).resize(window.platformHandle);
         ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
     }
 

@@ -50,11 +50,17 @@ namespace lysa {
         }
     }
 
+    void ViewportManager::resize(const unique_id renderTarget, const vireo::Extent &extent) {
+        for (auto& viewport : getResources()) {
+            if (viewport.renderTarget != renderTarget) continue;
+            resize(viewport, extent);
+        }
+    }
+
     void ViewportManager::destroyAll(const unique_id renderTarget) {
         for (auto& viewport : getResources()) {
-            if (viewport.renderTarget == renderTarget) {
-                destroy(viewport);
-            }
+            if (viewport.renderTarget != renderTarget) continue;
+            destroy(viewport);
         }
     }
 
@@ -65,17 +71,13 @@ namespace lysa {
 
     void ViewportManager::update(const unique_id renderTarget, const uint32 frameIndex) const {
         for (auto& viewport : getResources()) {
-            if (viewport.renderTarget == renderTarget) {
-
-            }
+            if (viewport.renderTarget != renderTarget) continue;
         }
     }
 
     void ViewportManager::prepare(const unique_id renderTarget, const uint32 frameIndex) const {
         for (auto& viewport : getResources()) {
-            if (viewport.renderTarget == renderTarget) {
-
-            }
+            if (viewport.renderTarget != renderTarget) continue;
         }
     }
 

@@ -10,6 +10,7 @@ import vireo;
 import lua_bridge;
 
 import lysa.context;
+import lysa.event;
 import lysa.lua;
 import lysa.types;
 import lysa.resources.manager;
@@ -26,6 +27,18 @@ export namespace lysa {
         vireo::PresentMode presentMode{vireo::PresentMode::IMMEDIATE};
         //! Number of simultaneous frames during rendering
         uint32 framesInFlight{2};
+    };
+
+    /**
+   * Viewport events data
+   */
+    struct RenderTargetEvent : Event {
+        //! The render target has been paused
+        static constexpr auto PAUSED{"RENDERING_TARGET_PAUSED"};
+        //! The render target has been resumed
+        static constexpr auto RESUMED{"RENDERING_TARGET_RESUMED"};
+        //! The render target has been resized
+        static constexpr auto RESIZED{"RENDERING_TARGET_RESIZED"};
     };
 
     struct RenderTarget {
@@ -75,6 +88,10 @@ export namespace lysa {
         void destroy(RenderTarget& renderTarget) override;
 
         void destroyAll(const void* renderingWindowHandle);
+
+        void resize(const void* renderingWindowHandle) const;
+
+        void pause(const void* renderingWindowHandle, bool pause);
 
     private:
         friend class Lysa;
