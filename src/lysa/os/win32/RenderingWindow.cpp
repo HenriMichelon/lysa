@@ -26,17 +26,15 @@ namespace lysa {
     /** Win32 window procedure to handle OS messages/events. */
     static LRESULT CALLBACK windowProcedure(HWND, UINT, WPARAM, LPARAM);
 
-    void RenderingWindowManager::show(const unique_id id) const {
-        const auto& window = get(id);
-        ShowWindow(static_cast<HWND>(window.platformHandle), SW_SHOW);
+    void RenderingWindow::show() const {
+        ShowWindow(static_cast<HWND>(platformHandle), SW_SHOW);
     }
 
-    void RenderingWindowManager::close(const unique_id id) const {
-        const auto& window = get(id);
-        PostMessage(static_cast<HWND>(window.platformHandle), WM_CLOSE, 0, 0);
+    void RenderingWindow::close() const {
+        PostMessage(static_cast<HWND>(platformHandle), WM_CLOSE, 0, 0);
     }
 
-    unique_id RenderingWindowManager::create(const RenderingWindowConfiguration& config) {
+    RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config) : ctx(ctx) {
         const auto hInstance = GetModuleHandle(nullptr);
 
         const auto windowClass = WNDCLASSEX {
@@ -118,16 +116,12 @@ namespace lysa {
             nullptr);
         if (hwnd == nullptr) { throw Exception("Error creating window", std::to_string(GetLastError())); }
 
-        auto& window = allocate(std::make_unique<RenderingWindow>());
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&window));
-        window.x = x;
-        window.y = y;
-        window.width = w;
-        window.height = h;
-        window.platformHandle = hwnd;
-        window.locator = &ctx.resourcesLocator;
-        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::READY)});
-        return window.id;
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+        this->x = x;
+        this->y = y;
+        width = w;
+        height = h;
+        platformHandle = hwnd;
     }
 
     BOOL CALLBACK monitorEnumProc(HMONITOR, HDC , const LPRECT lprcMonitor, const LPARAM dwData) {
@@ -145,18 +139,17 @@ namespace lysa {
         if (window == nullptr) {
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
-        auto& manager = window->locator->get<RenderingWindowManager>(RenderingWindowManager::ID);
         switch (message) {
         case WM_SIZE:
             if (IsIconic(hWnd)) {
-                window->stopped = true;
+                window->_setStopped(true);
             } else {
-                window->stopped = false;
-                manager._resized(window->id);
+                window->_setStopped(false);
+                window->_resized();
             }
             return 0;
         case WM_CLOSE:
-            manager._closing(window->id);
+            window->_closing();
             return 0;
         case WM_KEYDOWN:
         case WM_KEYUP:

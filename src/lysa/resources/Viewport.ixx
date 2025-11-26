@@ -62,7 +62,7 @@ export namespace lysa {
          */
         unique_id create(const ViewportConfiguration& configuration);
 
-        void destroy(Viewport& viewport) override;
+        void destroy(unique_id id) override;
 
         void destroyAll(unique_id renderTarget);
 

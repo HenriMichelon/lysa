@@ -16,24 +16,24 @@ namespace lysa {
         ResourcesManager(ctx, ID, capacity) {
     }
 
-    void RenderingWindowManager::destroy(RenderingWindow& renderingWindow) {
-        close(renderingWindow.id);
+    void RenderingWindow::_closing() {
+        if (stopped) { return; }
+        stopped = true;
+        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).destroyAll(platformHandle);
+        ctx.eventManager.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
+        ctx.resourcesLocator.get<RenderingWindowManager>(RenderingWindowManager::ID)._release(id);
     }
 
-    void RenderingWindowManager::_closing(const unique_id id) {
-        auto& window = get(id);
-        if (window.stopped) { return; }
-        window.stopped = true;
-        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).destroyAll(window.platformHandle);
-        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
-        release(id);
+    void RenderingWindow::_resized() const {
+        if (stopped) { return; }
+        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).resize(platformHandle);
+        ctx.eventManager.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
     }
 
-    void RenderingWindowManager::_resized(const unique_id id) const {
-        const auto& window = get(id);
-        if (window.stopped) { return; }
-        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).resize(window.platformHandle);
-        ctx.eventManager.push({window.id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
+    RenderingWindow& RenderingWindowManager::create(const RenderingWindowConfiguration& configuration) {
+        auto& instance = allocate(std::make_unique<RenderingWindow>(ctx, configuration));
+        ctx.eventManager.push({instance.id, static_cast<event_type>(RenderingWindowEvent::READY)});
+        return instance;
     }
 
     void RenderingWindowManager::_register(const Lua& lua) {
@@ -65,12 +65,14 @@ namespace lysa {
             .endClass()
             .beginClass<RenderingWindow>("RenderingWindow")
                .addProperty("id", &RenderingWindow::id)
-               .addProperty("x", &RenderingWindow::x)
-               .addProperty("y", &RenderingWindow::y)
-               .addProperty("width", &RenderingWindow::width)
-               .addProperty("height", &RenderingWindow::height)
-               .addProperty("stopped", &RenderingWindow::stopped)
-               .addProperty("platform_handle", &RenderingWindow::platformHandle)
+               .addProperty("x", &RenderingWindow::getX)
+               .addProperty("y", &RenderingWindow::getY)
+               .addProperty("width", &RenderingWindow::getWidth)
+               .addProperty("height", &RenderingWindow::getHeight)
+               .addProperty("stopped", &RenderingWindow::isStopped)
+               .addProperty("platform_handle", &RenderingWindow::getPlatformHandle)
+                .addFunction("show", &RenderingWindow::show)
+                .addFunction("close", &RenderingWindow::close)
             .endClass()
             .beginClass<RenderingWindowManager>("RenderingWindowManager")
                 .addConstructor<void(Context&, unique_id)>()
@@ -79,12 +81,6 @@ namespace lysa {
                .addFunction("get",
                    luabridge::nonConstOverload<const unique_id>(&RenderingWindowManager::get),
                    luabridge::constOverload<const unique_id>(&RenderingWindowManager::get)
-                   )
-               .addFunction("show", &RenderingWindowManager::show)
-               .addFunction("close", &RenderingWindowManager::close)
-               .addFunction("destroy",
-                   luabridge::overload<RenderingWindow&>(&RenderingWindowManager::destroy),
-                   luabridge::overload<const unique_id>(&Manager::destroy)
                    )
             .endClass()
         .endNamespace();

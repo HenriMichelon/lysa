@@ -85,7 +85,7 @@ export namespace lysa {
          */
         unique_id create(const RenderTargetConfiguration& configuration);
 
-        void destroy(RenderTarget& renderTarget) override;
+        void destroy(unique_id id) override;
 
         void destroyAll(const void* renderingWindowHandle);
 

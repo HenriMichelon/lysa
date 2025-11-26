@@ -46,17 +46,18 @@ namespace lysa {
     void RenderTargetManager::destroyAll(const void* renderingWindowHandle) {
         for (auto& renderTarget : getResources()) {
             if (renderTarget->configuration.renderingWindowHandle == renderingWindowHandle) {
-                destroy(*renderTarget);
+                destroy(renderTarget->id);
             }
         }
     }
 
-    void RenderTargetManager::destroy(RenderTarget& renderTarget) {
+    void RenderTargetManager::destroy(const unique_id id) {
+        auto& renderTarget = get(id);
         renderTarget.swapChain->waitIdle();
         viewportManager.destroyAll(renderTarget.id);
         renderTarget.swapChain.reset();
         renderTarget.framesData.clear();
-        release(renderTarget.id);
+        _release(renderTarget.id);
     }
 
     void RenderTargetManager::pause(const void* renderingWindowHandle, const bool pause) {
@@ -161,7 +162,6 @@ namespace lysa {
                     )
                 .addFunction("destroyAll", &RenderTargetManager::destroyAll)
                 .addFunction("destroy",
-                   luabridge::overload<RenderTarget&> (&RenderTargetManager::destroy),
                    luabridge::overload<const unique_id>(&Manager::destroy)
                 )
             .endClass()

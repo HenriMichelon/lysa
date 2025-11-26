@@ -16,9 +16,8 @@ import lua_bridge;
 import lysa.context;
 import lysa.event;
 import lysa.lua;
-import lysa.resources.locator;
-import lysa.resources.manager;
 import lysa.types;
+import lysa.resources.manager;
 
 export namespace lysa {
 
@@ -71,9 +70,41 @@ export namespace lysa {
     /**
     * Operating system window that serve as rendering surface.
     */
-    struct RenderingWindow {
+    class RenderingWindow {
+    public:
         //! Unique ID
         unique_id id{INVALID_ID};
+
+        RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config);
+
+        /**
+        * @brief Make a previously created window visible on screen.
+        * @param id Unique identifier of the window to show.
+        */
+        void show() const;
+
+        void close() const;
+
+        int32 getX() const { return x; }
+
+        int32 getY() const { return y; }
+
+        int32 getWidth() const { return width; }
+
+        int32 getHeight() const { return height; }
+
+        bool isStopped() const { return stopped; }
+
+        void* getPlatformHandle() const { return platformHandle; }
+
+        void _closing();
+
+        void _resized() const;
+
+        void _setStopped(const bool state) { stopped = state; }
+
+    private:
+        Context& ctx;
         //! Top-Left corner x position in pixels
         int32 x{0};
         //! Top-Left corner Y position in pixels
@@ -86,8 +117,6 @@ export namespace lysa {
         bool stopped{false};
         //! Opaque OS window handle used for presentation.
         void* platformHandle{nullptr};
-        //! Resource locator object used by global OS functions
-        ResourcesLocator *locator{nullptr};
     };
 
     /**
@@ -109,24 +138,8 @@ export namespace lysa {
          * @param configuration Window creation parameters (title, size, mode, position, monitor).
          * @return The unique @ref unique_id of the newly created window.
          */
-        unique_id create(const RenderingWindowConfiguration& configuration);
+        RenderingWindow& create(const RenderingWindowConfiguration& configuration);
 
-        void destroy(RenderingWindow& renderingWindow) override;
-
-        /**
-         * @brief Make a previously created window visible on screen.
-         * @param id Unique identifier of the window to show.
-         */
-        void show(unique_id id) const;
-
-        void close(unique_id id) const;
-
-        void _closing(unique_id id);
-
-        void _resized(unique_id id) const;
-
-    private:
-        friend class ResourcesLocator;
         static void _register(const Lua& lua);
     };
 

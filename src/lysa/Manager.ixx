@@ -70,13 +70,18 @@ export namespace lysa {
             assert([&]{ return freeList.size() == resources.size(); }, "ResourcesManager : cleanup() not called");
         }
 
-        virtual void destroy(T&) = 0;
-
-        void destroy(const unique_id id) { destroy(get(id)); }
+        virtual void destroy(unique_id id) {}
 
         Manager(Manager&) = delete;
 
         Manager& operator=(Manager&) = delete;
+
+        // Release a resource, returning its slot to the free list.
+        void _release(const unique_id id) {
+            resources[id].reset();
+            freeList.push_back(id);
+        }
+
 
     protected:
         friend class Lysa;
@@ -92,8 +97,8 @@ export namespace lysa {
         void cleanup() {
             for (auto& resource : resources) {
                 if (resource != nullptr) {
-                    destroy(*resource);
-                    release(resource->id);
+                    destroy(resource->id);
+                    _release(resource->id);
                 }
             }
         }
@@ -106,12 +111,6 @@ export namespace lysa {
             resources[id] = std::move(instance);
             resources[id]->id = id;
             return *(resources[id]);
-        }
-
-        // Release a resource, returning its slot to the free list.
-        void release(const unique_id id) {
-            resources[id] = nullptr;
-            freeList.push_back(id);
         }
 
         auto getResources() { return resources | std::views::filter([](auto& res) { return res != nullptr; }); }
