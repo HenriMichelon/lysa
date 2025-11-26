@@ -24,7 +24,7 @@ namespace lysa {
         if (configuration.framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
-        auto& renderTarget = allocate();
+        auto& renderTarget = allocate(std::make_unique<RenderTarget>());
         renderTarget.configuration = configuration;
         renderTarget.swapChain = ctx.vireo->createSwapChain(
             configuration.swapChainFormat,
@@ -44,9 +44,9 @@ namespace lysa {
     }
 
     void RenderTargetManager::destroyAll(const void* renderingWindowHandle) {
-        for (RenderTarget& renderTarget : getResources()) {
-            if (renderTarget.configuration.renderingWindowHandle == renderingWindowHandle) {
-                destroy(renderTarget);
+        for (auto& renderTarget : getResources()) {
+            if (renderTarget->configuration.renderingWindowHandle == renderingWindowHandle) {
+                destroy(*renderTarget);
             }
         }
     }
@@ -61,52 +61,52 @@ namespace lysa {
 
     void RenderTargetManager::pause(const void* renderingWindowHandle, const bool pause) {
         for (auto& renderTarget : getResources()) {
-            if (renderTarget.configuration.renderingWindowHandle != renderingWindowHandle) continue;
-            renderTarget.paused = pause;
-            ctx.eventManager.push({renderTarget.id, static_cast<event_type>(
-                renderTarget.paused ? RenderTargetEvent::PAUSED : RenderTargetEvent::RESUMED)});
+            if (renderTarget->configuration.renderingWindowHandle != renderingWindowHandle) continue;
+            renderTarget->paused = pause;
+            ctx.eventManager.push({renderTarget->id, static_cast<event_type>(
+                renderTarget->paused ? RenderTargetEvent::PAUSED : RenderTargetEvent::RESUMED)});
         }
     }
 
     void RenderTargetManager::resize(const void* renderingWindowHandle) const {
         for (auto& renderTarget : getResources()) {
-            if (renderTarget.configuration.renderingWindowHandle != renderingWindowHandle) continue;
-            const auto previousExtent = renderTarget.swapChain->getExtent();
-            renderTarget.swapChain->recreate();
-            const auto newExtent = renderTarget.swapChain->getExtent();
+            if (renderTarget->configuration.renderingWindowHandle != renderingWindowHandle) continue;
+            const auto previousExtent = renderTarget->swapChain->getExtent();
+            renderTarget->swapChain->recreate();
+            const auto newExtent = renderTarget->swapChain->getExtent();
             if (previousExtent.width != newExtent.width || previousExtent.height != newExtent.height) {
-                const auto& frame = renderTarget.framesData[0];
-                viewportManager.resize(renderTarget.id, newExtent);
+                const auto& frame = renderTarget->framesData[0];
+                viewportManager.resize(renderTarget->id, newExtent);
                 /*frame.commandAllocator->reset();
                 frame.prepareCommandList->begin();
                 frame.prepareCommandList->end();
                 ctx.graphicQueue->submit({frame.prepareCommandList});
                 ctx.graphicQueue->waitIdle();*/
             }
-            ctx.eventManager.push({renderTarget.id, static_cast<event_type>(RenderTargetEvent::RESIZED)});
+            ctx.eventManager.push({renderTarget->id, static_cast<event_type>(RenderTargetEvent::RESIZED)});
         }
     }
 
     void RenderTargetManager::update() const {
         for (auto& renderTarget : getResources()) {
-            if (renderTarget.paused) continue;
-            const auto frameIndex = renderTarget.swapChain->getCurrentFrameIndex();
-            viewportManager.update(renderTarget.id, frameIndex);
+            if (renderTarget->paused) continue;
+            const auto frameIndex = renderTarget->swapChain->getCurrentFrameIndex();
+            viewportManager.update(renderTarget->id, frameIndex);
         }
     }
 
     void RenderTargetManager::render() const {
         for (auto& renderTarget : getResources()) {
-            if (renderTarget.paused) continue;
-            const auto frameIndex = renderTarget.swapChain->getCurrentFrameIndex();
-            const auto& frame = renderTarget.framesData[frameIndex];
-            const auto& swapChain = renderTarget.swapChain;
+            if (renderTarget->paused) continue;
+            const auto frameIndex = renderTarget->swapChain->getCurrentFrameIndex();
+            const auto& frame = renderTarget->framesData[frameIndex];
+            const auto& swapChain = renderTarget->swapChain;
 
             if (!swapChain->acquire(frame.inFlightFence)) { return; }
             frame.commandAllocator->reset();
 
             frame.prepareCommandList->begin();
-            viewportManager.prepare(renderTarget.id, frameIndex);
+            viewportManager.prepare(renderTarget->id, frameIndex);
             frame.prepareCommandList->end();
             ctx.graphicQueue->submit(
                        vireo::WaitStage::ALL_COMMANDS,
@@ -115,7 +115,7 @@ namespace lysa {
 
             auto& commandList = frame.renderCommandList;
             commandList->begin();
-            viewportManager.render(renderTarget.id, frameIndex);
+            viewportManager.render(renderTarget->id, frameIndex);
             commandList->barrier(swapChain, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);
             commandList->barrier(swapChain, vireo::ResourceState::COPY_DST, vireo::ResourceState::PRESENT);
             commandList->end();

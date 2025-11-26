@@ -118,7 +118,7 @@ namespace lysa {
             nullptr);
         if (hwnd == nullptr) { throw Exception("Error creating window", std::to_string(GetLastError())); }
 
-        auto& window = allocate();
+        auto& window = allocate(std::make_unique<RenderingWindow>());
         SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&window));
         window.x = x;
         window.y = y;
@@ -157,7 +157,7 @@ namespace lysa {
             return 0;
         case WM_CLOSE:
             manager._closing(window->id);
-            break;
+            return 0;
         case WM_KEYDOWN:
         case WM_KEYUP:
         case WM_LBUTTONDOWN:

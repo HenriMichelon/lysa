@@ -38,7 +38,7 @@ export namespace lysa {
          * @return T& Reference to the resource.
          * @throws std::out_of_range if id is invalid (as thrown by std::vector::at).
          */
-        inline T& get(const unique_id id) { return resources.at(id); }
+        inline T& get(const unique_id id) { return *resources.at(id); }
 
         /**
          * @brief Retrieve a read-only reference to the resource with the given ID.
@@ -46,7 +46,7 @@ export namespace lysa {
          * @return const T& Const reference to the resource.
          * @throws std::out_of_range if id is invalid (as thrown by std::vector::at).
          */
-        inline const T& get(const unique_id id) const { return resources.at(id); }
+        inline const T& get(const unique_id id) const { return *resources.at(id); }
 
         /**
          * @brief Bracket operator for mutable access without bounds checking.
@@ -91,36 +91,36 @@ export namespace lysa {
 
         void cleanup() {
             for (auto& resource : resources) {
-                if (resource.id != INVALID_ID) {
-                    destroy(resource);
-                    release(resource.id);
+                if (resource != nullptr) {
+                    destroy(*resource);
+                    release(resource->id);
                 }
             }
         }
 
         // Allocate a new resource
-        T& allocate() {
+        T& allocate(std::unique_ptr<T> instance) {
             if (freeList.empty()) throw Exception("ResourcesManager : no more free slots");
             auto id = freeList.back();
             freeList.pop_back();
-            resources[id] = T{};
-            resources[id].id = id;
-            return resources[id];
+            resources[id] = std::move(instance);
+            resources[id]->id = id;
+            return *(resources[id]);
         }
 
         // Release a resource, returning its slot to the free list.
         void release(const unique_id id) {
-            resources[id].id = INVALID_ID;
+            resources[id] = nullptr;
             freeList.push_back(id);
         }
 
-        auto getResources() { return resources | std::views::filter([](auto& res) { return res.id != INVALID_ID; }); }
+        auto getResources() { return resources | std::views::filter([](auto& res) { return res != nullptr; }); }
 
-        auto getResources() const { return resources | std::views::filter([](auto& res) { return res.id != INVALID_ID; }); }
+        auto getResources() const { return resources | std::views::filter([](auto& res) { return res != nullptr; }); }
 
     private:
         // Contiguous storage for all resources managed by this instance.
-        std::vector<T> resources;
+        std::vector<std::unique_ptr<T>> resources;
         // Stack-like list of free slot IDs available for future creations.
         std::vector<unique_id> freeList{};
     };
