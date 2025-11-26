@@ -15,6 +15,17 @@ import lysa.types;
 
 export namespace lysa {
 
+    class Resource {
+    public:
+        //! Unique ID
+        unique_id id{INVALID_ID};
+
+    protected:
+        Context& ctx;
+
+        Resource(Context& ctx) : ctx{ctx} {}
+    };
+
     /**
      * @brief Generic, fixed-capacity resources manager using ID-based access.
      *

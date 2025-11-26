@@ -41,7 +41,10 @@ export namespace lysa {
         static constexpr auto RESIZED{"RENDERING_TARGET_RESIZED"};
     };
 
-    struct RenderTarget {
+    class RenderTarget : public Resource {
+    public:
+        RenderTarget(Context& ctx) : Resource(ctx) {}
+
         struct FrameData {
             /** Fence signaled when the frame's work has completed on GPU. */
             std::shared_ptr<vireo::Fence> inFlightFence;
@@ -55,8 +58,6 @@ export namespace lysa {
             std::shared_ptr<vireo::CommandList> renderCommandList;
         };
 
-        //! Unique ID
-        unique_id id{INVALID_ID};
         //! Set to true to pause the rendering in this target
         bool paused{false};
         //! Array of per‑frame resource bundles (size = frames in flight).
@@ -83,7 +84,7 @@ export namespace lysa {
          * @param configuration Render target creation parameters
          * @return The unique @ref unique_id of the newly render target.
          */
-        unique_id create(const RenderTargetConfiguration& configuration);
+        RenderTarget& create(const RenderTargetConfiguration& configuration);
 
         void destroy(unique_id id) override;
 

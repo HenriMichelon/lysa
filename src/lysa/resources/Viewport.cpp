@@ -17,20 +17,20 @@ namespace lysa {
         ResourcesManager(ctx, ID, capacity) {
     }
 
-    unique_id ViewportManager::create(const ViewportConfiguration& configuration) {
+    Viewport ViewportManager::create(const ViewportConfiguration& configuration) {
         if (configuration.renderTarget == INVALID_ID) {
             throw Exception("ViewportConfiguration : parent render target not set");
         }
-        RenderTarget& renderTarget = ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).get(configuration.renderTarget);
+        const RenderTarget& renderTarget = ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).get(configuration.renderTarget);
 
-        auto& viewport = allocate(std::make_unique<Viewport>());
+        auto& viewport = allocate(std::make_unique<Viewport>(ctx));
         viewport.renderTarget = configuration.renderTarget;
         viewport.configuration = configuration;
         viewport.framesData.resize(renderTarget.swapChain->getFramesInFlight());
         for (auto& frame : viewport.framesData) {
         }
         resize(viewport, renderTarget.swapChain->getExtent());
-        return viewport.id;
+        return viewport;
     }
 
     void ViewportManager::resize(Viewport& viewport, const vireo::Extent &extent) const {

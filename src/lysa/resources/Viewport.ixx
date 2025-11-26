@@ -25,13 +25,14 @@ export namespace lysa {
         vireo::Rect scissors{};
     };
 
-    struct Viewport {
+    class Viewport : public Resource {
+    public:
+        Viewport(Context& ctx) : Resource(ctx) {}
+
         /** Per‑frame state and deferred operations processed at frame boundaries. */
         struct FrameData {
 
         };
-        //! Unique ID
-        unique_id id{INVALID_ID};
         //! Parent render target
         unique_id renderTarget{INVALID_ID};
         //! Low‑level viewport (x, y, width, height, minDepth, maxDepth).
@@ -60,7 +61,7 @@ export namespace lysa {
          * @param configuration Render target creation parameters
          * @return The unique @ref unique_id of the newly render target.
          */
-        unique_id create(const ViewportConfiguration& configuration);
+        Viewport create(const ViewportConfiguration& configuration);
 
         void destroy(unique_id id) override;
 

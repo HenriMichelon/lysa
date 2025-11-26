@@ -17,14 +17,14 @@ namespace lysa {
         viewportManager{ctx.resourcesLocator.get<ViewportManager>(ViewportManager::ID)} {
     }
 
-    unique_id RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
+    RenderTarget& RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
         if (configuration.framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
-        auto& renderTarget = allocate(std::make_unique<RenderTarget>());
+        auto& renderTarget = allocate(std::make_unique<RenderTarget>(ctx));
         renderTarget.configuration = configuration;
         renderTarget.swapChain = ctx.vireo->createSwapChain(
             configuration.swapChainFormat,
@@ -40,7 +40,7 @@ namespace lysa {
             frame.prepareCommandList = frame.commandAllocator->createCommandList();
             frame.renderCommandList = frame.commandAllocator->createCommandList();
         }
-        return renderTarget.id;
+        return renderTarget;
     }
 
     void RenderTargetManager::destroyAll(const void* renderingWindowHandle) {
