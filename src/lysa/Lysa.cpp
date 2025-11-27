@@ -19,6 +19,8 @@ namespace lysa {
         // Graphic backend objects
         ctx.vireo = vireo::Vireo::create(lysaConfiguration.backend);
         ctx.graphicQueue = ctx.vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue"),
+        ctx.appDir = lysaConfiguration.appDir;
+        ctx.shaderDir = lysaConfiguration.shaderDir;
 
         // Lua bindings
         vireo::LuaBindings::_register(lua.get());

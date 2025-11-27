@@ -43,6 +43,12 @@ export namespace  lysa {
          * @brief Submit queue used for graphics/rendering work.
          */
         std::shared_ptr<vireo::SubmitQueue> graphicQueue;
+
+        //! Directory to search for resources for the app:// URI
+        std::filesystem::path appDir;
+
+        //! Directory to search for compiled shaders inside app://
+        std::string shaderDir;
     };
 
 }

@@ -62,19 +62,19 @@ end
         return luabridge::getGlobal(L, name.c_str());
     }
 
-    void Lua::execute(const std::string& filename) const{
+    void Lua::execute(std::ifstream& input) const{
         std::vector<char> data;
-        VirtualFS::loadBinaryData(filename, data);
+        VirtualFS::loadBinaryData(input, data);
         const auto script = std::string(data.begin(), data.end());
         if (script.empty()) {
-            throw Exception("Lua error: failed to load script '", filename, "'");
+            throw Exception("Lua error: failed to load script");
         }
 
         if (luaL_dostring(L, script.c_str()) != LUA_OK) {
             const char* err = lua_tostring(L, -1);
             std::string msg = err ? err : "(unknown error)";
             lua_pop(L, 1);
-            throw Exception("Lua error in '", filename, "': ", msg);
+            throw Exception("Lua error : ", msg);
         }
     }
 }

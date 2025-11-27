@@ -194,6 +194,7 @@ add_library(${LYSA_TARGET} STATIC
         ${DEFERRED_RENDERER_SRC}
         ${FORWARD_RENDERER_SRC}
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
 
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
@@ -235,6 +236,7 @@ target_sources(${LYSA_TARGET}
         ${FORWARD_RENDERER_MODULES}
         ${DEFERRED_RENDERER_MODULES}
         ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
 
         ${ENGINE_SRC_DIR}/resources/Manager.ixx
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx

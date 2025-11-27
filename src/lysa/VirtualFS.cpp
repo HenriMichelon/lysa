@@ -14,20 +14,20 @@ import lysa.exception;
 
 namespace lysa {
 
-    std::ifstream VirtualFS::openReadStream(const std::string &filepath) {
-        std::ifstream file(getPath(filepath), std::ios::binary);
+    std::ifstream VirtualFS::openReadStream(Context& ctx, const std::string &filepath) {
+        std::ifstream file(getPath(ctx, filepath), std::ios::binary);
         if (!file.is_open()) { throw Exception("Error: Could not open file ",  filepath); }
         return file;
     }
 
-    std::ofstream VirtualFS::openWriteStream(const std::string &filepath) {
-        std::ofstream file(getPath(filepath), std::ios::binary);
+    std::ofstream VirtualFS::openWriteStream(Context& ctx, const std::string &filepath) {
+        std::ofstream file(getPath(ctx, filepath), std::ios::binary);
         if (!file.is_open()) { throw Exception("Error: Could not open file ",  filepath); }
         return file;
     }
 
-    bool VirtualFS::fileExists(const std::string &filepath) {
-        return std::filesystem::exists(getPath(filepath));
+    bool VirtualFS::fileExists(Context& ctx, const std::string &filepath) {
+        return std::filesystem::exists(getPath(ctx, filepath));
     }
 
     std::string VirtualFS::parentPath(const std::string& filepath) {
@@ -36,11 +36,10 @@ namespace lysa {
         return filepath.substr(0, lastSlash+1);
     }
 
-    std::string VirtualFS::getPath(const std::string& filepath) {
+    std::string VirtualFS::getPath(Context& ctx, const std::string& filepath) {
         std::string filename;
         if (filepath.starts_with(APP_URI)) {
-            //filename = Application::getConfiguration().appDir.string();
-            filename = ".";
+            filename = ctx.appDir.string();
         } else {
             throw Exception("Unknown URI ", filepath);
         }
@@ -48,15 +47,19 @@ namespace lysa {
         return (filename + "/" + filePart);
     }
 
-    void VirtualFS::loadBinaryData(const std::string &filepath, std::vector<char>& out) {
-        std::ifstream file(getPath(filepath), std::ios::ate | std::ios::binary);
+    void VirtualFS::loadBinaryData(Context& ctx, const std::string &filepath, std::vector<char>& out) {
+        std::ifstream file(getPath(ctx, filepath), std::ios::ate | std::ios::binary);
         if (!file.is_open()) { throw Exception("failed to open file : ", filepath); }
-        const size_t fileSize = file.tellg();
+        loadBinaryData(file, out);
+    }
+
+    void VirtualFS::loadBinaryData(std::ifstream& input, std::vector<char>& out) {
+        const size_t fileSize = input.tellg();
         out.clear();
         out.resize(fileSize);
-        file.seekg(0);
-        file.read(out.data(), fileSize);
-        file.close();
+        input.seekg(0);
+        input.read(out.data(), fileSize);
+        input.close();
     }
 
     struct StreamWrapper {
@@ -86,9 +89,10 @@ namespace lysa {
     };
 
     std::byte* VirtualFS::loadRGBAImage(
+        Context& ctx,
         const std::string& filepath,
         uint32& width, uint32& height, uint64& size) {
-        std::ifstream file(getPath(filepath), std::ios::binary);
+        std::ifstream file(getPath(ctx, filepath), std::ios::binary);
         if (!file.is_open()) {
             throw Exception ("Error: Could not open file ", filepath);
         }

@@ -7,6 +7,7 @@
 export module lysa.virtual_fs;
 
 import vireo;
+import lysa.context;
 import lysa.types;
 
 export namespace lysa {
@@ -34,7 +35,7 @@ export namespace lysa {
          * @param filepath URI.
          * @return True if the directory exists; false otherwise.
          */
-        static bool dirExists(const std::string &filepath);
+        //static bool dirExists(Context& ctx, const std::string &filepath);
 
         /**
          * Tests whether a regular file exists at the given path or URI.
@@ -42,7 +43,7 @@ export namespace lysa {
          * @param filepath URI.
          * @return True if the file exists; false otherwise.
          */
-        static bool fileExists(const std::string &filepath);
+        static bool fileExists(Context& ctx, const std::string &filepath);
 
         /**
          * Opens an input stream for reading the file at path or URI.
@@ -54,7 +55,7 @@ export namespace lysa {
          * @param filepath URI.
          * @return std::ifstream positioned at the start of the file.
          */
-        static std::ifstream openReadStream(const std::string &filepath);
+        static std::ifstream openReadStream(Context& ctx, const std::string &filepath);
 
         /**
          * Opens an output stream for writing the file at path or URI.
@@ -67,7 +68,7 @@ export namespace lysa {
          * @param filepath URI.
          * @return std::ofstream positioned at the start of the file.
          */
-        static std::ofstream openWriteStream(const std::string &filepath);
+        static std::ofstream openWriteStream(Context& ctx, const std::string &filepath);
 
         /**
          * Returns the parent directory of the provided path or URI.
@@ -86,7 +87,15 @@ export namespace lysa {
          * @param filepath URI.
          * @param out      Destination buffer; its contents are replaced by the file bytes.
          */
-        static void loadBinaryData(const std::string &filepath, std::vector<char>& out);
+        static void loadBinaryData(Context& ctx, const std::string &filepath, std::vector<char>& out);
+
+        /**
+         * Loads the entire file contents into a byte buffer.
+         *
+         * @param filepath URI.
+         * @param out      Destination buffer; its contents are replaced by the file bytes.
+         */
+        static void loadBinaryData(std::ifstream& input, std::vector<char>& out);
 
         /**
          * Loads an image and returns an allocated RGBA (8‑bit per channel) buffer.
@@ -99,7 +108,7 @@ export namespace lysa {
          * @param size     Output total buffer size in bytes (width*height*4).
          * @return Pointer to the newly allocated pixel buffer in RGBA8888 format, or nullptr on failure.
          */
-        static std::byte* loadRGBAImage(const std::string& filepath, uint32& width, uint32& height, uint64& size);
+        static std::byte* loadRGBAImage(Context& ctx, const std::string& filepath, uint32& width, uint32& height, uint64& size);
 
         /**
          * Frees an image buffer allocated by loadRGBAImage().
@@ -113,11 +122,8 @@ export namespace lysa {
          *
          * Implementations may expand environment variables, normalize separators,
          * and map app:// to the application data/assets directory.
-         *
-         * @param filepath URI.
-         * @return Resolved OS path suitable for file I/O APIs.
          */
-        static std::string getPath(const std::string& filepath);
+        static std::string getPath(Context& ctx, const std::string& filepath);
     };
 
 }

@@ -63,7 +63,7 @@ export namespace lysa {
          *
          * @param filename URI to the Lua script file to execute.
          */
-        void execute(const std::string& filename) const;
+        void execute(std::ifstream& input) const;
 
         Lua(const LuaConfiguration& luaConfiguration);
 

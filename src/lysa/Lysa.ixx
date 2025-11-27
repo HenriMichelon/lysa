@@ -17,6 +17,7 @@ export import lysa.log;
 export import lysa.lua;
 export import lysa.math;
 export import lysa.types;
+export import lysa.virtual_fs;
 
 export import lysa.renderers.renderer;
 
@@ -40,6 +41,10 @@ export namespace  lysa {
     struct LysaConfiguration {
         //! Graphic API used by the graphic backend
         vireo::Backend backend{vireo::Backend::VULKAN};
+        //! Directory to search for resources for the app:// URI
+        std::filesystem::path appDir{"."};
+        //! Directory to search for compiled shaders inside app://
+        std::string shaderDir{"shaders"};
         //! Resource capacity configuration
         ResourcesCapacity resourcesCapacity;
         //! Configuration for Lua integration and tooling.
