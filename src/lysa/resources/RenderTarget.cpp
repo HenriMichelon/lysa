@@ -13,7 +13,8 @@ import lysa.resources.locator;
 namespace lysa {
 
     RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration) :
-        Resource(ctx) {
+        Resource(ctx),
+        viewportManager(ctx.resourcesLocator.get<ViewportManager>(ViewportManager::ID)){
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
@@ -39,7 +40,7 @@ namespace lysa {
 
     RenderTarget::~RenderTarget() {
         swapChain->waitIdle();
-        //viewportManager.destroyAll(renderTarget.id);
+        viewportManager.destroyByRenderTarget(id);
         swapChain.reset();
         framesData.clear();
     }
@@ -58,7 +59,7 @@ namespace lysa {
         const auto newExtent = swapChain->getExtent();
         if (previousExtent.width != newExtent.width || previousExtent.height != newExtent.height) {
             const auto& frame = framesData[0];
-            //viewportManager.resize(id, newExtent);
+            viewportManager.resize(id, newExtent);
             /*frame.commandAllocator->reset();
             frame.prepareCommandList->begin();
             frame.prepareCommandList->end();
@@ -68,13 +69,13 @@ namespace lysa {
         }
     }
 
-    void RenderTarget::_update() const {
+    void RenderTarget::update() const {
         if (paused) return;
         const auto frameIndex = swapChain->getCurrentFrameIndex();
         // viewportManager.update(renderTarget->id, frameIndex);
     }
 
-    void RenderTarget::_render() const {
+    void RenderTarget::render() const {
         if (paused) return;
         const auto frameIndex =swapChain->getCurrentFrameIndex();
         const auto& frame = framesData[frameIndex];
@@ -141,13 +142,13 @@ namespace lysa {
 
     void RenderTargetManager::update() const {
         for (auto& renderTarget : getResources()) {
-            renderTarget->_update();
+            renderTarget->update();
         }
     }
 
     void RenderTargetManager::render() const {
         for (auto& renderTarget : getResources()) {
-            renderTarget->_render();
+            renderTarget->render();
         }
     }
 

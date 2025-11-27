@@ -21,7 +21,7 @@ namespace lysa {
         framesData.resize(renderTarget.getSwapChain()->getFramesInFlight());
         for (auto& frame : framesData) {
         }
-        _resize(renderTarget.getSwapChain()->getExtent());
+        resize(renderTarget.getSwapChain()->getExtent());
     }
 
     Viewport::~Viewport() {
@@ -32,17 +32,14 @@ namespace lysa {
         ResourcesManager(ctx, ID, capacity) {
     }
 
-    Viewport ViewportManager::create(const ViewportConfiguration& configuration) {
+    Viewport& ViewportManager::create(const ViewportConfiguration& configuration) {
         if (configuration.renderTarget == INVALID_ID) {
             throw Exception("ViewportConfiguration : parent render target not set");
         }
-
-        auto& viewport = allocate(std::make_unique<Viewport>(ctx, configuration));
-
-        return viewport;
+        return allocate(std::make_unique<Viewport>(ctx, configuration));
     }
 
-    void Viewport::_resize(const vireo::Extent &extent) {
+    void Viewport::resize(const vireo::Extent &extent) {
         if (configuration.viewport.width == 0.0f || configuration.viewport.height == 0.0f) {
             viewport = vireo::Viewport{
                 .width = static_cast<float>(extent.width),
@@ -60,18 +57,16 @@ namespace lysa {
     }
 
     void ViewportManager::resize(const unique_id renderTarget, const vireo::Extent &extent) {
-        for (const auto& viewport : getResources()) {
-            if (viewport->getRenderTarget() != renderTarget) continue;
-            viewport->_resize(extent);
+        for (const auto& viewport : getResources(renderTarget)) {
+            viewport->resize(extent);
         }
     }
-    //
-    // void ViewportManager::destroy(const unique_id renderTarget) {
-    //     for (auto& viewport : getResources()) {
-    //         if (viewport->renderTarget != renderTarget) continue;
-    //         destroy(viewport->id);
-    //     }
-    // }
+
+    void ViewportManager::destroyByRenderTarget(const unique_id renderTarget) {
+        for (const auto& viewport : getResources(renderTarget)) {
+            destroy(viewport->id);
+        }
+    }
 
     void ViewportManager::_register(const Lua& lua) {
         lua.beginNamespace()

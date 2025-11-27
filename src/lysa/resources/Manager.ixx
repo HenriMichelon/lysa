@@ -110,9 +110,10 @@ export namespace lysa {
 
         auto getResources() const { return resources | std::views::filter([](auto& res) { return res != nullptr; }); }
 
-    private:
         // Contiguous storage for all resources managed by this instance.
         std::vector<std::unique_ptr<T>> resources;
+
+    private:
         // Stack-like list of free slot IDs available for future creations.
         std::vector<unique_id> freeList{};
     };

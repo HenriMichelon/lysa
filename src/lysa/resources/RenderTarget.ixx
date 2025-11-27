@@ -47,8 +47,6 @@ export namespace lysa {
 
         ~RenderTarget();
 
-        void resize() const;
-
         void pause(bool pause);
 
         auto getSwapChain() const { return swapChain; }
@@ -56,10 +54,6 @@ export namespace lysa {
         auto getRenderingWindowHandle() const { return renderingWindowHandle; }
 
         auto isPaused() const { return paused; }
-
-        void _update() const;
-
-        void _render() const;
 
     private:
         struct FrameData {
@@ -83,6 +77,13 @@ export namespace lysa {
         std::shared_ptr<vireo::SwapChain> swapChain{nullptr};
         //! associated OS window handler
         void* renderingWindowHandle{nullptr};
+
+        ViewportManager& viewportManager;
+
+        friend class RenderTargetManager;
+        void resize() const;
+        void update() const;
+        void render() const;
     };
 
     class RenderTargetManager : public ResourcesManager<RenderTarget> {
@@ -96,11 +97,6 @@ export namespace lysa {
          */
         RenderTargetManager(Context& ctx, unique_id capacity);
 
-        /**
-         * @brief Create a new rendering render target
-         * @param configuration Render target creation parameters
-         * @return The unique @ref unique_id of the newly render target.
-         */
         RenderTarget& create(const RenderTargetConfiguration& configuration);
 
         void destroy(const void* renderingWindowHandle);
@@ -111,12 +107,10 @@ export namespace lysa {
 
     private:
         friend class Lysa;
-        friend class ResourcesLocator;
-
         void update() const;
-
         void render() const;
 
+        friend class ResourcesLocator;
         static void _register(const Lua& lua);
     };
 

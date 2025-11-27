@@ -31,8 +31,6 @@ export namespace lysa {
 
         ~Viewport();
 
-        void _resize(const vireo::Extent &extent);
-
         auto getRenderTarget() const { return renderTarget; }
 
     private:
@@ -50,6 +48,9 @@ export namespace lysa {
         std::vector<FrameData> framesData;
         //! Configuration used when creating the viewport
         ViewportConfiguration configuration;
+
+        friend class ViewportManager;
+        void resize(const vireo::Extent &extent);
     };
 
     class ViewportManager : public ResourcesManager<Viewport> {
@@ -68,16 +69,20 @@ export namespace lysa {
          * @param configuration Render target creation parameters
          * @return The unique @ref unique_id of the newly render target.
          */
-        Viewport create(const ViewportConfiguration& configuration);
-
-//        void destroy(unique_id renderTarget);
+        Viewport& create(const ViewportConfiguration& configuration);
 
     private:
-        friend class RenderTargetManager;
-        friend class ResourcesLocator;
+        auto getResources(unique_id renderTarget) {
+            return resources | std::views::filter([renderTarget](auto& res) {
+                return res != nullptr && res->renderTarget == renderTarget;
+            });
+        }
 
+        friend class RenderTarget;
         void resize(unique_id renderTarget, const vireo::Extent &extent);
+        void destroyByRenderTarget(unique_id renderTarget);
 
+        friend class ResourcesLocator;
         static void _register(const Lua& lua);
     };
 
