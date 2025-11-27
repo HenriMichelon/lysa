@@ -139,14 +139,11 @@ export namespace lysa {
          */
         RenderingWindow& create(const RenderingWindowConfiguration& configuration);
 
-        void destroy(unique_id id);
+        void destroy(unique_id id) override;
 
-    private:
-        friend class ResourcesLocator;
         static void _register(const Lua& lua);
     };
 
 }
 
-template <>
-struct luabridge::Stack<lysa::RenderingWindowMode> : Enum<lysa::RenderingWindowMode> {};
+template <> struct luabridge::Stack<lysa::RenderingWindowMode> : Enum<lysa::RenderingWindowMode> {};

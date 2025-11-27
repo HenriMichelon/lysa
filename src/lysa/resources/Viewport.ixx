@@ -12,6 +12,7 @@ import lua_bridge;
 import lysa.context;
 import lysa.lua;
 import lysa.types;
+import lysa.renderers.renderer;
 import lysa.resources.manager;
 
 export namespace lysa {
@@ -51,6 +52,10 @@ export namespace lysa {
 
         friend class ViewportManager;
         void resize(const vireo::Extent &extent);
+        void render(
+            const Renderer& renderer,
+            const vireo::CommandList& commandList,
+            uint32 frameIndex);
     };
 
     class ViewportManager : public ResourcesManager<Viewport> {
@@ -64,6 +69,8 @@ export namespace lysa {
          */
         ViewportManager(Context& ctx, unique_id capacity);
 
+        static void _register(const Lua& lua);
+
     private:
         auto getResources(unique_id renderTarget) {
             return resources | std::views::filter([renderTarget](auto& res) {
@@ -73,10 +80,13 @@ export namespace lysa {
 
         friend class RenderTarget;
         void resize(unique_id renderTarget, const vireo::Extent &extent);
+        void render(
+            unique_id renderTarget,
+            const Renderer& renderer,
+            const vireo::CommandList& commandList,
+            uint32 frameIndex);
         void destroyByRenderTarget(unique_id renderTarget);
 
-        friend class ResourcesLocator;
-        static void _register(const Lua& lua);
     };
 
 }

@@ -8,6 +8,7 @@ module lysa.resources.render_target;
 
 import lysa.exception;
 import lysa.log;
+import lysa.renderers.renderer;
 import lysa.resources.locator;
 
 namespace lysa {
@@ -18,17 +19,18 @@ namespace lysa {
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
-        if (configuration.framesInFlight <= 0) {
+        if (configuration.swapChainConfiguration.framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
         this->renderingWindowHandle = configuration.renderingWindowHandle;
         swapChain = ctx.vireo->createSwapChain(
-            configuration.swapChainFormat,
+            configuration.swapChainConfiguration.swapChainFormat,
             ctx.graphicQueue,
             configuration.renderingWindowHandle,
-            configuration.presentMode,
-            configuration.framesInFlight);
-        framesData.resize(configuration.framesInFlight);
+            configuration.swapChainConfiguration.presentMode,
+            configuration.swapChainConfiguration.framesInFlight);
+        renderer = Renderer::create(ctx, configuration.rendererConfiguration, configuration.swapChainConfiguration);
+        framesData.resize(configuration.swapChainConfiguration.framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
@@ -36,6 +38,15 @@ namespace lysa {
             frame.prepareCommandList = frame.commandAllocator->createCommandList();
             frame.renderCommandList = frame.commandAllocator->createCommandList();
         }
+
+        // Create the main rendering attachments
+        const auto& frame = framesData[0];
+        frame.commandAllocator->reset();
+        frame.prepareCommandList->begin();
+        renderer->resize(swapChain->getExtent(), frame.prepareCommandList);
+        frame.prepareCommandList->end();
+        ctx.graphicQueue->submit({frame.prepareCommandList});
+        ctx.graphicQueue->waitIdle();
     }
 
     RenderTarget::~RenderTarget() {
@@ -60,11 +71,12 @@ namespace lysa {
         if (previousExtent.width != newExtent.width || previousExtent.height != newExtent.height) {
             const auto& frame = framesData[0];
             viewportManager.resize(id, newExtent);
-            /*frame.commandAllocator->reset();
+            frame.commandAllocator->reset();
             frame.prepareCommandList->begin();
+            renderer->resize(newExtent, frame.prepareCommandList);
             frame.prepareCommandList->end();
             ctx.graphicQueue->submit({frame.prepareCommandList});
-            ctx.graphicQueue->waitIdle();*/
+            ctx.graphicQueue->waitIdle();
             ctx.eventManager.push({id, static_cast<event_type>(RenderTargetEvent::RESIZED)});
         }
     }
@@ -94,7 +106,11 @@ namespace lysa {
         auto& commandList = frame.renderCommandList;
         commandList->begin();
         //viewportManager.render(renderTarget->id, frameIndex);
+
+        const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
+
         commandList->barrier(swapChain, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);
+        commandList->copy(colorAttachment->getImage(), swapChain);
         commandList->barrier(swapChain, vireo::ResourceState::COPY_DST, vireo::ResourceState::PRESENT);
         commandList->end();
 
@@ -149,12 +165,13 @@ namespace lysa {
     }
 
     void RenderTargetManager::_register(const Lua& lua) {
+        Renderer::_register(lua);
         lua.beginNamespace()
             .beginClass<RenderTargetConfiguration>("RenderTargetConfiguration")
                 .addConstructor<void()>()
-        .       addProperty("rendering_window_handle", &RenderTargetConfiguration::renderingWindowHandle)
-                .addProperty("swap_chain_format", &RenderTargetConfiguration::swapChainFormat)
-                .addProperty("present_mode", &RenderTargetConfiguration::presentMode)
+                .addProperty("rendering_window_handle", &RenderTargetConfiguration::renderingWindowHandle)
+                .addProperty("renderer_configuration", &RenderTargetConfiguration::rendererConfiguration)
+                .addProperty("swap_chain_configuration", &RenderTargetConfiguration::swapChainConfiguration)
             .endClass()
             .beginNamespace("RenderTargetEventType")
                 .addVariable("PAUSED", &RenderTargetEvent::PAUSED)

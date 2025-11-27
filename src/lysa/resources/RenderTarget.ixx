@@ -13,6 +13,9 @@ import lysa.context;
 import lysa.event;
 import lysa.lua;
 import lysa.types;
+
+import lysa.renderers.renderer;
+
 import lysa.resources.manager;
 import lysa.resources.viewport;
 
@@ -21,12 +24,9 @@ export namespace lysa {
     struct RenderTargetConfiguration {
         //! Set this field if you want to render in a window
         void* renderingWindowHandle{nullptr};
-        //! Postprocessing & swap chain image format
-        vireo::ImageFormat swapChainFormat{vireo::ImageFormat::R8G8B8A8_UNORM};
-        //! Presentation mode
-        vireo::PresentMode presentMode{vireo::PresentMode::IMMEDIATE};
-        //! Number of simultaneous frames during rendering
-        uint32 framesInFlight{2};
+
+        SwapChainConfiguration swapChainConfiguration;
+        RendererConfiguration rendererConfiguration;
     };
 
     /**
@@ -69,13 +69,15 @@ export namespace lysa {
             std::shared_ptr<vireo::CommandList> renderCommandList;
         };
 
-        //! Set to true to pause the rendering in this target
+        // Set to true to pause the rendering in this target
         bool paused{false};
-        //! Array of per‑frame resource bundles (size = frames in flight).
+        // Array of per‑frame resource bundles (size = frames in flight).
         std::vector<FrameData> framesData;
-        //! Swap chain presenting the render target in memory.
+        // Swap chain presenting the render target in memory.
         std::shared_ptr<vireo::SwapChain> swapChain{nullptr};
-        //! associated OS window handler
+        // Scene renderer used to draw attached viewports.
+        std::unique_ptr<Renderer> renderer;
+        // associated OS window handler
         void* renderingWindowHandle{nullptr};
 
         ViewportManager& viewportManager;

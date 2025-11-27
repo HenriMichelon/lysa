@@ -54,11 +54,6 @@ export namespace lysa {
         luabridge::Namespace beginNamespace() const;
 
         /**
-         * @brief Returns a LuaBridge3 namespace
-         */
-        luabridge::Namespace beginNamespace(const std::string& name) const;
-
-        /**
          * @brief Returns a global Lua object (function, variable, ...)
          */
         luabridge::LuaRef getGlobal(const std::string & name) const;

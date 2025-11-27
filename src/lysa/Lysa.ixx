@@ -18,6 +18,8 @@ export import lysa.lua;
 export import lysa.math;
 export import lysa.types;
 
+export import lysa.renderers.renderer;
+
 export import lysa.resources.locator;
 export import lysa.resources.manager;
 export import lysa.resources.render_target;

@@ -22,12 +22,26 @@ set(DIRECTX_BACKEND ON)
 set(LUA_BINDINGS ON)
 set(PHYSIC_ENGINE_JOLT ON)
 set(PHYSIC_ENGINE_PHYSX OFF)
+set(FORWARD_RENDERER ON)
+set(DEFERRED_RENDERER OFF)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
+
+#######################################################
+if(NOT FORWARD_RENDERER AND NOT DEFERRED_RENDERER)
+    message(FATAL_ERROR "Please activate a renderer with FORWARD_RENDERER or DEFERRED_RENDERER")
+endif()
+if (FORWARD_RENDERER)
+    add_compile_definitions(FORWARD_RENDERER)
+endif ()
+if (DEFERRED_RENDERER)
+    add_compile_definitions(DEFERRED_RENDERER)
+endif ()
+
 
 #######################################################
 if(WIN32)
@@ -39,7 +53,7 @@ endif ()
 
 #######################################################
 if(NOT PHYSIC_ENGINE_JOLT AND NOT PHYSIC_ENGINE_PHYSX)
-    message(FATAL_ERROR "Please activate a physics library with PHYSIC_ENGINE_JOLT ou PHYSIC_ENGINE_PHYSX")
+    message(FATAL_ERROR "Please activate a physics library with PHYSIC_ENGINE_JOLT or PHYSIC_ENGINE_PHYSX")
 endif()
 if(PHYSIC_ENGINE_JOLT AND PHYSIC_ENGINE_PHYSX)
     message(FATAL_ERROR "Please deactivate a physics library")
@@ -152,6 +166,22 @@ if(PHYSIC_ENGINE_PHYSX)
 endif ()
 
 #######################################################
+if(FORWARD_RENDERER)
+    set(FORWARD_RENDERER_SRC
+        ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.cpp
+    )
+    set(FORWARD_RENDERER_MODULES
+        ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.ixx
+    )
+endif ()
+if(DEFERRED_RENDERER)
+    set(DEFERRED_RENDERER_SRC
+    )
+    set(DEFERRED_RENDERER_MODULES
+    )
+endif ()
+
+#######################################################
 add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Global.cpp
@@ -160,6 +190,10 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Lysa.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
+
+        ${DEFERRED_RENDERER_SRC}
+        ${FORWARD_RENDERER_SRC}
+        ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
 
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
@@ -197,6 +231,10 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
+
+        ${FORWARD_RENDERER_MODULES}
+        ${DEFERRED_RENDERER_MODULES}
+        ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
 
         ${ENGINE_SRC_DIR}/resources/Manager.ixx
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx

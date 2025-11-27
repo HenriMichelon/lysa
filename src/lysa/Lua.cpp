@@ -58,10 +58,6 @@ end
         return luabridge::getGlobalNamespace(L).beginNamespace ("lysa");
     }
 
-    luabridge::Namespace Lua::beginNamespace(const std::string& name) const {
-        return luabridge::getGlobalNamespace(L).beginNamespace (name.c_str());
-    }
-
     luabridge::LuaRef Lua::getGlobal(const std::string & name) const {
         return luabridge::getGlobal(L, name.c_str());
     }
