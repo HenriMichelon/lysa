@@ -39,6 +39,7 @@ namespace lysa {
     void RenderingWindowManager::destroy(const unique_id id) {
         const auto& window = get(id);
         window.close();
+        Manager::destroy(id);
     }
 
     void RenderingWindowManager::_register(const Lua& lua) {

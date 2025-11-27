@@ -27,8 +27,15 @@ export namespace lysa {
 
     class Viewport : public Resource {
     public:
-        Viewport(Context& ctx) : Resource(ctx) {}
+        Viewport(Context& ctx, const ViewportConfiguration& configuration);
 
+        ~Viewport();
+
+        void _resize(const vireo::Extent &extent);
+
+        auto getRenderTarget() const { return renderTarget; }
+
+    private:
         /** Per‑frame state and deferred operations processed at frame boundaries. */
         struct FrameData {
 
@@ -63,21 +70,11 @@ export namespace lysa {
          */
         Viewport create(const ViewportConfiguration& configuration);
 
-        void destroy(unique_id id) override;
-
-        void destroyAll(unique_id renderTarget);
+//        void destroy(unique_id renderTarget);
 
     private:
         friend class RenderTargetManager;
         friend class ResourcesLocator;
-
-        void update(unique_id renderTarget, uint32 frameIndex) const;
-
-        void prepare(unique_id renderTarget, uint32 frameIndex) const;
-
-        void render(unique_id renderTarget, uint32 frameIndex) const;
-
-        void resize(Viewport& viewport, const vireo::Extent &extent) const;
 
         void resize(unique_id renderTarget, const vireo::Extent &extent);
 

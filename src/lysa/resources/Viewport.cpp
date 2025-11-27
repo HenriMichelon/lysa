@@ -13,6 +13,21 @@ import lysa.resources.render_target;
 
 namespace lysa {
 
+    Viewport::Viewport(Context& ctx, const ViewportConfiguration& configuration):
+        Resource(ctx) {
+        const RenderTarget& renderTarget = ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).get(configuration.renderTarget);
+        this->renderTarget = renderTarget.id;
+        this->configuration = configuration;
+        framesData.resize(renderTarget.getSwapChain()->getFramesInFlight());
+        for (auto& frame : framesData) {
+        }
+        _resize(renderTarget.getSwapChain()->getExtent());
+    }
+
+    Viewport::~Viewport() {
+        framesData.clear();
+    }
+
     ViewportManager::ViewportManager(Context& ctx, const unique_id capacity) :
         ResourcesManager(ctx, ID, capacity) {
     }
@@ -21,63 +36,42 @@ namespace lysa {
         if (configuration.renderTarget == INVALID_ID) {
             throw Exception("ViewportConfiguration : parent render target not set");
         }
-        const RenderTarget& renderTarget = ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).get(configuration.renderTarget);
 
-        auto& viewport = allocate(std::make_unique<Viewport>(ctx));
-        viewport.renderTarget = configuration.renderTarget;
-        viewport.configuration = configuration;
-        viewport.framesData.resize(renderTarget.getSwapChain()->getFramesInFlight());
-        for (auto& frame : viewport.framesData) {
-        }
-        resize(viewport, renderTarget.getSwapChain()->getExtent());
+        auto& viewport = allocate(std::make_unique<Viewport>(ctx, configuration));
+
         return viewport;
     }
 
-    void ViewportManager::resize(Viewport& viewport, const vireo::Extent &extent) const {
-        if (viewport.configuration.viewport.width == 0.0f || viewport.configuration.viewport.height == 0.0f) {
-            viewport.viewport = vireo::Viewport{
+    void Viewport::_resize(const vireo::Extent &extent) {
+        if (configuration.viewport.width == 0.0f || configuration.viewport.height == 0.0f) {
+            viewport = vireo::Viewport{
                 .width = static_cast<float>(extent.width),
                 .height = static_cast<float>(extent.height)
             };
         }
-        if (viewport.configuration.scissors.width == 0.0f || viewport.configuration.scissors.height == 0.0f) {
-            viewport.scissors = vireo::Rect{
-                .x = static_cast<int32>(viewport.viewport.x),
-                .y = static_cast<int32>(viewport.viewport.y),
-                .width = static_cast<uint32>(viewport.viewport.width),
-                .height = static_cast<uint32>(viewport.viewport.height)
+        if (configuration.scissors.width == 0.0f || configuration.scissors.height == 0.0f) {
+            scissors = vireo::Rect{
+                .x = static_cast<int32>(viewport.x),
+                .y = static_cast<int32>(viewport.y),
+                .width = static_cast<uint32>(viewport.width),
+                .height = static_cast<uint32>(viewport.height)
             };
         }
     }
 
     void ViewportManager::resize(const unique_id renderTarget, const vireo::Extent &extent) {
-        for (auto& viewport : getResources()) {
-            if (viewport->renderTarget != renderTarget) continue;
-            resize(*viewport, extent);
+        for (const auto& viewport : getResources()) {
+            if (viewport->getRenderTarget() != renderTarget) continue;
+            viewport->_resize(extent);
         }
     }
-
-    void ViewportManager::destroyAll(const unique_id renderTarget) {
-        for (auto& viewport : getResources()) {
-            if (viewport->renderTarget != renderTarget) continue;
-            destroy(viewport->id);
-        }
-    }
-
-    void ViewportManager::destroy(const unique_id id) {
-        auto& viewport = get(id);
-        viewport.framesData.clear();
-        //_release(viewport.id);
-    }
-
-    void ViewportManager::update(const unique_id renderTarget, const uint32 frameIndex) const {
-    }
-
-    void ViewportManager::prepare(const unique_id renderTarget, const uint32 frameIndex) const {
-    }
-
-    void ViewportManager::render(const unique_id renderTarget, const uint32 frameIndex) const {
-    }
+    //
+    // void ViewportManager::destroy(const unique_id renderTarget) {
+    //     for (auto& viewport : getResources()) {
+    //         if (viewport->renderTarget != renderTarget) continue;
+    //         destroy(viewport->id);
+    //     }
+    // }
 
     void ViewportManager::_register(const Lua& lua) {
         lua.beginNamespace()
@@ -89,7 +83,7 @@ namespace lysa {
             .endClass()
             .beginClass<Viewport>("Viewport")
                .addProperty("id", &Viewport::id)
-        .       addProperty("render_target", &Viewport::renderTarget)
+        .       addProperty("render_target", &Viewport::getRenderTarget)
             .endClass()
             .beginClass<ViewportManager>("ViewportManager")
                 .addConstructor<void(Context&, unique_id)>()
@@ -99,7 +93,7 @@ namespace lysa {
                     luabridge::nonConstOverload<const unique_id>(&ViewportManager::get),
                     luabridge::constOverload<const unique_id>(&ViewportManager::get)
                 )
-                .addFunction("destroyAll", &ViewportManager::destroyAll)
+                .addFunction("destroyAll", &ViewportManager::destroy)
                 .addFunction("destroy",
                   luabridge::overload<const unique_id>(&Manager::destroy))
             .endClass()
