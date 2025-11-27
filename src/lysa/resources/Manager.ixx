@@ -13,8 +13,6 @@ import lysa.types;
 
 export namespace lysa {
 
-    using DestroyHandler = std::function<void(unique_id)>;
-
     /**
      * @brief Generic object/resources manager using ID-based access.
      *
@@ -70,14 +68,12 @@ export namespace lysa {
             assert([&]{ return freeList.size() == resources.size(); }, "ResourcesManager : cleanup() not called");
         }
 
-        virtual void destroy(unique_id id) {}
-
         Manager(Manager&) = delete;
 
         Manager& operator=(Manager&) = delete;
 
         // Release a resource, returning its slot to the free list.
-        void _release(const unique_id id) {
+        virtual void destroy(const unique_id id) {
             resources[id].reset();
             freeList.push_back(id);
         }
@@ -95,11 +91,8 @@ export namespace lysa {
         }
 
         void cleanup() {
-            for (auto& resource : resources) {
-                if (resource != nullptr) {
-                    destroy(resource->id);
-                    _release(resource->id);
-                }
+            for (auto& resource : getResources()) {
+                destroy(resource->id);
             }
         }
 

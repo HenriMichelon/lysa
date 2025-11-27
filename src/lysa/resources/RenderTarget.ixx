@@ -43,8 +43,25 @@ export namespace lysa {
 
     class RenderTarget : public Resource {
     public:
-        RenderTarget(Context& ctx) : Resource(ctx) {}
+        RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration);
 
+        ~RenderTarget();
+
+        void resize() const;
+
+        void pause(bool pause);
+
+        auto getSwapChain() const { return swapChain; }
+
+        auto getRenderingWindowHandle() const { return renderingWindowHandle; }
+
+        auto isPaused() const { return paused; }
+
+        void _update() const;
+
+        void _render() const;
+
+    private:
         struct FrameData {
             /** Fence signaled when the frame's work has completed on GPU. */
             std::shared_ptr<vireo::Fence> inFlightFence;
@@ -64,8 +81,8 @@ export namespace lysa {
         std::vector<FrameData> framesData;
         //! Swap chain presenting the render target in memory.
         std::shared_ptr<vireo::SwapChain> swapChain{nullptr};
-        // Configuration used for creating the RenderTarget
-        RenderTargetConfiguration configuration;
+        //! associated OS window handler
+        void* renderingWindowHandle{nullptr};
     };
 
     class RenderTargetManager : public ResourcesManager<RenderTarget> {
@@ -86,9 +103,7 @@ export namespace lysa {
          */
         RenderTarget& create(const RenderTargetConfiguration& configuration);
 
-        void destroy(unique_id id) override;
-
-        void destroyAll(const void* renderingWindowHandle);
+        void destroy(const void* renderingWindowHandle);
 
         void resize(const void* renderingWindowHandle) const;
 
@@ -97,8 +112,6 @@ export namespace lysa {
     private:
         friend class Lysa;
         friend class ResourcesLocator;
-
-        ViewportManager& viewportManager;
 
         void update() const;
 

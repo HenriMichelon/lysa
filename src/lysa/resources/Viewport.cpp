@@ -26,10 +26,10 @@ namespace lysa {
         auto& viewport = allocate(std::make_unique<Viewport>(ctx));
         viewport.renderTarget = configuration.renderTarget;
         viewport.configuration = configuration;
-        viewport.framesData.resize(renderTarget.swapChain->getFramesInFlight());
+        viewport.framesData.resize(renderTarget.getSwapChain()->getFramesInFlight());
         for (auto& frame : viewport.framesData) {
         }
-        resize(viewport, renderTarget.swapChain->getExtent());
+        resize(viewport, renderTarget.getSwapChain()->getExtent());
         return viewport;
     }
 
@@ -67,7 +67,7 @@ namespace lysa {
     void ViewportManager::destroy(const unique_id id) {
         auto& viewport = get(id);
         viewport.framesData.clear();
-        _release(viewport.id);
+        //_release(viewport.id);
     }
 
     void ViewportManager::update(const unique_id renderTarget, const uint32 frameIndex) const {

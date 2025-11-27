@@ -135,6 +135,10 @@ export namespace lysa {
          */
         RenderingWindow& create(const RenderingWindowConfiguration& configuration);
 
+        void destroy(unique_id id);
+
+    private:
+        friend class ResourcesLocator;
         static void _register(const Lua& lua);
     };
 

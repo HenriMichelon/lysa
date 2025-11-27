@@ -19,9 +19,9 @@ namespace lysa {
     void RenderingWindow::_closing() {
         if (stopped) { return; }
         stopped = true;
-        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).destroyAll(platformHandle);
+        ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).destroy(platformHandle);
         ctx.eventManager.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
-        ctx.resourcesLocator.get<RenderingWindowManager>(RenderingWindowManager::ID)._release(id);
+        ctx.resourcesLocator.get<RenderingWindowManager>(RenderingWindowManager::ID).destroy(id);
     }
 
     void RenderingWindow::_resized() const {
@@ -34,6 +34,11 @@ namespace lysa {
         auto& instance = allocate(std::make_unique<RenderingWindow>(ctx, configuration));
         ctx.eventManager.push({instance.id, static_cast<event_type>(RenderingWindowEvent::READY)});
         return instance;
+    }
+
+    void RenderingWindowManager::destroy(const unique_id id) {
+        const auto& window = get(id);
+        window.close();
     }
 
     void RenderingWindowManager::_register(const Lua& lua) {
