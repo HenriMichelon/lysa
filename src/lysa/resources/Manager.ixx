@@ -90,6 +90,7 @@ export namespace lysa {
             }
         }
 
+        // Destroy all remaining resources
         void cleanup() {
             for (auto& resource : getResources()) {
                 destroy(resource->id);

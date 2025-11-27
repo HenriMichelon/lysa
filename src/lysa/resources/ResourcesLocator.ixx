@@ -37,7 +37,7 @@ export namespace lysa {
             throw Exception("ResourcesLocator could not find manager " + name);
         }
 
-        void* getManager(const std::string& name) {
+        void* _getManager(const std::string& name) {
             if (managers.contains(name)) {
                 return managers[name];
             }

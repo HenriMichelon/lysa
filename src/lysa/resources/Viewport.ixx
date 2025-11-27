@@ -64,13 +64,6 @@ export namespace lysa {
          */
         ViewportManager(Context& ctx, unique_id capacity);
 
-        /**
-         * @brief Create a new rendering render target
-         * @param configuration Render target creation parameters
-         * @return The unique @ref unique_id of the newly render target.
-         */
-        Viewport& create(const ViewportConfiguration& configuration);
-
     private:
         auto getResources(unique_id renderTarget) {
             return resources | std::views::filter([renderTarget](auto& res) {

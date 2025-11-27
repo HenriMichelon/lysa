@@ -15,7 +15,7 @@ namespace lysa {
     void ResourcesLocator::_register(const Lua& lua) {
         lua.beginNamespace()
             .beginClass<ResourcesLocator>("ResourcesLocator")
-                .addFunction("get", &ResourcesLocator::getManager)
+                .addFunction("get", &ResourcesLocator::_getManager)
                 .addFunction("getRenderTargetManager", +[](ResourcesLocator* rl) -> RenderTargetManager& {
                         return rl->get<RenderTargetManager>(RenderTargetManager::ID);
                     })

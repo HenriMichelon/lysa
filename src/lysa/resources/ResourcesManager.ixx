@@ -42,6 +42,16 @@ export namespace lysa {
      */
     template<typename T>
     class ResourcesManager : public Manager<T> {
+    public:
+        /**
+         * @brief Create a new unique resource
+         * @param configuration Creation parameters
+         */
+        template<typename C>
+        T& create(const C& configuration) {
+            return Manager<T>::allocate(std::make_unique<T>(ctx, configuration));
+        }
+
     protected:
         // Reference to the owning application context.
         Context& ctx;
@@ -52,7 +62,6 @@ export namespace lysa {
             ctx{ctx} {
             ctx.resourcesLocator.enroll(ID, *this);
         }
-
     };
 
 }

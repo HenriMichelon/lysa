@@ -16,7 +16,7 @@ namespace lysa {
     Viewport::Viewport(Context& ctx, const ViewportConfiguration& configuration):
         Resource(ctx) {
         const RenderTarget& renderTarget = ctx.resourcesLocator.get<RenderTargetManager>(RenderTargetManager::ID).get(configuration.renderTarget);
-        this->renderTarget = renderTarget.id;
+        this->renderTarget = configuration.renderTarget;
         this->configuration = configuration;
         framesData.resize(renderTarget.getSwapChain()->getFramesInFlight());
         for (auto& frame : framesData) {
@@ -30,13 +30,6 @@ namespace lysa {
 
     ViewportManager::ViewportManager(Context& ctx, const unique_id capacity) :
         ResourcesManager(ctx, ID, capacity) {
-    }
-
-    Viewport& ViewportManager::create(const ViewportConfiguration& configuration) {
-        if (configuration.renderTarget == INVALID_ID) {
-            throw Exception("ViewportConfiguration : parent render target not set");
-        }
-        return allocate(std::make_unique<Viewport>(ctx, configuration));
     }
 
     void Viewport::resize(const vireo::Extent &extent) {
@@ -83,7 +76,7 @@ namespace lysa {
             .beginClass<ViewportManager>("ViewportManager")
                 .addConstructor<void(Context&, unique_id)>()
                 .addStaticProperty("ID", &ViewportManager::ID)
-                .addFunction("create", &ViewportManager::create)
+                .addFunction("create", &ViewportManager::create<ViewportConfiguration>)
                 .addFunction("get",
                     luabridge::nonConstOverload<const unique_id>(&ViewportManager::get),
                     luabridge::constOverload<const unique_id>(&ViewportManager::get)

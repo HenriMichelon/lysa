@@ -112,10 +112,6 @@ namespace lysa {
         ResourcesManager(ctx, ID, capacity) {
     }
 
-    RenderTarget& RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
-        return allocate(std::make_unique<RenderTarget>(ctx, configuration));
-    }
-
     void RenderTargetManager::destroy(const void* renderingWindowHandle) {
         for (const auto& renderTarget : getResources()) {
             if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
@@ -179,7 +175,7 @@ namespace lysa {
             .beginClass<RenderTargetManager>("RenderTargetManager")
                 .addConstructor<void(Context&, unique_id)>()
                 .addStaticProperty("ID", &RenderTargetManager::ID)
-                .addFunction("create", &RenderTargetManager::create)
+                .addFunction("create", &ResourcesManager::create<RenderTargetConfiguration>)
                 .addFunction("get",
                     luabridge::nonConstOverload<const unique_id>(&RenderTargetManager::get),
                     luabridge::constOverload<const unique_id>(&RenderTargetManager::get)

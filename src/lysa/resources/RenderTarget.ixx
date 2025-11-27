@@ -97,8 +97,6 @@ export namespace lysa {
          */
         RenderTargetManager(Context& ctx, unique_id capacity);
 
-        RenderTarget& create(const RenderTargetConfiguration& configuration);
-
         void destroy(const void* renderingWindowHandle);
 
         void resize(const void* renderingWindowHandle) const;
