@@ -41,12 +41,10 @@ export namespace  lysa {
     struct LysaConfiguration {
         //! Graphic API used by the graphic backend
         vireo::Backend backend{vireo::Backend::VULKAN};
-        //! Directory to search for resources for the app:// URI
-        std::filesystem::path appDir{"."};
-        //! Directory to search for compiled shaders inside app://
-        std::string shaderDir{"shaders"};
         //! Resource capacity configuration
         ResourcesCapacity resourcesCapacity;
+        //! Virtual file system configuration
+        VirtualFSConfiguration virtualFsConfiguration;
         //! Configuration for Lua integration and tooling.
         LuaConfiguration luaConfiguration;
     };
@@ -101,15 +99,7 @@ export namespace  lysa {
          */
         Context& getContext() { return ctx; }
 
-        /**
-         * @brief Get the Lua interface.
-         * @return Reference to the owned @ref Lua instance.
-         */
-        const Lua& getLua() const { return lua; }
-
     private:
-        // Embedded Lua environment shared across the application.
-        Lua lua;
         // Global runtime context (events, resources, etc.).
         Context ctx;
         // Fixed delta time bookkeeping for the physics update loop
@@ -121,6 +111,8 @@ export namespace  lysa {
 
         // Consume platform-specific events.
         void processPlatformEvents();
+
+        static void _register(Context& ctx);
     };
 
 }

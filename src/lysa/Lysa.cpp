@@ -12,28 +12,13 @@ import vireo.lua;
 namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& lysaConfiguration) :
-        lua(lysaConfiguration.luaConfiguration),
+        ctx(
+            vireo::Vireo::create(lysaConfiguration.backend),
+            lysaConfiguration.luaConfiguration,
+            lysaConfiguration.virtualFsConfiguration),
         viewportManager(ctx, lysaConfiguration.resourcesCapacity.viewports),
         renderTargetManager(ctx, lysaConfiguration.resourcesCapacity.renderTarget) {
-
-        // Graphic backend objects
-        ctx.vireo = vireo::Vireo::create(lysaConfiguration.backend);
-        ctx.graphicQueue = ctx.vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue"),
-        ctx.appDir = lysaConfiguration.appDir;
-        ctx.shaderDir = lysaConfiguration.shaderDir;
-
-        // Lua bindings
-        vireo::LuaBindings::_register(lua.get());
-        EventManager::_register(lua);
-        lua.beginNamespace()
-            .beginClass<Context>("Context")
-                .addProperty("exit", &Context::exit)
-                .addProperty("event_manager", &Context::eventManager)
-                .addProperty("resources_locator", &Context::resourcesLocator)
-            .endClass()
-            .addProperty("ctx", &ctx)
-        .endNamespace();
-        ResourcesLocator::_register(lua);
+        _register(ctx);
     }
 
     Lysa::~Lysa() {
@@ -78,6 +63,20 @@ namespace lysa {
             [&](float dt){ if (onPhysicsProcess) onPhysicsProcess(dt); },
             [&]{ if (onQuit) onQuit(); }
             );
+    }
+
+    void Lysa::_register(Context& ctx) {
+        vireo::LuaBindings::_register(ctx.lua.get());
+        EventManager::_register(ctx.lua);
+        ctx.lua.beginNamespace()
+            .beginClass<Context>("Context")
+                .addProperty("exit", &Context::exit)
+                .addProperty("event_manager", &Context::eventManager)
+                .addProperty("resources_locator", &Context::resourcesLocator)
+            .endClass()
+            .addVariable("ctx", &ctx)
+        .endNamespace();
+        ResourcesLocator::_register(ctx.lua);
     }
 
 }

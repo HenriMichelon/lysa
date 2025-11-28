@@ -14,32 +14,32 @@ import lysa.exception;
 
 namespace lysa {
 
-    std::ifstream VirtualFS::openReadStream(Context& ctx, const std::string &filepath) {
-        std::ifstream file(getPath(ctx, filepath), std::ios::ate | std::ios::binary);
+    std::ifstream VirtualFS::openReadStream(const std::string &filepath) const {
+        std::ifstream file(getPath(filepath), std::ios::ate | std::ios::binary);
         if (!file.is_open()) { throw Exception("Error: Could not open file ",  filepath); }
         return file;
     }
 
-    std::ofstream VirtualFS::openWriteStream(Context& ctx, const std::string &filepath) {
-        std::ofstream file(getPath(ctx, filepath), std::ios::binary);
+    std::ofstream VirtualFS::openWriteStream(const std::string &filepath) const {
+        std::ofstream file(getPath(filepath), std::ios::binary);
         if (!file.is_open()) { throw Exception("Error: Could not open file ",  filepath); }
         return file;
     }
 
-    bool VirtualFS::fileExists(Context& ctx, const std::string &filepath) {
-        return std::filesystem::exists(getPath(ctx, filepath));
+    bool VirtualFS::fileExists(const std::string &filepath) const {
+        return std::filesystem::exists(getPath(filepath));
     }
 
-    std::string VirtualFS::parentPath(const std::string& filepath) {
+    std::string VirtualFS::parentPath(const std::string& filepath) const {
         const auto lastSlash = filepath.find_last_of("/");
         if (lastSlash == std::string::npos) return "";
         return filepath.substr(0, lastSlash+1);
     }
 
-    std::string VirtualFS::getPath(Context& ctx, const std::string& filepath) {
+    std::string VirtualFS::getPath(const std::string& filepath) const {
         std::string filename;
         if (filepath.starts_with(APP_URI)) {
-            filename = ctx.appDir.string();
+            filename = config.appDirectory.string();
         } else {
             throw Exception("Unknown URI ", filepath);
         }
@@ -47,13 +47,13 @@ namespace lysa {
         return (filename + "/" + filePart);
     }
 
-    void VirtualFS::loadBinaryData(Context& ctx, const std::string &filepath, std::vector<char>& out) {
-        std::ifstream file(getPath(ctx, filepath), std::ios::ate | std::ios::binary);
+    void VirtualFS::loadBinaryData(const std::string &filepath, std::vector<char>& out) const {
+        std::ifstream file(getPath(filepath), std::ios::ate | std::ios::binary);
         if (!file.is_open()) { throw Exception("failed to open file : ", filepath); }
         loadBinaryData(file, out);
     }
 
-    void VirtualFS::loadBinaryData(std::ifstream& input, std::vector<char>& out) {
+    void VirtualFS::loadBinaryData(std::ifstream& input, std::vector<char>& out) const {
         const size_t fileSize = input.tellg();
         out.clear();
         out.resize(fileSize);
@@ -89,10 +89,9 @@ namespace lysa {
     };
 
     std::byte* VirtualFS::loadRGBAImage(
-        Context& ctx,
         const std::string& filepath,
-        uint32& width, uint32& height, uint64& size) {
-        std::ifstream file(getPath(ctx, filepath), std::ios::binary);
+        uint32& width, uint32& height, uint64& size) const {
+        std::ifstream file(getPath(filepath), std::ios::binary);
         if (!file.is_open()) {
             throw Exception ("Error: Could not open file ", filepath);
         }
@@ -112,8 +111,24 @@ namespace lysa {
         return reinterpret_cast<std::byte*>(imageData);
     }
 
-    void VirtualFS::destroyImage(std::byte* image) {
+    void VirtualFS::destroyImage(std::byte* image) const {
         stbi_image_free(image);
+    }
+
+    void VirtualFS::loadScript(const std::string& scriptName, std::vector<char>& out) const {
+        std::ifstream file(
+            getPath(APP_URI + config.scriptsDir + "/" + scriptName + ".lua"),
+            std::ios::ate | std::ios::binary);
+        if (!file.is_open()) { throw Exception("failed to open Lua script '", scriptName, "'"); }
+        loadBinaryData(file, out);
+    }
+
+    void VirtualFS::loadShader(const std::string& shaderName, std::vector<char>& out) const {
+        std::ifstream file(
+            getPath(APP_URI + config.shadersDir + "/" + shaderName + "/" + vireo.getShaderFileExtension()),
+            std::ios::ate | std::ios::binary);
+        if (!file.is_open()) { throw Exception("failed to open compiled shader'", shaderName, "'"); }
+        loadBinaryData(file, out);
     }
 
 }

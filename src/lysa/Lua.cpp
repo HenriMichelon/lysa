@@ -23,7 +23,7 @@ import lysa.virtual_fs;
 
 namespace lysa {
 
-    Lua::Lua(const LuaConfiguration& luaConfiguration) {
+    Lua::Lua(const LuaConfiguration& luaConfiguration, const VirtualFS& virtualFs) : virtualFs(virtualFs) {
         L = luaL_newstate();
         luaL_openlibs(L);
         luaL_requiref(L, "socket", luaopen_socket_core, 1);
@@ -62,9 +62,9 @@ end
         return luabridge::getGlobal(L, name.c_str());
     }
 
-    void Lua::execute(std::ifstream& input) const{
+    void Lua::execute(const std::string& scriptName) const{
         std::vector<char> data;
-        VirtualFS::loadBinaryData(input, data);
+        virtualFs.loadScript(scriptName, data);
         const auto script = std::string(data.begin(), data.end());
         if (script.empty()) {
             throw Exception("Lua error: failed to load script");

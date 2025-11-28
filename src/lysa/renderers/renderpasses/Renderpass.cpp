@@ -21,14 +21,7 @@ namespace lysa {
 
     std::shared_ptr<vireo::ShaderModule> Renderpass::loadShader(const std::string& shaderName) const {
         auto tempBuffer = std::vector<char>{};
-        const auto& ext = ctx.vireo->getShaderFileExtension();
-        VirtualFS::loadBinaryData(
-            ctx,
-            "app://" +
-            ctx.shaderDir +
-            "/" +
-            shaderName + ext,
-            tempBuffer);
+        ctx.virtualFs.loadShader(shaderName, tempBuffer);
         return ctx.vireo->createShaderModule(tempBuffer);
     }
 }

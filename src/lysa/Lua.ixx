@@ -13,6 +13,7 @@ import vireo;
 export import lua_bridge;
 
 import lysa.types;
+import lysa.virtual_fs;
 
 export namespace lysa {
 
@@ -61,17 +62,18 @@ export namespace lysa {
         /**
          * @brief Execute a Lua script file in the current state.
          *
-         * @param filename URI to the Lua script file to execute.
+         * @param scriptName name of the script file to execute, relative to the script directory of the VFS
          */
-        void execute(std::ifstream& input) const;
+        void execute(const std::string& scriptName) const;
 
-        Lua(const LuaConfiguration& luaConfiguration);
+        Lua(const LuaConfiguration& luaConfiguration, const VirtualFS& virtualFs);
 
         ~Lua();
 
-        lua_State* get() const { return L; };
+        lua_State* get() const { return L; }
 
     private:
+        const VirtualFS &virtualFs;
         // The single Lua state instance used by the application.
         lua_State* L;
     };

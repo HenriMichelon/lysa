@@ -8,6 +8,8 @@ export module lysa.context;
 
 import vireo;
 import lysa.event;
+import lysa.lua;
+import lysa.virtual_fs;
 import lysa.resources.locator;
 
 export namespace  lysa {
@@ -25,6 +27,21 @@ export namespace  lysa {
         bool exit{false};
 
         /**
+         * @brief Backend object owning the device/instance and factory for GPU resources.
+         */
+        std::shared_ptr<vireo::Vireo> vireo;
+
+        /**
+         * Read and write resources referenced by URI
+         */
+        const VirtualFS virtualFs;
+
+        /**
+         * @brief Embedded Lua execution environment.
+         */
+        const Lua lua;
+
+        /**
          * @brief Central event dispatcher for the application.
          */
         EventManager eventManager;
@@ -35,20 +52,14 @@ export namespace  lysa {
         ResourcesLocator resourcesLocator;
 
         /**
-         * @brief Backend object owning the device/instance and factory for GPU resources.
-         */
-        std::shared_ptr<vireo::Vireo> vireo;
-
-        /**
          * @brief Submit queue used for graphics/rendering work.
          */
-        std::shared_ptr<vireo::SubmitQueue> graphicQueue;
+        const std::shared_ptr<vireo::SubmitQueue> graphicQueue;
 
-        //! Directory to search for resources for the app:// URI
-        std::filesystem::path appDir;
-
-        //! Directory to search for compiled shaders inside app://
-        std::string shaderDir;
+        Context(
+            const std::shared_ptr<vireo::Vireo>& vireo,
+            const LuaConfiguration& luaConfiguration,
+            const VirtualFSConfiguration& virtualFsConfiguration);
     };
 
 }

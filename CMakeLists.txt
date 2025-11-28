@@ -183,6 +183,7 @@ endif ()
 
 #######################################################
 add_library(${LYSA_TARGET} STATIC
+        ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
