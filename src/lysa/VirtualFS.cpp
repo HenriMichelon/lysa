@@ -125,7 +125,7 @@ namespace lysa {
 
     void VirtualFS::loadShader(const std::string& shaderName, std::vector<char>& out) const {
         std::ifstream file(
-            getPath(APP_URI + config.shadersDir + "/" + shaderName + "/" + vireo.getShaderFileExtension()),
+            getPath(APP_URI + config.shadersDir + "/" + shaderName + "/" + vireo->getShaderFileExtension()),
             std::ios::ate | std::ios::binary);
         if (!file.is_open()) { throw Exception("failed to open compiled shader'", shaderName, "'"); }
         loadBinaryData(file, out);

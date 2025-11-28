@@ -9,11 +9,11 @@ module lysa.context;
 namespace  lysa {
 
     Context::Context(
-        const std::shared_ptr<vireo::Vireo>& vireo,
+        const vireo::Backend backend,
         const LuaConfiguration& luaConfiguration,
         const VirtualFSConfiguration& virtualFsConfiguration) :
-        vireo(vireo),
-        virtualFs(virtualFsConfiguration, *vireo),
+        vireo(vireo::Vireo::create(backend)),
+        virtualFs(virtualFsConfiguration, vireo),
         lua(luaConfiguration, virtualFs),
         graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")) {
     }

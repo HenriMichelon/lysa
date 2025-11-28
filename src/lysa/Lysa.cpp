@@ -12,8 +12,7 @@ import vireo.lua;
 namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& lysaConfiguration) :
-        ctx(
-            vireo::Vireo::create(lysaConfiguration.backend),
+        ctx(lysaConfiguration.backend,
             lysaConfiguration.luaConfiguration,
             lysaConfiguration.virtualFsConfiguration),
         viewportManager(ctx, lysaConfiguration.resourcesCapacity.viewports),
@@ -22,10 +21,9 @@ namespace lysa {
     }
 
     Lysa::~Lysa() {
+        ctx.graphicQueue->waitIdle();
         viewportManager.cleanup();
         renderTargetManager.cleanup();
-        ctx.graphicQueue->waitIdle();
-        ctx.vireo.reset();
     }
 
     void Lysa::run(
@@ -71,8 +69,11 @@ namespace lysa {
         ctx.lua.beginNamespace()
             .beginClass<Context>("Context")
                 .addProperty("exit", &Context::exit)
+                .addProperty("vireo", +[](const Context* self) { return self->vireo; })
+                .addProperty("virtual_fs",  +[](const Context* self) { return self->virtualFs; })
                 .addProperty("event_manager", &Context::eventManager)
                 .addProperty("resources_locator", &Context::resourcesLocator)
+                .addProperty("graphic_queue", +[](const Context* self) { return self->graphicQueue; })
             .endClass()
             .addVariable("ctx", &ctx)
         .endNamespace();

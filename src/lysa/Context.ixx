@@ -29,7 +29,7 @@ export namespace  lysa {
         /**
          * @brief Backend object owning the device/instance and factory for GPU resources.
          */
-        std::shared_ptr<vireo::Vireo> vireo;
+        const std::shared_ptr<vireo::Vireo> vireo;
 
         /**
          * Read and write resources referenced by URI
@@ -57,7 +57,7 @@ export namespace  lysa {
         const std::shared_ptr<vireo::SubmitQueue> graphicQueue;
 
         Context(
-            const std::shared_ptr<vireo::Vireo>& vireo,
+            vireo::Backend backend,
             const LuaConfiguration& luaConfiguration,
             const VirtualFSConfiguration& virtualFsConfiguration);
     };

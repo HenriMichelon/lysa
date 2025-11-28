@@ -28,7 +28,7 @@ export namespace lysa {
      */
     class VirtualFS {
     public:
-        VirtualFS(const VirtualFSConfiguration& config, const vireo::Vireo& vireo) :
+        VirtualFS(const VirtualFSConfiguration& config, const std::shared_ptr<vireo::Vireo>& vireo) :
             vireo(vireo), config(config) {}
 
         /** URI scheme used to reference files relative to the application root. */
@@ -135,8 +135,8 @@ export namespace lysa {
         std::string getPath(const std::string& filepath) const;
 
     private:
-        const vireo::Vireo& vireo;
-        VirtualFSConfiguration config;
+        const std::shared_ptr<vireo::Vireo> vireo;
+        const VirtualFSConfiguration config;
     };
 
 }
