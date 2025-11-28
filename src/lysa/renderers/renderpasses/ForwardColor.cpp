@@ -9,7 +9,7 @@ module lysa.renderers.renderpasses.forward_color;
 
 namespace lysa {
     ForwardColor::ForwardColor(
-        Context& ctx,
+        const Context& ctx,
         const RendererConfiguration& config):
         Renderpass{ctx, config, "Forward Color"} {
         pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat); // Color

@@ -10,7 +10,7 @@ import lysa.renderers.renderer;
 
 namespace lysa {
     DepthPrepass::DepthPrepass(
-        Context& ctx,
+        const Context& ctx,
         const RendererConfiguration& config,
         const bool withStencil):
         Renderpass{ctx, config, "Depth pre-pass"} {

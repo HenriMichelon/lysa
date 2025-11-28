@@ -69,14 +69,14 @@ export namespace lysa {
         Renderer& operator=(Renderer&) = delete;
 
     protected:
-        Context& ctx;
+        const Context& ctx;
         const bool withStencil;
         const RendererConfiguration config;
         // Depth-only pre-pass used by both forward and deferred renderers
         DepthPrepass depthPrePass;
 
         Renderer(
-            Context& ctx,
+            const Context& ctx,
             const RendererConfiguration& config,
             bool withStencil);
 

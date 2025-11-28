@@ -7,6 +7,7 @@
 export module lysa.pipelines.frustum_culling;
 
 import vireo;
+import lysa.context;
 import lysa.frustum;
 import lysa.global;
 import lysa.math;
@@ -17,6 +18,7 @@ export namespace lysa {
     class FrustumCulling {
     public:
         FrustumCulling(
+            const Context& ctx,
             bool isForScene,
             const DeviceMemoryArray& meshInstancesArray);
 

@@ -26,7 +26,7 @@ namespace lysa {
     }
 
     Renderer::Renderer(
-        Context& ctx,
+        const Context& ctx,
         const RendererConfiguration& config,
         const bool withStencil):
         ctx(ctx),

@@ -11,7 +11,7 @@ import lysa.virtual_fs;
 namespace lysa {
 
     Renderpass::Renderpass(
-        Context& ctx,
+        const Context& ctx,
         const RendererConfiguration& config,
         const std::string& name):
         ctx{ctx},

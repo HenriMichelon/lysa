@@ -25,11 +25,12 @@ export namespace lysa {
     public:
         /**
          * Constructs a render pass with a shared rendering configuration and name.
+         * @param ctx Lysa context
          * @param config Rendering configuration (frame buffering, formats).
          * @param name   Human-readable name for debugging tools/logs.
          */
         Renderpass(
-            Context& ctx,
+            const Context& ctx,
             const RendererConfiguration& config,
             const std::string& name);
 
@@ -44,7 +45,7 @@ export namespace lysa {
         Renderpass& operator=(Renderpass&) = delete;
 
     protected:
-        Context& ctx;
+        const Context& ctx;
         /** Debug/name label for the pass. */
         const std::string name;
         /** Shared rendering configuration. */

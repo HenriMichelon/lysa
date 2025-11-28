@@ -18,7 +18,7 @@ export namespace lysa {
     class ForwardColor : public Renderpass {
     public:
         ForwardColor(
-            Context& ctx,
+            const Context& ctx,
             const RendererConfiguration& config);
 
         void render(

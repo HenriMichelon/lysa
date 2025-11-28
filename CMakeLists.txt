@@ -223,7 +223,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Memory.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
 
-        #${ENGINE_SRC_DIR}/pipelines/FrustumCulling.cpp
+        ${ENGINE_SRC_DIR}/pipelines/FrustumCulling.cpp
 
         ${DEFERRED_RENDERER_SRC}
         ${FORWARD_RENDERER_SRC}
@@ -256,7 +256,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
 
-        #${ENGINE_SRC_DIR}/pipelines/FrustumCulling.ixx
+        ${ENGINE_SRC_DIR}/pipelines/FrustumCulling.ixx
 
         ${FORWARD_RENDERER_MODULES}
         ${DEFERRED_RENDERER_MODULES}

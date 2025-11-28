@@ -16,7 +16,7 @@ import lysa.renderers.renderpasses.renderpass;
 export namespace lysa {
     class DepthPrepass : public Renderpass {
     public:
-        DepthPrepass(Context& ctx, const RendererConfiguration& config, bool withStencil);
+        DepthPrepass(const Context& ctx, const RendererConfiguration& config, bool withStencil);
 
         void render(
             vireo::CommandList& commandList,

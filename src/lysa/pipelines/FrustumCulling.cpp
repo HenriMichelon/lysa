@@ -11,9 +11,10 @@ import lysa.virtual_fs;
 
 namespace lysa {
     FrustumCulling::FrustumCulling(
+        const Context& ctx,
         const bool isForScene,
         const DeviceMemoryArray& meshInstancesArray) {
-        const auto& vireo = Application::getVireo();
+        const auto& vireo = *ctx.vireo;
         globalBuffer = vireo.createBuffer(vireo::BufferType::UNIFORM, sizeof(Global), 1, DEBUG_NAME);
         globalBuffer->map();
         commandClearCounterBuffer = vireo.createBuffer(vireo::BufferType::BUFFER_UPLOAD, sizeof(uint32));
@@ -43,10 +44,7 @@ namespace lysa {
             {},
             DEBUG_NAME);
         auto tempBuffer = std::vector<char>{};
-        const auto& ext = vireo.getShaderFileExtension();
-        VirtualFS::loadBinaryData("app://" + Application::getConfiguration().shaderDir + "/" +
-            (isForScene ? SHADER_SCENE : SHADER_SHADOWMAP)
-            + ext, tempBuffer);
+        ctx.virtualFs.loadShader(isForScene ? SHADER_SCENE : SHADER_SHADOWMAP, tempBuffer);
         const auto shader = vireo.createShaderModule(tempBuffer);
         pipeline = vireo.createComputePipeline(pipelineResources, shader, DEBUG_NAME);
     }
@@ -115,7 +113,7 @@ namespace lysa {
     }
 
     uint32 FrustumCulling::getDrawCommandsCount() const {
-        return *reinterpret_cast<uint32*>(downloadCounterBuffer->getMappedAddress());
+        return *static_cast<uint32*>(downloadCounterBuffer->getMappedAddress());
     }
 
 }
