@@ -11,6 +11,7 @@ import vireo;
 
 import lysa.context;
 import lysa.types;
+import lysa.renderers.configuration;
 import lysa.renderers.renderer;
 import lysa.renderers.renderpasses.forward_color;
 

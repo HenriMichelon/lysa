@@ -18,10 +18,8 @@ namespace lysa {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        ctx.eventManager._process();
     }
 }
-
 
 #ifndef LYSA_CONSOLE
 

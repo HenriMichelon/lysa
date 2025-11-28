@@ -32,6 +32,7 @@ namespace lysa {
         const std::function<void()>& onQuit) {
         while (!ctx.exit) {
             processPlatformEvents();
+            ctx.eventManager._process();
 
             // https://gafferongames.com/post/fix_your_timestep/
             const double newTime = std::chrono::duration_cast<std::chrono::duration<double>>(

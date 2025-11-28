@@ -19,6 +19,8 @@ import vireo;
 import vireo.lua;
 import lysa;
 
+template <> struct luabridge::Stack<lysa::LogLevel> : Enum<lysa::LogLevel> {};
+template <> struct luabridge::Stack<lysa::LoggingMode> : Enum<lysa::LoggingMode> {};
 template <> struct luabridge::Stack<lysa::RendererType> : Enum<lysa::RendererType> {};
 template <> struct luabridge::Stack<lysa::RenderingWindowMode> : Enum<lysa::RenderingWindowMode> {};
 
@@ -153,7 +155,7 @@ end
                .addStaticFunction("log", +[](const char*msg) { Log::log(msg); })
                .addStaticFunction("debug", +[](const char*msg) { Log::debug(msg); })
                .addStaticFunction("info", +[](const char*msg) { Log::info(msg); })
-               .addStaticFunction("game1", +[](const char*msg) { Log::game1(msg); })
+               .addStaticFunction("game1", +[](const char* msg) { Log::game1(msg); })
                .addStaticFunction("game2", +[](const char*msg) { Log::game2(msg); })
                .addStaticFunction("game3", +[](const char*msg) { Log::game3(msg); })
                .addStaticFunction("warning", +[](const char*msg) { Log::warning(msg); })

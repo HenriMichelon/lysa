@@ -9,7 +9,7 @@ module;
 export module lysa.lua;
 
 import std;
-export import lua_bridge;
+export import lua_bridge; // from Vireo
 
 import lysa.types;
 import lysa.virtual_fs;
@@ -73,7 +73,6 @@ export namespace lysa {
 
     private:
         const VirtualFS &virtualFs;
-        // The single Lua state instance used by the application.
         lua_State* L;
 
         void bind();
