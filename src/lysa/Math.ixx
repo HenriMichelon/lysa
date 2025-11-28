@@ -6,6 +6,7 @@
 */
 export module lysa.math;
 
+
 /**
  * @file
  * @brief Math helpers built on top of hlsl++ types.

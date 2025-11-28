@@ -113,16 +113,16 @@ export namespace lysa {
          * @param size     Output total buffer size in bytes (width*height*4).
          * @return Pointer to the newly allocated pixel buffer in RGBA8888 format, or nullptr on failure.
          */
-        std::byte* loadRGBAImage(const std::string& filepath, uint32& width, uint32& height, uint64& size) const;
+        std::byte* loadImage(const std::string& filepath, uint32& width, uint32& height, uint64& size) const;
 
         void loadScript(const std::string& scriptName, std::vector<char>& out) const;
 
         void loadShader(const std::string& shaderName, std::vector<char>& out) const;
 
         /**
-         * Frees an image buffer allocated by loadRGBAImage().
+         * Frees an image buffer allocated by loadImage().
          *
-         * @param image Pointer previously returned by loadRGBAImage() (may be nullptr).
+         * @param image Pointer previously returned by loadImage()
          */
         void destroyImage(std::byte* image) const;
 

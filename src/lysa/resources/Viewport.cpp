@@ -67,31 +67,4 @@ namespace lysa {
         }
     }
 
-    void ViewportManager::_register(const Lua& lua) {
-        lua.beginNamespace()
-            .beginClass<ViewportConfiguration>("ViewportConfiguration")
-                .addConstructor<void()>()
-        .       addProperty("renderTarget", &ViewportConfiguration::renderTarget)
-        .       addProperty("viewport", &ViewportConfiguration::viewport)
-        .       addProperty("scissors", &ViewportConfiguration::scissors)
-            .endClass()
-            .beginClass<Viewport>("Viewport")
-               .addProperty("id", &Viewport::id)
-        .       addProperty("renderTarget", &Viewport::getRenderTarget)
-            .endClass()
-            .beginClass<ViewportManager>("ViewportManager")
-                .addConstructor<void(Context&, unique_id)>()
-                .addStaticProperty("ID", &ViewportManager::ID)
-                .addFunction("create", &ViewportManager::create<ViewportConfiguration>)
-                .addFunction("get",
-                    luabridge::nonConstOverload<const unique_id>(&ViewportManager::get),
-                    luabridge::constOverload<const unique_id>(&ViewportManager::get)
-                )
-                .addFunction("destroyAll", &ViewportManager::destroy)
-                .addFunction("destroy",
-                  luabridge::overload<const unique_id>(&Manager::destroy))
-            .endClass()
-        .endNamespace();
-    }
-
 }

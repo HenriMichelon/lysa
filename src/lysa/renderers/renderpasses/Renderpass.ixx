@@ -9,7 +9,6 @@ export module lysa.renderers.renderpasses.renderpass;
 import std;
 import vireo;
 import lysa.context;
-import lysa.lua;
 import lysa.types;
 import lysa.renderers.renderer;
 
@@ -43,8 +42,6 @@ export namespace lysa {
         virtual ~Renderpass() = default;
         Renderpass(Renderpass&) = delete;
         Renderpass& operator=(Renderpass&) = delete;
-
-        static void _register(const Lua& lua);
 
     protected:
         Context& ctx;

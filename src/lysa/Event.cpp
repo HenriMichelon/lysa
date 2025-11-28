@@ -20,9 +20,11 @@ namespace lysa {
         handlers[type][id].push_back(std::move(handler));
     }
 
+#ifdef LUA_BINDINGS
     void EventManager::subscribe(const event_type& type, const unique_id id, luabridge::LuaRef handler) {
         handlersLua[type][id].push_back(std::move(handler));
     }
+#endif
 
     void EventManager::_process() {
         for (const Event& e : queue) {
@@ -37,6 +39,7 @@ namespace lysa {
                     }
                 }
             }
+#ifdef LUA_BINDINGS
             {
                 const auto itType = handlersLua.find(e.type);
                 if (itType != handlersLua.end()) {
@@ -48,6 +51,7 @@ namespace lysa {
                     }
                 }
             }
+#endif
         }
         queue.clear();
     }
@@ -55,23 +59,9 @@ namespace lysa {
     EventManager::~EventManager() {
         queue.clear();
         handlers.clear();
+#ifdef LUA_BINDINGS
         handlersLua.clear();
-    }
-
-    void EventManager::_register(const Lua& lua) {
-        lua.beginNamespace()
-            .beginClass<Event>("Event")
-                .addProperty("id", &Event::id)
-                .addProperty("type", &Event::type)
-            .endClass()
-            .beginClass<EventManager>("EventManager")
-                .addFunction("push", &EventManager::push)
-                .addFunction("subscribe", luabridge::overload<
-                    const event_type&, unique_id, luabridge::LuaRef
-                >(&EventManager::subscribe))
-            .endClass()
-        .endNamespace();
-
+#endif
     }
 
 }

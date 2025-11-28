@@ -167,44 +167,4 @@ namespace lysa {
         }
     }
 
-    void RenderTargetManager::_register(const Lua& lua) {
-        Renderer::_register(lua);
-        lua.beginNamespace()
-            .beginClass<RenderTargetConfiguration>("RenderTargetConfiguration")
-                .addConstructor<void()>()
-                .addProperty("renderingWindowHandle", &RenderTargetConfiguration::renderingWindowHandle)
-                .addProperty("rendererConfiguration", &RenderTargetConfiguration::rendererConfiguration)
-            .endClass()
-            .beginNamespace("RenderTargetEventType")
-                .addVariable("PAUSED", &RenderTargetEvent::PAUSED)
-                .addVariable("RESUMED", &RenderTargetEvent::RESUMED)
-                .addVariable("RESIZED", &RenderTargetEvent::RESIZED)
-            .endNamespace()
-            .beginClass<RenderTargetEvent>("RenderTargetEvent")
-                .addProperty("id", &RenderTargetEvent::id)
-                .addProperty("type", &RenderTargetEvent::type)
-            .endClass()
-            .beginClass<RenderTarget>("RenderTarget")
-               .addProperty("id", &RenderTarget::id)
-               .addFunction("pause", &RenderTarget::pause)
-               .addFunction("resize", &RenderTarget::resize)
-               .addFunction("swapChain", &RenderTarget::getSwapChain)
-               .addFunction("renderingWindowHandle", &RenderTarget::getRenderingWindowHandle)
-            .endClass()
-            .beginClass<RenderTargetManager>("RenderTargetManager")
-                .addConstructor<void(Context&, unique_id)>()
-                .addStaticProperty("ID", &RenderTargetManager::ID)
-                .addFunction("create", &ResourcesManager::create<RenderTargetConfiguration>)
-                .addFunction("get",
-                    luabridge::nonConstOverload<const unique_id>(&RenderTargetManager::get),
-                    luabridge::constOverload<const unique_id>(&RenderTargetManager::get)
-                    )
-                .addFunction("destroy",
-                   luabridge::overload<const unique_id>(&Manager::destroy),
-                   luabridge::overload<const void*>(&RenderTargetManager::destroy)
-                )
-            .endClass()
-        .endNamespace();
-    }
-
 }

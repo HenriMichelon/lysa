@@ -88,7 +88,7 @@ namespace lysa {
         .eof  = eofCallback,
     };
 
-    std::byte* VirtualFS::loadRGBAImage(
+    std::byte* VirtualFS::loadImage(
         const std::string& filepath,
         uint32& width, uint32& height, uint64& size) const {
         std::ifstream file(getPath(filepath), std::ios::binary);

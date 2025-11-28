@@ -7,16 +7,12 @@
 export module lysa.resources.render_target;
 
 import vireo;
-import lua_bridge;
 
 import lysa.context;
 import lysa.event;
-import lysa.lua;
 import lysa.types;
-
 import lysa.renderers.renderer;
-
-import lysa.resources.manager;
+import lysa.resources.resource_manager;
 import lysa.resources.viewport;
 
 export namespace lysa {
@@ -110,7 +106,6 @@ export namespace lysa {
         void render() const;
 
         friend class ResourcesLocator;
-        static void _register(const Lua& lua);
     };
 
 }

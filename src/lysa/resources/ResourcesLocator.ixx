@@ -8,8 +8,7 @@ export module lysa.resources.locator;
 
 import std;
 import lysa.exception;
-import lysa.lua;
-import lysa.manager;
+import lysa.resources.manager;
 
 export namespace lysa {
 
@@ -60,8 +59,6 @@ export namespace lysa {
         void enroll(const std::string& name, Manager<T>& manager) {
             managers[name] = &manager;
         }
-
-        static void _register(const Lua& lua);
 
     private:
         // Internal registry mapping names to manager instances.

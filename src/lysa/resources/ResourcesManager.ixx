@@ -4,14 +4,14 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.resources.manager;
+export module lysa.resources.resource_manager;
 
 import std;
 
 import lysa.context;
 import lysa.exception;
-import lysa.manager;
 import lysa.types;
+import lysa.resources.manager;
 
 export namespace lysa {
 

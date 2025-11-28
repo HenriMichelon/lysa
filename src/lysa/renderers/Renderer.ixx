@@ -9,7 +9,6 @@ export module lysa.renderers.renderer;
 import vireo;
 
 import lysa.context;
-import lysa.lua;
 import lysa.math;
 import lysa.types;
 
@@ -123,8 +122,6 @@ export namespace lysa {
         Renderer(Renderer&) = delete;
         Renderer& operator=(Renderer&) = delete;
 
-        static void _register(const Lua& lua);
-
     protected:
         Context& ctx;
         const bool withStencil;
@@ -158,5 +155,3 @@ export namespace lysa {
 
     };
 }
-
-template <> struct luabridge::Stack<lysa::RendererType> : Enum<lysa::RendererType> {};

@@ -25,5 +25,4 @@ export namespace lysa {
 
     constexpr unique_id INVALID_ID{-1};
 
-
 }

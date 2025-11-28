@@ -32,6 +32,11 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 #######################################################
+if (LUA_BINDINGS)
+    add_compile_definitions(LUA_BINDINGS)
+endif ()
+
+#######################################################
 if(NOT FORWARD_RENDERER AND NOT DEFERRED_RENDERER)
     message(FATAL_ERROR "Please activate a renderer with FORWARD_RENDERER or DEFERRED_RENDERER")
 endif()
@@ -166,6 +171,29 @@ if(PHYSIC_ENGINE_PHYSX)
 endif ()
 
 #######################################################
+if(LUA_BINDINGS)
+    set(LUA_BINDINGS_SRC
+            ${ENGINE_SRC_DIR}/bindings/lua/Lua.cpp
+            ${lua_socket_SOURCE_DIR}/src/luasocket.h
+            ${lua_socket_SOURCE_DIR}/src/except.c
+            ${lua_socket_SOURCE_DIR}/src/luasocket.c
+            ${lua_socket_SOURCE_DIR}/src/timeout.c
+            ${lua_socket_SOURCE_DIR}/src/buffer.c
+            ${lua_socket_SOURCE_DIR}/src/io.c
+            ${lua_socket_SOURCE_DIR}/src/auxiliar.c
+            ${lua_socket_SOURCE_DIR}/src/options.c
+            ${lua_socket_SOURCE_DIR}/src/inet.c
+            ${lua_socket_SOURCE_DIR}/src/tcp.c
+            ${lua_socket_SOURCE_DIR}/src/udp.c
+            ${lua_socket_SOURCE_DIR}/src/select.c
+            ${lua_socket_SOURCE_DIR}/src/wsocket.c
+    )
+    set(LUA_BINDINGS_MODULES
+            ${ENGINE_SRC_DIR}/bindings/lua/Lua.ixx
+    )
+endif ()
+
+#######################################################
 if(FORWARD_RENDERER)
     set(FORWARD_RENDERER_SRC
             ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.cpp
@@ -189,7 +217,6 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
-        ${ENGINE_SRC_DIR}/Lua.cpp
         ${ENGINE_SRC_DIR}/Lysa.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
@@ -201,25 +228,12 @@ add_library(${LYSA_TARGET} STATIC
 
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
-        ${ENGINE_SRC_DIR}/resources/ResourcesLocator.cpp
         ${ENGINE_SRC_DIR}/resources/Viewport.cpp
 
         ${OS_SRC}
         ${PHYSICS_SRC}
+        ${LUA_BINDINGS_SRC}
         ${DEPENDS_SRC_DIR}/stb/stb.cpp
-        ${lua_socket_SOURCE_DIR}/src/except.c
-        ${lua_socket_SOURCE_DIR}/src/luasocket.c
-        ${lua_socket_SOURCE_DIR}/src/timeout.c
-        ${lua_socket_SOURCE_DIR}/src/buffer.c
-        ${lua_socket_SOURCE_DIR}/src/io.c
-        ${lua_socket_SOURCE_DIR}/src/auxiliar.c
-        ${lua_socket_SOURCE_DIR}/src/options.c
-        ${lua_socket_SOURCE_DIR}/src/inet.c
-        ${lua_socket_SOURCE_DIR}/src/tcp.c
-        ${lua_socket_SOURCE_DIR}/src/udp.c
-        ${lua_socket_SOURCE_DIR}/src/select.c
-        ${lua_socket_SOURCE_DIR}/src/wsocket.c
-        ${lua_socket_SOURCE_DIR}/src/luasocket.h
 )
 target_sources(${LYSA_TARGET}
     PUBLIC
@@ -230,7 +244,6 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
-        ${ENGINE_SRC_DIR}/Lua.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
@@ -250,6 +263,7 @@ target_sources(${LYSA_TARGET}
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}
+        ${LUA_BINDINGS_MODULES}
 )
 
 compile_options(${LYSA_TARGET})
@@ -271,8 +285,12 @@ target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         xxhash
         Freetype::Freetype
         harfbuzz
-        lua
 )
+if(LUA_BINDINGS)
+    target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
+        lua
+    )
+endif ()
 add_dependencies(${LYSA_TARGET} ${VIREO_TARGET})
 target_precompile_headers(${LYSA_TARGET} PRIVATE
     "<intrin.h>"

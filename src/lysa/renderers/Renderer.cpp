@@ -79,26 +79,4 @@ namespace lysa {
         return getFrameColorAttachment(frameIndex);
     }
 
-    void Renderer::_register(const Lua& lua) {
-        Renderpass::_register(lua);
-        lua.beginNamespace()
-            .beginNamespace("RendererType")
-                .addVariable("FORWARD", RendererType::FORWARD)
-                .addVariable("DEFERRED", RendererType::DEFERRED)
-            .endNamespace()
-            .beginClass<RendererConfiguration>("RendererConfiguration")
-                .addConstructor<void()>()
-                .addProperty("rendererType", &RendererConfiguration::rendererType)
-                .addProperty("swapChainFormat", &RendererConfiguration::swapChainFormat)
-                .addProperty("presentMode", &RendererConfiguration::presentMode)
-                .addProperty("framesInFlight", &RendererConfiguration::framesInFlight)
-                .addProperty("colorRenderingFormat", &RendererConfiguration::colorRenderingFormat)
-                .addProperty("depthStencilFormat", &RendererConfiguration::depthStencilFormat)
-                .addProperty("clearColor", &RendererConfiguration::clearColor)
-                .addProperty("msaa", &RendererConfiguration::msaa)
-            .endClass()
-            .beginClass<Renderer>("Renderer")
-            .endClass()
-        .endNamespace();
-    }
 }

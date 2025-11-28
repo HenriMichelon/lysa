@@ -25,10 +25,4 @@ namespace lysa {
         return ctx.vireo->createShaderModule(tempBuffer);
     }
 
-    void Renderpass::_register(const Lua& lua) {
-        lua.beginNamespace()
-            .beginClass<Renderpass>("Renderpass")
-            .endClass()
-        .endNamespace();
-    }
 }

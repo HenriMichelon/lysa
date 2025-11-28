@@ -6,9 +6,12 @@
 */
 export module lysa.context;
 
+import std;
 import vireo;
 import lysa.event;
+#ifdef LUA_BINDINGS
 import lysa.lua;
+#endif
 import lysa.virtual_fs;
 import lysa.resources.locator;
 
@@ -36,10 +39,12 @@ export namespace  lysa {
          */
         const VirtualFS virtualFs;
 
+#ifdef LUA_BINDINGS
         /**
          * @brief Embedded Lua execution environment.
          */
         const Lua lua;
+#endif
 
         /**
          * @brief Central event dispatcher for the application.
@@ -58,8 +63,11 @@ export namespace  lysa {
 
         Context(
             vireo::Backend backend,
-            const LuaConfiguration& luaConfiguration,
-            const VirtualFSConfiguration& virtualFsConfiguration);
+            const VirtualFSConfiguration& virtualFsConfiguration
+#ifdef LUA_BINDINGS
+            ,const LuaConfiguration& luaConfiguration
+#endif
+            );
     };
 
 }

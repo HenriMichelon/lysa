@@ -14,17 +14,23 @@ export import lysa.event;
 export import lysa.exception;
 export import lysa.global;
 export import lysa.log;
-export import lysa.lua;
 export import lysa.math;
 export import lysa.types;
 export import lysa.virtual_fs;
 
 export import lysa.renderers.renderer;
+export import lysa.renderers.renderpasses.renderpass;
 
 export import lysa.resources.locator;
 export import lysa.resources.manager;
 export import lysa.resources.render_target;
+export import lysa.resources.rendering_window;
+export import lysa.resources.resource_manager;
 export import lysa.resources.viewport;
+
+#ifdef LUA_BINDINGS
+export import lysa.lua;
+#endif
 
 export namespace  lysa {
 
@@ -45,8 +51,10 @@ export namespace  lysa {
         ResourcesCapacity resourcesCapacity;
         //! Virtual file system configuration
         VirtualFSConfiguration virtualFsConfiguration;
+#ifdef LUA_BINDINGS
         //! Configuration for Lua integration and tooling.
         LuaConfiguration luaConfiguration;
+#endif
     };
 
     /**
@@ -81,6 +89,7 @@ export namespace  lysa {
             const std::function<void(float)>& onPhysicsProcess = {},
             const std::function<void()>& onQuit = {});
 
+#ifdef LUA_BINDINGS
         /**
          * @brief Run the main loop until quit is requested.
          *
@@ -92,6 +101,7 @@ export namespace  lysa {
             const luabridge::LuaRef& onProcess,
             const luabridge::LuaRef& onPhysicsProcess = nullptr,
             const luabridge::LuaRef& onQuit = nullptr);
+#endif
 
         /**
          * @brief Get the mutable application context.
@@ -111,8 +121,6 @@ export namespace  lysa {
 
         // Consume platform-specific events.
         void processPlatformEvents();
-
-        static void _register(Context& ctx);
     };
 
 }

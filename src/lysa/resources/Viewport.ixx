@@ -7,13 +7,11 @@
 export module lysa.resources.viewport;
 
 import vireo;
-import lua_bridge;
 
 import lysa.context;
-import lysa.lua;
 import lysa.types;
 import lysa.renderers.renderer;
-import lysa.resources.manager;
+import lysa.resources.resource_manager;
 
 export namespace lysa {
 
@@ -68,8 +66,6 @@ export namespace lysa {
          * @param capacity Initial capacity
          */
         ViewportManager(Context& ctx, unique_id capacity);
-
-        static void _register(const Lua& lua);
 
     private:
         auto getResources(unique_id renderTarget) {

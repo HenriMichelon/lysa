@@ -11,13 +11,11 @@ module;
 export module lysa.resources.rendering_window;
 
 import vireo;
-import lua_bridge;
 
 import lysa.context;
 import lysa.event;
-import lysa.lua;
 import lysa.types;
-import lysa.resources.manager;
+import lysa.resources.resource_manager;
 
 export namespace lysa {
 
@@ -140,10 +138,6 @@ export namespace lysa {
         RenderingWindow& create(const RenderingWindowConfiguration& configuration);
 
         void destroy(unique_id id) override;
-
-        static void _register(const Lua& lua);
     };
 
 }
-
-template <> struct luabridge::Stack<lysa::RenderingWindowMode> : Enum<lysa::RenderingWindowMode> {};
