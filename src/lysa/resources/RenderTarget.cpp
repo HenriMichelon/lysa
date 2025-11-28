@@ -97,6 +97,7 @@ namespace lysa {
 
         frame.prepareCommandList->begin();
         //viewportManager.prepare(renderTarget->id, frameIndex);
+        renderer->preRender(*frame.prepareCommandList, frameIndex);
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
                    vireo::WaitStage::ALL_COMMANDS,

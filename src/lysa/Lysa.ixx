@@ -18,6 +18,7 @@ export import lysa.math;
 export import lysa.types;
 export import lysa.virtual_fs;
 
+export import lysa.renderers.configuration;
 export import lysa.renderers.renderer;
 export import lysa.renderers.renderpasses.renderpass;
 

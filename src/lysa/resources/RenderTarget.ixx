@@ -11,6 +11,7 @@ import vireo;
 import lysa.context;
 import lysa.event;
 import lysa.types;
+import lysa.renderers.configuration;
 import lysa.renderers.renderer;
 import lysa.resources.resource_manager;
 import lysa.resources.viewport;

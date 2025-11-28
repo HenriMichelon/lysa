@@ -10,7 +10,7 @@ import std;
 import vireo;
 import lysa.context;
 import lysa.types;
-import lysa.renderers.renderer;
+import lysa.renderers.configuration;
 
 export namespace lysa {
     /**

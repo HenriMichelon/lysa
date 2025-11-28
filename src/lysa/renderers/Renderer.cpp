@@ -29,11 +29,21 @@ namespace lysa {
         Context& ctx,
         const RendererConfiguration& config,
         const bool withStencil):
-        ctx(ctx), withStencil(withStencil), config(config){
+        ctx(ctx),
+        withStencil(withStencil),
+        config(config),
+        depthPrePass(ctx, config, withStencil) {
         framesData.resize(config.framesInFlight);
     }
 
     void Renderer::update(const uint32 frameIndex) {
+        depthPrePass.update(frameIndex);
+    }
+
+    void Renderer::preRender(
+        vireo::CommandList& commandList,
+        const uint32 frameIndex) {
+        depthPrePass.render(commandList, framesData[frameIndex].depthAttachment);
     }
 
     void Renderer::render(

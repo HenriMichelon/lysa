@@ -224,6 +224,7 @@ add_library(${LYSA_TARGET} STATIC
         ${DEFERRED_RENDERER_SRC}
         ${FORWARD_RENDERER_SRC}
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
 
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
@@ -251,7 +252,9 @@ target_sources(${LYSA_TARGET}
 
         ${FORWARD_RENDERER_MODULES}
         ${DEFERRED_RENDERER_MODULES}
+        ${ENGINE_SRC_DIR}/renderers/Configuration.ixx
         ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
 
         ${ENGINE_SRC_DIR}/resources/Manager.ixx
@@ -278,7 +281,6 @@ target_include_directories(${LYSA_TARGET} PUBLIC
         ${harfbuzz_SOURCE_DIR}/src
         ${msdfgen_SOURCE_DIR}
         ${msdf_atlas_gen_SOURCE_DIR}
-        ${lua_cmake_SOURCE_DIR}/upstream
 )
 target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         std-cxx-modules
@@ -289,6 +291,9 @@ target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
 if(LUA_BINDING)
     target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         lua
+    )
+    target_include_directories(${LYSA_TARGET} PUBLIC
+        ${lua_cmake_SOURCE_DIR}/upstream
     )
 endif ()
 add_dependencies(${LYSA_TARGET} ${VIREO_TARGET})
