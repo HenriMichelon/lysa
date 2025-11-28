@@ -19,18 +19,18 @@ namespace lysa {
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
-        if (configuration.swapChainConfiguration.framesInFlight <= 0) {
+        if (configuration.rendererConfiguration.framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
         this->renderingWindowHandle = configuration.renderingWindowHandle;
         swapChain = ctx.vireo->createSwapChain(
-            configuration.swapChainConfiguration.swapChainFormat,
+            configuration.rendererConfiguration.swapChainFormat,
             ctx.graphicQueue,
             configuration.renderingWindowHandle,
-            configuration.swapChainConfiguration.presentMode,
-            configuration.swapChainConfiguration.framesInFlight);
-        renderer = Renderer::create(ctx, configuration.rendererConfiguration, configuration.swapChainConfiguration);
-        framesData.resize(configuration.swapChainConfiguration.framesInFlight);
+            configuration.rendererConfiguration.presentMode,
+            configuration.rendererConfiguration.framesInFlight);
+        renderer = Renderer::create(ctx, configuration.rendererConfiguration);
+        framesData.resize(configuration.rendererConfiguration.framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
@@ -106,12 +106,15 @@ namespace lysa {
         auto& commandList = frame.renderCommandList;
         commandList->begin();
         //viewportManager.render(renderTarget->id, frameIndex);
+        renderer->render(*commandList, true, frameIndex);
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
 
+        commandList->barrier(colorAttachment, vireo::ResourceState::UNDEFINED,vireo::ResourceState::COPY_SRC);
         commandList->barrier(swapChain, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);
         commandList->copy(colorAttachment->getImage(), swapChain);
         commandList->barrier(swapChain, vireo::ResourceState::COPY_DST, vireo::ResourceState::PRESENT);
+        commandList->barrier(colorAttachment, vireo::ResourceState::COPY_SRC,vireo::ResourceState::UNDEFINED);
         commandList->end();
 
         ctx.graphicQueue->submit(
@@ -171,7 +174,6 @@ namespace lysa {
                 .addConstructor<void()>()
                 .addProperty("rendering_window_handle", &RenderTargetConfiguration::renderingWindowHandle)
                 .addProperty("renderer_configuration", &RenderTargetConfiguration::rendererConfiguration)
-                .addProperty("swap_chain_configuration", &RenderTargetConfiguration::swapChainConfiguration)
             .endClass()
             .beginNamespace("RenderTargetEventType")
                 .addVariable("PAUSED", &RenderTargetEvent::PAUSED)

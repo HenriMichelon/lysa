@@ -64,6 +64,35 @@ namespace lysa {
     }
 
     void Lysa::_register(Context& ctx) {
+        ctx.lua.beginNamespace()
+            .beginClass<float2>("float2")
+                .addConstructor<void(float, float)>()
+                .addProperty("x", &float2::x)
+                .addProperty("r", &float2::r)
+                .addProperty("y", &float2::y)
+                .addProperty("g", &float2::g)
+            .endClass()
+            .beginClass<float3>("float3")
+                .addConstructor<void(float, float, float)>()
+                .addProperty("x", &float3::x)
+                .addProperty("r", &float3::r)
+                .addProperty("y", &float3::y)
+                .addProperty("g", &float3::g)
+                .addProperty("z", &float3::z)
+                .addProperty("b", &float3::b)
+            .endClass()
+            .beginClass<float4>("float4")
+                .addConstructor<void(float, float, float, float)>()
+                .addProperty("x", &float4::x)
+                .addProperty("r", &float4::r)
+                .addProperty("y", &float4::y)
+                .addProperty("g", &float4::g)
+                .addProperty("z", &float4::z)
+                .addProperty("b", &float4::b)
+                .addProperty("w", &float4::w)
+                .addProperty("a", &float4::a)
+            .endClass()
+        .endNamespace();
         vireo::LuaBindings::_register(ctx.lua.get());
         EventManager::_register(ctx.lua);
         ctx.lua.beginNamespace()

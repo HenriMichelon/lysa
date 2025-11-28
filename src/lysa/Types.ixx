@@ -21,6 +21,7 @@ export namespace lysa {
     using int64 = std::int64_t;
 
     using unique_id = int64;
+    using pipeline_id = int64;
 
     constexpr unique_id INVALID_ID{-1};
 

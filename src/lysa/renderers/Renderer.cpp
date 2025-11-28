@@ -7,6 +7,7 @@
 module lysa.renderers.renderer;
 
 import lysa.exception;
+import lysa.renderers.renderpasses.renderpass;
 #ifdef FORWARD_RENDERER
 import lysa.renderers.forward_renderer;
 #endif
@@ -15,11 +16,10 @@ namespace lysa {
 
     std::unique_ptr<Renderer> Renderer::create(
         Context& ctx,
-        const RendererConfiguration& config,
-        const SwapChainConfiguration& swapChainConfig) {
+        const RendererConfiguration& config) {
 #ifdef FORWARD_RENDERER
         if (config.rendererType == RendererType::FORWARD) {
-            return std::make_unique<ForwardRenderer>(ctx, config, swapChainConfig);
+            return std::make_unique<ForwardRenderer>(ctx, config);
         }
 #endif
         throw Exception("Unknown renderer type");
@@ -28,10 +28,20 @@ namespace lysa {
     Renderer::Renderer(
         Context& ctx,
         const RendererConfiguration& config,
-        const SwapChainConfiguration& swapChainConfig,
         const bool withStencil):
         ctx(ctx), withStencil(withStencil), config(config){
-        framesData.resize(swapChainConfig.framesInFlight);
+        framesData.resize(config.framesInFlight);
+    }
+
+    void Renderer::update(const uint32 frameIndex) {
+    }
+
+    void Renderer::render(
+       vireo::CommandList& commandList,
+       const bool clearAttachment,
+       const uint32 frameIndex) {
+        const auto& frame = framesData[frameIndex];
+        colorPass(commandList, frame.colorAttachment, frame.depthAttachment, clearAttachment, frameIndex);
     }
 
     void Renderer::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
@@ -70,23 +80,28 @@ namespace lysa {
     }
 
     void Renderer::_register(const Lua& lua) {
+        Renderpass::_register(lua);
         lua.beginNamespace()
             .beginNamespace("RendererType")
                 .addVariable("FORWARD", RendererType::FORWARD)
                 .addVariable("DEFERRED", RendererType::DEFERRED)
             .endNamespace()
-            .beginClass<SwapChainConfiguration>("SwapChainConfiguration")
-                .addConstructor<void()>()
-                .addProperty("swap_chain_format", &SwapChainConfiguration::swapChainFormat)
-                .addProperty("present_mode", &SwapChainConfiguration::presentMode)
-                .addProperty("frames_in_flight", &SwapChainConfiguration::framesInFlight)
-            .endClass()
             .beginClass<RendererConfiguration>("RendererConfiguration")
                 .addConstructor<void()>()
                 .addProperty("renderer_type", &RendererConfiguration::rendererType)
+                .addProperty("swap_chain_format", &RendererConfiguration::swapChainFormat)
+                .addProperty("present_mode", &RendererConfiguration::presentMode)
+                .addProperty("frames_in_flight", &RendererConfiguration::framesInFlight)
                 .addProperty("color_rendering_format", &RendererConfiguration::colorRenderingFormat)
                 .addProperty("depth_stencil_format", &RendererConfiguration::depthStencilFormat)
+                .addProperty("clear_color", &RendererConfiguration::clearColor)
+                .addProperty("msaa", &RendererConfiguration::msaa)
             .endClass()
-    .endNamespace();
+            .beginClass<Renderer>("Renderer")
+                /*.addProperty("current_color_attachment", &Renderer::getCurrentColorAttachment)
+                .addProperty("frame_color_attachment", &Renderer::getFrameColorAttachment)
+                .addProperty("frame_depth_attachment", &Renderer::getFrameDepthAttachment)*/
+            .endClass()
+        .endNamespace();
     }
 }

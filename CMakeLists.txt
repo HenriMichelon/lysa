@@ -168,10 +168,12 @@ endif ()
 #######################################################
 if(FORWARD_RENDERER)
     set(FORWARD_RENDERER_SRC
-        ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.cpp
+            ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.cpp
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/ForwardColor.cpp
     )
     set(FORWARD_RENDERER_MODULES
-        ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.ixx
+            ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.ixx
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/ForwardColor.ixx
     )
 endif ()
 if(DEFERRED_RENDERER)

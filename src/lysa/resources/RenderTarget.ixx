@@ -25,7 +25,6 @@ export namespace lysa {
         //! Set this field if you want to render in a window
         void* renderingWindowHandle{nullptr};
 
-        SwapChainConfiguration swapChainConfiguration;
         RendererConfiguration rendererConfiguration;
     };
 

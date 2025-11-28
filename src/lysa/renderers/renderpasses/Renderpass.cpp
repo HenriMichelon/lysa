@@ -4,7 +4,7 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-module lysa.renderers.renderpass;
+module lysa.renderers.renderpasses.renderpass;
 
 import lysa.virtual_fs;
 
@@ -23,5 +23,12 @@ namespace lysa {
         auto tempBuffer = std::vector<char>{};
         ctx.virtualFs.loadShader(shaderName, tempBuffer);
         return ctx.vireo->createShaderModule(tempBuffer);
+    }
+
+    void Renderpass::_register(const Lua& lua) {
+        lua.beginNamespace()
+            .beginClass<Renderpass>("Renderpass")
+            .endClass()
+        .endNamespace();
     }
 }

@@ -10,7 +10,9 @@ import std;
 import vireo;
 
 import lysa.context;
+import lysa.types;
 import lysa.renderers.renderer;
+import lysa.renderers.renderpasses.forward_color;
 
 export namespace lysa {
 
@@ -26,9 +28,25 @@ export namespace lysa {
     public:
         ForwardRenderer(
             Context& ctx,
-            const RendererConfiguration& config,
-            const SwapChainConfiguration& swapChainConfig);
+            const RendererConfiguration& config);
 
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
+
+    protected:
+        /** Per-frame housekeeping (post-process data, etc.). */
+        void update(uint32 frameIndex) override;
+
+        /** Records the forward color pass followed by transparency. */
+        void colorPass(
+            vireo::CommandList& commandList,
+            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+            const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+            bool clearAttachment,
+            uint32 frameIndex) override;
+
+
+    private:
+        /** Opaque/alpha-tested color pass used by forward rendering. */
+        ForwardColor forwardColorPass;
     };
 }

@@ -25,25 +25,22 @@ export namespace lysa {
     */
     const float3 DEFAULT_CLEAR_COLOR{0.0f, 0.0f, 0.0f};
 
-    struct SwapChainConfiguration {
+    struct RendererConfiguration {
+        RendererType rendererType{static_cast<int>(RendererType::DEFERRED)};
         //! Postprocessing & swap chain image format
         vireo::ImageFormat swapChainFormat{vireo::ImageFormat::R8G8B8A8_UNORM};
         //! Presentation mode
         vireo::PresentMode presentMode{vireo::PresentMode::IMMEDIATE};
         //! Number of simultaneous frames during rendering
         uint32 framesInFlight{2};
-    };
-
-    struct RendererConfiguration {
-        RendererType rendererType{static_cast<int>(RendererType::DEFERRED)};
         //! Main color pass frame buffer format
         vireo::ImageFormat colorRenderingFormat{vireo::ImageFormat::R16G16B16A16_UNORM};
         //! Depth and stencil buffer format
         vireo::ImageFormat depthStencilFormat{vireo::ImageFormat::D32_SFLOAT_S8_UINT};
         //! Frame buffer clear color
-        float3             clearColor{DEFAULT_CLEAR_COLOR};
+        float3 clearColor{DEFAULT_CLEAR_COLOR};
         //! MSAA samples count
-        vireo::MSAA        msaa{vireo::MSAA::NONE};
+        vireo::MSAA msaa{vireo::MSAA::NONE};
 
         /*
         //! Gamma correction factor when using *_UNORM, *_SNORM or *_SFLOAT format
@@ -91,8 +88,7 @@ export namespace lysa {
     public:
         static std::unique_ptr<Renderer> create(
             Context& ctx,
-            const RendererConfiguration& config,
-            const SwapChainConfiguration& swapChainConfig);
+            const RendererConfiguration& config);
 
         /** Returns the color attachment of the current renderer for the frame. */
         std::shared_ptr<vireo::RenderTarget> getCurrentColorAttachment(uint32 frameIndex) const;
@@ -114,6 +110,15 @@ export namespace lysa {
          */
         virtual void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList);
 
+        /** Performs per-frame housekeeping (e.g., pass-local data updates). */
+        virtual void update(uint32 frameIndex);
+
+        /** Main render stage: records opaque/transparent draw calls. */
+        void render(
+            vireo::CommandList& commandList,
+            bool clearAttachment,
+            uint32 frameIndex);
+
         virtual ~Renderer() = default;
         Renderer(Renderer&) = delete;
         Renderer& operator=(Renderer&) = delete;
@@ -128,8 +133,18 @@ export namespace lysa {
         Renderer(
             Context& ctx,
             const RendererConfiguration& config,
-            const SwapChainConfiguration& swapChainConfig,
             bool withStencil);
+
+        /**
+        * Records the pipeline-specific color pass for the concrete renderer.
+        * Implementations dispatch scene draws into colorAttachment/depthAttachment.
+        */
+        virtual void colorPass(
+            vireo::CommandList& commandList,
+            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+            const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+            bool clearAttachment,
+            uint32 frameIndex) = 0;
 
     private:
         /** Per-frame attachments owned by the renderer. */
