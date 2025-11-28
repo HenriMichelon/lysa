@@ -29,34 +29,9 @@ return {
             type = "boolean",
             description = "If true, rendering on this target is paused.",
           },
-          framesData = {
-            type = "table",
-            description = "Array of FrameData entries (one per frame in flight).",
-            childs = {
-              FrameData = {
-                type = "class",
-                description = "Per-frame resources.",
-                childs = {
-                  inFlightFence = {
-                    type = "function",
-                    description = "Fence signaled when the frame's GPU work completes (shared_ptr<vireo::Fence>).",
-
-                    commandAllocator = {
-                      type = "function",
-                      description = "Command allocator for this frame (shared_ptr<vireo::CommandAllocator>).",
-                    },
-                    renderCommandList = {
-                      type = "function",
-                      description = "Command list used to render to the swap chain (shared_ptr<vireo::CommandList>).",
-                    },
-                  },
-                },
-              },
-            },
-            swapChain = {
-              type = "function",
-              description = "Swap chain presenting the render target (shared_ptr<vireo::SwapChain>).",
-            },
+          swapChain = {
+            type = "function",
+            description = "Swap chain presenting the render target (shared_ptr<vireo::SwapChain>).",
           },
         },
 

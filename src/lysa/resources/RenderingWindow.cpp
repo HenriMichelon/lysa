@@ -77,7 +77,7 @@ namespace lysa {
                .addProperty("width", &RenderingWindow::getWidth)
                .addProperty("height", &RenderingWindow::getHeight)
                .addProperty("stopped", &RenderingWindow::isStopped)
-               .addProperty("platform_handle", &RenderingWindow::getPlatformHandle)
+               .addProperty("platformHandle", &RenderingWindow::getPlatformHandle)
                 .addFunction("show", &RenderingWindow::show)
                 .addFunction("close", &RenderingWindow::close)
             .endClass()

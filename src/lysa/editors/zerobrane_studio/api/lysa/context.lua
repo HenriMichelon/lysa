@@ -15,7 +15,7 @@ return {
             type = 'userdata',
             description = 'Central event dispatcher for the application (lysa.EventManager).'
           },
-          resources_locator = {
+          resourcesLocator = {
             type = 'userdata',
             description = 'Resource resolution and access facility (lysa.ResourcesLocator).'
           },
@@ -36,11 +36,11 @@ return {
         description = 'Global application context instance exposed by the engine.',
         childs = {
           exit = { type = 'boolean', description = 'Quit flag controlling the main loop termination.' },
-          event_manager = {
+          eventManager = {
             type = 'userdata',
             description = 'Central event dispatcher for the application (lysa.EventManager).'
           },
-          resources_locator = {
+          resourcesLocator = {
             type = 'userdata',
             description = 'Resource resolution and access facility (lysa.ResourcesLocator).'
           },
