@@ -9,7 +9,7 @@ export module lysa.context;
 import std;
 import vireo;
 import lysa.event;
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
 import lysa.lua;
 #endif
 import lysa.virtual_fs;
@@ -39,7 +39,7 @@ export namespace  lysa {
          */
         const VirtualFS virtualFs;
 
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         /**
          * @brief Embedded Lua execution environment.
          */
@@ -64,7 +64,7 @@ export namespace  lysa {
         Context(
             vireo::Backend backend,
             const VirtualFSConfiguration& virtualFsConfiguration
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
             ,const LuaConfiguration& luaConfiguration
 #endif
             );

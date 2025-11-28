@@ -28,7 +28,7 @@ export import lysa.resources.rendering_window;
 export import lysa.resources.resource_manager;
 export import lysa.resources.viewport;
 
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
 export import lysa.lua;
 #endif
 
@@ -51,7 +51,7 @@ export namespace  lysa {
         ResourcesCapacity resourcesCapacity;
         //! Virtual file system configuration
         VirtualFSConfiguration virtualFsConfiguration;
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         //! Configuration for Lua integration and tooling.
         LuaConfiguration luaConfiguration;
 #endif
@@ -89,7 +89,7 @@ export namespace  lysa {
             const std::function<void(float)>& onPhysicsProcess = {},
             const std::function<void()>& onQuit = {});
 
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         /**
          * @brief Run the main loop until quit is requested.
          *

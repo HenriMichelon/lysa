@@ -19,7 +19,7 @@ endif()
 #######################################################
 set(LYSA_TARGET ${PROJECT_NAME})
 set(DIRECTX_BACKEND ON)
-set(LUA_BINDINGS ON)
+set(LUA_BINDING ON)
 set(PHYSIC_ENGINE_JOLT ON)
 set(PHYSIC_ENGINE_PHYSX OFF)
 set(FORWARD_RENDERER ON)
@@ -32,8 +32,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 #######################################################
-if (LUA_BINDINGS)
-    add_compile_definitions(LUA_BINDINGS)
+if (LUA_BINDING)
+    add_compile_definitions(LUA_BINDING)
 endif ()
 
 #######################################################
@@ -171,7 +171,7 @@ if(PHYSIC_ENGINE_PHYSX)
 endif ()
 
 #######################################################
-if(LUA_BINDINGS)
+if(LUA_BINDING)
     set(LUA_BINDINGS_SRC
             ${ENGINE_SRC_DIR}/bindings/lua/Lua.cpp
             ${lua_socket_SOURCE_DIR}/src/luasocket.h
@@ -286,7 +286,7 @@ target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         Freetype::Freetype
         harfbuzz
 )
-if(LUA_BINDINGS)
+if(LUA_BINDING)
     target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
         lua
     )

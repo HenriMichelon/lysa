@@ -12,7 +12,7 @@ namespace lysa {
     Lysa::Lysa(const LysaConfiguration& lysaConfiguration) :
         ctx(lysaConfiguration.backend,
             lysaConfiguration.virtualFsConfiguration
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
             ,lysaConfiguration.luaConfiguration
 #endif
             ),
@@ -52,7 +52,7 @@ namespace lysa {
         if (onQuit) onQuit();
     }
 
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
     void Lysa::run(
         const luabridge::LuaRef& onProcess,
         const luabridge::LuaRef& onPhysicsProcess,

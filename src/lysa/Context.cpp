@@ -11,17 +11,17 @@ namespace  lysa {
     Context::Context(
         const vireo::Backend backend,
         const VirtualFSConfiguration& virtualFsConfiguration
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         ,const LuaConfiguration& luaConfiguration
 #endif
         ) :
         vireo(vireo::Vireo::create(backend)),
         virtualFs(virtualFsConfiguration, vireo),
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         lua(luaConfiguration, virtualFs),
 #endif
         graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")) {
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         lua.beginNamespace().addVariable("ctx", this).endNamespace();
 #endif
     }

@@ -7,7 +7,7 @@
 export module lysa.event;
 
 import std;
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
 import lysa.lua;
 #endif
 import lysa.types;
@@ -58,7 +58,7 @@ export namespace lysa {
          */
         void subscribe(const event_type& type, unique_id id, EventHandler& handler);
 
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         /**
          * @brief Subscribe a Lua handler to a given event type and target id.
          * @param type The event kind to listen to.
@@ -77,7 +77,7 @@ export namespace lysa {
         std::vector<Event> queue{};
         // C++ subscribers keyed by event type then id.
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<EventHandler>>> handlers{};
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         // Lua subscribers keyed by event type then id.
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<luabridge::LuaRef>>> handlersLua{};
 #endif

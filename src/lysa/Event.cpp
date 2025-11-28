@@ -20,7 +20,7 @@ namespace lysa {
         handlers[type][id].push_back(std::move(handler));
     }
 
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
     void EventManager::subscribe(const event_type& type, const unique_id id, luabridge::LuaRef handler) {
         handlersLua[type][id].push_back(std::move(handler));
     }
@@ -39,7 +39,7 @@ namespace lysa {
                     }
                 }
             }
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
             {
                 const auto itType = handlersLua.find(e.type);
                 if (itType != handlersLua.end()) {
@@ -59,7 +59,7 @@ namespace lysa {
     EventManager::~EventManager() {
         queue.clear();
         handlers.clear();
-#ifdef LUA_BINDINGS
+#ifdef LUA_BINDING
         handlersLua.clear();
 #endif
     }

@@ -45,7 +45,7 @@ set(HB_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(HB_HAVE_FREETYPE ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(harfbuzz)
 
-if (LUA_BINDINGS)
+if (LUA_BINDING)
 message(NOTICE "Fetching LuaSocket...")
 FetchContent_Declare(
         lua_socket
