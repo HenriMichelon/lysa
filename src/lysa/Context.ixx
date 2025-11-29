@@ -9,6 +9,7 @@ export module lysa.context;
 import std;
 import vireo;
 import lysa.event;
+import lysa.flecs;
 #ifdef LUA_BINDING
 import lysa.lua;
 #endif
@@ -50,6 +51,8 @@ export namespace  lysa {
          * @brief Central event dispatcher for the application.
          */
         EventManager eventManager;
+
+        flecs::world world;
 
         /**
          * @brief Resource resolution and access facility.

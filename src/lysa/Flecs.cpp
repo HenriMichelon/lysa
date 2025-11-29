@@ -5,4 +5,3 @@
 * https://opensource.org/licenses/MIT
 */
 module lysa.flecs;
-#include "flecs/flecs.cpp"
