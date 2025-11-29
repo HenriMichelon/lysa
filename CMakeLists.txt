@@ -187,7 +187,6 @@ if(LUA_BINDING)
             ${lua_socket_SOURCE_DIR}/src/udp.c
             ${lua_socket_SOURCE_DIR}/src/select.c
             ${lua_socket_SOURCE_DIR}/src/wsocket.c
-            ${flecs_lua_SOURCE_DIR}/src/bulk.c
     )
     set(LUA_BINDINGS_MODULES
             ${ENGINE_SRC_DIR}/bindings/lua/Lua.ixx
