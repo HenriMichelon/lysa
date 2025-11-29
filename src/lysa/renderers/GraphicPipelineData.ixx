@@ -26,7 +26,7 @@ export namespace lysa {
     };
 
     /**
-     * Per-pipeline cache for instances, draw command streams and culling.
+     * Per-pipeline data for instances, draw command streams and culling.
      *
      * Stores instance data, staging/copy buffers and the compute pipeline
      * used to perform frustum culling and produce culled indirect draws.

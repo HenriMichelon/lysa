@@ -12,6 +12,7 @@ export import vireo;
 export import lysa.context;
 export import lysa.event;
 export import lysa.exception;
+export import lysa.flecs;
 export import lysa.global;
 export import lysa.log;
 export import lysa.math;

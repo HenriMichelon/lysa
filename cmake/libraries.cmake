@@ -45,6 +45,14 @@ set(HB_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(HB_HAVE_FREETYPE ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(harfbuzz)
 
+#message(NOTICE "Fetching Flecs...")
+#FetchContent_Declare(
+#        flecs
+#        GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
+#        GIT_TAG        v4.1.2
+#)
+#FetchContent_MakeAvailable(flecs)
+
 if (LUA_BINDING)
 message(NOTICE "Fetching LuaSocket...")
 FetchContent_Declare(

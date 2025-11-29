@@ -215,6 +215,7 @@ endif ()
 add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
+        ${ENGINE_SRC_DIR}/Flecs.cpp
         ${ENGINE_SRC_DIR}/Frustum.cpp
         ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
@@ -241,6 +242,7 @@ add_library(${LYSA_TARGET} STATIC
         ${PHYSICS_SRC}
         ${LUA_BINDINGS_SRC}
         ${DEPENDS_SRC_DIR}/stb/stb.cpp
+        ${DEPENDS_SRC_DIR}/flecs/flecs.c
 )
 target_sources(${LYSA_TARGET}
     PUBLIC
@@ -249,6 +251,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
+        ${ENGINE_SRC_DIR}/Flecs.ixx
         ${ENGINE_SRC_DIR}/Frustum.ixx
         ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
