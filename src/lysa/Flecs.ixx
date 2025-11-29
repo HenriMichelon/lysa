@@ -5,6 +5,6 @@
 * https://opensource.org/licenses/MIT
 */
 module;
-#include "flecs/flecs.h"
+#include "flecs.h"
 export module lysa.flecs;
-#include "flecs/flecs.hpp"
+#include "flecs.hpp"

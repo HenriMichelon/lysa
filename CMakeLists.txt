@@ -187,6 +187,7 @@ if(LUA_BINDING)
             ${lua_socket_SOURCE_DIR}/src/udp.c
             ${lua_socket_SOURCE_DIR}/src/select.c
             ${lua_socket_SOURCE_DIR}/src/wsocket.c
+            ${flecs_lua_SOURCE_DIR}/src/bulk.c
     )
     set(LUA_BINDINGS_MODULES
             ${ENGINE_SRC_DIR}/bindings/lua/Lua.ixx
@@ -215,7 +216,6 @@ endif ()
 add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
-        ${ENGINE_SRC_DIR}/Flecs.cpp
         ${ENGINE_SRC_DIR}/Frustum.cpp
         ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
@@ -242,7 +242,7 @@ add_library(${LYSA_TARGET} STATIC
         ${PHYSICS_SRC}
         ${LUA_BINDINGS_SRC}
         ${DEPENDS_SRC_DIR}/stb/stb.cpp
-        ${DEPENDS_SRC_DIR}/flecs/flecs.c
+        ${DEPENDS_SRC_DIR}/flecs/src/flecs.c
 )
 target_sources(${LYSA_TARGET}
     PUBLIC
@@ -283,15 +283,16 @@ target_sources(${LYSA_TARGET}
         ${PHYSICS_MODULES}
         ${LUA_BINDINGS_MODULES}
 )
-
 compile_options(${LYSA_TARGET})
 target_include_directories(${LYSA_TARGET} PUBLIC
         ${INCLUDE_DIR}
         ${HLSLPP_SRC_DIR}/include
-        ${DEPENDS_SRC_DIR}/stb
         ${xxhash_SOURCE_DIR}
-        ${DEPENDS_SRC_DIR}/json
         ${DEPENDS_SRC_DIR}
+        ${DEPENDS_SRC_DIR}/flecs
+        ${DEPENDS_SRC_DIR}/json
+        ${DEPENDS_SRC_DIR}/stb
+        ${flecs_lua_SOURCE_DIR}/include
         ${freetype_SOURCE_DIR}/include
         ${harfbuzz_SOURCE_DIR}/src
         ${msdfgen_SOURCE_DIR}
