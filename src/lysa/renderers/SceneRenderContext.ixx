@@ -7,18 +7,15 @@
 export module lysa.renderers.scene_render_context;
 
 import vireo;
+import lysa.context;
 import lysa.math;
+import lysa.memory;
 import lysa.types;
+import lysa.pipelines.frustum_culling;
 import lysa.renderers.configuration;
+import lysa.renderers.graphic_pipeline_data;
 
 export namespace lysa {
-
-    struct SceneRenderContextConfiguration {
-        //! Number of nodes updates per frame for asynchronous scene updates
-        uint32 maxAsyncNodesUpdatedPerFrame{50};
-        uint32 maxModelsPerScene{10000};
-        uint32 maxMeshSurfacePerPipeline{100000};
-    };
 
     /**
      * Per-frame scene uniform payload consumed by shaders.
@@ -63,15 +60,6 @@ export namespace lysa {
         uint32 meshSurfaceMaterialIndex;
     };
 
-    /**
-     * A single indirect draw coupled with the instance index it belongs to.
-     */
-    struct DrawCommand {
-        /** InstanceData index associated to this draw. */
-        uint32 instanceIndex;
-        /** Standard indexed indirect draw command parameters. */
-        vireo::DrawIndexedIndirectCommand command;
-    };
 
     /**
      * %Scene orchestrator.
@@ -111,7 +99,7 @@ export namespace lysa {
         inline static std::shared_ptr<vireo::DescriptorLayout> pipelineDescriptorLayout{nullptr};
 
         /** Creates all static descriptor layouts used by scenes and pipelines. */
-        static void createDescriptorLayouts();
+        static void createDescriptorLayouts(const std::shared_ptr<vireo::Vireo>& vireo);
         /** Destroys static descriptor layouts created by createDescriptorLayouts(). */
         static void destroyDescriptorLayouts();
 
@@ -135,14 +123,12 @@ export namespace lysa {
          * @param scissors           Default scissors rectangle.
          */
         SceneRenderContext(
+            const Context& ctx,
             const SceneRenderContextConfiguration& config,
             const RendererConfiguration& renderingConfig,
             uint32 framesInFlight,
             const vireo::Viewport& viewport,
             const vireo::Rect& scissors);
-
-        /** Returns the currently active camera (may be null). */
-        auto getCurrentCamera() const { return currentCamera; }
 
         /** Returns the default viewport for this scene. */
         auto getViewport() const { return viewport; }
@@ -155,9 +141,6 @@ export namespace lysa {
 
         /** Removes a node previously added to the scene. */
         //virtual void removeNode(const std::shared_ptr<Node> &node);
-
-        /** Activates the provided camera as the current rendering viewpoint. */
-        //virtual void activateCamera(const std::shared_ptr<Camera> &camera);
 
         /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
         void update(const vireo::CommandList& commandList);
@@ -224,80 +207,8 @@ export namespace lysa {
         SceneRenderContext(SceneRenderContext&) = delete;
         SceneRenderContext& operator=(SceneRenderContext&) = delete;
 
-        /**
-         * Per-pipeline cache for instances, draw command streams and culling.
-         *
-         * Stores instance data, staging/copy buffers and the compute pipeline
-         * used to perform frustum culling and produce culled indirect draws.
-         */
-        struct PipelineData {
-            /** Identifier of the material/pipeline family. */
-            pipeline_id pipelineId;
-            /** Reference to the scene configuration. */
-            const SceneRenderContextConfiguration& config;
-            /** Descriptor set bound when drawing with this pipeline. */
-            std::shared_ptr<vireo::DescriptorSet> descriptorSet;
-            /** Compute pipeline used to cull draw commands against the frustum. */
-            FrustumCulling frustumCullingPipeline;
-
-            /** Flags tracking mutations in the instances set. */
-            bool instancesUpdated{false};
-            bool instancesRemoved{false};
-            /** Device memory array that stores InstanceData blocks. */
-            DeviceMemoryArray instancesArray;
-            /** Mapping of mesh instance to its memory block within instancesArray. */
-            std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock> instancesMemoryBlocks;
-
-            /** Number of indirect draw commands before culling. */
-            uint32 drawCommandsCount{0};
-            /** CPU-side list of draw commands to upload. */
-            std::vector<DrawCommand> drawCommands;
-            /** GPU buffer holding indirect draw commands. */
-            std::shared_ptr<vireo::Buffer> drawCommandsBuffer;
-            /** GPU buffer storing the count of culled draw commands. */
-            std::shared_ptr<vireo::Buffer> culledDrawCommandsCountBuffer;
-            /** GPU buffer holding culled indirect draw commands. */
-            std::shared_ptr<vireo::Buffer> culledDrawCommandsBuffer;
-
-            /** Staging buffer used to stream draw commands to the GPU. */
-            std::shared_ptr<vireo::Buffer> drawCommandsStagingBuffer;
-            /** Number of draw commands stored in the current staging buffer. */
-            uint32 drawCommandsStagingBufferCount{0};
-
-            /**
-             * Constructs a per-pipeline cache and GPU resources holder.
-             * @param config Scene configuration reference.
-             * @param pipelineId Unique id of the graphics pipeline family.
-             * @param meshInstancesDataArray Global mesh instances device array.
-             */
-            PipelineData::PipelineData(
-                const SceneRenderContextConfiguration& config,
-                uint32 pipelineId,
-                const DeviceMemoryArray& meshInstancesDataArray);
-
-            /** Registers a mesh instance into this pipeline cache. */
-            // void addNode(
-            //     const std::shared_ptr<MeshInstance>& meshInstance,
-            //     const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
-
-            /** Removes a previously registered mesh instance. */
-            // void removeNode(
-                // const std::shared_ptr<MeshInstance>& meshInstance);
-
-            /** Adds a single draw instance and wires memory blocks. */
-            // void addInstance(
-                // const std::shared_ptr<MeshInstance>& meshInstance,
-                // const MemoryBlock& instanceMemoryBlock,
-                // const MemoryBlock& meshInstanceMemoryBlock);
-
-            /** Uploads/refreshes GPU buffers and prepares culled draw streams. */
-            // void updateData(
-                // const vireo::CommandList& commandList,
-                // std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
-                // const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
-        };
-
     private:
+        const Context& ctx;
         /** Read-only reference to scene configuration (sizes, toggles). */
         const SceneRenderContextConfiguration& config;
         /** Read-only reference to global rendering configuration. */
@@ -314,10 +225,8 @@ export namespace lysa {
         std::shared_ptr<vireo::DescriptorSet> descriptorSetOpt1;
         /** Uniform buffer containing SceneData. */
         std::shared_ptr<vireo::Buffer> sceneUniformBuffer;
-        /** Current active camera used for rendering. */
-        std::shared_ptr<Camera> currentCamera{};
-        /** Current environment settings (skybox, IBL, etc.). */
-        std::shared_ptr<Environment> currentEnvironment{};
+        /** Current environment settings (skybox, etc.). */
+        //std::shared_ptr<Environment> currentEnvironment{};
         /** Map of lights to their shadow-map renderpasses. */
         // std::map<std::shared_ptr<Light>, std::shared_ptr<Renderpass>> shadowMapRenderers;
         /** Array of shadow map images. */
@@ -355,17 +264,17 @@ export namespace lysa {
         /** Recycle bin for staging buffers used to stream indirect draw commands. */
         std::unordered_set<std::shared_ptr<vireo::Buffer>> drawCommandsStagingBufferRecycleBin;
 
-        std::unordered_map<uint32, std::unique_ptr<PipelineData>> opaquePipelinesData;
-        std::unordered_map<uint32, std::unique_ptr<PipelineData>> shaderMaterialPipelinesData;
-        std::unordered_map<uint32, std::unique_ptr<PipelineData>> transparentPipelinesData;
+        std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>> opaquePipelinesData;
+        std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>> shaderMaterialPipelinesData;
+        std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>> transparentPipelinesData;
 
         void updatePipelinesData(
             const vireo::CommandList& commandList,
-            const std::unordered_map<uint32, std::unique_ptr<PipelineData>>& pipelinesData);
+            const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData);
 
         void compute(
             vireo::CommandList& commandList,
-            const std::unordered_map<uint32, std::unique_ptr<PipelineData>>& pipelinesData) const;
+            const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const;
 
         // void addNode(
             // pipeline_id pipelineId,
@@ -375,7 +284,7 @@ export namespace lysa {
         void drawModels(
             vireo::CommandList& commandList,
             const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines,
-            const std::unordered_map<uint32, std::unique_ptr<PipelineData>>& pipelinesData) const;
+            const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const;
 
         // void enableLightShadowCasting(const std::shared_ptr<Node>&node);
 

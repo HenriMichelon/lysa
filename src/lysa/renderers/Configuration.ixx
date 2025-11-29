@@ -75,5 +75,11 @@ export namespace lysa {
         float              ssaoStrength{2.0f};*/
     };
 
+    struct SceneRenderContextConfiguration {
+        //! Number of nodes updates per frame for asynchronous scene updates
+        uint32 maxAsyncNodesUpdatedPerFrame{50};
+        uint32 maxModelsPerScene{10000};
+        uint32 maxMeshSurfacePerPipeline{100000};
+    };
 
 }
