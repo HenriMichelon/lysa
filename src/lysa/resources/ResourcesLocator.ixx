@@ -29,9 +29,9 @@ export namespace lysa {
          * @throws Exception if no manager has been enrolled under the specified name.
          */
         template<typename T>
-        T& get(const std::string& name) {
+        T& get(const std::string& name) const {
             if (managers.contains(name)) {
-                return *(static_cast<T*>(managers[name]));
+                return *(static_cast<T*>(managers.at(name)));
             }
             throw Exception("ResourcesLocator could not find manager " + name);
         }

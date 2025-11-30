@@ -83,14 +83,24 @@ end
     }
 
     void Lua::bind() {
-        const auto& lua = *this;
         luabridge::getGlobalNamespace(L).beginNamespace("std")
             .beginClass<std::string>("string")
             .endClass()
             .beginClass<std::u32string>("u32string")
             .endClass()
         .endNamespace();
-        vireo::LuaBindings::_register(lua.get());
+
+        luabridge::getGlobalNamespace(L).beginNamespace("flecs")
+            .beginClass<flecs::world>("world")
+                .addFunction("entity", +[](const flecs::world* w) { return w->entity<>(); })
+            .endClass()
+            .beginClass<flecs::entity>("entity")
+                .addProperty("is_alive", +[](const flecs::entity* e) { return e->is_alive(); })
+                .addFunction("destruct", &flecs::entity::destruct)
+            .endClass()
+        .endNamespace();
+
+        vireo::LuaBindings::_register(L);
 
         beginNamespace()
             .beginClass<float2>("float2")
@@ -175,8 +185,8 @@ end
             .endClass()
 
             .beginClass<VirtualFS>("VirtualFS")
-                .addFunction("getPath", &VirtualFS::getPath)
-                .addFunction("fileExists", &VirtualFS::fileExists)
+                .addFunction("get_path", &VirtualFS::getPath)
+                .addFunction("file_exists", &VirtualFS::fileExists)
                 /*.addFunction("loadBinaryData",
                     luabridge::overload<const std::string&, std::vector<char>& >(&VirtualFS::loadBinaryData),
                     luabridge::overload<std::ifstream&, std::vector<char>& >(&VirtualFS::loadBinaryData)
@@ -219,7 +229,7 @@ end
                .addProperty("width", &RenderingWindow::getWidth)
                .addProperty("height", &RenderingWindow::getHeight)
                .addProperty("stopped", &RenderingWindow::isStopped)
-               .addProperty("platformHandle", &RenderingWindow::getPlatformHandle)
+               .addProperty("platform_handle", &RenderingWindow::getPlatformHandle)
                 .addFunction("show", &RenderingWindow::show)
                 .addFunction("close", &RenderingWindow::close)
             .endClass()
@@ -235,13 +245,13 @@ end
 
             .beginClass<ViewportConfiguration>("ViewportConfiguration")
                 .addConstructor<void()>()
-                .addProperty("renderTarget", &ViewportConfiguration::renderTarget)
+                .addProperty("render_target", &ViewportConfiguration::renderTarget)
                 .addProperty("viewport", &ViewportConfiguration::viewport)
                 .addProperty("scissors", &ViewportConfiguration::scissors)
             .endClass()
             .beginClass<Viewport>("Viewport")
                 .addProperty("id", &Viewport::id)
-                .addProperty("renderTarget", &Viewport::getRenderTarget)
+                .addProperty("render_target", &Viewport::getRenderTarget)
             .endClass()
             .beginClass<ViewportManager>("ViewportManager")
                 .addConstructor<void(Context&, unique_id)>()
@@ -258,8 +268,8 @@ end
 
             .beginClass<RenderTargetConfiguration>("RenderTargetConfiguration")
                 .addConstructor<void()>()
-                .addProperty("renderingWindowHandle", &RenderTargetConfiguration::renderingWindowHandle)
-                .addProperty("rendererConfiguration", &RenderTargetConfiguration::rendererConfiguration)
+                .addProperty("rendering_window_handle", &RenderTargetConfiguration::renderingWindowHandle)
+                .addProperty("renderer_configuration", &RenderTargetConfiguration::rendererConfiguration)
             .endClass()
             .beginNamespace("RenderTargetEventType")
                 .addVariable("PAUSED", &RenderTargetEvent::PAUSED)
@@ -273,8 +283,8 @@ end
             .beginClass<RenderTarget>("RenderTarget")
                .addProperty("id", &RenderTarget::id)
                .addFunction("pause", &RenderTarget::pause)
-               .addFunction("swapChain", &RenderTarget::getSwapChain)
-               .addFunction("renderingWindowHandle", &RenderTarget::getRenderingWindowHandle)
+               .addFunction("swap_chain", &RenderTarget::getSwapChain)
+               .addFunction("rendering_window_handle", &RenderTarget::getRenderingWindowHandle)
             .endClass()
             .beginClass<RenderTargetManager>("RenderTargetManager")
                 .addConstructor<void(Context&, unique_id)>()
@@ -299,13 +309,13 @@ end
             .endNamespace()
             .beginClass<RendererConfiguration>("RendererConfiguration")
                 .addConstructor<void()>()
-                .addProperty("rendererType", &RendererConfiguration::rendererType)
-                .addProperty("swapChainFormat", &RendererConfiguration::swapChainFormat)
-                .addProperty("presentMode", &RendererConfiguration::presentMode)
-                .addProperty("framesInFlight", &RendererConfiguration::framesInFlight)
-                .addProperty("colorRenderingFormat", &RendererConfiguration::colorRenderingFormat)
-                .addProperty("depthStencilFormat", &RendererConfiguration::depthStencilFormat)
-                .addProperty("clearColor", &RendererConfiguration::clearColor)
+                .addProperty("renderer_type", &RendererConfiguration::rendererType)
+                .addProperty("swap_chain_format", &RendererConfiguration::swapChainFormat)
+                .addProperty("present_mode", &RendererConfiguration::presentMode)
+                .addProperty("frames_in_flight", &RendererConfiguration::framesInFlight)
+                .addProperty("color_rendering_format", &RendererConfiguration::colorRenderingFormat)
+                .addProperty("depth_stencil_format", &RendererConfiguration::depthStencilFormat)
+                .addProperty("clear_color", &RendererConfiguration::clearColor)
                 .addProperty("msaa", &RendererConfiguration::msaa)
             .endClass()
             .beginClass<Renderer>("Renderer")
@@ -313,13 +323,13 @@ end
 
             .beginClass<ResourcesLocator>("ResourcesLocator")
                 .addFunction("get", &ResourcesLocator::_getManager)
-                .addFunction("getRenderTargetManager", +[](ResourcesLocator* rl) -> RenderTargetManager& {
+                .addProperty("render_target_manager", +[](const ResourcesLocator* rl) -> RenderTargetManager& {
                         return rl->get<RenderTargetManager>(RenderTargetManager::ID);
                     })
-                .addFunction("getViewportManager", +[](ResourcesLocator* rl) -> ViewportManager& {
+                .addProperty("viewport_manager", +[](const ResourcesLocator* rl) -> ViewportManager& {
                         return rl->get<ViewportManager>(ViewportManager::ID);
                     })
-                .addFunction("getRenderingWindowManager", +[](ResourcesLocator* rl) -> RenderingWindowManager& {
+                .addProperty("rendering_window_manager", +[](const ResourcesLocator* rl) -> RenderingWindowManager& {
                     return rl->get<RenderingWindowManager>(RenderingWindowManager::ID);
                 })
             .endClass()
@@ -327,10 +337,11 @@ end
             .beginClass<Context>("Context")
                 .addProperty("exit", &Context::exit)
                 .addProperty("vireo", +[](const Context* self) { return self->vireo; })
-                .addProperty("virtualFs",  +[](const Context* self) { return self->virtualFs; })
-                .addProperty("eventManager", &Context::eventManager)
-                .addProperty("resourcesLocator", &Context::resourcesLocator)
-                .addProperty("graphicQueue", +[](const Context* self) { return self->graphicQueue; })
+                .addProperty("virtual_fs",  +[](const Context* self) { return self->virtualFs; })
+                .addProperty("event_manager", &Context::eventManager)
+                .addProperty("world", &Context::world)
+                .addProperty("resources_locator", &Context::resourcesLocator)
+                .addProperty("graphic_queue", +[](const Context* self) { return self->graphicQueue; })
             .endClass()
         .endNamespace();
     }
