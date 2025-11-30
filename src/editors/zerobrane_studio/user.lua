@@ -19,13 +19,6 @@ filetree.fontsize = 11
 
 debugger.runonstart = false
 
-api = {
-    'baselib',
-    'lysa',
-    'vireo'
-}
-autocomplete = true
-
 styles = loadfile('cfg/tomorrow.lua')('SolarizedLight')
 stylesoutshell = styles
 styles.auxwindow = loadfile('cfg/tomorrow.lua')('SolarizedDark').text
