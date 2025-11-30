@@ -62,6 +62,10 @@ end
         return luabridge::getGlobalNamespace(L).beginNamespace ("lysa");
     }
 
+    luabridge::Namespace Lua::beginNamespace(const std::string& name) const {
+        return luabridge::getGlobalNamespace(L).beginNamespace (name.c_str());
+    }
+
     luabridge::LuaRef Lua::getGlobal(const std::string & name) const {
         return luabridge::getGlobal(L, name.c_str());
     }
@@ -83,14 +87,14 @@ end
     }
 
     void Lua::bind() {
-        luabridge::getGlobalNamespace(L).beginNamespace("std")
+        beginNamespace("std")
             .beginClass<std::string>("string")
             .endClass()
             .beginClass<std::u32string>("u32string")
             .endClass()
         .endNamespace();
 
-        luabridge::getGlobalNamespace(L).beginNamespace("flecs")
+        beginNamespace("flecs")
             .beginClass<flecs::world>("world")
                 .addFunction("entity", +[](const flecs::world* w) { return w->entity<>(); })
             .endClass()
