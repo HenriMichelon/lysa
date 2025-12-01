@@ -38,11 +38,11 @@ export namespace lysa {
     */
     struct RenderingWindowEvent : Event {
         //! The window is ready to be shown
-        static constexpr auto READY{"RENDERING_WINDOW_READY"};
+        static inline const event_type READY{"RENDERING_WINDOW_READY"};
         //! The window is about to close
-        static constexpr auto CLOSING{"RENDERING_WINDOW_CLOSING"};
+        static inline const event_type CLOSING{"RENDERING_WINDOW_CLOSING"};
         //! The window has been resized
-        static constexpr auto RESIZED{"RENDERING_WINDOW_RESIZED"};
+        static inline const event_type RESIZED{"RENDERING_WINDOW_RESIZED"};
     };
 
     /**

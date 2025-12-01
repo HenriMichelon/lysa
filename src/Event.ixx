@@ -56,7 +56,7 @@ export namespace lysa {
          * @param id The specific target id to filter on.
          * @param handler Reference to a callable receiving the event.
          */
-        void subscribe(const event_type& type, unique_id id, EventHandler& handler);
+        void subscribe(const event_type& type, unique_id id, const EventHandler& handler);
 
 #ifdef LUA_BINDING
         /**

@@ -16,7 +16,7 @@ namespace lysa {
         queue.push_back(e);
     }
 
-    void EventManager::subscribe(const event_type& type, const unique_id id, EventHandler& handler) {
+    void EventManager::subscribe(const event_type& type, const unique_id id, const EventHandler& handler) {
         handlers[type][id].push_back(std::move(handler));
     }
 
