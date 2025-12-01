@@ -15,7 +15,7 @@ namespace lysa {
 
     RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration) :
         Resource(ctx),
-        viewportManager(ctx.resourcesLocator.get<ViewportManager>(ViewportManager::ID)){
+        viewportManager(ctx.resourcesLocator.get<ViewportManager>()){
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
@@ -129,7 +129,8 @@ namespace lysa {
     }
 
     RenderTargetManager::RenderTargetManager(Context& ctx, const unique_id capacity) :
-        ResourcesManager(ctx, ID, capacity) {
+        ResourcesManager(ctx, capacity) {
+        ctx.resourcesLocator.enroll(*this);
     }
 
     void RenderTargetManager::destroy(const void* renderingWindowHandle) {

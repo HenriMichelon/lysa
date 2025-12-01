@@ -239,7 +239,6 @@ end
             .endClass()
             .beginClass<RenderingWindowManager>("RenderingWindowManager")
                 .addConstructor<void(Context&, unique_id)>()
-                .addStaticProperty("ID", &RenderingWindowManager::ID)
                .addFunction("create", &RenderingWindowManager::create)
                .addFunction("get",
                    luabridge::nonConstOverload<const unique_id>(&RenderingWindowManager::get),
@@ -259,7 +258,6 @@ end
             .endClass()
             .beginClass<ViewportManager>("ViewportManager")
                 .addConstructor<void(Context&, unique_id)>()
-                .addStaticProperty("ID", &ViewportManager::ID)
                 .addFunction("create", &ViewportManager::create<ViewportConfiguration>)
                 .addFunction("get",
                     luabridge::nonConstOverload<const unique_id>(&ViewportManager::get),
@@ -292,7 +290,6 @@ end
             .endClass()
             .beginClass<RenderTargetManager>("RenderTargetManager")
                 .addConstructor<void(Context&, unique_id)>()
-                .addStaticProperty("ID", &RenderTargetManager::ID)
                 .addFunction("create", &ResourcesManager<RenderTarget>::create<RenderTargetConfiguration>)
                 .addFunction("get",
                     luabridge::nonConstOverload<const unique_id>(&RenderTargetManager::get),
@@ -326,15 +323,14 @@ end
             .endClass()
 
             .beginClass<ResourcesLocator>("ResourcesLocator")
-                .addFunction("get", &ResourcesLocator::_getManager)
                 .addProperty("render_target_manager", +[](const ResourcesLocator* rl) -> RenderTargetManager& {
-                        return rl->get<RenderTargetManager>(RenderTargetManager::ID);
+                        return rl->get<RenderTargetManager>();
                     })
                 .addProperty("viewport_manager", +[](const ResourcesLocator* rl) -> ViewportManager& {
-                        return rl->get<ViewportManager>(ViewportManager::ID);
+                        return rl->get<ViewportManager>();
                     })
                 .addProperty("rendering_window_manager", +[](const ResourcesLocator* rl) -> RenderingWindowManager& {
-                    return rl->get<RenderingWindowManager>(RenderingWindowManager::ID);
+                    return rl->get<RenderingWindowManager>();
                 })
             .endClass()
 

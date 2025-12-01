@@ -86,8 +86,6 @@ export namespace lysa {
 
     class RenderTargetManager : public ResourcesManager<RenderTarget> {
     public:
-        static constexpr auto ID = "RenderTarget";
-
         /**
          * @brief Construct a manager bound to the given runtime context.
          * @param ctx Instance wide context

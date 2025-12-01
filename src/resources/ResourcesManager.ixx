@@ -57,10 +57,9 @@ export namespace lysa {
         Context& ctx;
 
         // Construct a manager with a fixed number of slots.
-        ResourcesManager(Context& ctx, const std::string& ID, const unique_id capacity) :
+        ResourcesManager(Context& ctx, const unique_id capacity) :
             Manager<T>(capacity),
             ctx{ctx} {
-            ctx.resourcesLocator.enroll(ID, *this);
         }
     };
 

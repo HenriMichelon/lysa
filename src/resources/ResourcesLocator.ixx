@@ -19,50 +19,45 @@ export namespace lysa {
     class ResourcesLocator {
     public:
         /**
-         * @brief Retrieve a previously enrolled resources manager by name.
+         * @brief Retrieve a previously enrolled resources manager by type.
          *
          * Looks up the manager registered under the given name and returns it as type T.
          *
          * @tparam T The concrete manager type to retrieve (e.g., RenderingWindowManager).
-         * @param name The key used during enrollment.
          * @return T& Reference to the located manager.
-         * @throws Exception if no manager has been enrolled under the specified name.
+         * @throws Exception if no manager has been enrolled under the specified type.
          */
         template<typename T>
-        T& get(const std::string& name) const {
-            if (managers.contains(name)) {
-                return *(static_cast<T*>(managers.at(name)));
+        T& get() const {
+            using t = std::remove_cv_t<std::remove_reference_t<T>>;
+            const auto key = std::type_index(typeid(t));
+            if (managers.contains(key)) {
+                return *(static_cast<T*>(managers.at(key)));
             }
-            throw Exception("ResourcesLocator could not find manager " + name);
-        }
-
-        void* _getManager(const std::string& name) {
-            if (managers.contains(name)) {
-                return managers[name];
-            }
-            throw Exception("ResourcesLocator could not find manager " + name);
+            throw Exception("ResourcesLocator could not find manager");
         }
 
         /**
-         * @brief Enroll a resources manager instance under a given name.
+         * @brief Enroll a resources manager instance under a given type.
          *
          * Registers the address of the provided ResourcesManager<T> so it can later be
-         * retrieved via get<T>(name).
+         * retrieved via get<T>().
          *
          * @tparam T The type of resources handled by the manager.
-         * @param name The key used to identify this manager (commonly a string literal).
          * @param manager Reference to the manager instance to register. Ownership is not taken;
          *                the caller is responsible for the manager's lifetime, which must exceed
          *                any subsequent lookups.
          */
         template<typename T>
-        void enroll(const std::string& name, Manager<T>& manager) {
-            managers[name] = &manager;
+        void enroll(T& manager) {
+            using t = std::remove_cv_t<std::remove_reference_t<T>>;
+            const auto key = std::type_index(typeid(t));
+            managers[key] = &manager;
         }
 
     private:
-        // Internal registry mapping names to manager instances.
-        std::unordered_map<std::string, void*> managers{};
+        // Internal registry mapping types to manager instances.
+        std::unordered_map<std::type_index, void*> managers{};
     };
 
 }

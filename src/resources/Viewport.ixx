@@ -58,8 +58,6 @@ export namespace lysa {
 
     class ViewportManager : public ResourcesManager<Viewport> {
     public:
-        static constexpr auto ID = "Viewport";
-
         /**
          * @brief Construct a manager bound to the given runtime context.
          * @param ctx Instance wide context

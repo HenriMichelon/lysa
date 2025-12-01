@@ -117,8 +117,6 @@ export namespace lysa {
      */
     class RenderingWindowManager : public ResourcesManager<RenderingWindow> {
     public:
-        static constexpr auto ID = "RenderingWindow";
-
         /**
          * @brief Construct a manager bound to the given runtime context.
          * @param ctx Reference to the application @ref Context (used for events and access to the @ref ResourcesLocator).
