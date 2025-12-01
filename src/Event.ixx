@@ -75,6 +75,7 @@ export namespace lysa {
     private:
         // Pending events waiting to be processed.
         std::vector<Event> queue{};
+        std::mutex queueMutex;
         // C++ subscribers keyed by event type then id.
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<EventHandler>>> handlers{};
 #ifdef LUA_BINDING

@@ -13,6 +13,7 @@ import lysa.log;
 namespace lysa {
 
     void EventManager::push(const Event& e) {
+        auto lock = std::scoped_lock (queueMutex);
         queue.push_back(e);
     }
 
@@ -27,7 +28,12 @@ namespace lysa {
 #endif
 
     void EventManager::_process() {
-        for (const Event& e : queue) {
+        std::vector<Event> currentQueue;
+        {
+            auto lock = std::scoped_lock (queueMutex);
+            currentQueue.swap(queue);
+        }
+        for (const Event& e : currentQueue) {
             {
                 const auto itType = handlers.find(e.type);
                 if (itType != handlers.end()) {
