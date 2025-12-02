@@ -22,7 +22,17 @@ namespace  lysa {
 #endif
         graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")) {
 #ifdef LUA_BINDING
-        lua.beginNamespace().addVariable("ctx", this).endNamespace();
+        lua.beginNamespace()
+            .beginNamespace("ctx")
+               .addProperty("exit", &exit)
+               .addProperty("vireo", [this] { return &vireo;})
+               .addProperty("fs",  [this] { return &fs;})
+               .addProperty("events", [this] { return &events;})
+               .addProperty("world", [this] { return &world;})
+               .addProperty("resources", [this] { return &resources;})
+               .addProperty("graphic_queue", [this] { return &graphicQueue;})
+            .endNamespace()
+        .endNamespace();
 #endif
     }
 

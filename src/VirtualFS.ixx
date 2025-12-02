@@ -134,6 +134,8 @@ export namespace lysa {
          */
         std::string getPath(const std::string& filepath) const;
 
+        constexpr const std::string& getScriptsDirectory() const { return config.scriptsDir; }
+
     private:
         const std::shared_ptr<vireo::Vireo> vireo;
         const VirtualFSConfiguration config;

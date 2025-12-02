@@ -36,9 +36,13 @@ namespace lysa {
         luabridge::enableExceptions(L);
         bind();
 
+        const std::string path_chunk = "package.path = package.path .. ';?.lua;" + virtualFs.getScriptsDirectory()  + "/?.lua'";
+        if (luaL_dostring(L, path_chunk.c_str()) != LUA_OK) {
+            Log::warning("[Lua] error: ", std::string(lua_tostring(L, -1)));
+            lua_pop(L, 1);
+        }
         if (luaConfiguration.startRemoteDebug) {
              std::string mobdebug_chunk = R"(
-package.path = package.path .. ";?.lua;lib/?.lua"
 local ok, mobdebug = pcall(require, 'mobdebug')
 if not ok then
     error('mobdebug not found: ' .. tostring(mobdebug))
@@ -183,11 +187,9 @@ end
             .endClass()
             .beginClass<EventManager>("EventManager")
                 .addFunction("push", &EventManager::push)
-                .addFunction("subscribe", luabridge::overload<
-                    const event_type&, unique_id, luabridge::LuaRef
-                >(&EventManager::subscribe))
+                .addFunction("subscribe",
+                    luabridge::overload<const event_type&, unique_id, luabridge::LuaRef>(&EventManager::subscribe))
             .endClass()
-
             .beginClass<VirtualFS>("VirtualFS")
                 .addFunction("get_path", &VirtualFS::getPath)
                 .addFunction("file_exists", &VirtualFS::fileExists)
@@ -290,7 +292,8 @@ end
             .endClass()
             .beginClass<RenderTargetManager>("RenderTargetManager")
                 .addConstructor<void(Context&, unique_id)>()
-                .addFunction("create", &ResourcesManager<RenderTarget>::create<RenderTargetConfiguration>)
+                .addFunction("create",
+                    &ResourcesManager<RenderTarget>::create<RenderTargetConfiguration>)
                 .addFunction("get",
                     luabridge::nonConstOverload<const unique_id>(&RenderTargetManager::get),
                     luabridge::constOverload<const unique_id>(&RenderTargetManager::get)
@@ -323,25 +326,18 @@ end
             .endClass()
 
             .beginClass<ResourcesRegistry>("ResourcesRegistry")
-                .addProperty("render_target_manager", +[](const ResourcesRegistry* rl) -> RenderTargetManager& {
+                .addProperty("render_target_manager",
+                    +[](const ResourcesRegistry* rl) -> RenderTargetManager& {
                         return rl->get<RenderTargetManager>();
                     })
-                .addProperty("viewport_manager", +[](const ResourcesRegistry* rl) -> ViewportManager& {
+                .addProperty("viewport_manager",
+                    +[](const ResourcesRegistry* rl) -> ViewportManager& {
                         return rl->get<ViewportManager>();
                     })
-                .addProperty("rendering_window_manager", +[](const ResourcesRegistry* rl) -> RenderingWindowManager& {
+                .addProperty("rendering_window_manager",
+                    +[](const ResourcesRegistry* rl) -> RenderingWindowManager& {
                     return rl->get<RenderingWindowManager>();
                 })
-            .endClass()
-
-            .beginClass<Context>("Context")
-                .addProperty("exit", &Context::exit)
-                .addProperty("vireo", +[](const Context* self) { return self->vireo; })
-                .addProperty("fs",  +[](const Context* self) -> const VirtualFS& { return self->fs; })
-                .addProperty("events", +[](const Context* self) -> const EventManager& { return self->events; })
-                .addProperty("world", +[](const Context* self) -> const flecs::world& { return self->world; })
-                .addProperty("resources", +[](const Context* self) -> const ResourcesRegistry& { return self->resources; })
-                .addProperty("graphic_queue", +[](const Context* self) { return self->graphicQueue; })
             .endClass()
         .endNamespace();
     }
