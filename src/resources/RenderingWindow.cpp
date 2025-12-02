@@ -15,26 +15,26 @@ namespace lysa {
 
     RenderingWindowManager::RenderingWindowManager(Context& ctx,const unique_id capacity) :
         ResourcesManager(ctx, capacity) {
-        ctx.resourcesLocator.enroll(*this);
+        ctx.resources.enroll(*this);
     }
 
     void RenderingWindow::_closing() {
         if (stopped) { return; }
         stopped = true;
-        ctx.resourcesLocator.get<RenderTargetManager>().destroy(platformHandle);
-        ctx.eventManager.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
-        ctx.resourcesLocator.get<RenderingWindowManager>().destroy(id);
+        ctx.resources.get<RenderTargetManager>().destroy(platformHandle);
+        ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
+        ctx.resources.get<RenderingWindowManager>().destroy(id);
     }
 
     void RenderingWindow::_resized() const {
         if (stopped) { return; }
-        ctx.resourcesLocator.get<RenderTargetManager>().resize(platformHandle);
-        ctx.eventManager.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
+        ctx.resources.get<RenderTargetManager>().resize(platformHandle);
+        ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
     }
 
     RenderingWindow& RenderingWindowManager::create(const RenderingWindowConfiguration& configuration) {
         auto& instance = ResourcesManager::create(configuration);
-        ctx.eventManager.push({instance.id, static_cast<event_type>(RenderingWindowEvent::READY)});
+        ctx.events.push({instance.id, static_cast<event_type>(RenderingWindowEvent::READY)});
         return instance;
     }
 

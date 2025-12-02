@@ -65,6 +65,10 @@ export namespace lysa {
          */
         ViewportManager(Context& ctx, unique_id capacity);
 
+        ~ViewportManager() override {
+            cleanup();
+        }
+
     private:
         auto getResources(unique_id renderTarget) {
             return resources | std::views::filter([renderTarget](auto& res) {

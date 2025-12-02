@@ -337,10 +337,10 @@ end
             .beginClass<Context>("Context")
                 .addProperty("exit", &Context::exit)
                 .addProperty("vireo", +[](const Context* self) { return self->vireo; })
-                .addProperty("virtual_fs",  +[](const Context* self) -> const VirtualFS& { return self->virtualFs; })
-                .addProperty("event_manager", +[](const Context* self) -> const EventManager& { return self->eventManager; })
+                .addProperty("fs",  +[](const Context* self) -> const VirtualFS& { return self->fs; })
+                .addProperty("events", +[](const Context* self) -> const EventManager& { return self->events; })
                 .addProperty("world", +[](const Context* self) -> const flecs::world& { return self->world; })
-                .addProperty("resources_locator", +[](const Context* self) -> const ResourcesLocator& { return self->resourcesLocator; })
+                .addProperty("resources", +[](const Context* self) -> const ResourcesLocator& { return self->resources; })
                 .addProperty("graphic_queue", +[](const Context* self) { return self->graphicQueue; })
             .endClass()
         .endNamespace();

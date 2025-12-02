@@ -38,7 +38,7 @@ export namespace  lysa {
         /**
          * Read and write resources referenced by URI
          */
-        const VirtualFS virtualFs;
+        const VirtualFS fs;
 
 #ifdef LUA_BINDING
         /**
@@ -50,14 +50,14 @@ export namespace  lysa {
         /**
          * @brief Central event dispatcher for the application.
          */
-        EventManager eventManager;
+        EventManager events;
 
         flecs::world world;
 
         /**
          * @brief Resource resolution and access facility.
          */
-        ResourcesLocator resourcesLocator;
+        ResourcesLocator resources;
 
         /**
          * @brief Submit queue used for graphics/rendering work.

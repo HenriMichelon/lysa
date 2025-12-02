@@ -69,7 +69,6 @@ export namespace lysa {
         }
 
         Manager(Manager&) = delete;
-
         Manager& operator=(Manager&) = delete;
 
         // Release a resource, returning its slot to the free list.
@@ -77,7 +76,6 @@ export namespace lysa {
             resources[id].reset();
             freeList.push_back(id);
         }
-
 
     protected:
         friend class Lysa;

@@ -16,9 +16,9 @@ namespace  lysa {
 #endif
         ) :
         vireo(vireo::Vireo::create(backend)),
-        virtualFs(virtualFsConfiguration, vireo),
+        fs(virtualFsConfiguration, vireo),
 #ifdef LUA_BINDING
-        lua(luaConfiguration, virtualFs),
+        lua(luaConfiguration, fs),
 #endif
         graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")) {
 #ifdef LUA_BINDING

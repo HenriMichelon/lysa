@@ -15,7 +15,7 @@ namespace lysa {
 
     RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration) :
         Resource(ctx),
-        viewportManager(ctx.resourcesLocator.get<ViewportManager>()){
+        viewportManager(ctx.resources.get<ViewportManager>()){
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
@@ -59,7 +59,7 @@ namespace lysa {
     void RenderTarget::pause(const bool pause) {
         if (paused != pause) {
             paused = pause;
-            ctx.eventManager.push({id, static_cast<event_type>(
+            ctx.events.push({id, static_cast<event_type>(
                     paused ? RenderTargetEvent::PAUSED : RenderTargetEvent::RESUMED)});
         }
     }
@@ -77,7 +77,7 @@ namespace lysa {
             frame.prepareCommandList->end();
             ctx.graphicQueue->submit({frame.prepareCommandList});
             ctx.graphicQueue->waitIdle();
-            ctx.eventManager.push({id, static_cast<event_type>(RenderTargetEvent::RESIZED)});
+            ctx.events.push({id, static_cast<event_type>(RenderTargetEvent::RESIZED)});
         }
     }
 
@@ -130,7 +130,7 @@ namespace lysa {
 
     RenderTargetManager::RenderTargetManager(Context& ctx, const unique_id capacity) :
         ResourcesManager(ctx, capacity) {
-        ctx.resourcesLocator.enroll(*this);
+        ctx.resources.enroll(*this);
     }
 
     void RenderTargetManager::destroy(const void* renderingWindowHandle) {

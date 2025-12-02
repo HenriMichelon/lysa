@@ -37,6 +37,8 @@ export import lysa.lua;
 export namespace  lysa {
 
     struct ResourcesCapacity {
+        //! Maximum number of rendering windows
+        unique_id renderingWindow{1};
         //! Maximum number of render targets
         unique_id renderTarget{1};
         //! Maximum number of viewports
@@ -120,6 +122,7 @@ export namespace  lysa {
 
         ViewportManager viewportManager;
         RenderTargetManager renderTargetManager;
+        RenderingWindowManager renderingWindowManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();

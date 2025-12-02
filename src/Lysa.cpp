@@ -17,13 +17,12 @@ namespace lysa {
 #endif
             ),
         viewportManager(ctx, lysaConfiguration.resourcesCapacity.viewports),
-        renderTargetManager(ctx, lysaConfiguration.resourcesCapacity.renderTarget) {
+        renderTargetManager(ctx, lysaConfiguration.resourcesCapacity.renderTarget),
+        renderingWindowManager(ctx, lysaConfiguration.resourcesCapacity.renderingWindow) {
     }
 
     Lysa::~Lysa() {
         ctx.graphicQueue->waitIdle();
-        viewportManager.cleanup();
-        renderTargetManager.cleanup();
     }
 
     void Lysa::run(
@@ -32,7 +31,7 @@ namespace lysa {
         const std::function<void()>& onQuit) {
         while (!ctx.exit) {
             processPlatformEvents();
-            ctx.eventManager._process();
+            ctx.events._process();
 
             // https://gafferongames.com/post/fix_your_timestep/
             const double newTime = std::chrono::duration_cast<std::chrono::duration<double>>(
