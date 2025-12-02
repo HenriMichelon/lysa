@@ -18,7 +18,7 @@ export namespace lysa {
         //! Path for the app:// URI
         std::filesystem::path appDirectory{"."};
         //! Directory to search for Lua scripts inside app://
-        std::string scriptsDir{"scripts"};
+        std::string scriptsDir{"lib"};
         //! Directory to search for compiled shaders inside app://
         std::string shadersDir{"shaders"};
     };

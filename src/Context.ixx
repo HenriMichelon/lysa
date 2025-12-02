@@ -57,7 +57,7 @@ export namespace  lysa {
         /**
          * @brief Resource resolution and access facility.
          */
-        ResourcesLocator resources;
+        ResourcesRegistry resources;
 
         /**
          * @brief Submit queue used for graphics/rendering work.

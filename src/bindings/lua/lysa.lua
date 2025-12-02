@@ -297,12 +297,12 @@ return {
     -- Resources locator
     ------------------------------------------------------------------------
 
-    ---@class lysa.ResourcesLocator
-    ---@field get fun(self:lysa.ResourcesLocator, id:integer):any
+    ---@class lysa.ResourcesRegistry
+    ---@field get fun(self:lysa.ResourcesRegistry, id:integer):any
     ---@field render_target_manager lysa.RenderTargetManager
     ---@field viewport_manager lysa.ViewportManager
     ---@field rendering_window_manager lysa.RenderingWindowManager
-    ResourcesLocator = lysa.ResourcesLocator,
+    ResourcesRegistry = lysa.ResourcesRegistry,
 
     ------------------------------------------------------------------------
     -- Context
@@ -311,10 +311,10 @@ return {
     ---@class lysa.Context
     ---@field exit boolean
     ---@field vireo vireo.Vireo
-    ---@field virtual_fs lysa.VirtualFS
-    ---@field event_manager lysa.EventManager
+    ---@field fs lysa.VirtualFS
+    ---@field events lysa.EventManager
     ---@field world flecs.world
-    ---@field resources_locator lysa.ResourcesLocator
+    ---@field resources lysa.ResourcesRegistry
     ---@field graphic_queue vireo.SubmitQueue
     Context = lysa.Context,
 

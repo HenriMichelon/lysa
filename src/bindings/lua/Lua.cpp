@@ -38,7 +38,7 @@ namespace lysa {
 
         if (luaConfiguration.startRemoteDebug) {
              std::string mobdebug_chunk = R"(
-package.path = package.path .. ";./scripts/?.lua;./?.lua"
+package.path = package.path .. ";?.lua;lib/?.lua"
 local ok, mobdebug = pcall(require, 'mobdebug')
 if not ok then
     error('mobdebug not found: ' .. tostring(mobdebug))
@@ -322,14 +322,14 @@ end
             .beginClass<Renderer>("Renderer")
             .endClass()
 
-            .beginClass<ResourcesLocator>("ResourcesLocator")
-                .addProperty("render_target_manager", +[](const ResourcesLocator* rl) -> RenderTargetManager& {
+            .beginClass<ResourcesRegistry>("ResourcesRegistry")
+                .addProperty("render_target_manager", +[](const ResourcesRegistry* rl) -> RenderTargetManager& {
                         return rl->get<RenderTargetManager>();
                     })
-                .addProperty("viewport_manager", +[](const ResourcesLocator* rl) -> ViewportManager& {
+                .addProperty("viewport_manager", +[](const ResourcesRegistry* rl) -> ViewportManager& {
                         return rl->get<ViewportManager>();
                     })
-                .addProperty("rendering_window_manager", +[](const ResourcesLocator* rl) -> RenderingWindowManager& {
+                .addProperty("rendering_window_manager", +[](const ResourcesRegistry* rl) -> RenderingWindowManager& {
                     return rl->get<RenderingWindowManager>();
                 })
             .endClass()
@@ -340,7 +340,7 @@ end
                 .addProperty("fs",  +[](const Context* self) -> const VirtualFS& { return self->fs; })
                 .addProperty("events", +[](const Context* self) -> const EventManager& { return self->events; })
                 .addProperty("world", +[](const Context* self) -> const flecs::world& { return self->world; })
-                .addProperty("resources", +[](const Context* self) -> const ResourcesLocator& { return self->resources; })
+                .addProperty("resources", +[](const Context* self) -> const ResourcesRegistry& { return self->resources; })
                 .addProperty("graphic_queue", +[](const Context* self) { return self->graphicQueue; })
             .endClass()
         .endNamespace();

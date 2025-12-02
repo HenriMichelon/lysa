@@ -108,7 +108,7 @@ export namespace lysa {
         void update() const;
         void render() const;
 
-        friend class ResourcesLocator;
+        friend class ResourcesRegistry;
     };
 
 }

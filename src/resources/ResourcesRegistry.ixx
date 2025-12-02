@@ -16,7 +16,7 @@ export namespace lysa {
      * @brief Top level registry to locate resource managers at runtime.
      *
      */
-    class ResourcesLocator {
+    class ResourcesRegistry {
     public:
         /**
          * @brief Retrieve a previously enrolled resources manager by type.

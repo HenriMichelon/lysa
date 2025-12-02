@@ -274,8 +274,8 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/resources/Manager.ixx
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
         ${ENGINE_SRC_DIR}/resources/RenderTarget.ixx
-        ${ENGINE_SRC_DIR}/resources/ResourcesLocator.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx
+        ${ENGINE_SRC_DIR}/resources/ResourcesRegistry.ixx
         ${ENGINE_SRC_DIR}/resources/Viewport.ixx
 
         ${OS_MODULES}
