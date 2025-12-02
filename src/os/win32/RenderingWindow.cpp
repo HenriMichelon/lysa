@@ -34,8 +34,8 @@ namespace lysa {
         PostMessage(static_cast<HWND>(platformHandle), WM_CLOSE, 0, 0);
     }
 
-    RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config) :
-        Resource(ctx) {
+    RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config):
+        ctx(ctx) {
         const auto hInstance = GetModuleHandle(nullptr);
 
         const auto windowClass = WNDCLASSEX {

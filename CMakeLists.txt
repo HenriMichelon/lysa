@@ -233,6 +233,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
 
+        ${ENGINE_SRC_DIR}/resources/Image.cpp
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
         ${ENGINE_SRC_DIR}/resources/Viewport.cpp
@@ -255,6 +256,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
+        ${ENGINE_SRC_DIR}/Manager.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Memory.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
@@ -271,7 +273,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
 
-        ${ENGINE_SRC_DIR}/resources/Manager.ixx
+        ${ENGINE_SRC_DIR}/resources/Image.ixx
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
         ${ENGINE_SRC_DIR}/resources/RenderTarget.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx

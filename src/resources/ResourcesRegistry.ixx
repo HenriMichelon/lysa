@@ -8,7 +8,7 @@ export module lysa.resources.locator;
 
 import std;
 import lysa.exception;
-import lysa.resources.manager;
+import lysa.manager;
 
 export namespace lysa {
 

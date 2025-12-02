@@ -10,8 +10,8 @@ import std;
 
 import lysa.context;
 import lysa.exception;
+import lysa.manager;
 import lysa.types;
-import lysa.resources.manager;
 
 export namespace lysa {
 
@@ -20,10 +20,7 @@ export namespace lysa {
         //! Unique ID
         unique_id id{INVALID_ID};
 
-    protected:
-        Context& ctx;
-
-        Resource(Context& ctx) : ctx{ctx} {}
+        virtual ~Resource() = default;
     };
 
     /**
@@ -52,6 +49,13 @@ export namespace lysa {
             return Manager<T>::allocate(std::make_unique<T>(ctx, configuration));
         }
 
+        /**
+         * @brief Create a new unique resource
+         */
+        template<typename... Args>
+        T& create(Args&&... args) {
+            return Manager<T>::allocate(std::make_unique<T>(std::forward<Args>(args)...));
+        }
     protected:
         // Reference to the owning application context.
         Context& ctx;

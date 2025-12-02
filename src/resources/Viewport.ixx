@@ -28,32 +28,21 @@ export namespace lysa {
     public:
         Viewport(Context& ctx, const ViewportConfiguration& configuration);
 
-        ~Viewport();
-
         auto getRenderTarget() const { return renderTarget; }
 
     private:
-        /** Per‑frame state and deferred operations processed at frame boundaries. */
-        struct FrameData {
-
-        };
+        Context& ctx;
         //! Parent render target
         unique_id renderTarget{INVALID_ID};
         //! Low‑level viewport (x, y, width, height, minDepth, maxDepth).
         vireo::Viewport viewport{};
         //! Scissors rectangle limiting rendering to a sub‑area.
         vireo::Rect scissors{};
-        /** Array of per‑frame resource bundles (size = frames in flight). */
-        std::vector<FrameData> framesData;
         //! Configuration used when creating the viewport
         ViewportConfiguration configuration;
 
         friend class ViewportManager;
         void resize(const vireo::Extent &extent);
-        void render(
-            const Renderer& renderer,
-            const vireo::CommandList& commandList,
-            uint32 frameIndex);
     };
 
     class ViewportManager : public ResourcesManager<Viewport> {
@@ -78,11 +67,6 @@ export namespace lysa {
 
         friend class RenderTarget;
         void resize(unique_id renderTarget, const vireo::Extent &extent);
-        void render(
-            unique_id renderTarget,
-            const Renderer& renderer,
-            const vireo::CommandList& commandList,
-            uint32 frameIndex);
         void destroyByRenderTarget(unique_id renderTarget);
 
     };

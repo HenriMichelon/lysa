@@ -9,16 +9,18 @@ module lysa;
 
 namespace lysa {
 
-    Lysa::Lysa(const LysaConfiguration& lysaConfiguration) :
-        ctx(lysaConfiguration.backend,
-            lysaConfiguration.virtualFsConfiguration
+    Lysa::Lysa(const LysaConfiguration& config) :
+        ctx(config.backend,
+            config.virtualFsConfiguration
 #ifdef LUA_BINDING
-            ,lysaConfiguration.luaConfiguration
+            ,config.luaConfiguration
 #endif
             ),
-        viewportManager(ctx, lysaConfiguration.resourcesCapacity.viewports),
-        renderTargetManager(ctx, lysaConfiguration.resourcesCapacity.renderTarget),
-        renderingWindowManager(ctx, lysaConfiguration.resourcesCapacity.renderingWindow) {
+        viewportManager(ctx, config.resourcesCapacity.viewports),
+        renderTargetManager(ctx, config.resourcesCapacity.renderTarget),
+        renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
+        imageManager(ctx, config.resourcesCapacity.images)
+    {
     }
 
     Lysa::~Lysa() {

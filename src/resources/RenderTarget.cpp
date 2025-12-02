@@ -14,7 +14,7 @@ import lysa.resources.locator;
 namespace lysa {
 
     RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration) :
-        Resource(ctx),
+        ctx(ctx),
         viewportManager(ctx.resources.get<ViewportManager>()){
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");

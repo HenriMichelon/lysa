@@ -15,6 +15,7 @@ export import lysa.exception;
 export import lysa.flecs;
 export import lysa.global;
 export import lysa.log;
+export import lysa.manager;
 export import lysa.math;
 export import lysa.types;
 export import lysa.virtual_fs;
@@ -23,8 +24,8 @@ export import lysa.renderers.configuration;
 export import lysa.renderers.renderer;
 export import lysa.renderers.renderpasses.renderpass;
 
+export import lysa.resources.image;
 export import lysa.resources.locator;
-export import lysa.resources.manager;
 export import lysa.resources.render_target;
 export import lysa.resources.rendering_window;
 export import lysa.resources.resource_manager;
@@ -43,6 +44,8 @@ export namespace  lysa {
         unique_id renderTarget{1};
         //! Maximum number of viewports
         unique_id viewports{5};
+        //! Maximum images stored in GPU memory
+        unique_id images{500};
     };
 
     /**
@@ -75,9 +78,9 @@ export namespace  lysa {
 
         /**
          * @brief Construct the runtime and initialize subsystems.
-         * @param lysaConfiguration Configuration values used during startup.
+         * @param config Configuration values used during startup.
          */
-        Lysa(const LysaConfiguration& lysaConfiguration);
+        Lysa(const LysaConfiguration& config);
 
         ~Lysa();
 
@@ -123,6 +126,7 @@ export namespace  lysa {
         ViewportManager viewportManager;
         RenderTargetManager renderTargetManager;
         RenderingWindowManager renderingWindowManager;
+        ImageManager imageManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();

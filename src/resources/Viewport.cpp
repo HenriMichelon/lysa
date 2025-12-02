@@ -14,18 +14,11 @@ import lysa.resources.render_target;
 namespace lysa {
 
     Viewport::Viewport(Context& ctx, const ViewportConfiguration& configuration):
-        Resource(ctx) {
+        ctx(ctx) {
         const RenderTarget& renderTarget = ctx.resources.get<RenderTargetManager>().get(configuration.renderTarget);
         this->renderTarget = configuration.renderTarget;
         this->configuration = configuration;
-        framesData.resize(renderTarget.getSwapChain()->getFramesInFlight());
-        for (auto& frame : framesData) {
-        }
         resize(renderTarget.getSwapChain()->getExtent());
-    }
-
-    Viewport::~Viewport() {
-        framesData.clear();
     }
 
     ViewportManager::ViewportManager(Context& ctx, const unique_id capacity) :
@@ -48,12 +41,6 @@ namespace lysa {
                 .height = static_cast<uint32>(viewport.height)
             };
         }
-    }
-
-    void Viewport::render(
-        const Renderer& renderer,
-        const vireo::CommandList& commandList,
-        uint32 frameIndex) {
     }
 
     void ViewportManager::resize(const unique_id renderTarget, const vireo::Extent &extent) {

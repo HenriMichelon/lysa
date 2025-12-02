@@ -98,6 +98,7 @@ export namespace lysa {
         void _setStopped(const bool state) { stopped = state; }
 
     private:
+        Context& ctx;
         //! Top-Left corner x position in pixels
         int32 x{0};
         //! Top-Left corner Y position in pixels
