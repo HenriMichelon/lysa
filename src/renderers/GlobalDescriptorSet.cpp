@@ -31,18 +31,9 @@ namespace lysa {
         descriptorSet.reset();
     }
 
-    void GlobalDescriptorSet::flush() {
-        auto lock = std::unique_lock(mutex, std::try_to_lock);
-        const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
-        // materialArray.flush(*command.commandList);
-        // meshSurfaceArray.flush(*command.commandList);
-        ctx.asyncQueue.endCommand(command);
-        updated = false;
-    }
-
     void GlobalDescriptorSet::update() {
-        auto lock = std::lock_guard(mutex);
         if (imageManager.isUpdateNeeded()) {
+            auto lock = std::lock_guard(mutex);
             ctx.graphicQueue->waitIdle();
             descriptorSet->update(BINDING_TEXTURES, imageManager.getImages());
             imageManager.resetUpdateFlag();

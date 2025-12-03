@@ -9,7 +9,7 @@ import lysa.exception;
 
 namespace lysa {
 
-    Samplers::Samplers(const std::shared_ptr<vireo::Vireo>& vireo, const unique_id capacity):
+    Samplers::Samplers(const std::shared_ptr<vireo::Vireo>& vireo, const size_t capacity):
         vireo{vireo},
         samplers(capacity),
         samplersInfo(capacity) {

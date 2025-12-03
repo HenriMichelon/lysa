@@ -20,7 +20,7 @@ namespace lysa {
         name{name} {
     }
 
-    ImageManager::ImageManager(Context& ctx, const unique_id capacity) :
+    ImageManager::ImageManager(Context& ctx, const size_t capacity) :
         ResourcesManager(ctx, capacity),
         blankImage(ctx.vireo->createImage(
             vireo::ImageFormat::R8G8B8A8_SRGB,

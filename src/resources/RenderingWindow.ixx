@@ -123,7 +123,7 @@ export namespace lysa {
          * @param ctx Reference to the application @ref Context (used for events and access to the @ref ResourcesLocator).
          * @param capacity Optional initial capacity for window resources.
          */
-        RenderingWindowManager(Context& ctx, unique_id capacity = 5);
+        RenderingWindowManager(Context& ctx, size_t capacity);
 
         ~RenderingWindowManager() override {
             cleanup();

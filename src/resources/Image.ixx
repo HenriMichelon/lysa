@@ -71,7 +71,7 @@ export namespace lysa {
          * @param ctx Instance wide context
          * @param capacity Initial capacity
          */
-        ImageManager(Context& ctx, unique_id capacity);
+        ImageManager(Context& ctx, size_t capacity);
 
         ~ImageManager() override;
 

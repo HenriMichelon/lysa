@@ -21,7 +21,8 @@ namespace lysa {
         renderTargetManager(ctx, config.resourcesCapacity.renderTarget),
         renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
         imageManager(ctx, config.resourcesCapacity.images),
-        imageTextureManager(ctx, config.resourcesCapacity.images)
+        imageTextureManager(ctx, config.resourcesCapacity.images),
+        materialManager(ctx, config.resourcesCapacity.material)
     {
     }
 

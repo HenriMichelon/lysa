@@ -29,6 +29,7 @@ export import lysa.renderers.renderpasses.renderpass;
 
 export import lysa.resources.image;
 export import lysa.resources.locator;
+export import lysa.resources.material;
 export import lysa.resources.render_target;
 export import lysa.resources.rendering_window;
 export import lysa.resources.resource_manager;
@@ -44,15 +45,17 @@ export namespace  lysa {
 
     struct ResourcesCapacity {
         //! Maximum number of rendering windows
-        unique_id renderingWindow{1};
+        size_t renderingWindow{1};
         //! Maximum number of render targets
-        unique_id renderTarget{1};
+        size_t renderTarget{1};
         //! Maximum number of viewports
-        unique_id viewports{5};
-        //! Maximum images stored in GPU memory
-        unique_id images{500};
-        //! Maximum GPU image samplers
-        unique_id samplers{20};
+        size_t viewports{5};
+        //! Maximum number of images stored in GPU memory
+        size_t images{500};
+        //! Maximum number of GPU image samplers
+        size_t samplers{20};
+        //! Maximum number of standard & shader materials
+        size_t material{100};
     };
 
     /**
@@ -135,6 +138,7 @@ export namespace  lysa {
         RenderingWindowManager renderingWindowManager;
         ImageManager imageManager;
         ImageTextureManager imageTextureManager;
+        MaterialManager materialManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();

@@ -39,20 +39,8 @@ export namespace lysa {
         /** Returns the descriptor set layout */
         auto getDescriptorLayout() const { return descriptorLayout; }
 
-        /**
-        * Flushes pending uploads to the device. Typically, enqueues copy/transfer
-        * commands to make new/updated resources visible to the GPU.
-        */
-        void flush();
-
-        /** Applies incremental updates to buffers, images, and descriptors if needed. */
+        /** Update descriptor set if needed. */
         void update();
-
-        /** Marks the container as updated so dependent systems can react. */
-        void needUpdates() { updated = true; }
-
-        /** Returns true when an update has been flagged since the last processing. */
-        bool isUpdateNeeded() const { return updated; }
 
     private:
         Context& ctx;
@@ -63,7 +51,5 @@ export namespace lysa {
         std::shared_ptr<vireo::DescriptorSet> descriptorSet;
         /** Mutex to guard mutations to the descriptor set. */
         std::mutex mutex;
-        /** Flag indicating the descriptor set has pending updates. */
-        bool updated{false};
     };
 }

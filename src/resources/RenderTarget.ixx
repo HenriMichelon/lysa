@@ -92,7 +92,7 @@ export namespace lysa {
          * @param ctx Instance wide context
          * @param capacity Initial capacity
          */
-        RenderTargetManager(Context& ctx, unique_id capacity);
+        RenderTargetManager(Context& ctx, size_t capacity);
 
         ~RenderTargetManager() override {
             cleanup();

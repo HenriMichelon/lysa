@@ -105,7 +105,7 @@ export namespace lysa {
         const auto& getDescriptorSet() const { return descriptorSet; }
 
         /** Creates a Samplers pool bound to the given backend. */
-        Samplers(const std::shared_ptr<vireo::Vireo>& vireo, unique_id capacity);
+        Samplers(const std::shared_ptr<vireo::Vireo>& vireo, size_t capacity);
 
         ~Samplers();
 

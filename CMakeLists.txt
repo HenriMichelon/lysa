@@ -236,6 +236,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
 
         ${ENGINE_SRC_DIR}/resources/Image.cpp
+        ${ENGINE_SRC_DIR}/resources/Material.cpp
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
         ${ENGINE_SRC_DIR}/resources/Samplers.cpp
@@ -279,6 +280,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
 
         ${ENGINE_SRC_DIR}/resources/Image.ixx
+        ${ENGINE_SRC_DIR}/resources/Material.ixx
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
         ${ENGINE_SRC_DIR}/resources/RenderTarget.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx

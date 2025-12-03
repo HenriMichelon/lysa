@@ -13,7 +13,7 @@ import lysa.resources.render_target;
 
 namespace lysa {
 
-    RenderingWindowManager::RenderingWindowManager(Context& ctx,const unique_id capacity) :
+    RenderingWindowManager::RenderingWindowManager(Context& ctx,const size_t capacity) :
         ResourcesManager(ctx, capacity) {
         ctx.resources.enroll(*this);
     }

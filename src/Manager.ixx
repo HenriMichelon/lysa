@@ -83,7 +83,7 @@ export namespace lysa {
         friend class Lysa;
 
         // Construct a manager with a fixed number of slots.
-        Manager(const unique_id capacity) :
+        Manager(const size_t capacity) :
             resources(capacity) {
             for (auto id = capacity; id > 0; --id) {
                 freeList.push_back(id-1);

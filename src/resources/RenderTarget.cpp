@@ -128,7 +128,7 @@ namespace lysa {
         swapChain->nextFrameIndex();
     }
 
-    RenderTargetManager::RenderTargetManager(Context& ctx, const unique_id capacity) :
+    RenderTargetManager::RenderTargetManager(Context& ctx, const size_t capacity) :
         ResourcesManager(ctx, capacity) {
         ctx.resources.enroll(*this);
     }

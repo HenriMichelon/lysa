@@ -21,7 +21,7 @@ namespace lysa {
         resize(renderTarget.getSwapChain()->getExtent());
     }
 
-    ViewportManager::ViewportManager(Context& ctx, const unique_id capacity) :
+    ViewportManager::ViewportManager(Context& ctx, const size_t capacity) :
         ResourcesManager(ctx, capacity) {
         ctx.resources.enroll(*this);
     }

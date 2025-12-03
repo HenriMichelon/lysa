@@ -52,7 +52,7 @@ export namespace lysa {
          * @param ctx Instance wide context
          * @param capacity Initial capacity
          */
-        ViewportManager(Context& ctx, unique_id capacity);
+        ViewportManager(Context& ctx, size_t capacity);
 
         ~ViewportManager() override {
             cleanup();

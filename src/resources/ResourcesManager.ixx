@@ -60,7 +60,7 @@ export namespace lysa {
         Context& ctx;
 
         // Construct a manager with a fixed number of slots.
-        ResourcesManager(Context& ctx, const unique_id capacity) :
+        ResourcesManager(Context& ctx, const size_t capacity) :
             Manager<T>(capacity),
             ctx{ctx} {
         }

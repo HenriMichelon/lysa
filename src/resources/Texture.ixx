@@ -59,7 +59,7 @@ export namespace lysa {
         /**
          * Returns the index of the attached sampler in the global sampler GPU array
          */
-        unique_id getSamplerIndex() const { return samplerIndex; }
+        uint32 getSamplerIndex() const { return samplerIndex; }
 
         uint32 getWidth() const override { return image.getWidth(); }
 
@@ -67,13 +67,13 @@ export namespace lysa {
 
         const std::string& getName() const override { return image.getName(); }
 
-        ImageTexture(const Image& image, const unique_id samplerIndex) :
+        ImageTexture(const Image& image, const uint32 samplerIndex) :
             image(image),
             samplerIndex(samplerIndex) {}
 
     protected:
         const Image& image;
-        unique_id samplerIndex{0};
+        uint32 samplerIndex{0};
 
     };
 
