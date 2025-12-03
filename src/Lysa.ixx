@@ -21,7 +21,10 @@ export import lysa.types;
 export import lysa.virtual_fs;
 
 export import lysa.renderers.configuration;
+export import lysa.renderers.global_descriptor_set;
+export import lysa.renderers.graphic_pipeline_data;
 export import lysa.renderers.renderer;
+export import lysa.renderers.samplers;
 export import lysa.renderers.renderpasses.renderpass;
 
 export import lysa.resources.image;
@@ -46,6 +49,8 @@ export namespace  lysa {
         unique_id viewports{5};
         //! Maximum images stored in GPU memory
         unique_id images{500};
+        //! Maximum GPU image samplers
+        unique_id samplers{20};
     };
 
     /**
@@ -127,6 +132,7 @@ export namespace  lysa {
         RenderTargetManager renderTargetManager;
         RenderingWindowManager renderingWindowManager;
         ImageManager imageManager;
+        Samplers samplers;
 
         // Consume platform-specific events.
         void processPlatformEvents();

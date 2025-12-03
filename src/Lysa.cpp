@@ -19,7 +19,8 @@ namespace lysa {
         viewportManager(ctx, config.resourcesCapacity.viewports),
         renderTargetManager(ctx, config.resourcesCapacity.renderTarget),
         renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
-        imageManager(ctx, config.resourcesCapacity.images)
+        imageManager(ctx, config.resourcesCapacity.images),
+        samplers(*ctx.vireo, config.resourcesCapacity.samplers)
     {
     }
 
@@ -34,6 +35,9 @@ namespace lysa {
         while (!ctx.exit) {
             processPlatformEvents();
             ctx.events._process();
+            if (samplers.isUpdateNeeded()) {
+                samplers.update();
+            }
 
             // https://gafferongames.com/post/fix_your_timestep/
             const double newTime = std::chrono::duration_cast<std::chrono::duration<double>>(

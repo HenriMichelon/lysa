@@ -31,14 +31,23 @@ export namespace lysa {
         uint32 getHeight() const { return image->getHeight(); }
 
         /**
-         * Returns the size in pixels
+         * Returns the size in number of pixels
          */
         float2 getSize() const { return float2{getWidth(), getHeight()}; }
 
+        /**
+         * Returns the GPU image
+         */
         auto getImage() const { return image; }
 
+        /**
+         * Returns the index of the image in the global GPU memory array of images
+         */
         uint32 getIndex() const { return index; }
 
+        /**
+         * Returns the name of the image
+         */
         const auto& getName() const { return name; }
 
         Image(const std::shared_ptr<vireo::Image>& image, const std::string & name);
@@ -46,9 +55,11 @@ export namespace lysa {
         ~Image() override = default;
 
     private:
+        // GPU Image
         std::shared_ptr<vireo::Image> image;
         // Index in GPU memory
         uint32 index{0};
+        // File or image name
         std::string name;
 
         friend class ImageManager;
@@ -67,19 +78,31 @@ export namespace lysa {
 
         //void update();
 
+        /**
+         * Save an image into a file.<br>
+         * Supports PNG and HDR formats.
+         * @param image_id Image
+         * @param filepath Destination file URI
+         */
         void save(unique_id image_id, const std::string& filepath);
 
         /**
         * Load a bitmap from a file.<br>
         * Supports JPEG and PNG formats
+        * @param filepath Source file URI
+        * @param imageFormat Image pixel format
         */
         Image& load(
             const std::string &filepath,
             vireo::ImageFormat imageFormat = vireo::ImageFormat::R8G8B8A8_SRGB);
 
         /**
-         * Load a bitmap from memory.<br>
-         * Supports JPEG & PNG formats.
+         * Creates a bitmap from an array in memory
+         * @param data Pixels array
+         * @param width Width in pixels
+         * @param height Height in pixels
+         * @param imageFormat Pixel format
+         * @param name Optional name
          */
         Image& create(
             const void* data,
@@ -94,7 +117,13 @@ export namespace lysa {
         /** Returns the default cubemap blank image used as a safe fallback. */
         auto getBlankCubeMap() { return blankCubeMap; }
 
+        /** Returns true if the descriptor sets using the images must be updated */
         bool isUpdateNeeded() const { return updated; }
+
+        void resetUpdateFlag() { updated = false; }
+
+        /** Return the global GPU image array */
+        auto getImages() const { return images; }
 
     private:
         /** Flag indicating that one or more textures changed and need syncing. */

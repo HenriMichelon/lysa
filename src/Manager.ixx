@@ -77,6 +77,8 @@ export namespace lysa {
             freeList.push_back(id);
         }
 
+        unique_id getCapacity() const { return resources.size(); }
+
     protected:
         friend class Lysa;
 
