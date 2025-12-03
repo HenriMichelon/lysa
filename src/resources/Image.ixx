@@ -20,8 +20,6 @@ export namespace lysa {
      */
     class Image : public Resource {
     public:
-        Image(const std::shared_ptr<vireo::Image>& image, uint32 index, const std::string & name);
-
         /**
          * Returns the width in pixels
          */
@@ -41,13 +39,19 @@ export namespace lysa {
 
         uint32 getIndex() const { return index; }
 
+        const auto& getName() const { return name; }
+
+        Image(const std::shared_ptr<vireo::Image>& image, const std::string & name);
+
         ~Image() override = default;
 
-    protected:
+    private:
         std::shared_ptr<vireo::Image> image;
         // Index in GPU memory
-        uint32 index;
+        uint32 index{0};
         std::string name;
+
+        friend class ImageManager;
     };
 
     class ImageManager : public ResourcesManager<Image> {
@@ -90,24 +94,19 @@ export namespace lysa {
         /** Returns the default cubemap blank image used as a safe fallback. */
         auto getBlankCubeMap() { return blankCubeMap; }
 
+        bool isUpdateNeeded() const { return updated; }
 
     private:
-        /** List of GPU texture images managed by this container. */
-        std::vector<std::shared_ptr<vireo::Image>> images;
         /** Flag indicating that one or more textures changed and need syncing. */
-        bool textureUpdated{false};
+        bool updated{false};
         /** Default 2D image used when a texture is missing. */
         std::shared_ptr<vireo::Image> blankImage;
         /** Default cubemap image used when a cubemap is missing. */
         std::shared_ptr<vireo::Image> blankCubeMap;
-        /** Mutex to guard mutations to images */
+        /** Mutex to guard mutations to images resources */
         std::mutex mutex;
-
-        /** Creates a small in-memory JPEG used to initialize blank textures. */
-        static std::vector<uint8> createBlankJPEG();
-
-        /** Callback passed to stb to write encoded data into an external buffer. */
-        static void stb_write_func(void *context, void *data, int size);
+        /** List of GPU images managed by this container. */
+        std::vector<std::shared_ptr<vireo::Image>> images;
     };
 
 }

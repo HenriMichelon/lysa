@@ -15,38 +15,37 @@ import lysa.virtual_fs;
 
 namespace lysa {
 
-    Image::Image(const std::shared_ptr<vireo::Image>& image, const uint32 index, const std::string & name):
+    Image::Image(const std::shared_ptr<vireo::Image>& image, const std::string & name):
         image{image},
-        index{index},
         name{name} {
     }
 
     ImageManager::ImageManager(Context& ctx, const unique_id capacity) :
         ResourcesManager(ctx, capacity),
-        images(capacity) {
-        ctx.resources.enroll(*this);
-        auto blankJPEG = createBlankJPEG();
-        std::vector<void*> cubeFaces(6);
-        for (int i = 0; i < 6; i++) {
-            cubeFaces[i]= blankJPEG.data();
-        }
-        const auto& vireo = *ctx.vireo;
-        blankImage = vireo.createImage(
+        blankImage(ctx.vireo->createImage(
             vireo::ImageFormat::R8G8B8A8_SRGB,
             1, 1,1, 1,
-            "Blank Image");
-        blankCubeMap = vireo.createImage(
+            "Blank Image")),
+        blankCubeMap(ctx.vireo->createImage(
             vireo::ImageFormat::R8G8B8A8_SRGB,
             1, 1,1, 6,
-            "Blank CubeMap");
-        const auto commandAllocator = vireo.createCommandAllocator(vireo::CommandType::GRAPHIC);
+            "Blank CubeMap")),
+        images(capacity, blankImage) {
+        ctx.resources.enroll(*this);
+        auto blank = std::vector<uint8>(4, 0);
+        std::vector<void*> cubeFaces(6);
+        for (int i = 0; i < 6; i++) {
+            cubeFaces[i]= blank.data();
+        }
+        ctx.graphicQueue->waitIdle();
+        const auto commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
         const auto commandList = commandAllocator->createCommandList();
         commandList->begin();
         commandList->barrier(
             blankImage,
             vireo::ResourceState::UNDEFINED,
             vireo::ResourceState::COPY_DST);
-        commandList->upload(blankImage, blankJPEG.data());
+        commandList->upload(blankImage, blank.data());
         commandList->barrier(
             blankImage,
             vireo::ResourceState::COPY_DST,
@@ -63,25 +62,12 @@ namespace lysa {
         commandList->end();
         ctx.graphicQueue->submit({commandList});
         ctx.graphicQueue->waitIdle();
-
-        for (int i = 0; i < resources.size(); i++) {
-            images[i] = blankImage;
-        }
     }
 
     ImageManager::~ImageManager() {
         cleanup();
         images.clear();
     }
-
-    // void ImageManager::update() {
-    //     auto lock = std::lock_guard(mutex);
-    //     if (textureUpdated) {
-    //         ctx.graphicQueue->waitIdle();
-    //         //descriptorSet->update(BINDING_TEXTURE, textures);
-    //         textureUpdated = false;
-    //     }
-    // }
 
     Image& ImageManager::create(
         const void* data,
@@ -90,32 +76,25 @@ namespace lysa {
         const std::string& name) {
         if (isFull()) throw Exception("ImageManager : no more free slots");
 
-        auto lock = std::lock_guard(mutex);
-
-        const auto& vireo = *ctx.vireo;
-        const auto image = vireo.createImage(imageFormat, width, height, 1, 1, name);
-
-        const auto commandAllocator = vireo.createCommandAllocator(vireo::CommandType::GRAPHIC);
-        const auto commandList = commandAllocator->createCommandList();
-        commandList->begin();
-        commandList->barrier(image, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);
-        commandList->upload(image, data);
-        commandList->barrier(image, vireo::ResourceState::COPY_DST, vireo::ResourceState::SHADER_READ);
-        commandList->end();
-
-        const auto& graphicQueue = ctx.graphicQueue;
-        graphicQueue->submit({commandList});
-        graphicQueue->waitIdle();
-
-        uint32 index = 0;
-        for (; index < images.size(); index++) {
-            if (images[index] == blankImage) {
-                images[index] = image;
-                textureUpdated = true;
-            }
+        const auto image = ctx.vireo->createImage(imageFormat, width, height, 1, 1, name);
+        {
+            auto lock = std::lock_guard(mutex);
+            ctx.graphicQueue->waitIdle();
+            const auto commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
+            const auto commandList = commandAllocator->createCommandList();
+            commandList->begin();
+            commandList->barrier(image, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);
+            commandList->upload(image, data);
+            commandList->barrier(image, vireo::ResourceState::COPY_DST, vireo::ResourceState::SHADER_READ);
+            commandList->end();
+            ctx.graphicQueue->submit({commandList});
+            ctx.graphicQueue->waitIdle();
         }
 
-        return ResourcesManager::create(image, index, name);
+        auto& result = ResourcesManager::create(image, name);
+        result.index = result.id;
+        images[result.index] = image;
+        return result;
     }
 
     Image& ImageManager::load(
@@ -124,7 +103,7 @@ namespace lysa {
         uint32 texWidth, texHeight;
         uint64 imageSize;
         auto *pixels = ctx.fs.loadImage(filepath, texWidth, texHeight, imageSize);
-        if (!pixels) { throw Exception("failed to load texture image ", filepath); }
+        if (!pixels) { throw Exception("failed to load image ", filepath); }
         auto& image = create(pixels, texWidth, texHeight, imageFormat, filepath);
         ctx.fs.destroyImage(pixels);
         return image;
@@ -132,19 +111,18 @@ namespace lysa {
 
     void ImageManager::save(const unique_id image_id, const std::string& filepath) {
         const auto image = get(image_id).getImage();
-        const auto& vireo = *ctx.vireo;
-        const auto& graphicQueue = ctx.graphicQueue;
-        graphicQueue->waitIdle();
-
-        const auto commandAllocator = vireo.createCommandAllocator(vireo::CommandType::GRAPHIC);
-        const auto commandList = commandAllocator->createCommandList();
-        commandList->begin();
-        const auto buffer = vireo.createBuffer(vireo::BufferType::IMAGE_DOWNLOAD, image->getAlignedImageSize());
-        commandList->copy(image, buffer);
-        commandList->end();
-        graphicQueue->submit({commandList});
-        graphicQueue->waitIdle();
-
+        const auto buffer = ctx.vireo->createBuffer(vireo::BufferType::IMAGE_DOWNLOAD, image->getAlignedImageSize());
+        {
+            auto lock = std::lock_guard(mutex);
+            ctx.graphicQueue->waitIdle();
+            const auto commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
+            const auto commandList = commandAllocator->createCommandList();
+            commandList->begin();
+            commandList->copy(image, buffer);
+            commandList->end();
+            ctx.graphicQueue->submit({commandList});
+            ctx.graphicQueue->waitIdle();
+        }
         buffer->map();
         const auto rowPitch = image->getRowPitch();
         const auto alignedRowPitch = image->getAlignedRowPitch();
@@ -169,24 +147,9 @@ namespace lysa {
                 image->getPixelSize(image->getFormat()),
                 imageData.data(),
                 rowPitch);
+        } else {
+            throw Exception("Image format not supported");
         }
-    }
-
-    void ImageManager::stb_write_func(void *context, void *data, const int size) {
-        auto *buffer = static_cast<std::vector<uint8> *>(context);
-        auto *ptr    = static_cast<uint8*>(data);
-        buffer->insert(buffer->end(), ptr, ptr + size);
-    }
-
-    std::vector<uint8> ImageManager::createBlankJPEG() {
-        std::vector<uint8> blankJPEG;
-        const auto data = new uint8[1 * 1 * 3];
-        data[0]   = static_cast<uint8>(0);
-        data[1]   = static_cast<uint8>(0);
-        data[2]   = static_cast<uint8>(0);
-        stbi_write_jpg_to_func(stb_write_func, &blankJPEG, 1, 1, 3, data, 100);
-        delete[] data;
-        return blankJPEG;
     }
 
 }
