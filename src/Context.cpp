@@ -20,7 +20,9 @@ namespace  lysa {
 #ifdef LUA_BINDING
         lua(luaConfiguration, fs),
 #endif
-        graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")) {
+        graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")),
+        transferQueue(vireo->createSubmitQueue(vireo::CommandType::TRANSFER, "Main transfer queue")),
+        asyncQueue(vireo, transferQueue, graphicQueue) {
 #ifdef LUA_BINDING
         lua.beginNamespace()
             .beginNamespace("ctx")

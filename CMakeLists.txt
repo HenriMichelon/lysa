@@ -213,6 +213,7 @@ endif ()
 
 #######################################################
 add_library(${LYSA_TARGET} STATIC
+        ${ENGINE_SRC_DIR}/AsyncQueue.cpp
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Frustum.cpp
@@ -230,7 +231,6 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/GlobalDescriptorSet.cpp
         #${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.cpp
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
-        ${ENGINE_SRC_DIR}/renderers/Samplers.cpp
         #${ENGINE_SRC_DIR}/renderers/SceneRenderContext.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
@@ -238,6 +238,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/resources/Image.cpp
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
+        ${ENGINE_SRC_DIR}/resources/Samplers.cpp
         ${ENGINE_SRC_DIR}/resources/Viewport.cpp
 
         ${OS_SRC}
@@ -250,6 +251,7 @@ target_sources(${LYSA_TARGET}
     PUBLIC
     FILE_SET CXX_MODULES
     FILES
+        ${ENGINE_SRC_DIR}/AsyncQueue.ixx
         ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
@@ -272,7 +274,6 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/renderers/GlobalDescriptorSet.ixx
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.ixx
         ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
-        ${ENGINE_SRC_DIR}/renderers/Samplers.ixx
         ${ENGINE_SRC_DIR}/renderers/SceneRenderContext.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
@@ -282,6 +283,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/resources/RenderTarget.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesRegistry.ixx
+        ${ENGINE_SRC_DIR}/resources/Samplers.ixx
         ${ENGINE_SRC_DIR}/resources/Viewport.ixx
 
         ${OS_MODULES}

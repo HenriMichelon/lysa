@@ -3,7 +3,7 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-module lysa.renderers.samplers;
+module lysa.resources.samplers;
 
 import lysa.exception;
 
@@ -18,7 +18,6 @@ namespace lysa {
         descriptorLayout->build();
         descriptorSet = vireo.createDescriptorSet(descriptorLayout, "Static Samplers");
 
-        // Used for frame buffers/screen sample
         addSampler(
             vireo::Filter::NEAREST,
             vireo::Filter::NEAREST,

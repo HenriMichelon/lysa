@@ -9,6 +9,7 @@ export module lysa;
 export import std;
 export import vireo;
 
+export import lysa.async_queue;
 export import lysa.context;
 export import lysa.event;
 export import lysa.exception;
@@ -24,7 +25,6 @@ export import lysa.renderers.configuration;
 export import lysa.renderers.global_descriptor_set;
 export import lysa.renderers.graphic_pipeline_data;
 export import lysa.renderers.renderer;
-export import lysa.renderers.samplers;
 export import lysa.renderers.renderpasses.renderpass;
 
 export import lysa.resources.image;
@@ -32,6 +32,7 @@ export import lysa.resources.locator;
 export import lysa.resources.render_target;
 export import lysa.resources.rendering_window;
 export import lysa.resources.resource_manager;
+export import lysa.resources.samplers;
 export import lysa.resources.viewport;
 
 #ifdef LUA_BINDING

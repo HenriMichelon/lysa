@@ -10,7 +10,7 @@ import vireo;
 
 namespace lysa {
 
-    GlobalDescriptorSet::GlobalDescriptorSet(const Context& ctx):
+    GlobalDescriptorSet::GlobalDescriptorSet(Context& ctx):
         ctx(ctx),
         imageManager(ctx.resources.get<ImageManager>()) {
         descriptorLayout = ctx.vireo->createDescriptorLayout("Global");
@@ -33,13 +33,12 @@ namespace lysa {
 
     void GlobalDescriptorSet::flush() {
         auto lock = std::unique_lock(mutex, std::try_to_lock);
-        // auto& asyncQueue = Application::getAsyncQueue();
-        // const auto command = asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
+        const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
         // indexArray.flush(*command.commandList);
         // vertexArray.flush(*command.commandList);
         // materialArray.flush(*command.commandList);
         // meshSurfaceArray.flush(*command.commandList);
-        // asyncQueue.endCommand(command);
+        ctx.asyncQueue.endCommand(command);
         updated = false;
     }
 

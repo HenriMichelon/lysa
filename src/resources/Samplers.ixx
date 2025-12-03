@@ -3,7 +3,7 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
  */
-export module lysa.renderers.samplers;
+export module lysa.resources.samplers;
 
 import std;
 import vireo;

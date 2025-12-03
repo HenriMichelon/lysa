@@ -8,6 +8,7 @@ export module lysa.context;
 
 import std;
 import vireo;
+import lysa.async_queue;
 import lysa.event;
 import lysa.flecs;
 #ifdef LUA_BINDING
@@ -23,7 +24,7 @@ export namespace  lysa {
      */
     struct Context {
         /**
-         * @brief Quit flag controlling the main loop termination.
+         * Quit flag controlling the main loop termination.
          *
          * When set to true, the main loop (see @ref Lysa::run) will exit
          * at the end of the current iteration.
@@ -31,7 +32,7 @@ export namespace  lysa {
         bool exit{false};
 
         /**
-         * @brief Backend object owning the device/instance and factory for GPU resources.
+         * Backend object owning the device/instance and factory for GPU resources.
          */
         const std::shared_ptr<vireo::Vireo> vireo;
 
@@ -42,27 +43,40 @@ export namespace  lysa {
 
 #ifdef LUA_BINDING
         /**
-         * @brief Embedded Lua execution environment.
+         * Embedded Lua execution environment.
          */
         const Lua lua;
 #endif
 
         /**
-         * @brief Central event dispatcher for the application.
+         * Central event dispatcher for the application.
          */
         EventManager events;
 
+        /**
+         * ECS world
+         */
         flecs::world world;
 
         /**
-         * @brief Resource resolution and access facility.
+         * Resource resolution and access facility.
          */
         ResourcesRegistry resources;
 
         /**
-         * @brief Submit queue used for graphics/rendering work.
+         * Submit queue used for graphics/rendering work.
          */
         const std::shared_ptr<vireo::SubmitQueue> graphicQueue;
+
+        /**
+         * Submit queue used for DMA transfers work.
+         */
+        const std::shared_ptr<vireo::SubmitQueue> transferQueue;
+
+        /**
+         * Asynchronous submissions of submit queues
+         */
+        AsyncQueue asyncQueue;
 
         Context(
             vireo::Backend backend,

@@ -29,7 +29,7 @@ export namespace lysa {
         /** Descriptor binding index for the textures array/sampled images. */
         static constexpr vireo::DescriptorIndex BINDING_TEXTURE{2};
 
-        GlobalDescriptorSet(const Context& ctx);
+        GlobalDescriptorSet(Context& ctx);
 
         ~GlobalDescriptorSet();
 
@@ -55,7 +55,7 @@ export namespace lysa {
         bool isUpdateNeeded() const { return updated; }
 
     private:
-        const Context& ctx;
+        Context& ctx;
         ImageManager& imageManager;
         // Global descriptor set layout
         std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
