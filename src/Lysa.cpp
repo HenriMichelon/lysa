@@ -11,6 +11,7 @@ namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& config) :
         ctx(config.backend,
+            config.resourcesCapacity.samplers,
             config.virtualFsConfiguration
 #ifdef LUA_BINDING
             ,config.luaConfiguration
@@ -20,7 +21,7 @@ namespace lysa {
         renderTargetManager(ctx, config.resourcesCapacity.renderTarget),
         renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
         imageManager(ctx, config.resourcesCapacity.images),
-        samplers(*ctx.vireo, config.resourcesCapacity.samplers)
+        imageTextureManager(ctx, config.resourcesCapacity.images)
     {
     }
 
@@ -35,8 +36,8 @@ namespace lysa {
         while (!ctx.exit) {
             processPlatformEvents();
             ctx.events._process();
-            if (samplers.isUpdateNeeded()) {
-                samplers.update();
+            if (ctx.samplers.isUpdateNeeded()) {
+                ctx.samplers.update();
             }
 
             // https://gafferongames.com/post/fix_your_timestep/

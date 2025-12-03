@@ -122,7 +122,7 @@ namespace lysa {
         }
     }
 
-    void AsyncQueue::cleanup() {
+    AsyncQueue::~AsyncQueue() {
         quit = true;
         if (queueThread) {
             queueCv.notify_one();

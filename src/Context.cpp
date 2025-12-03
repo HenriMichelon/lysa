@@ -10,6 +10,7 @@ namespace  lysa {
 
     Context::Context(
         const vireo::Backend backend,
+        const unique_id samplersCapacity,
         const VirtualFSConfiguration& virtualFsConfiguration
 #ifdef LUA_BINDING
         ,const LuaConfiguration& luaConfiguration
@@ -17,6 +18,7 @@ namespace  lysa {
         ) :
         vireo(vireo::Vireo::create(backend)),
         fs(virtualFsConfiguration, vireo),
+        samplers(vireo, samplersCapacity),
 #ifdef LUA_BINDING
         lua(luaConfiguration, fs),
 #endif

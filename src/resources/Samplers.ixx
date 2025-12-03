@@ -20,7 +20,13 @@ export namespace lysa {
     class Samplers {
     public:
         /** Descriptor set index used by pipelines to bind the samplers set. */
-        static constexpr uint32 SET_SAMPLERS{1};
+        static constexpr uint32 SET{1};
+
+        static constexpr unique_id NEAREST_NEAREST_CLAMP_TO_BORDER = 0;
+        static constexpr unique_id LINEAR_LINEAR_CLAMP_TO_EDGE = 1;
+        static constexpr unique_id LINEAR_LINEAR_CLAMP_TO_EDGE_LOD_CLAMP_NONE = 2;
+        static constexpr unique_id LINEAR_LINEAR_REPEAT = 3;
+        static constexpr unique_id NEAREST_NEAREST_REPEAT = 4;
 
         /**
          * Human-readable description of sampler creation parameters.
@@ -99,13 +105,13 @@ export namespace lysa {
         const auto& getDescriptorSet() const { return descriptorSet; }
 
         /** Creates a Samplers pool bound to the given backend. */
-        Samplers(const vireo::Vireo& vireo, unique_id capacity);
+        Samplers(const std::shared_ptr<vireo::Vireo>& vireo, unique_id capacity);
 
         ~Samplers();
 
     private:
         /** Reference to the graphics backend entry point. */
-        const vireo::Vireo& vireo;
+        const std::shared_ptr<vireo::Vireo> vireo;
         /** Number of active samplers in the pool. */
         uint32 samplerCount{0};
         /** Sampler objects owned by this pool. */

@@ -33,6 +33,7 @@ export import lysa.resources.render_target;
 export import lysa.resources.rendering_window;
 export import lysa.resources.resource_manager;
 export import lysa.resources.samplers;
+export import lysa.resources.texture;
 export import lysa.resources.viewport;
 
 #ifdef LUA_BINDING
@@ -133,7 +134,7 @@ export namespace  lysa {
         RenderTargetManager renderTargetManager;
         RenderingWindowManager renderingWindowManager;
         ImageManager imageManager;
-        Samplers samplers;
+        ImageTextureManager imageTextureManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();

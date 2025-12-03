@@ -9,14 +9,14 @@ import lysa.exception;
 
 namespace lysa {
 
-    Samplers::Samplers(const vireo::Vireo& vireo, const unique_id capacity):
+    Samplers::Samplers(const std::shared_ptr<vireo::Vireo>& vireo, const unique_id capacity):
         vireo{vireo},
         samplers(capacity),
         samplersInfo(capacity) {
-        descriptorLayout = vireo.createSamplerDescriptorLayout("Static Samplers");
+        descriptorLayout = vireo->createSamplerDescriptorLayout("Static Samplers");
         descriptorLayout->add(0, vireo::DescriptorType::SAMPLER, capacity);
         descriptorLayout->build();
-        descriptorSet = vireo.createDescriptorSet(descriptorLayout, "Static Samplers");
+        descriptorSet = vireo->createDescriptorSet(descriptorLayout, "Static Samplers");
 
         addSampler(
             vireo::Filter::NEAREST,
@@ -82,7 +82,7 @@ namespace lysa {
             }
         }
         const auto index = samplerCount;
-        samplers[index] = vireo.createSampler(
+        samplers[index] = vireo->createSampler(
             minFilter,
             maxFilter,
             samplerAddressModeU,

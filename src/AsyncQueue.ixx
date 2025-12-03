@@ -57,7 +57,7 @@ export namespace lysa {
          * Release background resources and flush outstanding commands. Safe to
          * call during application shutdown.
          */
-        void cleanup();
+        ~AsyncQueue();
 
         /**
          * Acquire a command for the specified queue type and begin recording on

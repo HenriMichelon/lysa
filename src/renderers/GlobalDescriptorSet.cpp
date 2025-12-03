@@ -14,16 +14,16 @@ namespace lysa {
         ctx(ctx),
         imageManager(ctx.resources.get<ImageManager>()) {
         descriptorLayout = ctx.vireo->createDescriptorLayout("Global");
-        descriptorLayout->add(BINDING_MATERIAL, vireo::DescriptorType::DEVICE_STORAGE);
+        descriptorLayout->add(BINDING_MATERIALS, vireo::DescriptorType::DEVICE_STORAGE);
         descriptorLayout->add(BINDING_SURFACES, vireo::DescriptorType::DEVICE_STORAGE);
-        descriptorLayout->add(BINDING_TEXTURE, vireo::DescriptorType::SAMPLED_IMAGE,
+        descriptorLayout->add(BINDING_TEXTURES, vireo::DescriptorType::SAMPLED_IMAGE,
             imageManager.getCapacity());
         descriptorLayout->build();
 
         descriptorSet = ctx.vireo->createDescriptorSet(descriptorLayout, "Global");
         // descriptorSet->update(BINDING_MATERIAL, materialArray.getBuffer());
         // descriptorSet->update(BINDING_SURFACES, meshSurfaceArray.getBuffer());
-        descriptorSet->update(BINDING_TEXTURE, imageManager.getImages());
+        descriptorSet->update(BINDING_TEXTURES, imageManager.getImages());
     }
 
     GlobalDescriptorSet::~GlobalDescriptorSet() {
@@ -34,8 +34,6 @@ namespace lysa {
     void GlobalDescriptorSet::flush() {
         auto lock = std::unique_lock(mutex, std::try_to_lock);
         const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
-        // indexArray.flush(*command.commandList);
-        // vertexArray.flush(*command.commandList);
         // materialArray.flush(*command.commandList);
         // meshSurfaceArray.flush(*command.commandList);
         ctx.asyncQueue.endCommand(command);
@@ -46,7 +44,7 @@ namespace lysa {
         auto lock = std::lock_guard(mutex);
         if (imageManager.isUpdateNeeded()) {
             ctx.graphicQueue->waitIdle();
-            descriptorSet->update(BINDING_TEXTURE, imageManager.getImages());
+            descriptorSet->update(BINDING_TEXTURES, imageManager.getImages());
             imageManager.resetUpdateFlag();
         }
     }

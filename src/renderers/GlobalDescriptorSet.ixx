@@ -21,13 +21,13 @@ export namespace lysa {
     class GlobalDescriptorSet {
     public:
         /** Descriptor set index used by pipelines to bind shared resources. */
-        static constexpr uint32 SET_GLOBAL{0};
-        /** Descriptor binding index for the material buffer. */
-        static constexpr vireo::DescriptorIndex BINDING_MATERIAL{0};
+        static constexpr uint32 SET{0};
+        /** Descriptor binding index for the materials buffer. */
+        static constexpr vireo::DescriptorIndex BINDING_MATERIALS{0};
         /** Descriptor binding index for the mesh surfaces buffer. */
         static constexpr vireo::DescriptorIndex BINDING_SURFACES{1};
         /** Descriptor binding index for the textures array/sampled images. */
-        static constexpr vireo::DescriptorIndex BINDING_TEXTURE{2};
+        static constexpr vireo::DescriptorIndex BINDING_TEXTURES{2};
 
         GlobalDescriptorSet(Context& ctx);
 

@@ -15,7 +15,9 @@ import lysa.flecs;
 import lysa.lua;
 #endif
 import lysa.virtual_fs;
+import lysa.types;
 import lysa.resources.locator;
+import lysa.resources.samplers;
 
 export namespace  lysa {
 
@@ -64,6 +66,11 @@ export namespace  lysa {
         ResourcesRegistry resources;
 
         /**
+         * Global GPU samplers
+         */
+        Samplers samplers;
+
+        /**
          * Submit queue used for graphics/rendering work.
          */
         const std::shared_ptr<vireo::SubmitQueue> graphicQueue;
@@ -80,6 +87,7 @@ export namespace  lysa {
 
         Context(
             vireo::Backend backend,
+            unique_id samplersCapacity,
             const VirtualFSConfiguration& virtualFsConfiguration
 #ifdef LUA_BINDING
             ,const LuaConfiguration& luaConfiguration

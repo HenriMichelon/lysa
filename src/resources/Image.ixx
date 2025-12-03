@@ -48,10 +48,9 @@ export namespace lysa {
         /**
          * Returns the name of the image
          */
-        const auto& getName() const { return name; }
+        const std::string& getName() const { return name; }
 
         Image(const std::shared_ptr<vireo::Image>& image, const std::string & name);
-
         ~Image() override = default;
 
     private:
