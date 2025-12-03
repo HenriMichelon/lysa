@@ -213,6 +213,7 @@ endif ()
 
 #######################################################
 add_library(${LYSA_TARGET} STATIC
+        ${ENGINE_SRC_DIR}/AABB.cpp
         ${ENGINE_SRC_DIR}/AsyncQueue.cpp
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
@@ -237,6 +238,7 @@ add_library(${LYSA_TARGET} STATIC
 
         ${ENGINE_SRC_DIR}/resources/Image.cpp
         ${ENGINE_SRC_DIR}/resources/Material.cpp
+        ${ENGINE_SRC_DIR}/resources/Mesh.cpp
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
         ${ENGINE_SRC_DIR}/resources/Samplers.cpp
@@ -252,6 +254,7 @@ target_sources(${LYSA_TARGET}
     PUBLIC
     FILE_SET CXX_MODULES
     FILES
+        ${ENGINE_SRC_DIR}/AABB.ixx
         ${ENGINE_SRC_DIR}/AsyncQueue.ixx
         ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
@@ -281,6 +284,7 @@ target_sources(${LYSA_TARGET}
 
         ${ENGINE_SRC_DIR}/resources/Image.ixx
         ${ENGINE_SRC_DIR}/resources/Material.ixx
+        ${ENGINE_SRC_DIR}/resources/Mesh.ixx
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
         ${ENGINE_SRC_DIR}/resources/RenderTarget.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx

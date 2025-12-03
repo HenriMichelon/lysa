@@ -189,7 +189,7 @@ namespace lysa {
     }
 
     void MaterialManager::upload(const unique_id material_id) {
-        auto& material = get(material_id);
+        auto& material = (*this)[material_id];
         if (material.bypassUpload) { return; }
         auto lock = std::unique_lock(mutex);
         if (!material.isUploaded()) {

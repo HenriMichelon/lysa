@@ -22,7 +22,12 @@ namespace lysa {
         renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
         imageManager(ctx, config.resourcesCapacity.images),
         imageTextureManager(ctx, config.resourcesCapacity.images),
-        materialManager(ctx, config.resourcesCapacity.material)
+        materialManager(ctx, config.resourcesCapacity.material),
+        meshManager(ctx,
+            config.resourcesCapacity.meshes,
+            config.resourcesCapacity.vertices,
+            config.resourcesCapacity.indices,
+            config.resourcesCapacity.surfaces)
     {
     }
 

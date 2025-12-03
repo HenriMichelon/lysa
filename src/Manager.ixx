@@ -53,7 +53,7 @@ export namespace lysa {
          * @warning No bounds checking is performed (uses vector::operator[]). Prefer get() when
          *          you need range checking.
          */
-        inline T& operator[](const unique_id id) { return resources[id]; }
+        inline T& operator[](const unique_id id) { return *resources[id]; }
 
         /**
          * @brief Bracket operator for const access without bounds checking.
@@ -62,7 +62,7 @@ export namespace lysa {
          * @warning No bounds checking is performed (uses vector::operator[]). Prefer const get()
          *          when you need range checking.
          */
-        inline const T& operator[](const unique_id id) const { return resources[id]; }
+        inline const T& operator[](const unique_id id) const { return *resources[id]; }
 
         virtual ~Manager() {
             assert([&]{ return freeList.size() == resources.size(); }, "ResourcesManager : cleanup() not called");

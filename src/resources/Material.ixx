@@ -359,6 +359,8 @@ export namespace lysa {
 
         void flush();
 
+        auto getBuffer() const { return memoryArray.getBuffer(); }
+
     private:
         /** GPU memory array that stores material description blocks for shaders. */
         DeviceMemoryArray memoryArray;

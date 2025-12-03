@@ -9,6 +9,7 @@ export module lysa;
 export import std;
 export import vireo;
 
+export import lysa.aabb;
 export import lysa.async_queue;
 export import lysa.context;
 export import lysa.event;
@@ -30,6 +31,7 @@ export import lysa.renderers.renderpasses.renderpass;
 export import lysa.resources.image;
 export import lysa.resources.locator;
 export import lysa.resources.material;
+export import lysa.resources.mesh;
 export import lysa.resources.render_target;
 export import lysa.resources.rendering_window;
 export import lysa.resources.resource_manager;
@@ -56,6 +58,14 @@ export namespace  lysa {
         size_t samplers{20};
         //! Maximum number of standard & shader materials
         size_t material{100};
+        //! Maximum number of meshes
+        size_t meshes{1000};
+        //! Maximum number of meshes vertices in GPU memory
+        size_t vertices{5000000};
+        //! Maximum number of meshes indices in GPU memory
+        size_t indices{5000000*2};
+        //! Maximum number of meshes surfaces in GPU memory
+        size_t surfaces{200000};
     };
 
     /**
@@ -139,6 +149,7 @@ export namespace  lysa {
         ImageManager imageManager;
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
+        MeshManager meshManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();
