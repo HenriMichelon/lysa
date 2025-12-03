@@ -15,11 +15,16 @@ import lysa.types;
 
 export namespace lysa {
 
+    struct ResourceConfiguration {};
+
     class Resource {
     public:
         //! Unique ID
         unique_id id{INVALID_ID};
 
+        Resource() = default;
+        Resource(Resource&) = delete;
+        Resource& operator = (Resource&) = delete;
         virtual ~Resource() = default;
     };
 
@@ -42,20 +47,14 @@ export namespace lysa {
     public:
         /**
          * @brief Create a new unique resource
-         * @param configuration Creation parameters
-         */
-        template<typename C>
-        T& create(const C& configuration) {
-            return Manager<T>::allocate(std::make_unique<T>(ctx, configuration));
-        }
-
-        /**
-         * @brief Create a new unique resource
          */
         template<typename... Args>
         T& create(Args&&... args) {
             return Manager<T>::allocate(std::make_unique<T>(std::forward<Args>(args)...));
         }
+
+        Context& getContext() const { return ctx; }
+
     protected:
         // Reference to the owning application context.
         Context& ctx;

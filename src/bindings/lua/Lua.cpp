@@ -261,7 +261,7 @@ end
             .beginClass<ViewportManager>("ViewportManager")
                 .addConstructor<void(Context&, unique_id)>()
                 .addFunction("create", +[](ViewportManager* self, const ViewportConfiguration& config) -> Viewport& {
-                    return self->create<ViewportConfiguration>(config);
+                    return self->create(config);
                 })
                 .addFunction("get",
                     luabridge::nonConstOverload<const unique_id>(&ViewportManager::get),
@@ -294,8 +294,8 @@ end
             .endClass()
             .beginClass<RenderTargetManager>("RenderTargetManager")
                 .addConstructor<void(Context&, unique_id)>()
-                .addFunction("create", +[](RenderTargetManager* self, const RendererConfiguration& config) -> RenderTarget& {
-                    return self->create<RendererConfiguration>(config);
+                .addFunction("create", +[](RenderTargetManager* self, const RenderTargetConfiguration& config) -> RenderTarget& {
+                    return self->create(config);
                 })
                 .addFunction("get",
                     luabridge::nonConstOverload<const unique_id>(&RenderTargetManager::get),

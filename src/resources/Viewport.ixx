@@ -15,7 +15,7 @@ import lysa.resources.resource_manager;
 
 export namespace lysa {
 
-    struct ViewportConfiguration {
+    struct ViewportConfiguration : ResourceConfiguration {
         //! Parent render target
         unique_id renderTarget{INVALID_ID};
         //! Low‑level viewport (x, y, width, height, minDepth, maxDepth).
@@ -57,6 +57,9 @@ export namespace lysa {
         ~ViewportManager() override {
             cleanup();
         }
+
+        Viewport& create(const ViewportConfiguration& configuration);
+
 
     private:
         auto getResources(unique_id renderTarget) {

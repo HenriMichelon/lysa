@@ -133,6 +133,10 @@ namespace lysa {
         ctx.resources.enroll(*this);
     }
 
+    RenderTarget& RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
+        return ResourcesManager::create(ctx, configuration);
+    }
+
     void RenderTargetManager::destroy(const void* renderingWindowHandle) {
         for (const auto& renderTarget : getResources()) {
             if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {

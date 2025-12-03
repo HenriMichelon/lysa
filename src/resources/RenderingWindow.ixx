@@ -48,7 +48,7 @@ export namespace lysa {
     /**
     * Rendering window configuration
     */
-    struct RenderingWindowConfiguration {
+    struct RenderingWindowConfiguration : ResourceConfiguration {
         //! Window title bar
         std::string title{"Lysa Window"};
         //! State of the display Window

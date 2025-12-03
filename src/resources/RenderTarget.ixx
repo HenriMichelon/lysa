@@ -18,7 +18,7 @@ import lysa.resources.viewport;
 
 export namespace lysa {
 
-    struct RenderTargetConfiguration {
+    struct RenderTargetConfiguration : ResourceConfiguration {
         //! Set this field if you want to render in a window
         void* renderingWindowHandle{nullptr};
 
@@ -97,6 +97,8 @@ export namespace lysa {
         ~RenderTargetManager() override {
             cleanup();
         }
+
+        RenderTarget& create(const RenderTargetConfiguration& configuration);
 
         void destroy(const void* renderingWindowHandle);
 

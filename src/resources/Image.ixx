@@ -20,7 +20,7 @@ export namespace lysa {
      */
     class Image : public Resource {
     public:
-        Image(const std::shared_ptr<vireo::Image>& image, const std::string & name);
+        Image(const std::shared_ptr<vireo::Image>& image, uint32 index, const std::string & name);
 
         /**
          * Returns the width in pixels
@@ -44,9 +44,10 @@ export namespace lysa {
         ~Image() override = default;
 
     protected:
-        std::string name;
         std::shared_ptr<vireo::Image> image;
+        // Index in GPU memory
         uint32 index;
+        std::string name;
     };
 
     class ImageManager : public ResourcesManager<Image> {
@@ -58,9 +59,9 @@ export namespace lysa {
          */
         ImageManager(Context& ctx, unique_id capacity);
 
-        ~ImageManager() override {
-            cleanup();
-        }
+        ~ImageManager() override;
+
+        //void update();
 
         void save(unique_id image_id, const std::string& filepath);
 
@@ -82,9 +83,31 @@ export namespace lysa {
             vireo::ImageFormat imageFormat = vireo::ImageFormat::R8G8B8A8_SRGB,
             const std::string& name = "Image");
 
+
+        /** Returns the default 2D blank image used as a safe fallback. */
+        auto getBlankImage() { return blankImage; }
+
+        /** Returns the default cubemap blank image used as a safe fallback. */
+        auto getBlankCubeMap() { return blankCubeMap; }
+
+
     private:
+        /** List of GPU texture images managed by this container. */
+        std::vector<std::shared_ptr<vireo::Image>> images;
+        /** Flag indicating that one or more textures changed and need syncing. */
+        bool textureUpdated{false};
+        /** Default 2D image used when a texture is missing. */
+        std::shared_ptr<vireo::Image> blankImage;
+        /** Default cubemap image used when a cubemap is missing. */
+        std::shared_ptr<vireo::Image> blankCubeMap;
+        /** Mutex to guard mutations to images */
+        std::mutex mutex;
 
+        /** Creates a small in-memory JPEG used to initialize blank textures. */
+        static std::vector<uint8> createBlankJPEG();
 
+        /** Callback passed to stb to write encoded data into an external buffer. */
+        static void stb_write_func(void *context, void *data, int size);
     };
 
 }

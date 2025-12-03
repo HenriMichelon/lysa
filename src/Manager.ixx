@@ -97,7 +97,7 @@ export namespace lysa {
 
         // Allocate a new resource
         T& allocate(std::unique_ptr<T> instance) {
-            if (freeList.empty()) throw Exception("ResourcesManager : no more free slots");
+            if (isFull()) throw Exception("ResourcesManager : no more free slots");
             auto id = freeList.back();
             freeList.pop_back();
             resources[id] = std::move(instance);
@@ -111,6 +111,10 @@ export namespace lysa {
 
         // Contiguous storage for all resources managed by this instance.
         std::vector<std::unique_ptr<T>> resources;
+
+        bool isFull() const {
+            return freeList.empty();
+        }
 
     private:
         // Stack-like list of free slot IDs available for future creations.

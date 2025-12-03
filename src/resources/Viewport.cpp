@@ -43,6 +43,10 @@ namespace lysa {
         }
     }
 
+    Viewport& ViewportManager::create(const ViewportConfiguration& configuration) {
+        return ResourcesManager::create(ctx, configuration);
+    }
+
     void ViewportManager::resize(const unique_id renderTarget, const vireo::Extent &extent) {
         for (const auto& viewport : getResources(renderTarget)) {
             viewport->resize(extent);
