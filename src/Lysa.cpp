@@ -29,6 +29,7 @@ namespace lysa {
             config.resourcesCapacity.indices,
             config.resourcesCapacity.surfaces)
     {
+        //ctx.world.import<MeshInstanceModule>(meshManager);
     }
 
     Lysa::~Lysa() {
@@ -45,6 +46,7 @@ namespace lysa {
             if (ctx.samplers.isUpdateNeeded()) {
                 ctx.samplers.update();
             }
+            ctx.world.progress();
 
             // https://gafferongames.com/post/fix_your_timestep/
             const double newTime = std::chrono::duration_cast<std::chrono::duration<double>>(
@@ -58,6 +60,7 @@ namespace lysa {
                 accumulator -= FIXED_DELTA_TIME;
             }
             onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
+
 
             renderTargetManager.update();
             renderTargetManager.render();

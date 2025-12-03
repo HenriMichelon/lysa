@@ -244,6 +244,8 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/resources/Samplers.cpp
         ${ENGINE_SRC_DIR}/resources/Viewport.cpp
 
+        ${ENGINE_SRC_DIR}/systems/MeshInstance.cpp
+
         ${OS_SRC}
         ${PHYSICS_SRC}
         ${LUA_BINDINGS_SRC}
@@ -256,6 +258,7 @@ target_sources(${LYSA_TARGET}
     FILES
         ${ENGINE_SRC_DIR}/AABB.ixx
         ${ENGINE_SRC_DIR}/AsyncQueue.ixx
+        ${ENGINE_SRC_DIR}/Components.ixx
         ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
@@ -292,6 +295,8 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/resources/Samplers.ixx
         ${ENGINE_SRC_DIR}/resources/Texture.ixx
         ${ENGINE_SRC_DIR}/resources/Viewport.ixx
+
+        ${ENGINE_SRC_DIR}/systems/MeshInstance.ixx
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}

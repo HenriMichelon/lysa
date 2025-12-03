@@ -39,6 +39,8 @@ export import lysa.resources.samplers;
 export import lysa.resources.texture;
 export import lysa.resources.viewport;
 
+export import lysa.systems.mesh_instance;
+
 #ifdef LUA_BINDING
 export import lysa.lua;
 #endif
