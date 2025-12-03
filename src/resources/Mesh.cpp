@@ -71,7 +71,7 @@ namespace lysa {
         const size_t vertexCapacity,
         const size_t indexCapacity,
         const size_t surfaceCapacity) :
-       ResourcesManager(ctx, capacity),
+        ResourcesManager(ctx, capacity),
         materialManager(ctx.resources.get<MaterialManager>()),
         vertexArray {
             ctx.vireo,
@@ -115,6 +115,8 @@ namespace lysa {
             mesh.indicesMemoryBlock = indexArray.alloc(mesh.indices.size());
             mesh.surfacesMemoryBlock = meshSurfaceArray.alloc(mesh.surfaces.size());
         }
+
+        auto lock = std::unique_lock(mutex);
 
         // Uploading all vertices
         auto vertexData = std::vector<VertexData>(mesh.vertices.size());
