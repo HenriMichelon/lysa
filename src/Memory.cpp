@@ -28,10 +28,6 @@ namespace lysa {
     }
 
     MemoryArray::~MemoryArray() {
-        MemoryArray::cleanup();
-    }
-
-    void MemoryArray::cleanup() {
         buffer.reset();
     }
 
@@ -110,13 +106,8 @@ namespace lysa {
            vireo::ResourceState::SHADER_READ);
     }
 
-    void DeviceMemoryArray::cleanup() {
-        MemoryArray::cleanup();
-        stagingBuffer.reset();
-    }
-
     DeviceMemoryArray::~DeviceMemoryArray() {
-        DeviceMemoryArray::cleanup();
+        stagingBuffer.reset();
     }
 
     HostVisibleMemoryArray::HostVisibleMemoryArray(
