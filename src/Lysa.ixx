@@ -11,6 +11,7 @@ export import vireo;
 
 export import lysa.aabb;
 export import lysa.async_queue;
+export import lysa.components;
 export import lysa.context;
 export import lysa.event;
 export import lysa.exception;
@@ -19,6 +20,7 @@ export import lysa.global;
 export import lysa.log;
 export import lysa.manager;
 export import lysa.math;
+export import lysa.systems;
 export import lysa.types;
 export import lysa.virtual_fs;
 
@@ -38,8 +40,6 @@ export import lysa.resources.resource_manager;
 export import lysa.resources.samplers;
 export import lysa.resources.texture;
 export import lysa.resources.viewport;
-
-export import lysa.systems.mesh_instance;
 
 #ifdef LUA_BINDING
 export import lysa.lua;

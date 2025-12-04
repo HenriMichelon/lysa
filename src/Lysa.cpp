@@ -29,7 +29,9 @@ namespace lysa {
             config.resourcesCapacity.indices,
             config.resourcesCapacity.surfaces)
     {
-        //ctx.world.import<MeshInstanceModule>(meshManager);
+        ctx.world.set<components::Context>({&ctx});
+        ctx.world.import<TransformModule>();
+        ctx.world.import<MeshInstanceModule>();
     }
 
     Lysa::~Lysa() {

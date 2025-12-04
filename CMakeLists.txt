@@ -55,6 +55,13 @@ if(WIN32)
     endif()
     add_compile_definitions(UNICODE _UNICODE)
 endif ()
+#######################################################
+function(lysa_compile_options TARGET_NAME )
+    compile_options(${TARGET_NAME})
+    if (MSVC)
+        target_compile_options(${TARGET_NAME} PRIVATE /wd4291) # for Flecs 'new' placement operator
+    endif()
+endfunction()
 
 #######################################################
 if(NOT PHYSIC_ENGINE_JOLT AND NOT PHYSIC_ENGINE_PHYSX)
@@ -244,7 +251,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/resources/Samplers.cpp
         ${ENGINE_SRC_DIR}/resources/Viewport.cpp
 
-        ${ENGINE_SRC_DIR}/systems/MeshInstance.cpp
+        ${ENGINE_SRC_DIR}/systems/Systems.cpp
 
         ${OS_SRC}
         ${PHYSICS_SRC}
@@ -258,7 +265,6 @@ target_sources(${LYSA_TARGET}
     FILES
         ${ENGINE_SRC_DIR}/AABB.ixx
         ${ENGINE_SRC_DIR}/AsyncQueue.ixx
-        ${ENGINE_SRC_DIR}/Components.ixx
         ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
@@ -272,6 +278,8 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Memory.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
+
+        ${ENGINE_SRC_DIR}/components/Components.ixx
 
         ${ENGINE_SRC_DIR}/pipelines/FrustumCulling.ixx
 
@@ -296,13 +304,13 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/resources/Texture.ixx
         ${ENGINE_SRC_DIR}/resources/Viewport.ixx
 
-        ${ENGINE_SRC_DIR}/systems/MeshInstance.ixx
+        ${ENGINE_SRC_DIR}/systems/Systems.ixx
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}
         ${LUA_BINDINGS_MODULES}
 )
-compile_options(${LYSA_TARGET})
+lysa_compile_options(${LYSA_TARGET})
 target_include_directories(${LYSA_TARGET} PUBLIC
         ${INCLUDE_DIR}
         ${HLSLPP_SRC_DIR}/include
