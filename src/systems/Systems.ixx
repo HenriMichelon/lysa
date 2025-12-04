@@ -16,8 +16,8 @@ export namespace lysa {
         TransformModule(const flecs::world& w);
     private:
         static void updateGlobalTransform(
-            flecs::entity parent,
-            const components::Transform& parentTransform);
+            flecs::entity e,
+            components::Transform& t);
     };
 
     struct MeshInstanceModule {

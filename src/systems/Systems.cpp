@@ -15,14 +15,18 @@ import lysa.resources.mesh;
 namespace lysa {
 
      void TransformModule::updateGlobalTransform(
-          const flecs::entity parent,
-          const components::Transform& parentTransform) {
-          parent.children([&](const flecs::entity child) {
+          const flecs::entity e,
+          components::Transform& t) {
+          auto parentMatrix = float4x4::identity();
+          auto parent = e.parent();
+          if (parent && parent.has<components::Transform>()) {
+               parentMatrix = parent.get<components::Transform>().globalTransform;
+          }
+          t.globalTransform = mul(t.localTransform, parentMatrix);
+          e.add<tags::Updated>();
+          e.children([&](const flecs::entity child) {
              if (child.has<components::Transform>()) {
-                  auto& t = child.get_mut<components::Transform>();
-                  t.globalTransform = mul(t.localTransform, parentTransform.globalTransform);
-                  child.add<tags::Updated>();
-                  updateGlobalTransform(child, t);
+                  updateGlobalTransform(child, child.get_mut<components::Transform>());
              }
           });
      }
@@ -34,12 +38,6 @@ namespace lysa {
           .event(flecs::OnAdd)
           .each([](const flecs::entity e, const components::Position &p, components::Transform& t) {
                t.localTransform[3] = float4{p.x, p.y, p.z, 1.0f};
-               auto parentMatrix = float4x4::identity();
-               if (e.parent() && e.has<components::Transform>()) {
-                    parentMatrix = e.parent().get<components::Transform>().globalTransform;
-               }
-               t.globalTransform = mul(t.localTransform, parentMatrix);
-               e.add<tags::Updated>();
                updateGlobalTransform(e, t);
           });
      }
