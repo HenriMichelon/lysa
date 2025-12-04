@@ -11,18 +11,19 @@ export import vireo;
 
 export import lysa.aabb;
 export import lysa.async_queue;
-export import lysa.components;
 export import lysa.context;
 export import lysa.event;
 export import lysa.exception;
-export import lysa.flecs;
 export import lysa.global;
 export import lysa.log;
 export import lysa.manager;
 export import lysa.math;
-export import lysa.systems;
 export import lysa.types;
 export import lysa.virtual_fs;
+
+export import lysa.ecs.components;
+export import lysa.ecs.flecs;
+export import lysa.ecs.systems;
 
 export import lysa.renderers.configuration;
 export import lysa.renderers.global_descriptor_set;

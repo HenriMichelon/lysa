@@ -231,7 +231,11 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Math.cpp
         ${ENGINE_SRC_DIR}/Memory.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
-        
+
+        ${ENGINE_SRC_DIR}/ecs/components/Transform.cpp
+        ${ENGINE_SRC_DIR}/ecs/systems/Systems.cpp
+        ${ENGINE_SRC_DIR}/ecs/systems/Transform.cpp
+
         ${ENGINE_SRC_DIR}/pipelines/FrustumCulling.cpp
 
         ${DEFERRED_RENDERER_SRC}
@@ -251,8 +255,6 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/resources/Samplers.cpp
         ${ENGINE_SRC_DIR}/resources/Viewport.cpp
 
-        ${ENGINE_SRC_DIR}/systems/Systems.cpp
-
         ${OS_SRC}
         ${PHYSICS_SRC}
         ${LUA_BINDINGS_SRC}
@@ -268,7 +270,6 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
-        ${ENGINE_SRC_DIR}/Flecs.ixx
         ${ENGINE_SRC_DIR}/Frustum.ixx
         ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
@@ -279,7 +280,10 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
 
-        ${ENGINE_SRC_DIR}/components/Components.ixx
+        ${ENGINE_SRC_DIR}/ecs/Flecs.ixx
+        ${ENGINE_SRC_DIR}/ecs/components/Components.ixx
+        ${ENGINE_SRC_DIR}/ecs/components/Transform.ixx
+        ${ENGINE_SRC_DIR}/ecs/systems/Systems.ixx
 
         ${ENGINE_SRC_DIR}/pipelines/FrustumCulling.ixx
 
@@ -303,8 +307,6 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/resources/Samplers.ixx
         ${ENGINE_SRC_DIR}/resources/Texture.ixx
         ${ENGINE_SRC_DIR}/resources/Viewport.ixx
-
-        ${ENGINE_SRC_DIR}/systems/Systems.ixx
 
         ${OS_MODULES}
         ${PHYSICS_MODULES}

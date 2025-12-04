@@ -38,7 +38,8 @@ using uint32 = uint32_t;
 
 #include "hlsl++/data_packing.h"
 
-import std;
+export import std;
+export import lysa.types;
 
 export namespace lysa {
 

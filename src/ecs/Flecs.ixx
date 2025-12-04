@@ -10,5 +10,5 @@ module;
 #include <type_traits>
 #include "flecs_utils.hpp"
 
-export module lysa.flecs;
+export module lysa.ecs.flecs;
 #include "flecs.hpp"

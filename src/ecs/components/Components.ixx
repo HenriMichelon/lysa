@@ -4,34 +4,21 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
 */
-export module lysa.components;
-
-import std;
+export module lysa.ecs.components;
 
 import lysa.aabb;
 import lysa.context;
 import lysa.math;
-import lysa.types;
 
-export namespace lysa::tags {
+export import lysa.ecs.components.transform;
+export import lysa.ecs.flecs;
+
+export namespace lysa::ecs {
+
     struct Updated { };
-}
-
-export namespace lysa::components {
 
     struct Context {
         lysa::Context* ctx;
-    };
-
-    struct Position {
-        float x;
-        float y;
-        float z;
-    };
-
-    struct Transform {
-        float4x4 localTransform{};
-        float4x4 globalTransform{};
     };
 
     struct MeshInstance {
@@ -39,7 +26,5 @@ export namespace lysa::components {
         bool castShadows{false};
         AABB worldAABB;
     };
-
-
 
 }

@@ -4,20 +4,18 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
 */
-export module lysa.systems;
+export module lysa.ecs.systems;
 
-import lysa.components;
-import lysa.flecs;
+import lysa.ecs.components;
+export import lysa.ecs.flecs;
 
-export namespace lysa {
+export namespace lysa::ecs {
 
     class TransformModule {
     public:
         TransformModule(const flecs::world& w);
     private:
-        static void updateGlobalTransform(
-            flecs::entity e,
-            components::Transform& t);
+        static void updateGlobalTransform(flecs::entity e, Transform& t);
     };
 
     struct MeshInstanceModule {

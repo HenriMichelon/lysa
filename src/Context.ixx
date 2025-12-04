@@ -10,7 +10,7 @@ import std;
 import vireo;
 import lysa.async_queue;
 import lysa.event;
-import lysa.flecs;
+import lysa.ecs.flecs;
 #ifdef LUA_BINDING
 import lysa.lua;
 #endif
