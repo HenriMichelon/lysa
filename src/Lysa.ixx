@@ -79,6 +79,8 @@ export namespace  lysa {
         vireo::Backend backend{vireo::Backend::VULKAN};
         //! Resource capacity configuration
         ResourcesCapacity resourcesCapacity;
+        size_t eventsReserveCapacity{100};
+        size_t commandsReserveCapacity{1000};
         //! Virtual file system configuration
         VirtualFSConfiguration virtualFsConfiguration;
 #ifdef LUA_BINDING

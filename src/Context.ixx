@@ -9,6 +9,8 @@ export module lysa.context;
 import std;
 import vireo;
 import lysa.async_queue;
+import lysa.async_pool;
+import lysa.command_buffer;
 import lysa.event;
 import lysa.ecs.flecs;
 #ifdef LUA_BINDING
@@ -56,6 +58,16 @@ export namespace  lysa {
         EventManager events;
 
         /**
+         * Deferred commands buffer
+         */
+        CommandBuffer defer;
+
+        /**
+         * Deferred commands buffer
+         */
+        AsyncPool threads;
+
+        /**
          * ECS world
          */
         flecs::world world;
@@ -87,7 +99,9 @@ export namespace  lysa {
 
         Context(
             vireo::Backend backend,
-            unique_id samplersCapacity,
+            size_t eventsCapacity,
+            size_t commandsCapacity,
+            size_t samplersCapacity,
             const VirtualFSConfiguration& virtualFsConfiguration
 #ifdef LUA_BINDING
             ,const LuaConfiguration& luaConfiguration

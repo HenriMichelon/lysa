@@ -16,10 +16,6 @@ export namespace lysa::ecs {
         float4x4 global{};
     };
 
-    struct Translate {
-        float3 offset;
-    };
-
     float3 getPositionGlobal(flecs::entity e);
 
     float3 getPositionLocal(flecs::entity e);

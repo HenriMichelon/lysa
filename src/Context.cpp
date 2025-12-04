@@ -10,7 +10,9 @@ namespace  lysa {
 
     Context::Context(
         const vireo::Backend backend,
-        const unique_id samplersCapacity,
+        const size_t eventsCapacity,
+        const size_t commandsCapacity,
+        const size_t samplersCapacity,
         const VirtualFSConfiguration& virtualFsConfiguration
 #ifdef LUA_BINDING
         ,const LuaConfiguration& luaConfiguration
@@ -22,6 +24,8 @@ namespace  lysa {
 #ifdef LUA_BINDING
         lua(luaConfiguration, fs),
 #endif
+        events(eventsCapacity),
+        defer(commandsCapacity),
         graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")),
         transferQueue(vireo->createSubmitQueue(vireo::CommandType::TRANSFER, "Main transfer queue")),
         asyncQueue(vireo, transferQueue, graphicQueue) {

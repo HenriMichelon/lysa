@@ -11,6 +11,8 @@ namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& config) :
         ctx(config.backend,
+            config.eventsReserveCapacity,
+            config.commandsReserveCapacity,
             config.resourcesCapacity.samplers,
             config.virtualFsConfiguration
 #ifdef LUA_BINDING
@@ -43,8 +45,10 @@ namespace lysa {
         const std::function<void(float)>& onPhysicsProcess,
         const std::function<void()>& onQuit) {
         while (!ctx.exit) {
+            ctx.threads._process();
             processPlatformEvents();
             ctx.events._process();
+            ctx.defer._process();
             if (ctx.samplers.isUpdateNeeded()) {
                 ctx.samplers.update();
             }
@@ -62,7 +66,6 @@ namespace lysa {
                 accumulator -= FIXED_DELTA_TIME;
             }
             onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
-
 
             renderTargetManager.update();
             renderTargetManager.render();

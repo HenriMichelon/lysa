@@ -28,12 +28,11 @@ namespace lysa {
 #endif
 
     void EventManager::_process() {
-        std::vector<Event> currentQueue;
         {
             auto lock = std::scoped_lock (queueMutex);
-            currentQueue.swap(queue);
+            processingQueue.swap(queue);
         }
-        for (const Event& e : currentQueue) {
+        for (const Event& e : processingQueue) {
             {
                 const auto itType = handlers.find(e.type);
                 if (itType != handlers.end()) {
@@ -59,7 +58,12 @@ namespace lysa {
             }
 #endif
         }
-        queue.clear();
+        processingQueue.clear();
+    }
+
+    EventManager::EventManager(const size_t reservedCapacity) {
+        queue.reserve(reservedCapacity);
+        processingQueue.reserve(reservedCapacity);
     }
 
     EventManager::~EventManager() {

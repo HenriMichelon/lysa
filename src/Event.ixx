@@ -70,11 +70,14 @@ export namespace lysa {
 
         void _process();
 
+        EventManager(size_t reservedCapacity);
         ~EventManager();
 
     private:
         // Pending events waiting to be processed.
-        std::vector<Event> queue{};
+        std::vector<Event> queue;
+        // Backup of events for processing without blocking too much the queue
+        std::vector<Event> processingQueue;
         std::mutex queueMutex;
         // C++ subscribers keyed by event type then id.
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<EventHandler>>> handlers{};
