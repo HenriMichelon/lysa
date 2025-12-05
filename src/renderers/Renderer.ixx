@@ -10,7 +10,6 @@ import vireo;
 
 import lysa.context;
 import lysa.math;
-import lysa.types;
 import lysa.renderers.configuration;
 import lysa.renderers.renderpass.depth_prepass;
 

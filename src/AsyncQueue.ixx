@@ -6,7 +6,6 @@
 */
 export module lysa.async_queue;
 
-import std;
 import vireo;
 import lysa.types;
 

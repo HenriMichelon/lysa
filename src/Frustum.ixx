@@ -6,7 +6,6 @@
 */
 export module lysa.frustum;
 
-import std;
 import lysa.math;
 
 export namespace lysa {

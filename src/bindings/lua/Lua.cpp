@@ -15,7 +15,6 @@ extern "C"
 }
 module lysa.lua;
 
-import vireo;
 import vireo.lua;
 import lysa;
 

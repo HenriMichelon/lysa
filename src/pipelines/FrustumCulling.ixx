@@ -9,10 +9,9 @@ export module lysa.pipelines.frustum_culling;
 import vireo;
 import lysa.context;
 import lysa.frustum;
-import lysa.global;
+import lysa.utils;
 import lysa.math;
 import lysa.memory;
-import lysa.types;
 
 export namespace lysa {
     class FrustumCulling {
@@ -50,7 +49,7 @@ export namespace lysa {
         const std::string SHADER_SCENE{"frustum_culling.comp"};
         const std::string SHADER_SHADOWMAP{"frustum_culling_shadowmap.comp"};
 
-        struct Global {
+        struct Utils {
             uint32 drawCommandsCount;
             Frustum::Plane planes[6];
             float4x4 viewMatrix;

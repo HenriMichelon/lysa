@@ -4,7 +4,6 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-module;
 module lysa;
 
 namespace lysa {
@@ -45,10 +44,10 @@ namespace lysa {
         const std::function<void(float)>& onPhysicsProcess,
         const std::function<void()>& onQuit) {
         while (!ctx.exit) {
+            ctx.defer._process();
             ctx.threads._process();
             processPlatformEvents();
             ctx.events._process();
-            ctx.defer._process();
             if (ctx.samplers.isUpdateNeeded()) {
                 ctx.samplers.update();
             }

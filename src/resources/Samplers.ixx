@@ -5,7 +5,6 @@
  */
 export module lysa.resources.samplers;
 
-import std;
 import vireo;
 import lysa.types;
 

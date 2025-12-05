@@ -8,8 +8,6 @@ module;
 #include <cstddef>
 module lysa.resources.mesh;
 
-import lysa.log;
-
 namespace lysa {
 
     const std::vector<vireo::VertexAttributeDesc> VertexData::vertexAttributes {

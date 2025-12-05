@@ -6,7 +6,6 @@
 */
 export module lysa.renderers.renderpasses.forward_color;
 
-import std;
 import vireo;
 import lysa.context;
 import lysa.types;

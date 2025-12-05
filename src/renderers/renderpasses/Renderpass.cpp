@@ -6,8 +6,6 @@
 */
 module lysa.renderers.renderpasses.renderpass;
 
-import lysa.virtual_fs;
-
 namespace lysa {
 
     Renderpass::Renderpass(

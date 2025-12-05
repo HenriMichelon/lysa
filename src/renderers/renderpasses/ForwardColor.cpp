@@ -6,7 +6,6 @@
 */
 module lysa.renderers.renderpasses.forward_color;
 
-
 namespace lysa {
     ForwardColor::ForwardColor(
         const Context& ctx,

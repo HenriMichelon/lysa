@@ -12,7 +12,6 @@ import lysa.context;
 import lysa.exception;
 import lysa.math;
 import lysa.memory;
-import lysa.types;
 import lysa.resources.material;
 import lysa.resources.resource_manager;
 

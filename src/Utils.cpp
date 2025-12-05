@@ -8,7 +8,7 @@ module;
 #ifdef _WIN32
 #include <windows.h>
 #endif
-module lysa.global;
+module lysa.utils;
 
 import lysa.exception;
 

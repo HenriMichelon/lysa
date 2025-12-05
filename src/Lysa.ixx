@@ -14,7 +14,7 @@ export import lysa.async_queue;
 export import lysa.context;
 export import lysa.event;
 export import lysa.exception;
-export import lysa.global;
+export import lysa.utils;
 export import lysa.log;
 export import lysa.manager;
 export import lysa.math;

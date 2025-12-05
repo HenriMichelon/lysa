@@ -6,25 +6,23 @@
 */
 module lysa.ecs.components.transform;
 
-import lysa.exception;
-import lysa.math;
-import lysa.ecs.flecs;
-
 namespace lysa::ecs {
+
+    #define CHECK_TRANSFORM(e) assert([&]{ return e.has<Transform>();}, "No Transform component in entity");
 
 
     float3 getPositionGlobal(const flecs::entity e) {
-        assert([&]{ return e.has<Transform>();} ,"No Transform component in entity");
+        CHECK_TRANSFORM(e);
         return e.get<Transform>().global[3].xyz;
     }
 
     float3 getPositionLocal(const flecs::entity e) {
-        assert([&]{ return e.has<Transform>();} ,"No Transform component in entity");
+        CHECK_TRANSFORM(e);
         return e.get<Transform>().local[3].xyz;
     }
 
     void setPositionLocal(const flecs::entity e, const float3& position) {
-        assert([&]{ return e.has<Transform>();} ,"No Transform component in entity");
+        CHECK_TRANSFORM(e);
         if (any(position != getPositionLocal(e))) {
             auto t = e.get<Transform>();
             t.local[3] = float4{position, 1.0f};
@@ -38,7 +36,7 @@ namespace lysa::ecs {
                 setPositionLocal(e, position);
                 return;
             }
-            assert([&]{ return e.parent().has<Transform>();} , "No Transform component in parent entity");
+            CHECK_TRANSFORM(e.parent());
             auto t = e.parent().get<Transform>();
             t.local[3] = mul(float4{position, 1.0}, inverse(t.global));
             e.set(t);

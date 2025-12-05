@@ -10,7 +10,6 @@ module lysa.resources.rendering_window;
 
 import lysa.exception;
 import lysa.log;
-import lysa.resources.locator;
 
 namespace lysa {
 

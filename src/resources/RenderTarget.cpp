@@ -9,7 +9,6 @@ module lysa.resources.render_target;
 import lysa.exception;
 import lysa.log;
 import lysa.renderers.renderer;
-import lysa.resources.locator;
 
 namespace lysa {
 

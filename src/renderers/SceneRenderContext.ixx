@@ -10,7 +10,6 @@ import vireo;
 import lysa.context;
 import lysa.math;
 import lysa.memory;
-import lysa.types;
 import lysa.pipelines.frustum_culling;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;

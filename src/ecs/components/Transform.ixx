@@ -6,6 +6,7 @@
 */
 export module lysa.ecs.components.transform;
 
+import lysa.exception;
 import lysa.math;
 import lysa.ecs.flecs;
 

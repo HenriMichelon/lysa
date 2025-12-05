@@ -10,6 +10,7 @@ import vireo;
 import lysa.types;
 
 export namespace lysa {
+
     /**
      * Description of allocated GPU memory block
      */

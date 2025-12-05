@@ -6,8 +6,6 @@
 */
 module lysa.aabb;
 
-import lysa.math;
-
 namespace lysa {
 
     // https://ktstephano.github.io/rendering/stratusgfx/aabbs

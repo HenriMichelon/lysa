@@ -6,10 +6,7 @@
 */
 export module lysa.resources.resource_manager;
 
-import std;
-
 import lysa.context;
-import lysa.exception;
 import lysa.manager;
 import lysa.types;
 

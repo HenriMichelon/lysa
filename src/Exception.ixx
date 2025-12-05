@@ -10,7 +10,7 @@ module;
 #endif
 export module lysa.exception;
 
-export import std;
+import std;
 
 export namespace lysa {
 

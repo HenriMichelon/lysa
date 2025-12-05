@@ -15,7 +15,7 @@ namespace lysa {
         const bool isForScene,
         const DeviceMemoryArray& meshInstancesArray) {
         const auto& vireo = *ctx.vireo;
-        globalBuffer = vireo.createBuffer(vireo::BufferType::UNIFORM, sizeof(Global), 1, DEBUG_NAME);
+        globalBuffer = vireo.createBuffer(vireo::BufferType::UNIFORM, sizeof(Utils), 1, DEBUG_NAME);
         globalBuffer->map();
         commandClearCounterBuffer = vireo.createBuffer(vireo::BufferType::BUFFER_UPLOAD, sizeof(uint32));
         constexpr auto clearValue = 0;
@@ -69,7 +69,7 @@ namespace lysa {
             vireo::ResourceState::COMPUTE_WRITE);
         if (drawCommandsCount == 0) { return; }
 
-        auto global = Global{
+        auto global = Utils{
             .drawCommandsCount = drawCommandsCount,
             .viewMatrix = inverse(view),
         };

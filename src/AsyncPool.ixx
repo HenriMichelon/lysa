@@ -6,7 +6,7 @@
 */
 export module lysa.async_pool;
 
-import lysa.types;
+import std;
 
 export namespace lysa {
 

@@ -6,8 +6,6 @@
 */
 module lysa.renderers.renderpass.depth_prepass;
 
-import lysa.renderers.renderer;
-
 namespace lysa {
     DepthPrepass::DepthPrepass(
         const Context& ctx,

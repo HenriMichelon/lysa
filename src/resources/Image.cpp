@@ -10,8 +10,6 @@ module;
 module lysa.resources.image;
 
 import lysa.exception;
-import lysa.log;
-import lysa.virtual_fs;
 
 namespace lysa {
 

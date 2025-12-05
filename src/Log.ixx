@@ -7,7 +7,6 @@
 export module lysa.log;
 #include <cstdio>
 
-import std;
 import lysa.types;
 
 export namespace lysa {

@@ -4,11 +4,9 @@
  * This software is released under the MIT License.
  * https://opensource.org/licenses/MIT
 */
-export module lysa.global;
+export module lysa.utils;
 
-import std;
 import lysa.math;
-import lysa.types;
 
 export namespace lysa {
 

@@ -227,11 +227,11 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Frustum.cpp
-        ${ENGINE_SRC_DIR}/Global.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
         ${ENGINE_SRC_DIR}/Lysa.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
         ${ENGINE_SRC_DIR}/Memory.cpp
+        ${ENGINE_SRC_DIR}/Utils.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
 
         ${ENGINE_SRC_DIR}/ecs/components/Transform.cpp
@@ -275,13 +275,13 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Frustum.ixx
-        ${ENGINE_SRC_DIR}/Global.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
         ${ENGINE_SRC_DIR}/Manager.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Memory.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
+        ${ENGINE_SRC_DIR}/Utils.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
 
         ${ENGINE_SRC_DIR}/ecs/Flecs.ixx

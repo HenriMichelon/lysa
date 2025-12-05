@@ -6,8 +6,6 @@
 */
 module lysa.frustum;
 
-import lysa.types;
-
 namespace lysa {
     
     void Frustum::Plane::normalize() {

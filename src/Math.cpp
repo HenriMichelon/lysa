@@ -6,8 +6,6 @@
 */
 module lysa.math;
 
-import std;
-
 namespace lysa {
 
     float4x4 look_at(const float3& eye, const float3& center, const float3& up) {

@@ -6,7 +6,6 @@
 */
 export module lysa.renderers.forward_renderer;
 
-import std;
 import vireo;
 
 import lysa.context;

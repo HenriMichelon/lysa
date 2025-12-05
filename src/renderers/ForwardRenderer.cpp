@@ -6,8 +6,6 @@
 */
 module lysa.renderers.forward_renderer;
 
-import lysa.types;
-
 namespace lysa {
 
     ForwardRenderer::ForwardRenderer(

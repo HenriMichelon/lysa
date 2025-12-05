@@ -6,7 +6,6 @@
 */
 export module lysa.event;
 
-import std;
 #ifdef LUA_BINDING
 import lysa.lua;
 #endif

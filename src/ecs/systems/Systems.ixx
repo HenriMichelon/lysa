@@ -6,7 +6,7 @@
 */
 export module lysa.ecs.systems;
 
-import lysa.ecs.components;
+export import lysa.ecs.components;
 export import lysa.ecs.flecs;
 
 export namespace lysa::ecs {

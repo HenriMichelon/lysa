@@ -6,8 +6,6 @@
 */
 export module lysa.manager;
 
-import std;
-
 import lysa.exception;
 import lysa.types;
 

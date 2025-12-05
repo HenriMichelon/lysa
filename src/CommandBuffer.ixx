@@ -6,7 +6,7 @@
 */
 export module lysa.command_buffer;
 
-import lysa.types;
+import std;
 
 export namespace lysa {
 

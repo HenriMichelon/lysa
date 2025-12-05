@@ -6,12 +6,7 @@
 */
 module lysa.ecs.systems;
 
-import lysa.aabb;
-import lysa.log;
 import lysa.math;
-import lysa.types;
-import lysa.ecs.components;
-import lysa.resources.mesh;
 
 namespace lysa::ecs {
 
@@ -35,7 +30,6 @@ namespace lysa::ecs {
           .event(flecs::OnSet)
           .event(flecs::OnAdd)
           .each([](const flecs::entity e,Transform& t) {
-               Log::info("Transform set ", e.name());
                updateGlobalTransform(e, t);
           });
           // w.observer<Transform, const Position>()

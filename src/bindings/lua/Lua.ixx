@@ -8,7 +8,6 @@ module;
 #include "lua.h"
 export module lysa.lua;
 
-import std;
 export import lua_bridge; // from Vireo
 
 import lysa.types;
