@@ -32,19 +32,6 @@ namespace lysa::ecs {
           .each([](const flecs::entity e,Transform& t) {
                updateGlobalTransform(e, t);
           });
-          // w.observer<Transform, const Position>()
-          // .event(flecs::OnSet)
-          // .each([](const flecs::entity e, Transform& t, const Position& p) {
-          //      t.local[3] = float4{p.x, p.y, p.z, 1.0f};
-          //      updateGlobalTransform(e, t);
-          //      e.remove<Position>();
-          // });
-          // w.system<Transform, const Translate>()
-          // .kind(flecs::OnUpdate)
-          // .each([](const flecs::entity e, Transform& t, const Translate& tr) {
-          //      t.local = mul(t.local, float4x4::translation(tr.offset));
-          //      updateGlobalTransform(e, t);
-          // });
      }
 
 }
