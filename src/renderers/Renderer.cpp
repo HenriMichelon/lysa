@@ -40,18 +40,46 @@ namespace lysa {
         depthPrePass.update(frameIndex);
     }
 
+    void Renderer::updatePipelines(const SceneRenderContext& scene) {
+        const auto& pipelineIds = scene.getPipelineIds();
+        // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
+            // static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->updatePipelines(pipelineIds);
+        // }
+        updatePipelines(pipelineIds);
+    }
+
+    void Renderer::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
+        depthPrePass.updatePipelines(pipelineIds);
+        // shaderMaterialPass.updatePipelines(pipelineIds);
+        // transparencyPass.updatePipelines(pipelineIds);
+    }
+
+    void Renderer::compute(
+       vireo::CommandList& commandList,
+       const SceneRenderContext& scene,
+       const uint32 frameIndex) const {
+        auto resourcesLock = std::lock_guard{Application::getResources().getMutex()};
+        for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
+            shadowMapRenderer->update(frameIndex);
+        }
+        scene.update(commandList);
+        scene.compute(commandList);
+    }
+
     void Renderer::preRender(
         vireo::CommandList& commandList,
+        const SceneRenderContext& scene,
         const uint32 frameIndex) {
         depthPrePass.render(commandList, framesData[frameIndex].depthAttachment);
     }
 
     void Renderer::render(
        vireo::CommandList& commandList,
+       const SceneRenderContext& scene,
        const bool clearAttachment,
        const uint32 frameIndex) {
         const auto& frame = framesData[frameIndex];
-        colorPass(commandList, frame.colorAttachment, frame.depthAttachment, clearAttachment, frameIndex);
+        colorPass(commandList, scene, frame.colorAttachment, frame.depthAttachment, clearAttachment, frameIndex);
     }
 
     void Renderer::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {

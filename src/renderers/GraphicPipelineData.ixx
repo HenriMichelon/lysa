@@ -31,6 +31,13 @@ export namespace lysa {
         float4x4 projection;
     };
 
+    struct VertexData {
+        float4 position; // position + uv.x
+        float4 normal;   // normal + uv.y
+        float4 tangent;  // tangent + sign
+
+        static const std::vector<vireo::VertexAttributeDesc> vertexAttributes;
+    };
     /**
      * Light data in GPU memory
      */

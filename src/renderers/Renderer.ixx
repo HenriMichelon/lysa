@@ -11,6 +11,8 @@ import vireo;
 import lysa.context;
 import lysa.math;
 import lysa.renderers.configuration;
+import lysa.renderers.graphic_pipeline_data;
+import lysa.renderers.scene_render_context;
 import lysa.renderers.renderpass.depth_prepass;
 
 export namespace lysa {
@@ -49,19 +51,56 @@ export namespace lysa {
          */
         virtual void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList);
 
+        /**
+         * Updates graphics pipelines according to the Scene material mapping.
+         * Convenience overload that pulls mapping from the Scene.
+         */
+        void updatePipelines(const SceneRenderContext& scene);
+
+        /**
+         * Updates graphics pipelines according to the provided materials mapping.
+         * @param pipelineIds Map of pipeline family id to materials.
+         */
+        virtual void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
+
         /** Performs per-frame housekeeping (e.g., pass-local data updates). */
         virtual void update(uint32 frameIndex);
+
+        /** Executes compute workloads such as frustum culling. */
+        void compute(
+            vireo::CommandList& commandList,
+            const SceneRenderContext& scene,
+            uint32 frameIndex) const;
 
         /** Pre-render stage: uploads, layout transitions, depth pre pass and shadow maps. */
         void preRender(
             vireo::CommandList& commandList,
+            const SceneRenderContext& scene,
             uint32 frameIndex);
 
         /** Main render stage: records opaque/transparent draw calls. */
         void render(
             vireo::CommandList& commandList,
+            const SceneRenderContext& scene,
             bool clearAttachment,
             uint32 frameIndex);
+
+        /** Applies post-processing chain (SMAA, bloom, custom passes). */
+        // void postprocess(
+        //     vireo::CommandList& commandList,
+        //     const vireo::Viewport&viewport,
+        //     const vireo::Rect&scissor,
+        //     uint32 frameIndex);
+
+        /** Adds a full-screen post-processing pass by fragment shader name. */
+        // void addPostprocessing(
+        //     const std::string& fragShaderName,
+        //     vireo::ImageFormat outputFormat,
+        //     void* data = nullptr,
+        //     uint32 dataSize = 0);
+
+        /** Removes a previously added post-processing pass by fragment name. */
+        // void removePostprocessing(const std::string& fragShaderName);
 
         virtual ~Renderer() = default;
         Renderer(Renderer&) = delete;
@@ -85,6 +124,7 @@ export namespace lysa {
         */
         virtual void colorPass(
             vireo::CommandList& commandList,
+            const SceneRenderContext& scene,
             const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             bool clearAttachment,

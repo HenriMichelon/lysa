@@ -6,6 +6,8 @@
 */
 module lysa.renderers.renderpass.depth_prepass;
 
+import lysa.renderers.graphic_pipeline_data;
+
 namespace lysa {
     DepthPrepass::DepthPrepass(
         const Context& ctx,
@@ -15,27 +17,38 @@ namespace lysa {
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
         pipelineConfig.stencilTestEnable = withStencil;
         pipelineConfig.backStencilOpState = pipelineConfig.frontStencilOpState;
-        /*pipelineConfig.resources = ctx.vireo->createPipelineResources({
+        pipelineConfig.resources = ctx.vireo->createPipelineResources({
             Resources::descriptorLayout,
             Application::getResources().getSamplers().getDescriptorLayout(),
             Scene::sceneDescriptorLayout,
             Scene::pipelineDescriptorLayout,
             Scene::sceneDescriptorLayoutOptional1},
-            Scene::instanceIndexConstantDesc, name);*/
+            Scene::instanceIndexConstantDesc, name);
         renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
+    }
+
+    void DepthPrepass::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
+        for (const auto& [pipelineId, materials] : pipelineIds) {
+            if (!pipelines.contains(pipelineId)) {
+                const auto& material = materials.at(0);
+                pipelineConfig.cullMode = material->getCullMode();
+                pipelineConfig.vertexShader = loadShader(VERTEX_SHADER);
+                pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
+                pipelines[pipelineId] = ctx.vireo->createGraphicPipeline(pipelineConfig, name);
+            }
+        }
     }
 
     void DepthPrepass::render(
         vireo::CommandList& commandList,
+        const SceneRenderContext& scene,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment) {
         renderingConfig.depthStencilRenderTarget = depthAttachment;
         commandList.beginRendering(renderingConfig);
         if (pipelineConfig.stencilTestEnable) {
             commandList.setStencilReference(1);
         }
-        // scene.drawOpaquesModels(
-        //   commandList,
-        //   pipelines);
+        scene.drawOpaquesModels(commandList, pipelines);
         commandList.endRendering();
     }
 }
