@@ -12,7 +12,7 @@ import lysa.resources.mesh;
 namespace lysa::ecs {
 
      MeshInstanceModule::MeshInstanceModule(const flecs::world& w) {
-          auto& meshManager = w.get<Context>().ctx->resources.get<MeshManager>();
+          auto& meshManager = w.get<Context>().ctx->res.get<MeshManager>();
           w.module<MeshInstanceModule>();
           w.component<MeshInstance>();
           w.observer<const Transform, MeshInstance>()

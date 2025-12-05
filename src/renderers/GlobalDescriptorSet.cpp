@@ -13,7 +13,7 @@ namespace lysa {
 
     GlobalDescriptorSet::GlobalDescriptorSet(Context& ctx):
         ctx(ctx),
-        imageManager(ctx.resources.get<ImageManager>()) {
+        imageManager(ctx.res.get<ImageManager>()) {
         descriptorLayout = ctx.vireo->createDescriptorLayout("Global");
         descriptorLayout->add(BINDING_MATERIALS, vireo::DescriptorType::DEVICE_STORAGE);
         descriptorLayout->add(BINDING_SURFACES, vireo::DescriptorType::DEVICE_STORAGE);
@@ -22,7 +22,7 @@ namespace lysa {
         descriptorLayout->build();
 
         descriptorSet = ctx.vireo->createDescriptorSet(descriptorLayout, "Global");
-        descriptorSet->update(BINDING_MATERIALS, ctx.resources.get<MaterialManager>().getBuffer());
+        descriptorSet->update(BINDING_MATERIALS, ctx.res.get<MaterialManager>().getBuffer());
         // descriptorSet->update(BINDING_SURFACES, meshSurfaceArray.getBuffer());
         descriptorSet->update(BINDING_TEXTURES, imageManager.getImages());
     }

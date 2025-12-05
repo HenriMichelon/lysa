@@ -12,20 +12,20 @@ namespace lysa {
 
     RenderingWindowManager::RenderingWindowManager(Context& ctx,const size_t capacity) :
         ResourcesManager(ctx, capacity) {
-        ctx.resources.enroll(*this);
+        ctx.res.enroll(*this);
     }
 
     void RenderingWindow::_closing() {
         if (stopped) { return; }
         stopped = true;
-        ctx.resources.get<RenderTargetManager>().destroy(platformHandle);
+        ctx.res.get<RenderTargetManager>().destroy(platformHandle);
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
-        ctx.resources.get<RenderingWindowManager>().destroy(id);
+        ctx.res.get<RenderingWindowManager>().destroy(id);
     }
 
     void RenderingWindow::_resized() const {
         if (stopped) { return; }
-        ctx.resources.get<RenderTargetManager>().resize(platformHandle);
+        ctx.res.get<RenderTargetManager>().resize(platformHandle);
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
     }
 

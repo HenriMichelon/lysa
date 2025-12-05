@@ -37,7 +37,7 @@ namespace  lysa {
                .addProperty("fs",  [this] { return &fs;})
                .addProperty("events", [this] { return &events;})
                .addProperty("world", [this] { return &world;})
-               .addProperty("resources", [this] { return &resources;})
+               .addProperty("res", [this] { return &res;})
                .addProperty("graphic_queue", [this] { return &graphicQueue;})
             .endNamespace()
         .endNamespace();

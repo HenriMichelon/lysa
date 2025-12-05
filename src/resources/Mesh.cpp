@@ -36,7 +36,7 @@ namespace lysa {
         assert([&]{return surfaceIndex < surfaces.size();}, "Invalid surface index");
         surfaces[surfaceIndex].material = material;
         materials.insert(surfaces[surfaceIndex].material);
-        ctx.resources.get<MeshManager>().upload(id);
+        ctx.res.get<MeshManager>().upload(id);
     }
 
     bool Mesh::operator==(const Mesh &other) const {
@@ -70,7 +70,7 @@ namespace lysa {
         const size_t indexCapacity,
         const size_t surfaceCapacity) :
         ResourcesManager(ctx, capacity),
-        materialManager(ctx.resources.get<MaterialManager>()),
+        materialManager(ctx.res.get<MaterialManager>()),
         vertexArray {
             ctx.vireo,
             sizeof(VertexData),
@@ -92,7 +92,7 @@ namespace lysa {
             surfaceCapacity,
             vireo::BufferType::DEVICE_STORAGE,
             "MeshSurface Array"} {
-        ctx.resources.enroll(*this);
+        ctx.res.enroll(*this);
     }
 
     void MeshManager::flush() {

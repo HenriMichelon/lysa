@@ -84,7 +84,7 @@ export namespace lysa {
          * @param capacity Initial capacity
          */
         ImageTextureManager(Context& ctx, const unique_id capacity) : ResourcesManager(ctx, capacity) {
-            ctx.resources.enroll(*this);
+            ctx.res.enroll(*this);
         }
 
         ~ImageTextureManager() override { cleanup(); }

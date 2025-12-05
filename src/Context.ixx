@@ -75,7 +75,7 @@ export namespace  lysa {
         /**
          * Resource resolution and access facility.
          */
-        ResourcesRegistry resources;
+        ResourcesRegistry res;
 
         /**
          * Global GPU samplers

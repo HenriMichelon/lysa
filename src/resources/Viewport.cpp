@@ -14,7 +14,7 @@ namespace lysa {
 
     Viewport::Viewport(Context& ctx, const ViewportConfiguration& configuration):
         ctx(ctx) {
-        const RenderTarget& renderTarget = ctx.resources.get<RenderTargetManager>().get(configuration.renderTarget);
+        const RenderTarget& renderTarget = ctx.res.get<RenderTargetManager>().get(configuration.renderTarget);
         this->renderTarget = configuration.renderTarget;
         this->configuration = configuration;
         resize(renderTarget.getSwapChain()->getExtent());
@@ -22,7 +22,7 @@ namespace lysa {
 
     ViewportManager::ViewportManager(Context& ctx, const size_t capacity) :
         ResourcesManager(ctx, capacity) {
-        ctx.resources.enroll(*this);
+        ctx.res.enroll(*this);
     }
 
     void Viewport::resize(const vireo::Extent &extent) {

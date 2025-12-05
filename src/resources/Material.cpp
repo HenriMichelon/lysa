@@ -14,7 +14,7 @@ namespace lysa {
     }
 
     void Material::upload() const {
-        ctx.resources.get<MaterialManager>().upload(id);
+        ctx.res.get<MaterialManager>().upload(id);
     }
 
     MaterialData StandardMaterial::getMaterialData() const {
@@ -185,7 +185,7 @@ namespace lysa {
             static_cast<size_t>(capacity),
             vireo::BufferType::DEVICE_STORAGE,
             "Global material array"} {
-        ctx.resources.enroll(*this);
+        ctx.res.enroll(*this);
     }
 
     void MaterialManager::upload(const unique_id material_id) {

@@ -29,7 +29,7 @@ namespace lysa {
             1, 1,1, 6,
             "Blank CubeMap")),
         images(capacity, blankImage) {
-        ctx.resources.enroll(*this);
+        ctx.res.enroll(*this);
         auto blank = std::vector<uint8>(4, 0);
         std::vector<void*> cubeFaces(6);
         for (int i = 0; i < 6; i++) {
