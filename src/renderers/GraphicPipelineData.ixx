@@ -28,6 +28,8 @@ export namespace lysa {
         AABB worldAABB;
         float4x4 worldTransform;
         std::unordered_map<uint32, unique_id> materialsOverride;
+
+        unique_id getSurfaceMaterial(uint32 surfaceIndex) const;
     };
 
     /**
@@ -79,7 +81,9 @@ export namespace lysa {
         static constexpr vireo::DescriptorIndex BINDING_INSTANCES{0};
         /** Shared descriptor layout for pipeline-local resources. */
         inline static std::shared_ptr<vireo::DescriptorLayout> pipelineDescriptorLayout{nullptr};
+        /** Create the shared descriptor layout */
         static void createDescriptorLayouts(const std::shared_ptr<vireo::Vireo>& vireo);
+        /** Destroy the shared descriptor layout */
         static void destroyDescriptorLayouts();
 
         /** Identifier of the material/pipeline family. */
@@ -90,6 +94,10 @@ export namespace lysa {
         std::shared_ptr<vireo::DescriptorSet> descriptorSet;
         /** Compute pipeline used to cull draw commands against the frustum. */
         FrustumCulling frustumCullingPipeline;
+        /** Shortcut to the material manager */
+        MaterialManager& materialManager;
+        /** Shortcut to Vireo */
+        std::shared_ptr<vireo::Vireo> vireo;
 
         /** Flags tracking mutations in the instances set. */
         bool instancesUpdated{false};
@@ -97,7 +105,7 @@ export namespace lysa {
         /** Device memory array that stores InstanceData blocks. */
         DeviceMemoryArray instancesArray;
         /** Mapping of mesh instance to its memory block within instancesArray. */
-        //std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock> instancesMemoryBlocks;
+        std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock> instancesMemoryBlocks;
 
         /** Number of indirect draw commands before culling. */
         uint32 drawCommandsCount{0};
@@ -122,25 +130,25 @@ export namespace lysa {
             const DeviceMemoryArray& meshInstancesDataArray);
 
         /** Registers a mesh instance into this pipeline cache. */
-        // void addInstance(
-        //     const MeshInstanceDesc& meshInstance,
-        //     const std::unordered_map<MeshInstanceDesc, MemoryBlock>& meshInstancesDataMemoryBlocks);
+        void addInstance(
+            const std::shared_ptr<MeshInstanceDesc>& meshInstance,
+            const std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock>& meshInstancesDataMemoryBlocks);
 
         /** Removes a previously registered mesh instance. */
-        // void removeNode(
-            // const std::shared_ptr<MeshInstance>& meshInstance);
+        void removeInstance(
+            const std::shared_ptr<MeshInstanceDesc>& meshInstance);
 
         /** Adds a single draw instance and wires memory blocks. */
-        // void addInstance(
-        //     const MeshInstanceDesc& meshInstance,
-        //     const MemoryBlock& instanceMemoryBlock,
-        //     const MemoryBlock& meshInstanceMemoryBlock);
+        void addInstance(
+            const std::shared_ptr<MeshInstanceDesc>& meshInstance,
+            const MemoryBlock& instanceMemoryBlock,
+            const MemoryBlock& meshInstanceMemoryBlock);
 
         /** Uploads/refreshes GPU buffers and prepares culled draw streams. */
-        // void updateData(
-            // const vireo::CommandList& commandList,
-            // std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
-            // const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
+        void updateData(
+            const vireo::CommandList& commandList,
+            std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
+            const std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock>& meshInstancesDataMemoryBlocks);
     };
 
 }

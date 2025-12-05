@@ -119,6 +119,11 @@ export namespace lysa {
         std::vector<MeshSurface>& getSurfaces() { return surfaces; }
 
         /**
+         * Returns all the Surfaces
+         */
+        const std::vector<MeshSurface>& getSurfaces() const { return surfaces; }
+
+        /**
          * Returns all the vertices
          */
         std::vector<Vertex>& getVertices() { return vertices; }
