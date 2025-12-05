@@ -110,10 +110,10 @@ export namespace lysa {
 
 
         /** Returns the default 2D blank image used as a safe fallback. */
-        auto getBlankImage() { return blankImage; }
+        auto getBlankImage() const { return blankImage; }
 
         /** Returns the default cubemap blank image used as a safe fallback. */
-        auto getBlankCubeMap() { return blankCubeMap; }
+        auto getBlankCubeMap() const { return blankCubeMap; }
 
         /** Returns true if the descriptor sets using the images must be updated */
         bool isUpdateNeeded() const { return updated; }

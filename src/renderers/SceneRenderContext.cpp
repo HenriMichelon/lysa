@@ -8,19 +8,24 @@ module lysa.renderers.scene_render_context;
 
 import lysa.exception;
 import lysa.log;
+import lysa.resources.image;
 
 namespace lysa {
 
-    void SceneRenderContext::createDescriptorLayouts(const std::shared_ptr<vireo::Vireo>& vireo) {
+    void SceneRenderContext::createDescriptorLayouts(
+        const std::shared_ptr<vireo::Vireo>& vireo,
+        const SceneRenderContextConfiguration& config) {
         sceneDescriptorLayout = vireo->createDescriptorLayout("Scene");
         sceneDescriptorLayout->add(BINDING_SCENE, vireo::DescriptorType::UNIFORM);
         sceneDescriptorLayout->add(BINDING_MODELS, vireo::DescriptorType::DEVICE_STORAGE);
         sceneDescriptorLayout->add(BINDING_LIGHTS, vireo::DescriptorType::UNIFORM);
-        sceneDescriptorLayout->add(BINDING_SHADOW_MAPS, vireo::DescriptorType::SAMPLED_IMAGE, MAX_SHADOW_MAPS * 6);
+        sceneDescriptorLayout->add(BINDING_SHADOW_MAPS, vireo::DescriptorType::SAMPLED_IMAGE,
+            config.maxShadowMaps * 6);
         sceneDescriptorLayout->build();
 
         sceneDescriptorLayoutOptional1 = vireo->createDescriptorLayout("Scene opt1");
-        sceneDescriptorLayoutOptional1->add(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, vireo::DescriptorType::SAMPLED_IMAGE, MAX_SHADOW_MAPS * 6);
+        sceneDescriptorLayoutOptional1->add(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR,
+            vireo::DescriptorType::SAMPLED_IMAGE, config.maxShadowMaps * 6);
         sceneDescriptorLayoutOptional1->build();
 
         GraphicPipelineData::createDescriptorLayouts(vireo);
@@ -32,313 +37,275 @@ namespace lysa {
         GraphicPipelineData::destroyDescriptorLayouts();
     }
 
-    // SceneRenderContext::SceneRenderContext(
-    //     const SceneRenderContextConfiguration& config,
-    //     const RendererConfiguration& renderingConfig,
-    //     const uint32 framesInFlight,
-    //     const vireo::Viewport& viewport,
-    //     const vireo::Rect& scissors) :
-    //     config{config},
-    //     lightsBuffer{ctx.vireo->createBuffer(
-    //         vireo::BufferType::UNIFORM,
-    //         sizeof(LightData),
-    //         1,
-    //         "Scene Lights")},
-    //     meshInstancesDataArray{ctx.vireo,
-    //         sizeof(MeshInstanceData),
-    //         config.maxModelsPerScene,
-    //         config.maxModelsPerScene,
-    //         vireo::BufferType::DEVICE_STORAGE,
-    //         "meshInstances Data"},
-    //     sceneUniformBuffer{ctx.vireo->createBuffer(
-    //         vireo::BufferType::UNIFORM,
-    //         sizeof(SceneData), 1,
-    //         "Scene Data")},
-    //     scissors{scissors},
-    //     viewport{viewport},
-    //     framesInFlight{framesInFlight},
-    //     renderingConfig{renderingConfig} {
-    //
-    //     shadowMaps.resize(MAX_SHADOW_MAPS * 6);
-    //     shadowTransparencyColorMaps.resize(MAX_SHADOW_MAPS * 6);
-    //     for (int i = 0; i < shadowMaps.size(); i++) {
-    //         shadowMaps[i] = Application::getResources().getBlankImage();
-    //         shadowTransparencyColorMaps[i] = Application::getResources().getBlankImage();
-    //     }
-    //
-    //     descriptorSet = ctx.vireo->createDescriptorSet(sceneDescriptorLayout, "Scene");
-    //     descriptorSet->update(BINDING_SCENE, sceneUniformBuffer);
-    //     descriptorSet->update(BINDING_MODELS, meshInstancesDataArray.getBuffer());
-    //     descriptorSet->update(BINDING_LIGHTS, lightsBuffer);
-    //     descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
-    //
-    //     descriptorSetOpt1 = ctx.vireo->createDescriptorSet(sceneDescriptorLayoutOptional1, "Scene Opt1");
-    //     descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
-    //
-    //     sceneUniformBuffer->map();
-    //     lightsBuffer->map();
-    // }
+    SceneRenderContext::SceneRenderContext(
+        const Context& ctx,
+        const SceneRenderContextConfiguration& config,
+        const RendererConfiguration& renderingConfig,
+        const uint32 framesInFlight,
+        const vireo::Viewport& viewport,
+        const vireo::Rect& scissors) :
+        ctx(ctx),
+        materialManager(ctx.res.get<MaterialManager>()),
+        config{config},
+        lightsBuffer{ctx.vireo->createBuffer(
+            vireo::BufferType::UNIFORM,
+            sizeof(LightData),
+            1,
+            "Scene Lights")},
+        meshInstancesDataArray{ctx.vireo,
+            sizeof(MeshInstanceData),
+            config.maxMeshInstancesPerScene,
+            config.maxMeshInstancesPerScene,
+            vireo::BufferType::DEVICE_STORAGE,
+            "meshInstances Data"},
+        sceneUniformBuffer{ctx.vireo->createBuffer(
+            vireo::BufferType::UNIFORM,
+            sizeof(SceneData), 1,
+            "Scene Data")},
+        scissors{scissors},
+        viewport{viewport},
+        framesInFlight{framesInFlight},
+        renderingConfig{renderingConfig} {
 
-    // void SceneRenderContext::compute(vireo::CommandList& commandList) const {
-    //     compute(commandList, opaquePipelinesData);
-    //     compute(commandList, shaderMaterialPipelinesData);
-    //     compute(commandList, transparentPipelinesData);
-    // }
+        const auto blankImage = ctx.res.get<ImageManager>().getBlankImage();
+        shadowMaps.resize(config.maxShadowMaps * 6);
+        shadowTransparencyColorMaps.resize(config.maxShadowMaps * 6);
+        for (int i = 0; i < shadowMaps.size(); i++) {
+            shadowMaps[i] = blankImage;
+            shadowTransparencyColorMaps[i] = blankImage;
+        }
 
-    // void SceneRenderContext::compute(
-    //     vireo::CommandList& commandList,
-    //     const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {
-    //     for (const auto& [pipelineId, pipelineData] : pipelinesData) {
-    //         pipelineData->frustumCullingPipeline.dispatch(
-    //             commandList,
-    //             pipelineData->drawCommandsCount,
-    //             currentCamera->getTransformGlobal(),
-    //             currentCamera->getProjection(),
-    //             *pipelineData->instancesArray.getBuffer(),
-    //             *pipelineData->drawCommandsBuffer,
-    //             *pipelineData->culledDrawCommandsBuffer,
-    //             *pipelineData->culledDrawCommandsCountBuffer);
-    //     }
-    //     for (const auto& renderer : std::views::values(shadowMapRenderers)) {
-    //         const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(renderer);
-    //         shadowMapRenderer->compute(commandList, pipelinesData);
-    //     }
-    // }
+        descriptorSet = ctx.vireo->createDescriptorSet(sceneDescriptorLayout, "Scene");
+        descriptorSet->update(BINDING_SCENE, sceneUniformBuffer);
+        descriptorSet->update(BINDING_MODELS, meshInstancesDataArray.getBuffer());
+        descriptorSet->update(BINDING_LIGHTS, lightsBuffer);
+        descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
 
-    // void SceneRenderContext::updatePipelinesData(
-    //     const vireo::CommandList& commandList,
-    //     const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
-    //     for (const auto& [pipelineId, pipelineData] : pipelinesData) {
-    //         pipelineData->updateData(commandList, drawCommandsStagingBufferRecycleBin, meshInstancesDataMemoryBlocks);
-    //     }
-    // }
+        descriptorSetOpt1 = ctx.vireo->createDescriptorSet(sceneDescriptorLayoutOptional1, "Scene Opt1");
+        descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
 
-    // void SceneRenderContext::update(const vireo::CommandList& commandList) {
-    //     if (!drawCommandsStagingBufferRecycleBin.empty()) {
-    //         drawCommandsStagingBufferRecycleBin.clear();
-    //     }
-    //     if (!removedLights.empty()) {
-    //         for (const auto& light : removedLights) {
-    //             lights.remove(light);
-    //             disableLightShadowCasting(light);
-    //         }
-    //     }
-    //     if (!removedMeshInstances.empty()) {
-    //         for (const auto& meshInstance : removedMeshInstances) {
-    //             meshInstancesDataArray.free(meshInstancesDataMemoryBlocks.at(meshInstance));
-    //             meshInstancesDataMemoryBlocks.erase(meshInstance);
-    //         }
-    //         meshInstancesDataUpdated = true;
-    //         removedMeshInstances.clear();
-    //     }
-    //
-    //     if (shadowMapsUpdated) {
-    //         descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
-    //         descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
-    //         shadowMapsUpdated = false;
-    //     }
-    //
-    //     auto sceneUniform = SceneData {
-    //         .cameraPosition = currentCamera->getPositionGlobal(),
-    //         .projection = currentCamera->getProjection(),
-    //         .view = inverse(currentCamera->getTransformGlobal()),
-    //         .viewInverse = currentCamera->getTransformGlobal(),
-    //         .lightsCount = static_cast<uint32>(lights.size()),
-    //         .bloomEnabled = renderingConfig.bloomEnabled ? 1u : 0u,
-    //         .ssaoEnabled = renderingConfig.ssaoEnabled ? 1u : 0u,
-    //     };
-    //     if (currentEnvironment) {
-    //         sceneUniform.ambientLight = currentEnvironment->getAmbientColorAndIntensity();
-    //     }
-    //     sceneUniformBuffer->write(&sceneUniform);
-    //
-    //     for (const auto& meshInstance : std::views::keys(meshInstancesDataMemoryBlocks)) {
-    //         if (meshInstance->isUpdated()) {
-    //             const auto modelData = meshInstance->getModelData();
-    //             meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &modelData);
-    //             meshInstancesDataUpdated = true;
-    //             meshInstance->decrementUpdates();
-    //         }
-    //     }
-    //
-    //     if (meshInstancesDataUpdated) {
-    //         meshInstancesDataArray.flush(commandList);
-    //         meshInstancesDataArray.postBarrier(commandList);
-    //         meshInstancesDataUpdated = false;
-    //     }
-    //
-    //     // const auto start = std::chrono::high_resolution_clock::now();
-    //     updatePipelinesData(commandList, opaquePipelinesData);
-    //     updatePipelinesData(commandList, shaderMaterialPipelinesData);
-    //     updatePipelinesData(commandList, transparentPipelinesData);
-    //     // const auto end = std::chrono::high_resolution_clock::now();
-    //     // const std::chrono::duration<double, std::milli> duration = end - start;
-    //     // if (duration.count() > 0.01) {
-    //         // std::cout << "updatePipelinesData " << duration.count() << " ms\n";
-    //     // }
-    //
-    //     if (!lights.empty()) {
-    //         if (lights.size() > lightsBufferCount) {
-    //             if (lightsBufferCount >= Light::MAX_LIGHTS) {
-    //                 throw Exception("Too many lights");
-    //             }
-    //             lightsBufferCount = lights.size();
-    //             lightsBuffer = ctx.vireo->createBuffer(
-    //                 vireo::BufferType::UNIFORM,
-    //                 sizeof(LightData) * lightsBufferCount, 1,
-    //                 "Scene Lights");
-    //             lightsBuffer->map();
-    //             descriptorSet->update(BINDING_LIGHTS, lightsBuffer);
-    //         }
-    //         auto lightIndex = 0;
-    //         auto lightsArray = std::vector<LightData>(lightsBufferCount);
-    //         for (const auto& light : lights) {
-    //             if (light->isVisible()) {
-    //                 lightsArray[lightIndex] = light->getLightData();
-    //                 if (shadowMapRenderers.contains(light)) {
-    //                     const auto&shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers[light]);
-    //                     lightsArray[lightIndex].mapIndex = shadowMapIndex[light];
-    //                     switch (light->getLightType()) {
-    //                         case Light::LIGHT_DIRECTIONAL: {
-    //                             for (int cascadeIndex = 0; cascadeIndex < lightsArray[lightIndex].cascadesCount ; cascadeIndex++) {
-    //                                 lightsArray[lightIndex].lightSpace[cascadeIndex] =
-    //                                     shadowMapRenderer->getLightSpace(cascadeIndex);
-    //                                 lightsArray[lightIndex].cascadeSplitDepth[cascadeIndex] =
-    //                                     shadowMapRenderer->getCascadeSplitDepth(cascadeIndex);
-    //                             }
-    //                             break;
-    //                         }
-    //                         case Light::LIGHT_SPOT: {
-    //                             lightsArray[lightIndex].lightSpace[0] = shadowMapRenderer->getLightSpace(0);
-    //                             break;
-    //                         }
-    //                         case Light::LIGHT_OMNI: {
-    //                             break;
-    //                         }
-    //                         default:;
-    //                     }
-    //                 }
-    //                 lightIndex++;
-    //             }
-    //         }
-    //         lightsBuffer->write(lightsArray.data(), lightsArray.size() * sizeof(LightData));
-    //     }
-    // }
+        sceneUniformBuffer->map();
+        lightsBuffer->map();
+    }
 
-    // void SceneRenderContext::addNode(const std::shared_ptr<Node>& node) {
-    //     switch (node->getType()) {
-    //     case Node::CAMERA:
-    //         node->setMaxUpdates(framesInFlight);
-    //         activateCamera(static_pointer_cast<Camera>(node));
-    //         break;
-    //     case Node::ENVIRONMENT:
-    //         node->setMaxUpdates(framesInFlight);
-    //         currentEnvironment = static_pointer_cast<Environment>(node);
-    //         break;
-    //     case Node::MESH_INSTANCE:{
-    //         const auto& meshInstance = static_pointer_cast<MeshInstance>(node);
-    //         if (meshInstancesDataMemoryBlocks.contains(meshInstance)) {
-    //             break;
-    //         }
-    //
-    //         const auto& mesh = meshInstance->getMesh();
-    //         assert([&]{return !mesh->getMaterials().empty(); }, "Models without materials are not supported");
-    //         if (!mesh->isUploaded()) {
-    //             throw Exception("Mesh instance is not in VRAM");
-    //         }
-    //
-    //         meshInstancesDataMemoryBlocks[meshInstance] = meshInstancesDataArray.alloc(1);
-    //         meshInstance->setMaxUpdates(framesInFlight);
-    //         if (!meshInstance->isUpdated()) { meshInstance->setUpdated(); }
-    //
-    //         auto haveTransparentMaterial{false};
-    //         auto haveShaderMaterial{false};
-    //         auto nodePipelineIds = std::set<uint32>{};
-    //         for (int i = 0; i < mesh->getSurfaces().size(); i++) {
-    //             const auto material = meshInstance->getSurfaceMaterial(i);
-    //             haveTransparentMaterial = material->getTransparency() != Transparency::DISABLED;
-    //             haveShaderMaterial = material->getType() == Material::SHADER;
-    //             auto id = material->getPipelineId();
-    //             nodePipelineIds.insert(id);
-    //             if (!pipelineIds.contains(id)) {
-    //                 pipelineIds[id].push_back(material);
-    //                 materialsUpdated = true;
-    //             }
-    //         }
-    //
-    //         for (const auto& pipelineId : nodePipelineIds) {
-    //             if (haveShaderMaterial) {
-    //                 addNode(pipelineId, meshInstance, shaderMaterialPipelinesData);
-    //             } else if (haveTransparentMaterial) {
-    //                 addNode(pipelineId, meshInstance, transparentPipelinesData);
-    //             } else {
-    //                 addNode(pipelineId, meshInstance, opaquePipelinesData);
-    //             }
-    //         }
-    //         break;
-    //     }
-    //     case Node::DIRECTIONAL_LIGHT:
-    //     case Node::OMNI_LIGHT:
-    //     case Node::SPOT_LIGHT:
-    //         lights.push_back(static_pointer_cast<Light>(node));
-    //         enableLightShadowCasting(node);
-    //         break;
-    //     default:
-    //         break;
-    //     }
-    // }
+    void SceneRenderContext::compute(const CameraDesc& camera, vireo::CommandList& commandList) const {
+        compute(camera, commandList, opaquePipelinesData);
+        compute(camera, commandList, shaderMaterialPipelinesData);
+        compute(camera, commandList, transparentPipelinesData);
+    }
 
-    // void SceneRenderContext::addNode(
-    //     pipeline_id pipelineId,
-    //     const std::shared_ptr<MeshInstance>& meshInstance,
-    //     std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
-    //     if (!pipelinesData.contains(pipelineId)) {
-    //         pipelinesData[pipelineId] = std::make_unique<GraphicPipelineData>(config, pipelineId, meshInstancesDataArray);
-    //     }
-    //     pipelinesData[pipelineId]->addNode(meshInstance, meshInstancesDataMemoryBlocks);
-    // }
+    void SceneRenderContext::compute(
+        const CameraDesc& camera,
+        vireo::CommandList& commandList,
+        const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {
+        for (const auto& [pipelineId, pipelineData] : pipelinesData) {
+            pipelineData->frustumCullingPipeline.dispatch(
+                commandList,
+                pipelineData->drawCommandsCount,
+                camera.transform,
+                camera.projection,
+                *pipelineData->instancesArray.getBuffer(),
+                *pipelineData->drawCommandsBuffer,
+                *pipelineData->culledDrawCommandsBuffer,
+                *pipelineData->culledDrawCommandsCountBuffer);
+        }
+        // for (const auto& renderer : std::views::values(shadowMapRenderers)) {
+        //     const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(renderer);
+        //     shadowMapRenderer->compute(commandList, pipelinesData);
+        // }
+    }
 
-    // void SceneRenderContext::removeNode(const std::shared_ptr<Node>& node) {
-    //     switch (node->getType()) {
-    //     case Node::CAMERA:
-    //         if (node == currentCamera) {
-    //             currentCamera->setActive(false);
-    //             currentCamera.reset();
-    //         }
-    //         break;
-    //     case Node::ENVIRONMENT:
-    //         if (node == currentEnvironment) {
-    //             currentEnvironment.reset();
-    //         }
-    //         break;
-    //     case Node::MESH_INSTANCE:{
-    //         const auto& meshInstance = static_pointer_cast<MeshInstance>(node);
-    //         if (!meshInstancesDataMemoryBlocks.contains(meshInstance)) {
-    //             break;
-    //         }
-    //         for (const auto& pipelineId : std::views::keys(pipelineIds)) {
-    //             if (shaderMaterialPipelinesData.contains(pipelineId)) {
-    //                 shaderMaterialPipelinesData[pipelineId]->removeNode(meshInstance);
-    //             }
-    //             if (transparentPipelinesData.contains(pipelineId)) {
-    //                 transparentPipelinesData[pipelineId]->removeNode(meshInstance);
-    //             }
-    //             if (opaquePipelinesData.contains(pipelineId)) {
-    //                 opaquePipelinesData[pipelineId]->removeNode(meshInstance);
-    //             }
-    //         }
-    //         removedMeshInstances.push_back(meshInstance);
-    //         break;
-    //     }
-    //     case Node::DIRECTIONAL_LIGHT:
-    //     case Node::OMNI_LIGHT:
-    //     case Node::SPOT_LIGHT:
-    //         removedLights.push_back(static_pointer_cast<Light>(node));
-    //         break;
-    //     default:
-    //         break;
-    //     }
-    // }
+    void SceneRenderContext::updatePipelinesData(
+        const vireo::CommandList& commandList,
+        const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
+        for (const auto& [pipelineId, pipelineData] : pipelinesData) {
+            pipelineData->updateData(commandList, drawCommandsStagingBufferRecycleBin, meshInstancesDataMemoryBlocks);
+        }
+    }
+
+    void SceneRenderContext::update(const CameraDesc& camera, const vireo::CommandList& commandList) {
+        if (!drawCommandsStagingBufferRecycleBin.empty()) {
+            drawCommandsStagingBufferRecycleBin.clear();
+        }
+        if (!removedLights.empty()) {
+            for (const auto& light : removedLights) {
+                lights.remove(light);
+                //disableLightShadowCasting(light);
+            }
+        }
+        if (!removedMeshInstances.empty()) {
+            for (const auto& meshInstance : removedMeshInstances) {
+                meshInstancesDataArray.free(meshInstancesDataMemoryBlocks.at(meshInstance));
+                meshInstancesDataMemoryBlocks.erase(meshInstance);
+            }
+            meshInstancesDataUpdated = true;
+            removedMeshInstances.clear();
+        }
+
+        if (shadowMapsUpdated) {
+            descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
+            descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
+            shadowMapsUpdated = false;
+        }
+
+        auto sceneUniform = SceneData {
+            .cameraPosition = camera.position,
+            .projection = camera.projection,
+            .view = inverse(camera.transform),
+            .viewInverse = camera.transform,
+            .lightsCount = static_cast<uint32>(lights.size()),
+            // .bloomEnabled = renderingConfig.bloomEnabled ? 1u : 0u,
+            // .ssaoEnabled = renderingConfig.ssaoEnabled ? 1u : 0u,
+        };
+        if (environment) {
+            sceneUniform.ambientLight = environment->ambientColorIntensity;
+        }
+        sceneUniformBuffer->write(&sceneUniform);
+
+        for (const auto& meshInstance : std::views::keys(meshInstancesDataMemoryBlocks)) {
+            if (meshInstance->pendingUpdates > 0) {
+                const auto meshInstanceData = meshInstance->getData();
+                meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
+                meshInstancesDataUpdated = true;
+                meshInstance->pendingUpdates -= 1;
+            }
+        }
+
+        if (meshInstancesDataUpdated) {
+            meshInstancesDataArray.flush(commandList);
+            meshInstancesDataArray.postBarrier(commandList);
+            meshInstancesDataUpdated = false;
+        }
+
+        // const auto start = std::chrono::high_resolution_clock::now();
+        updatePipelinesData(commandList, opaquePipelinesData);
+        updatePipelinesData(commandList, shaderMaterialPipelinesData);
+        updatePipelinesData(commandList, transparentPipelinesData);
+        // const auto end = std::chrono::high_resolution_clock::now();
+        // const std::chrono::duration<double, std::milli> duration = end - start;
+        // if (duration.count() > 0.01) {
+            // std::cout << "updatePipelinesData " << duration.count() << " ms\n";
+        // }
+
+        if (!lights.empty()) {
+            if (lights.size() > lightsBufferCount) {
+                if (lightsBufferCount >= config.maxLights) {
+                    throw Exception("Too many lights");
+                }
+                lightsBufferCount = lights.size();
+                lightsBuffer = ctx.vireo->createBuffer(
+                    vireo::BufferType::UNIFORM,
+                    sizeof(LightData) * lightsBufferCount, 1,
+                    "Scene Lights");
+                lightsBuffer->map();
+                descriptorSet->update(BINDING_LIGHTS, lightsBuffer);
+            }
+            auto lightIndex = 0;
+            auto lightsArray = std::vector<LightData>(lightsBufferCount);
+            for (const auto& light : lights) {
+                if (light->visible) {
+                    lightsArray[lightIndex] = light->getData();
+                    // if (shadowMapRenderers.contains(light)) {
+                    //     const auto&shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers[light]);
+                    //     lightsArray[lightIndex].mapIndex = shadowMapIndex[light];
+                    //     switch (light->getLightType()) {
+                    //         case Light::LIGHT_DIRECTIONAL: {
+                    //             for (int cascadeIndex = 0; cascadeIndex < lightsArray[lightIndex].cascadesCount ; cascadeIndex++) {
+                    //                 lightsArray[lightIndex].lightSpace[cascadeIndex] =
+                    //                     shadowMapRenderer->getLightSpace(cascadeIndex);
+                    //                 lightsArray[lightIndex].cascadeSplitDepth[cascadeIndex] =
+                    //                     shadowMapRenderer->getCascadeSplitDepth(cascadeIndex);
+                    //             }
+                    //             break;
+                    //         }
+                    //         case Light::LIGHT_SPOT: {
+                    //             lightsArray[lightIndex].lightSpace[0] = shadowMapRenderer->getLightSpace(0);
+                    //             break;
+                    //         }
+                    //         case Light::LIGHT_OMNI: {
+                    //             break;
+                    //         }
+                    //         default:;
+                    //     }
+                    // }
+                    lightIndex++;
+                }
+            }
+            lightsBuffer->write(lightsArray.data(), lightsArray.size() * sizeof(LightData));
+        }
+    }
+
+    void SceneRenderContext::addInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+        if (meshInstancesDataMemoryBlocks.contains(meshInstance)) {
+            return;
+        }
+
+        const auto& mesh = meshInstance->mesh;
+        assert([&]{return !mesh.getMaterials().empty(); }, "Models without materials are not supported");
+        if (!mesh.isUploaded()) {
+            throw Exception("Mesh instance is not in VRAM");
+        }
+
+        meshInstancesDataMemoryBlocks[meshInstance] = meshInstancesDataArray.alloc(1);
+        meshInstance->maxUpdates = framesInFlight;
+        if (meshInstance->pendingUpdates == 0) {
+            meshInstance->pendingUpdates = meshInstance->maxUpdates;
+        }
+
+        auto haveTransparentMaterial{false};
+        auto haveShaderMaterial{false};
+        auto nodePipelineIds = std::set<uint32>{};
+        for (int i = 0; i < mesh.getSurfaces().size(); i++) {
+            const auto& material = materialManager[meshInstance->getSurfaceMaterial(i)];
+            haveTransparentMaterial = material.getTransparency() != Transparency::DISABLED;
+            haveShaderMaterial = material.getType() == Material::SHADER;
+            const auto id = material.getPipelineId();
+            nodePipelineIds.insert(id);
+            if (!pipelineIds.contains(id)) {
+                pipelineIds[id].push_back(material.id);
+                materialsUpdated = true;
+            }
+        }
+
+        for (const auto& pipelineId : nodePipelineIds) {
+            if (haveShaderMaterial) {
+                addInstance(pipelineId, meshInstance, shaderMaterialPipelinesData);
+            } else if (haveTransparentMaterial) {
+                addInstance(pipelineId, meshInstance, transparentPipelinesData);
+            } else {
+                addInstance(pipelineId, meshInstance, opaquePipelinesData);
+            }
+        }
+    }
+
+    void SceneRenderContext::addInstance(
+        pipeline_id pipelineId,
+        const std::shared_ptr<MeshInstanceDesc>& meshInstance,
+        std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
+        if (!pipelinesData.contains(pipelineId)) {
+            pipelinesData[pipelineId] = std::make_unique<GraphicPipelineData>(
+                ctx, config, pipelineId, meshInstancesDataArray);
+        }
+        pipelinesData[pipelineId]->addInstance(meshInstance, meshInstancesDataMemoryBlocks);
+    }
+
+    void SceneRenderContext::removeInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+        if (!meshInstancesDataMemoryBlocks.contains(meshInstance)) {
+            return;
+        }
+        for (const auto& pipelineId : std::views::keys(pipelineIds)) {
+            if (shaderMaterialPipelinesData.contains(pipelineId)) {
+                shaderMaterialPipelinesData[pipelineId]->removeInstance(meshInstance);
+            }
+            if (transparentPipelinesData.contains(pipelineId)) {
+                transparentPipelinesData[pipelineId]->removeInstance(meshInstance);
+            }
+            if (opaquePipelinesData.contains(pipelineId)) {
+                opaquePipelinesData[pipelineId]->removeInstance(meshInstance);
+            }
+        }
+        removedMeshInstances.push_back(meshInstance);
+    }
 
     void SceneRenderContext::drawOpaquesModels(
         vireo::CommandList& commandList,
@@ -419,33 +386,33 @@ namespace lysa {
         }
     }
 
-    // void SceneRenderContext::drawModels(
-    //     vireo::CommandList& commandList,
-    //     const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines,
-    //     const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {
-    //     for (const auto& [pipelineId, pipelineData] : pipelinesData) {
-    //         if (pipelineData->drawCommandsCount == 0 ||
-    //             pipelineData->frustumCullingPipeline.getDrawCommandsCount() == 0) { continue; }
-    //         const auto& pipeline = pipelines.at(pipelineId);
-    //         commandList.bindPipeline(pipeline);
-    //             commandList.bindDescriptors({
-    //                 Application::getResources().getDescriptorSet(),
-    //                 Application::getResources().getSamplers().getDescriptorSet(),
-    //                 descriptorSet,
-    //                 pipelineData->descriptorSet,
-    //                 descriptorSetOpt1,
-    //             });
-    //
-    //         commandList.drawIndexedIndirectCount(
-    //             pipelineData->culledDrawCommandsBuffer,
-    //             0,
-    //             pipelineData->culledDrawCommandsCountBuffer,
-    //             0,
-    //             pipelineData->drawCommandsCount,
-    //             sizeof(DrawCommand),
-    //             sizeof(uint32));
-    //     }
-    // }
+    void SceneRenderContext::drawModels(
+        vireo::CommandList& commandList,
+        const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines,
+        const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {
+        for (const auto& [pipelineId, pipelineData] : pipelinesData) {
+            if (pipelineData->drawCommandsCount == 0 ||
+                pipelineData->frustumCullingPipeline.getDrawCommandsCount() == 0) { continue; }
+            const auto& pipeline = pipelines.at(pipelineId);
+            commandList.bindPipeline(pipeline);
+                commandList.bindDescriptors({
+                    Application::getResources().getDescriptorSet(),
+                    Application::getResources().getSamplers().getDescriptorSet(),
+                    descriptorSet,
+                    pipelineData->descriptorSet,
+                    descriptorSetOpt1,
+                });
+
+            commandList.drawIndexedIndirectCount(
+                pipelineData->culledDrawCommandsBuffer,
+                0,
+                pipelineData->culledDrawCommandsCountBuffer,
+                0,
+                pipelineData->drawCommandsCount,
+                sizeof(DrawCommand),
+                sizeof(uint32));
+        }
+    }
 
     // void SceneRenderContext::activateCamera(const std::shared_ptr<Camera>& camera) {
     //     if (currentCamera != nullptr)

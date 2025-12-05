@@ -158,6 +158,8 @@ export namespace lysa {
 
         auto& getMaterials() { return materials; }
 
+        const auto& getMaterials() const { return materials; }
+
         auto isUploaded() const { return verticesMemoryBlock.size > 0; }
 
         void buildAABB();

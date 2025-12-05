@@ -13,6 +13,7 @@ import lysa.memory;
 import lysa.pipelines.frustum_culling;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
+import lysa.resources.material;
 
 export namespace lysa {
 
@@ -44,20 +45,17 @@ export namespace lysa {
 
     /**
      * %Scene orchestrator.
+     *
      *  - Track nodes added to the scene (cameras, lights, mesh instances, environment).
      *  - Own GPU-side resources necessary for scene rendering (uniform buffers, descriptor sets).
      *  - Build and maintain per-pipeline instance data and indirect draw commands.
      *  - Perform frustum culling via compute pipelines and submit culled draws.
      *  - Manage shadow-map renderers and their images.
      *
-     * Thread-safety: unless stated otherwise, methods are intended to be called
-     * only from the render thread.
+     * Thread-safety: methods are intended to be called only from the render thread.
      */
     class SceneRenderContext {
     public:
-        /** Maximum number of shadow maps supported by the scene. */
-        static constexpr uint32 MAX_SHADOW_MAPS{20};
-
         /** Descriptor binding for SceneData uniform buffer. */
         static constexpr vireo::DescriptorIndex BINDING_SCENE{0};
         /** Descriptor binding for per-model/instance data buffer. */
@@ -75,7 +73,9 @@ export namespace lysa {
         inline static std::shared_ptr<vireo::DescriptorLayout> sceneDescriptorLayoutOptional1{nullptr};
 
         /** Creates all static descriptor layouts used by scenes and pipelines. */
-        static void createDescriptorLayouts(const std::shared_ptr<vireo::Vireo>& vireo);
+        static void createDescriptorLayouts(
+            const std::shared_ptr<vireo::Vireo>& vireo,
+            const SceneRenderContextConfiguration& config);
         /** Destroys static descriptor layouts created by createDescriptorLayouts(). */
         static void destroyDescriptorLayouts();
 
@@ -92,6 +92,7 @@ export namespace lysa {
         /**
          * Constructs a Scene for a given configuration and viewport/scissors.
          *
+         * @param ctx
          * @param config             Scene high-level configuration (buffers sizes, features).
          * @param renderingConfig    Global rendering configuration.
          * @param framesInFlight     Number of buffered frames.
@@ -112,17 +113,17 @@ export namespace lysa {
         /** Returns the default scissors rectangle for this scene. */
         auto getScissors() const { return scissors; }
 
-        /** Adds a node (camera, light, mesh instance, environment, etc.) to the scene. */
-        //virtual void addNode(const std::shared_ptr<Node> &node);
+        /** Adds a mesh instance to the scene. */
+        void addInstance(const std::shared_ptr<MeshInstanceDesc> &node);
 
         /** Removes a node previously added to the scene. */
-        //virtual void removeNode(const std::shared_ptr<Node> &node);
+        virtual void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node);
 
         /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
-        void update(const vireo::CommandList& commandList);
+        void update(const CameraDesc& camera, const vireo::CommandList& commandList);
 
         /** Executes compute workloads such as frustum culling. */
-        void compute(vireo::CommandList& commandList) const;
+        void compute(const CameraDesc& camera, vireo::CommandList& commandList) const;
 
         /** Writes initial GPU state required before issuing draw calls. */
         void setInitialState(const vireo::CommandList& commandList) const;
@@ -162,7 +163,7 @@ export namespace lysa {
            const std::map<pipeline_id, std::shared_ptr<FrustumCulling>>& frustumCullingPipelines) const;
 
         /** Returns the mapping of pipeline identifiers to their materials. */
-        // const auto& getPipelineIds() const { return pipelineIds; }
+        const auto& getPipelineIds() const { return pipelineIds; }
 
         /** True when materials set changed and pipelines/descriptors must be refreshed. */
         auto isMaterialsUpdated() const { return materialsUpdated; }
@@ -185,6 +186,7 @@ export namespace lysa {
 
     private:
         const Context& ctx;
+        MaterialManager& materialManager;
         /** Read-only reference to scene configuration (sizes, toggles). */
         const SceneRenderContextConfiguration& config;
         /** Read-only reference to global rendering configuration. */
@@ -202,7 +204,7 @@ export namespace lysa {
         /** Uniform buffer containing SceneData. */
         std::shared_ptr<vireo::Buffer> sceneUniformBuffer;
         /** Current environment settings (skybox, etc.). */
-        //std::shared_ptr<Environment> currentEnvironment{};
+        std::shared_ptr<EnvironmentDesc> environment{};
         /** Map of lights to their shadow-map renderpasses. */
         // std::map<std::shared_ptr<Light>, std::shared_ptr<Renderpass>> shadowMapRenderers;
         /** Array of shadow map images. */
@@ -210,28 +212,28 @@ export namespace lysa {
         /** Array of transparency-color shadow maps (optional). */
         std::vector<std::shared_ptr<vireo::Image>> shadowTransparencyColorMaps;
         /** Associates each light with a shadow map index. */
-        // std::map<std::shared_ptr<Light>, uint32> shadowMapIndex;
+        // std::map<std::shared_ptr<LightData>, uint32> shadowMapIndex;
         /** Lights scheduled for removal (deferred to safe points). */
-        // std::list<std::shared_ptr<Light>> removedLights;
+        std::list<std::shared_ptr<LightDesc>> removedLights;
         /** True if the set of shadow maps has changed and descriptors must be updated. */
         bool shadowMapsUpdated{false};
 
         /** Device array storing per-mesh-instance GPU data. */
         DeviceMemoryArray meshInstancesDataArray;
         /** Memory blocks allocated in meshInstancesDataArray per MeshInstance. */
-        // std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock> meshInstancesDataMemoryBlocks{};
+        std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock> meshInstancesDataMemoryBlocks{};
         /** Mesh instances scheduled for removal. */
-        // std::list<std::shared_ptr<MeshInstance>> removedMeshInstances{};
+        std::list<std::shared_ptr<MeshInstanceDesc>> removedMeshInstances{};
         /** True if meshInstancesDataArray content changed. */
         bool meshInstancesDataUpdated{false};
 
         /** Mapping of pipeline id to materials used by that pipeline. */
-        // std::unordered_map<pipeline_id, std::vector<std::shared_ptr<Material>>> pipelineIds;
+        std::unordered_map<pipeline_id, std::vector<unique_id>> pipelineIds;
         /** Flag set when materials list changes. */
         bool materialsUpdated{false};
 
         /** Active lights list. */
-        // std::list<std::shared_ptr<Light>> lights;
+        std::list<std::shared_ptr<LightDesc>> lights;
         /** GPU buffer with packed light parameters. */
         std::shared_ptr<vireo::Buffer> lightsBuffer;
         /** Number of allocated light slots in lightsBuffer. */
@@ -249,13 +251,14 @@ export namespace lysa {
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData);
 
         void compute(
+            const CameraDesc& camera,
             vireo::CommandList& commandList,
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const;
 
-        // void addNode(
-            // pipeline_id pipelineId,
-            // const std::shared_ptr<MeshInstance>& meshInstance,
-            // std::unordered_map<uint32, std::unique_ptr<PipelineData>>& pipelinesData);
+        void addInstance(
+            pipeline_id pipelineId,
+            const std::shared_ptr<MeshInstanceDesc>& meshInstance,
+            std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData);
 
         void drawModels(
             vireo::CommandList& commandList,

@@ -75,9 +75,15 @@ export namespace lysa {
     };
 
     struct SceneRenderContextConfiguration {
+        //! Maximum number of lights per scene
+        uint32 maxLights{100};
+        //! Maximum number of shadow map  per scene
+        uint32 maxShadowMaps{20};
         //! Number of nodes updates per frame for asynchronous scene updates
         uint32 maxAsyncNodesUpdatedPerFrame{50};
-        uint32 maxModelsPerScene{10000};
+        //! Maximum number of mesh instances per scene
+        uint32 maxMeshInstancesPerScene{10000};
+        //! Maximum number of mesh surfaces instances  per scene
         uint32 maxMeshSurfacePerPipeline{100000};
     };
 
