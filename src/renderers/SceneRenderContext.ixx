@@ -246,6 +246,10 @@ export namespace lysa {
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>> shaderMaterialPipelinesData;
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>> transparentPipelinesData;
 
+        void setEnvironment(const std::shared_ptr<EnvironmentDesc>& environmentDesc) {
+            environment = environmentDesc;
+        }
+
         void updatePipelinesData(
             const vireo::CommandList& commandList,
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData);

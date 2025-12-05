@@ -211,7 +211,7 @@ export namespace lysa {
 
         void flush();
 
-        //auto getBuffer() const { return memoryArray.getBuffer(); }
+        auto getMeshSurfaceBuffer() const { return meshSurfaceArray.getBuffer(); }
 
     private:
         MaterialManager& materialManager;

@@ -8,6 +8,7 @@ module lysa.renderers.global_descriptor_set;
 
 import vireo;
 import lysa.resources.material;
+import lysa.resources.mesh;
 
 namespace lysa {
 
@@ -23,7 +24,7 @@ namespace lysa {
 
         descriptorSet = ctx.vireo->createDescriptorSet(descriptorLayout, "Global");
         descriptorSet->update(BINDING_MATERIALS, ctx.res.get<MaterialManager>().getBuffer());
-        // descriptorSet->update(BINDING_SURFACES, meshSurfaceArray.getBuffer());
+        descriptorSet->update(BINDING_SURFACES,  ctx.res.get<MeshManager>().getMeshSurfaceBuffer());
         descriptorSet->update(BINDING_TEXTURES, imageManager.getImages());
     }
 
@@ -40,6 +41,5 @@ namespace lysa {
             imageManager.resetUpdateFlag();
         }
     }
-
 
 }

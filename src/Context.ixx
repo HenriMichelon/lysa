@@ -18,6 +18,7 @@ import lysa.lua;
 #endif
 import lysa.virtual_fs;
 import lysa.types;
+import lysa.resources.samplers;
 import lysa.resources.locator;
 import lysa.resources.samplers;
 
@@ -96,6 +97,9 @@ export namespace  lysa {
          * Asynchronous submissions of submit queues
          */
         AsyncQueue asyncQueue;
+
+        std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
+        std::shared_ptr<vireo::DescriptorSet> descriptorSet;
 
         Context(
             vireo::Backend backend,

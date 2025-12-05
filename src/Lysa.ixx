@@ -155,6 +155,7 @@ export namespace  lysa {
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
         MeshManager meshManager;
+        GlobalDescriptorSet globalDescriptors;
 
         // Consume platform-specific events.
         void processPlatformEvents();

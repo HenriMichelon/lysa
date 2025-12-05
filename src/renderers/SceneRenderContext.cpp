@@ -396,8 +396,8 @@ namespace lysa {
             const auto& pipeline = pipelines.at(pipelineId);
             commandList.bindPipeline(pipeline);
                 commandList.bindDescriptors({
-                    Application::getResources().getDescriptorSet(),
-                    Application::getResources().getSamplers().getDescriptorSet(),
+                    ctx.descriptorSet,
+                    ctx.samplers.getDescriptorSet(),
                     descriptorSet,
                     pipelineData->descriptorSet,
                     descriptorSetOpt1,
@@ -413,20 +413,6 @@ namespace lysa {
                 sizeof(uint32));
         }
     }
-
-    // void SceneRenderContext::activateCamera(const std::shared_ptr<Camera>& camera) {
-    //     if (currentCamera != nullptr)
-    //         currentCamera->setActive(false);
-    //     if (camera == nullptr) {
-    //         currentCamera.reset();
-    //     } else {
-    //         currentCamera = camera;
-    //         currentCamera->setActive(true);
-    //     }
-    //     for (auto& renderer : std::views::values(shadowMapRenderers)) {
-    //         std::reinterpret_pointer_cast<ShadowMapPass>(renderer)->setCurrentCamera(currentCamera);
-    //     }
-    // }
 
     // void SceneRenderContext::enableLightShadowCasting(const std::shared_ptr<Node>&node) {
     //     if (const auto& light = std::dynamic_pointer_cast<Light>(node)) {

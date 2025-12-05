@@ -28,8 +28,11 @@ namespace lysa {
             config.resourcesCapacity.meshes,
             config.resourcesCapacity.vertices,
             config.resourcesCapacity.indices,
-            config.resourcesCapacity.surfaces)
+            config.resourcesCapacity.surfaces),
+        globalDescriptors(ctx)
     {
+        ctx.descriptorLayout = globalDescriptors.getDescriptorLayout();
+        ctx.descriptorSet = globalDescriptors.getDescriptorSet();
         ctx.world.set<ecs::Context>({&ctx});
         ctx.world.import<ecs::TransformModule>();
         ctx.world.import<ecs::MeshInstanceModule>();
