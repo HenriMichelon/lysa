@@ -243,9 +243,9 @@ add_library(${LYSA_TARGET} STATIC
         ${DEFERRED_RENDERER_SRC}
         ${FORWARD_RENDERER_SRC}
         ${ENGINE_SRC_DIR}/renderers/GlobalDescriptorSet.cpp
-        #${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.cpp
+        ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.cpp
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
-        #${ENGINE_SRC_DIR}/renderers/SceneRenderContext.cpp
+        ${ENGINE_SRC_DIR}/renderers/SceneRenderContext.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
 

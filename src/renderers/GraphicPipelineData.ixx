@@ -8,12 +8,55 @@ export module lysa.renderers.graphic_pipeline_data;
 
 import vireo;
 
-import lysa.types;
+import lysa.aabb;
+import lysa.context;
+import lysa.math;
 import lysa.memory;
+import lysa.resources.material;
+import lysa.resources.mesh;
 import lysa.pipelines.frustum_culling;
 import lysa.renderers.configuration;
 
 export namespace lysa {
+
+    /**
+     * Structure to pass data between the ECS/OOP systems to the rendering system
+     */
+    struct MeshInstanceDesc {
+        Mesh& mesh;
+        bool castShadow;
+        AABB worldAABB;
+        float4x4 worldTransform;
+        std::unordered_map<uint32, unique_id> materialsOverride;
+    };
+
+    /**
+     * Mesh instance data in GPU memory
+     */
+    struct MeshInstanceData {
+        float4x4 transform;
+        float3   aabbMin;
+        float3   aabbMax;
+        uint     visible;
+        uint     castShadows;
+    };
+
+    /**
+     * %A single draw instance.
+     *
+     * Indices reference engine-wide arrays for mesh instances, mesh surfaces
+     * and materials, allowing shaders to fetch additional data.
+     */
+    struct alignas(8) InstanceData {
+        /** Index of the MeshInstance in the global instances array. */
+        uint32 meshInstanceIndex;
+        /** Index of the mesh surface within the global surfaces array. */
+        uint32 meshSurfaceIndex;
+        /** Index of the material used by this instance. */
+        uint32 materialIndex;
+        /** Index of the mesh-surface-local material slot. */
+        uint32 meshSurfaceMaterialIndex;
+    };
 
     /**
      * A single indirect draw coupled with the instance index it belongs to.
@@ -32,6 +75,13 @@ export namespace lysa {
      * used to perform frustum culling and produce culled indirect draws.
      */
     struct GraphicPipelineData {
+        /** Descriptor binding for per-instance buffer used by pipelines. */
+        static constexpr vireo::DescriptorIndex BINDING_INSTANCES{0};
+        /** Shared descriptor layout for pipeline-local resources. */
+        inline static std::shared_ptr<vireo::DescriptorLayout> pipelineDescriptorLayout{nullptr};
+        static void createDescriptorLayouts(const std::shared_ptr<vireo::Vireo>& vireo);
+        static void destroyDescriptorLayouts();
+
         /** Identifier of the material/pipeline family. */
         pipeline_id pipelineId;
         /** Reference to the scene configuration. */
@@ -66,15 +116,15 @@ export namespace lysa {
         uint32 drawCommandsStagingBufferCount{0};
 
         GraphicPipelineData::GraphicPipelineData(
-            const std::shared_ptr<vireo::Vireo>& vireo,
+            const Context& ctx,
             const SceneRenderContextConfiguration& config,
             uint32 pipelineId,
             const DeviceMemoryArray& meshInstancesDataArray);
 
         /** Registers a mesh instance into this pipeline cache. */
-        // void addNode(
-        //     const std::shared_ptr<MeshInstance>& meshInstance,
-        //     const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
+        // void addInstance(
+        //     const MeshInstanceDesc& meshInstance,
+        //     const std::unordered_map<MeshInstanceDesc, MemoryBlock>& meshInstancesDataMemoryBlocks);
 
         /** Removes a previously registered mesh instance. */
         // void removeNode(
@@ -82,9 +132,9 @@ export namespace lysa {
 
         /** Adds a single draw instance and wires memory blocks. */
         // void addInstance(
-            // const std::shared_ptr<MeshInstance>& meshInstance,
-            // const MemoryBlock& instanceMemoryBlock,
-            // const MemoryBlock& meshInstanceMemoryBlock);
+        //     const MeshInstanceDesc& meshInstance,
+        //     const MemoryBlock& instanceMemoryBlock,
+        //     const MemoryBlock& meshInstanceMemoryBlock);
 
         /** Uploads/refreshes GPU buffers and prepares culled draw streams. */
         // void updateData(

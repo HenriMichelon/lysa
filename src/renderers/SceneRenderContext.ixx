@@ -43,24 +43,6 @@ export namespace lysa {
     };
 
     /**
-     * %A single draw instance.
-     *
-     * Indices reference engine-wide arrays for mesh instances, mesh surfaces
-     * and materials, allowing shaders to fetch additional data.
-     */
-    struct alignas(8) InstanceData {
-        /** Index of the MeshInstance in the global instances array. */
-        uint32 meshInstanceIndex;
-        /** Index of the mesh surface within the global surfaces array. */
-        uint32 meshSurfaceIndex;
-        /** Index of the material used by this instance. */
-        uint32 materialIndex;
-        /** Index of the mesh-surface-local material slot. */
-        uint32 meshSurfaceMaterialIndex;
-    };
-
-
-    /**
      * %Scene orchestrator.
      *  - Track nodes added to the scene (cameras, lights, mesh instances, environment).
      *  - Own GPU-side resources necessary for scene rendering (uniform buffers, descriptor sets).
@@ -91,11 +73,6 @@ export namespace lysa {
         static constexpr vireo::DescriptorIndex BINDING_SHADOW_MAP_TRANSPARENCY_COLOR{0};
         /** Optional descriptor layout (set used when transparency color is needed). */
         inline static std::shared_ptr<vireo::DescriptorLayout> sceneDescriptorLayoutOptional1{nullptr};
-
-        /** Descriptor binding for per-instance buffer used by pipelines. */
-        static constexpr vireo::DescriptorIndex BINDING_INSTANCES{0};
-        /** Shared descriptor layout for pipeline-local resources. */
-        inline static std::shared_ptr<vireo::DescriptorLayout> pipelineDescriptorLayout{nullptr};
 
         /** Creates all static descriptor layouts used by scenes and pipelines. */
         static void createDescriptorLayouts(const std::shared_ptr<vireo::Vireo>& vireo);
