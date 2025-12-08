@@ -342,7 +342,7 @@ if(LUA_BINDING)
         lua
     )
     target_include_directories(${LYSA_TARGET} PUBLIC
-        ${lua_cmake_SOURCE_DIR}/upstream
+        ${LUA_INCLUDE_DIR} # defined in Vireo
     )
 endif ()
 add_dependencies(${LYSA_TARGET} ${VIREO_TARGET})

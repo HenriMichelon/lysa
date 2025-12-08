@@ -21,11 +21,12 @@ namespace lysa {
     }
 
     void ForwardRenderer::colorPass(
-       vireo::CommandList& commandList,
-       const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
-       const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
-       const bool clearAttachment,
-       const uint32 frameIndex) {
+        vireo::CommandList& commandList,
+        const SceneRenderContext& scene,
+        const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+        const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+        const bool clearAttachment,
+        const uint32 frameIndex) {
         forwardColorPass.render(commandList, colorAttachment, depthAttachment, clearAttachment, frameIndex);
     }
 

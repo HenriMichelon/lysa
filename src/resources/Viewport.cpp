@@ -20,11 +20,6 @@ namespace lysa {
         resize(renderTarget.getSwapChain()->getExtent());
     }
 
-    ViewportManager::ViewportManager(Context& ctx, const size_t capacity) :
-        ResourcesManager(ctx, capacity) {
-        ctx.res.enroll(*this);
-    }
-
     void Viewport::resize(const vireo::Extent &extent) {
         if (configuration.viewport.width == 0.0f || configuration.viewport.height == 0.0f) {
             viewport = vireo::Viewport{
@@ -42,6 +37,34 @@ namespace lysa {
         }
     }
 
+    void Viewport::update(Renderer& renderer, uint32 frameIndex) {
+        renderer.update(frameIndex);
+    }
+
+    void Viewport::prepare(
+        Renderer& renderer,
+        const vireo::CommandList& commandList,
+        uint32 frameIndex) {
+        //renderer.preRender(commandList, frameIndex);
+
+    }
+
+    void Viewport::render(
+        Renderer& renderer,
+        const vireo::CommandList& commandList,
+        uint32 frameIndex) {
+        //renderer.render(commandList, frameIndex);
+    }
+
+    ViewportManager::ViewportManager(Context& ctx, const size_t capacity) :
+        ResourcesManager(ctx, capacity) {
+        ctx.res.enroll(*this);
+    }    void ViewportManager::destroyByRenderTarget(const unique_id renderTarget) {
+        for (const auto& viewport : getResources(renderTarget)) {
+            destroy(viewport->id);
+        }
+    }
+
     Viewport& ViewportManager::create(const ViewportConfiguration& configuration) {
         return ResourcesManager::create(ctx, configuration);
     }
@@ -52,9 +75,27 @@ namespace lysa {
         }
     }
 
-    void ViewportManager::destroyByRenderTarget(const unique_id renderTarget) {
+    void ViewportManager::update(const unique_id renderTarget, Renderer& renderer, uint32 frameIndex) {
         for (const auto& viewport : getResources(renderTarget)) {
-            destroy(viewport->id);
+            viewport->update(renderer, frameIndex);
+        }
+    }
+
+    void ViewportManager::prepare(const unique_id renderTarget,
+        Renderer& renderer,
+        const vireo::CommandList& commandList,
+        uint32 frameIndex) {
+        for (const auto& viewport : getResources(renderTarget)) {
+            viewport->prepare(renderer, commandList, frameIndex);
+        }
+    }
+
+    void ViewportManager::render(const unique_id renderTarget,
+        Renderer& renderer,
+        const vireo::CommandList& commandList,
+        uint32 frameIndex) {
+        for (const auto& viewport : getResources(renderTarget)) {
+            viewport->render(renderer, commandList, frameIndex);
         }
     }
 

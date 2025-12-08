@@ -83,7 +83,7 @@ namespace lysa {
     void RenderTarget::update() const {
         if (paused) return;
         const auto frameIndex = swapChain->getCurrentFrameIndex();
-        // viewportManager.update(renderTarget->id, frameIndex);
+        viewportManager.update(id, frameIndex);
     }
 
     void RenderTarget::render() const {
@@ -95,8 +95,7 @@ namespace lysa {
         frame.commandAllocator->reset();
 
         frame.prepareCommandList->begin();
-        //viewportManager.prepare(renderTarget->id, frameIndex);
-        renderer->preRender(*frame.prepareCommandList, frameIndex);
+        viewportManager.prepare(id, *renderer, *frame.prepareCommandList, frameIndex);
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
                    vireo::WaitStage::ALL_COMMANDS,
@@ -105,8 +104,7 @@ namespace lysa {
 
         auto& commandList = frame.renderCommandList;
         commandList->begin();
-        //viewportManager.render(renderTarget->id, frameIndex);
-        renderer->render(*commandList, true, frameIndex);
+        viewportManager.render(id, *renderer, *frame.renderCommandList, frameIndex);
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
 

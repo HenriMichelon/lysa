@@ -58,19 +58,19 @@ namespace lysa {
        vireo::CommandList& commandList,
        const SceneRenderContext& scene,
        const uint32 frameIndex) const {
-        auto resourcesLock = std::lock_guard{Application::getResources().getMutex()};
-        for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
-            shadowMapRenderer->update(frameIndex);
-        }
-        scene.update(commandList);
-        scene.compute(commandList);
+        // auto resourcesLock = std::lock_guard{Application::getResources().getMutex()};
+        // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
+        //     shadowMapRenderer->update(frameIndex);
+        // }
+        // scene.update(commandList);
+        // scene.compute(commandList);
     }
 
     void Renderer::preRender(
         vireo::CommandList& commandList,
         const SceneRenderContext& scene,
         const uint32 frameIndex) {
-        depthPrePass.render(commandList, framesData[frameIndex].depthAttachment);
+        depthPrePass.render(commandList, scene, framesData[frameIndex].depthAttachment);
     }
 
     void Renderer::render(

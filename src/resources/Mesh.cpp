@@ -8,6 +8,8 @@ module;
 #include <cstddef>
 module lysa.resources.mesh;
 
+import lysa.renderers.graphic_pipeline_data;
+
 namespace lysa {
 
     const std::vector<vireo::VertexAttributeDesc> VertexData::vertexAttributes {

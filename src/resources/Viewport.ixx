@@ -11,6 +11,7 @@ import vireo;
 import lysa.context;
 import lysa.types;
 import lysa.resources.resource_manager;
+import lysa.renderers.renderer;
 
 export namespace lysa {
 
@@ -42,6 +43,17 @@ export namespace lysa {
 
         friend class ViewportManager;
         void resize(const vireo::Extent &extent);
+        void update(
+            Renderer& renderer,
+            uint32 frameIndex);
+        void prepare(
+            Renderer& renderer,
+            const vireo::CommandList& commandList,
+            uint32 frameIndex);
+        void render(
+            Renderer& renderer,
+            const vireo::CommandList& commandList,
+            uint32 frameIndex);
     };
 
     class ViewportManager : public ResourcesManager<Viewport> {
@@ -70,6 +82,18 @@ export namespace lysa {
         friend class RenderTarget;
         void resize(unique_id renderTarget, const vireo::Extent &extent);
         void destroyByRenderTarget(unique_id renderTarget);
+        void update(unique_id renderTarget,
+            Renderer& renderer,
+            uint32 frameIndex);
+        void prepare(unique_id renderTarget,
+            Renderer& renderer,
+            const vireo::CommandList& commandList,
+            uint32 frameIndex);
+        void render(unique_id renderTarget,
+            Renderer& renderer,
+            const vireo::CommandList& commandList,
+            uint32 frameIndex);
+
 
     };
 
