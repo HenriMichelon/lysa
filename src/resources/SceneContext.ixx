@@ -83,16 +83,14 @@ export namespace lysa {
         virtual void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node);
 
         /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
-        void update(const CameraDesc& camera, const vireo::CommandList& commandList);
+        void prepare(
+            const vireo::CommandList& commandList,
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors,
+            const CameraDesc& camera);
 
         /** Executes compute workloads such as frustum culling. */
         void compute(const CameraDesc& camera, vireo::CommandList& commandList) const;
-
-        /** Writes initial GPU state required before issuing draw calls. */
-        void setInitialState(
-            const vireo::CommandList& commandList,
-            const vireo::Viewport& viewport,
-            const vireo::Rect& scissors) const;
 
         /**
          * Issues draw calls for opaque models using the supplied pipelines map.

@@ -118,7 +118,13 @@ namespace lysa {
         }
     }
 
-    void SceneContext::update(const CameraDesc& camera, const vireo::CommandList& commandList) {
+    void SceneContext::prepare(
+        const vireo::CommandList& commandList,
+        const vireo::Viewport& viewport,
+        const vireo::Rect& scissors,
+        const CameraDesc& camera) {
+        commandList.setViewport(viewport);
+        commandList.setScissors(scissors);
         if (!drawCommandsStagingBufferRecycleBin.empty()) {
             drawCommandsStagingBufferRecycleBin.clear();
         }
@@ -321,14 +327,6 @@ namespace lysa {
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const {
         if (shaderMaterialPipelinesData.empty()) { return; }
         drawModels(commandList, pipelines, shaderMaterialPipelinesData);
-    }
-
-    void SceneContext::setInitialState(
-        const vireo::CommandList& commandList,
-        const vireo::Viewport& viewport,
-        const vireo::Rect& scissors) const {
-        commandList.setViewport(viewport);
-        commandList.setScissors(scissors);
     }
 
     void SceneContext::drawModels(

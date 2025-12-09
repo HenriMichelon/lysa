@@ -108,8 +108,7 @@ namespace lysa {
 
         frame.prepareCommandList->begin();
         for (auto& view : views) {
-            view.scene.setInitialState(*frame.prepareCommandList, view.viewport, view.scissors);
-            view.scene.update(view.camera, *frame.prepareCommandList);
+            view.scene.prepare(*frame.prepareCommandList, view.viewport, view.scissors, view.camera);
         }
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
