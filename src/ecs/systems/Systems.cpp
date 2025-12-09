@@ -39,42 +39,50 @@ namespace lysa::ecs {
         auto& renderTargetManager = w.get<Context>().ctx->res.get<RenderTargetManager>();
         auto& sceneContextManager = w.get<Context>().ctx->res.get<SceneContextManager>();
         w.module<RenderModule>();
-        w.component<CameraProjection>();
         w.component<Camera>();
+        w.component<CameraRef>();
         w.component<Viewport>();
         w.component<RenderTarget>();
         w.component<Scene>();
-        w.observer<CameraProjection>()
+        w.component<SceneRef>();
+        w.observer<Camera>()
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
-            .each([&](CameraProjection& cp) {
+            .each([&](Camera& cp) {
                 if (cp.isPerspective) {
                     cp.projection = perspective(radians(cp.fov), cp.aspectRatio, cp.near, cp.far);
                 } else {
                     cp.projection = orthographic(cp.left, cp.right, cp.top, cp.bottom, cp.near, cp.far);
                 }
             });
-        w.system<const RenderTarget, const Viewport, const Camera>()
-            .with<Scene>().parent()
+        w.system<const RenderTarget>()
             .kind(flecs::OnUpdate)
-            .each([&](
-                flecs::entity e,
-                const RenderTarget& rt,
-                const Viewport& vp,
-                const Camera& camref) {
-                    const auto& renderTarget = renderTargetManager[rt.renderTarget];
-                    if (renderTarget.isPaused()) { return; }
-                    auto& scene = sceneContextManager[e.parent().get<Scene>().sceneContext];
-                    const auto cameraProjection = camref.camera.get<CameraProjection>();
-                    const auto cameraTransform = camref.camera.get<Transform>().global;
-                    auto cameraDesc = CameraDesc{
-                        .position = cameraTransform[3].xyz,
-                        .transform = cameraTransform,
-                        .projection = cameraProjection.projection
-                    };
-                    renderTarget.render(vp.viewport, vp.scissors, cameraDesc, scene);
+            .each([&](flecs::entity e, const RenderTarget& rt) {
+                const auto& renderTarget = renderTargetManager[rt.renderTarget];
+                if (renderTarget.isPaused()) { return; }
+                auto views = std::list<RenderView>();
+                e.children([&](const flecs::entity child) {
+                    if (child.has<CameraRef>() && child.has<SceneRef>()) {
+                        auto& cameraRef = child.get<CameraRef>();
+                        auto& sceneRef = child.get<SceneRef>();
+                        auto& scene = sceneContextManager[sceneRef.scene.get<Scene>().sceneContext];
+                        const auto camera = cameraRef.camera.get<Camera>();
+                        const auto cameraTransform = cameraRef.camera.get<Transform>().global;
+                        const auto cameraDesc = CameraDesc{
+                            .position = cameraTransform[3].xyz,
+                            .transform = cameraTransform,
+                            .projection = camera.projection
+                        };
+                        Viewport viewport;
+                        if (child.has<Viewport>()) {
+                            viewport = child.get<Viewport>();
+                        }
+                        views.push_back({viewport.viewport, viewport.scissors, cameraDesc, scene});
+                    }
                 });
-            }
+                renderTarget.render(views);
+            });
+        }
 
 
 }

@@ -34,7 +34,7 @@ export namespace lysa::ecs {
         vireo::Rect scissors{};
     };
 
-    struct CameraProjection {
+    struct Camera {
         // Is the projection perspective?
         bool isPerspective{true};
         // Field of view in degrees
@@ -57,7 +57,7 @@ export namespace lysa::ecs {
         float4x4 projection{float4x4::identity()};
     };
 
-    struct Camera {
+    struct CameraRef {
         flecs::entity camera;
     };
 
@@ -68,7 +68,11 @@ export namespace lysa::ecs {
     };
 
     struct Scene {
-        unique_id sceneContext;
+        unique_id sceneContext{INVALID_ID};
+    };
+
+    struct SceneRef {
+        flecs::entity scene;
     };
 
 }

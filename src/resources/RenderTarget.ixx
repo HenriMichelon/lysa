@@ -40,17 +40,20 @@ export namespace lysa {
         static constexpr auto RESIZED{"RENDERING_TARGET_RESIZED"};
     };
 
+    struct RenderView {
+        vireo::Viewport viewport;
+        vireo::Rect scissors;
+        const CameraDesc camera;
+        SceneContext& scene;
+    };
+
     class RenderTarget : public Resource {
     public:
         RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, uint32 framesInFlight);
 
         ~RenderTarget() override;
 
-        void render(
-            vireo::Viewport viewport,
-            vireo::Rect scissors,
-            const CameraDesc& camera,
-            SceneContext& scene) const;
+        void render(std::list<RenderView>& views) const;
 
         void pause(bool pause);
 

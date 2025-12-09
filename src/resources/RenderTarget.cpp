@@ -79,38 +79,38 @@ namespace lysa {
         }
     }
 
-    void RenderTarget::render(
-        vireo::Viewport viewport,
-        vireo::Rect scissors,
-        const CameraDesc& camera,
-        SceneContext& scene) const {
+    void RenderTarget::render(std::list<RenderView>& views) const {
         if (paused) return;
-        if (viewport.width == 0.0f || viewport.height == 0.0f) {
-            viewport.width = static_cast<float>(swapChain->getExtent().width);
-            viewport.height = static_cast<float>(swapChain->getExtent().height);
-        }
-        if (scissors.width   == 0.0f || scissors.height == 0.0f) {
-            scissors.x = static_cast<int32>(viewport.x);
-            scissors.y = static_cast<int32>(viewport.y);
-            scissors.width = static_cast<int32>(viewport.width);
-            scissors.height = static_cast<int32>(viewport.height);
+        for (auto& view : views) {
+            if (view.viewport.width == 0.0f || view.viewport.height == 0.0f) {
+                view.viewport.width = static_cast<float>(swapChain->getExtent().width);
+                view.viewport.height = static_cast<float>(swapChain->getExtent().height);
+            }
+            if (view.scissors.width   == 0.0f || view.scissors.height == 0.0f) {
+                view.scissors.x = static_cast<int32>(view.viewport.x);
+                view.scissors.y = static_cast<int32>(view.viewport.y);
+                view.scissors.width = static_cast<int32>(view.viewport.width);
+                view.scissors.height = static_cast<int32>(view.viewport.height);
+            }
+            if (view.scene.isMaterialsUpdated()) {
+                renderer->updatePipelines(view.scene);
+                view.scene.resetMaterialsUpdated();
+            }
         }
 
         const auto frameIndex =swapChain->getCurrentFrameIndex();
         const auto& frame = framesData[frameIndex];
 
-        if (scene.isMaterialsUpdated()) {
-            //renderer.updatePipelines(scene);
-            scene.resetMaterialsUpdated();
-        }
         renderer->update(frameIndex);
 
         if (!swapChain->acquire(frame.inFlightFence)) { return; }
         frame.commandAllocator->reset();
 
         frame.prepareCommandList->begin();
-        scene.setInitialState(*frame.prepareCommandList, viewport, scissors);
-        scene.update(camera, *frame.prepareCommandList);
+        for (auto& view : views) {
+            view.scene.setInitialState(*frame.prepareCommandList, view.viewport, view.scissors);
+            view.scene.update(view.camera, *frame.prepareCommandList);
+        }
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
                    vireo::WaitStage::ALL_COMMANDS,
@@ -119,7 +119,9 @@ namespace lysa {
 
         auto& commandList = frame.renderCommandList;
         commandList->begin();
-        renderer->render(*commandList, scene, true, frameIndex);
+        for (auto& view : views) {
+            renderer->render(*commandList, view.scene, true, frameIndex);
+        }
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
 
