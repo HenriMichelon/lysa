@@ -1,50 +1,48 @@
 /*
- * Copyright (c) 2025-present Henri Michelon
- *
- * This software is released under the MIT License.
- * https://opensource.org/licenses/MIT
- */
-module lysa.renderers.scene_render_context;
+* Copyright (c) 2025-present Henri Michelon
+*
+* This software is released under the MIT License.
+* https://opensource.org/licenses/MIT
+*/
+module lysa.resources.scene_context;
 
 import lysa.exception;
-import lysa.log;
+import lysa.math;
 import lysa.resources.image;
 
 namespace lysa {
 
-    void SceneRenderContext::createDescriptorLayouts(
+    void SceneContext::createDescriptorLayouts(
         const std::shared_ptr<vireo::Vireo>& vireo,
-        const SceneRenderContextConfiguration& config) {
+        const uint32 maxShadowMaps) {
         sceneDescriptorLayout = vireo->createDescriptorLayout("Scene");
         sceneDescriptorLayout->add(BINDING_SCENE, vireo::DescriptorType::UNIFORM);
         sceneDescriptorLayout->add(BINDING_MODELS, vireo::DescriptorType::DEVICE_STORAGE);
         sceneDescriptorLayout->add(BINDING_LIGHTS, vireo::DescriptorType::UNIFORM);
         sceneDescriptorLayout->add(BINDING_SHADOW_MAPS, vireo::DescriptorType::SAMPLED_IMAGE,
-            config.maxShadowMaps * 6);
+            maxShadowMaps * 6);
         sceneDescriptorLayout->build();
 
         sceneDescriptorLayoutOptional1 = vireo->createDescriptorLayout("Scene opt1");
         sceneDescriptorLayoutOptional1->add(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR,
-            vireo::DescriptorType::SAMPLED_IMAGE, config.maxShadowMaps * 6);
+            vireo::DescriptorType::SAMPLED_IMAGE, maxShadowMaps * 6);
         sceneDescriptorLayoutOptional1->build();
 
         GraphicPipelineData::createDescriptorLayouts(vireo);
     }
 
-    void SceneRenderContext::destroyDescriptorLayouts() {
+    void SceneContext::destroyDescriptorLayouts() {
         sceneDescriptorLayout.reset();
         sceneDescriptorLayoutOptional1.reset();
         GraphicPipelineData::destroyDescriptorLayouts();
     }
 
-    SceneRenderContext::SceneRenderContext(
+    SceneContext::SceneContext(
         const Context& ctx,
-        const SceneRenderContextConfiguration& config,
-        const RendererConfiguration& renderingConfig,
-        const uint32 framesInFlight) :
+        const SceneContextConfiguration& config,
+        const uint32 framesInFlight,
+        uint32 maxShadowMaps) :
         ctx(ctx),
-        materialManager(ctx.res.get<MaterialManager>()),
-        config{config},
         lightsBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::UNIFORM,
             sizeof(LightData),
@@ -61,11 +59,12 @@ namespace lysa {
             sizeof(SceneData), 1,
             "Scene Data")},
         framesInFlight{framesInFlight},
-        renderingConfig{renderingConfig} {
+        config{config},
+        materialManager(ctx.res.get<MaterialManager>()) {
 
         const auto blankImage = ctx.res.get<ImageManager>().getBlankImage();
-        shadowMaps.resize(config.maxShadowMaps * 6);
-        shadowTransparencyColorMaps.resize(config.maxShadowMaps * 6);
+        shadowMaps.resize(maxShadowMaps * 6);
+        shadowTransparencyColorMaps.resize(maxShadowMaps * 6);
         for (int i = 0; i < shadowMaps.size(); i++) {
             shadowMaps[i] = blankImage;
             shadowTransparencyColorMaps[i] = blankImage;
@@ -84,13 +83,13 @@ namespace lysa {
         lightsBuffer->map();
     }
 
-    void SceneRenderContext::compute(const CameraDesc& camera, vireo::CommandList& commandList) const {
+    void SceneContext::compute(const CameraDesc& camera, vireo::CommandList& commandList) const {
         compute(camera, commandList, opaquePipelinesData);
         compute(camera, commandList, shaderMaterialPipelinesData);
         compute(camera, commandList, transparentPipelinesData);
     }
 
-    void SceneRenderContext::compute(
+    void SceneContext::compute(
         const CameraDesc& camera,
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {
@@ -111,7 +110,7 @@ namespace lysa {
         // }
     }
 
-    void SceneRenderContext::updatePipelinesData(
+    void SceneContext::updatePipelinesData(
         const vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
         for (const auto& [pipelineId, pipelineData] : pipelinesData) {
@@ -119,7 +118,7 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::update(const CameraDesc& camera, const vireo::CommandList& commandList) {
+    void SceneContext::update(const CameraDesc& camera, const vireo::CommandList& commandList) {
         if (!drawCommandsStagingBufferRecycleBin.empty()) {
             drawCommandsStagingBufferRecycleBin.clear();
         }
@@ -231,7 +230,7 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::addInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+    void SceneContext::addInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
         if (meshInstancesDataMemoryBlocks.contains(meshInstance)) {
             return;
         }
@@ -274,18 +273,18 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::addInstance(
+    void SceneContext::addInstance(
         pipeline_id pipelineId,
         const std::shared_ptr<MeshInstanceDesc>& meshInstance,
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
         if (!pipelinesData.contains(pipelineId)) {
             pipelinesData[pipelineId] = std::make_unique<GraphicPipelineData>(
-                ctx, config, pipelineId, meshInstancesDataArray);
+                ctx, pipelineId, meshInstancesDataArray, config.maxMeshSurfacePerPipeline);
         }
         pipelinesData[pipelineId]->addInstance(meshInstance, meshInstancesDataMemoryBlocks);
     }
 
-    void SceneRenderContext::removeInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+    void SceneContext::removeInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
         if (!meshInstancesDataMemoryBlocks.contains(meshInstance)) {
             return;
         }
@@ -303,28 +302,28 @@ namespace lysa {
         removedMeshInstances.push_back(meshInstance);
     }
 
-    void SceneRenderContext::drawOpaquesModels(
+    void SceneContext::drawOpaquesModels(
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const {
         if (opaquePipelinesData.empty()) { return; }
         drawModels(commandList, pipelines, opaquePipelinesData);
     }
 
-    void SceneRenderContext::drawTransparentModels(
+    void SceneContext::drawTransparentModels(
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const {
         if (transparentPipelinesData.empty()) { return; }
         drawModels(commandList, pipelines, transparentPipelinesData);
     }
 
-    void SceneRenderContext::drawShaderMaterialModels(
+    void SceneContext::drawShaderMaterialModels(
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const {
         if (shaderMaterialPipelinesData.empty()) { return; }
         drawModels(commandList, pipelines, shaderMaterialPipelinesData);
     }
 
-    void SceneRenderContext::setInitialState(
+    void SceneContext::setInitialState(
         const vireo::CommandList& commandList,
         const vireo::Viewport& viewport,
         const vireo::Rect& scissors) const {
@@ -332,7 +331,7 @@ namespace lysa {
         commandList.setScissors(scissors);
     }
 
-    void SceneRenderContext::drawModels(
+    void SceneContext::drawModels(
         vireo::CommandList& commandList,
         const uint32 set,
         const std::map<pipeline_id, std::shared_ptr<vireo::Buffer>>& culledDrawCommandsBuffers,
@@ -385,7 +384,7 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::drawModels(
+    void SceneContext::drawModels(
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines,
         const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {
@@ -413,7 +412,7 @@ namespace lysa {
         }
     }
 
-    // void SceneRenderContext::enableLightShadowCasting(const std::shared_ptr<Node>&node) {
+    // void SceneContext::enableLightShadowCasting(const std::shared_ptr<Node>&node) {
     //     if (const auto& light = std::dynamic_pointer_cast<Light>(node)) {
     //         if (light->getCastShadows() && !shadowMapRenderers.contains(light) && (shadowMapRenderers.size() < MAX_SHADOW_MAPS)) {
     //             const auto shadowMapRenderer = make_shared<ShadowMapPass>(
@@ -442,7 +441,7 @@ namespace lysa {
     //     }
     // }
 
-    // void SceneRenderContext::disableLightShadowCasting(const std::shared_ptr<Light>&light) {
+    // void SceneContext::disableLightShadowCasting(const std::shared_ptr<Light>&light) {
     //     if (shadowMapRenderers.contains(light)) {
     //         // INFO("disableLightShadowCasting for ", std::to_string(light->getName()));
     //         const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers.at(light));
@@ -457,5 +456,16 @@ namespace lysa {
     //         shadowMapRenderers.erase(light);
     //     }
     // }
+
+
+    SceneContextManager::SceneContextManager(Context& ctx, const size_t capacity, const uint32 maxShadowMaps, const uint32 framesInFlight) :
+        ResourcesManager(ctx, capacity), maxShadowMaps(maxShadowMaps), framesInFlight(framesInFlight) {
+            ctx.res.enroll(*this);
+    }
+
+    SceneContext& SceneContextManager::create(const SceneContextConfiguration& configuration) {
+        return ResourcesManager::create(ctx, configuration, framesInFlight, maxShadowMaps);
+    }
+
 
 }

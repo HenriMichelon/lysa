@@ -12,8 +12,8 @@ import lysa.context;
 import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
-import lysa.renderers.scene_render_context;
 import lysa.renderers.renderpass.depth_prepass;
+import lysa.resources.scene_context;
 
 export namespace lysa {
 
@@ -56,7 +56,7 @@ export namespace lysa {
          * Updates graphics pipelines according to the Scene material mapping.
          * Convenience overload that pulls mapping from the Scene.
          */
-        void updatePipelines(const SceneRenderContext& scene);
+        void updatePipelines(const SceneContext& scene);
 
         /**
          * Updates graphics pipelines according to the provided materials mapping.
@@ -70,19 +70,19 @@ export namespace lysa {
         /** Executes compute workloads such as frustum culling. */
         void compute(
             vireo::CommandList& commandList,
-            const SceneRenderContext& scene,
+            const SceneContext& scene,
             uint32 frameIndex) const;
 
         /** Pre-render stage: uploads, layout transitions, depth pre pass and shadow maps. */
         void preRender(
             vireo::CommandList& commandList,
-            const SceneRenderContext& scene,
+            const SceneContext& scene,
             uint32 frameIndex);
 
         /** Main render stage: records opaque/transparent draw calls. */
         void render(
             vireo::CommandList& commandList,
-            const SceneRenderContext& scene,
+            const SceneContext& scene,
             bool clearAttachment,
             uint32 frameIndex);
 
@@ -126,7 +126,7 @@ export namespace lysa {
         */
         virtual void colorPass(
             vireo::CommandList& commandList,
-            const SceneRenderContext& scene,
+            const SceneContext& scene,
             const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             bool clearAttachment,

@@ -20,7 +20,7 @@ namespace lysa {
             ,config.luaConfiguration
 #endif
             ),
-        renderTargetManager(ctx, config.resourcesCapacity.renderTarget),
+        renderTargetManager(ctx, config.resourcesCapacity.renderTarget, config.framesInFlight),
         renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
         imageManager(ctx, config.resourcesCapacity.images),
         imageTextureManager(ctx, config.resourcesCapacity.images),
@@ -30,16 +30,22 @@ namespace lysa {
             config.resourcesCapacity.vertices,
             config.resourcesCapacity.indices,
             config.resourcesCapacity.surfaces),
+        sceneContextManager(ctx,
+            config.resourcesCapacity.scenes,
+            config.resourcesCapacity.shadowMapsPerScene,
+            config.framesInFlight),
         globalDescriptors(ctx)
     {
         ctx.descriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.descriptorSet = globalDescriptors.getDescriptorSet();
+        SceneContext::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
         ctx.world.set<ecs::Context>({&ctx});
         ecs::_register(ctx.world);
     }
 
     Lysa::~Lysa() {
         ctx.graphicQueue->waitIdle();
+        SceneContext::destroyDescriptorLayouts();
     }
 
     void Lysa::run(

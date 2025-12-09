@@ -39,6 +39,7 @@ export import lysa.resources.render_target;
 export import lysa.resources.rendering_window;
 export import lysa.resources.resource_manager;
 export import lysa.resources.samplers;
+export import lysa.resources.scene_context;
 export import lysa.resources.texture;
 
 #ifdef LUA_BINDING
@@ -54,6 +55,8 @@ export namespace  lysa {
         size_t renderTarget{1};
         //! Maximum number of viewports
         size_t viewports{5};
+        //! Maximum number of scenes
+        size_t scenes{10};
         //! Maximum number of images stored in GPU memory
         size_t images{500};
         //! Maximum number of GPU image samplers
@@ -68,6 +71,8 @@ export namespace  lysa {
         size_t indices{5000000*2};
         //! Maximum number of meshes surfaces in GPU memory
         size_t surfaces{200000};
+        //! Maximum number of shadow maps per scene
+        uint32 shadowMapsPerScene{20};
     };
 
     /**
@@ -76,6 +81,8 @@ export namespace  lysa {
     struct LysaConfiguration {
         //! Graphic API used by the graphic backend
         vireo::Backend backend{vireo::Backend::VULKAN};
+        //! Number of simultaneous frames during rendering
+        uint32 framesInFlight{2};
         //! Resource capacity configuration
         ResourcesCapacity resourcesCapacity;
         size_t eventsReserveCapacity{100};
@@ -157,6 +164,7 @@ export namespace  lysa {
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
         MeshManager meshManager;
+        SceneContextManager sceneContextManager;
         GlobalDescriptorSet globalDescriptors;
 
         // Consume platform-specific events.

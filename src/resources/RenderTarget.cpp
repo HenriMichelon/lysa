@@ -13,12 +13,12 @@ import lysa.renderers.renderer;
 
 namespace lysa {
 
-    RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration) :
+    RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, const uint32 framesInFlight) :
         ctx(ctx) {
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
-        if (configuration.framesInFlight <= 0) {
+        if (framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
         this->renderingWindowHandle = configuration.renderingWindowHandle;
@@ -27,9 +27,9 @@ namespace lysa {
             ctx.graphicQueue,
             configuration.renderingWindowHandle,
             configuration.presentMode,
-            configuration.framesInFlight);
-        renderer = Renderer::create(ctx, configuration.rendererConfiguration, configuration.framesInFlight);
-        framesData.resize(configuration.framesInFlight);
+            framesInFlight);
+        renderer = Renderer::create(ctx, configuration.rendererConfiguration, framesInFlight);
+        framesData.resize(framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
@@ -90,7 +90,7 @@ namespace lysa {
         const vireo::Viewport& viewport,
         const vireo::Rect& scissors,
         const CameraDesc& camera,
-        SceneRenderContext& scene) const {
+        SceneContext& scene) const {
         if (paused) return;
         const auto frameIndex =swapChain->getCurrentFrameIndex();
         const auto& frame = framesData[frameIndex];
@@ -129,13 +129,13 @@ namespace lysa {
         swapChain->nextFrameIndex();
     }
 
-    RenderTargetManager::RenderTargetManager(Context& ctx, const size_t capacity) :
-        ResourcesManager(ctx, capacity) {
+    RenderTargetManager::RenderTargetManager(Context& ctx, const size_t capacity, const uint32 framesInFlight) :
+        ResourcesManager(ctx, capacity), framesInFlight(framesInFlight) {
         ctx.res.enroll(*this);
     }
 
     RenderTarget& RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
-        return ResourcesManager::create(ctx, configuration);
+        return ResourcesManager::create(ctx, configuration, framesInFlight);
     }
 
     void RenderTargetManager::destroy(const void* renderingWindowHandle) {

@@ -41,7 +41,7 @@ namespace lysa {
 
     void DepthPrepass::render(
         vireo::CommandList& commandList,
-        const SceneRenderContext& scene,
+        const SceneContext& scene,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment) {
         renderingConfig.depthStencilRenderTarget = depthAttachment;
         commandList.beginRendering(renderingConfig);

@@ -68,7 +68,7 @@ export namespace lysa::ecs {
     };
 
     struct Scene {
-
+        unique_id sceneContext;
     };
 
 }

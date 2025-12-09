@@ -1,62 +1,36 @@
 /*
- * Copyright (c) 2025-present Henri Michelon
- *
- * This software is released under the MIT License.
- * https://opensource.org/licenses/MIT
- */
-export module lysa.renderers.scene_render_context;
+* Copyright (c) 2025-present Henri Michelon
+*
+* This software is released under the MIT License.
+* https://opensource.org/licenses/MIT
+*/
+export module lysa.resources.scene_context;
 
 import vireo;
 import lysa.context;
-import lysa.math;
 import lysa.memory;
+import lysa.types;
 import lysa.pipelines.frustum_culling;
-import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.resources.material;
+import lysa.resources.resource_manager;
 
 export namespace lysa {
 
-    /**
-     * Per-frame scene uniform payload consumed by shaders.
-     *
-     * Contains camera transforms, ambient lighting, and feature toggles. The
-     * layout/alignas qualifiers are chosen to satisfy typical std140/std430
-     * alignment constraints on most backends.
-     */
-    struct SceneData {
-        /** World-space camera position in XYZ; W is unused. */
-        float3      cameraPosition;
-        /** Projection matrix used for rendering (clip-from-view). */
-        alignas(16) float4x4 projection;
-        /** View matrix (view-from-world). */
-        float4x4    view;
-        /** Inverse of the view matrix (world-from-view). */
-        float4x4    viewInverse;
-        /** Ambient light RGB color in xyz and strength in w. */
-        float4      ambientLight{1.0f, 1.0f, 1.0f, 1.0f}; // RGB + strength
-        /** Number of active lights currently bound. */
-        uint32      lightsCount{0};
-        /** Toggle for bloom post-process (1 enabled, 0 disabled). */
-        uint32      bloomEnabled{0};
-        /** Toggle for SSAO post-process (1 enabled, 0 disabled). */
-        uint32      ssaoEnabled{0};
+    struct SceneContextConfiguration : ResourceConfiguration {
+        //! Maximum number of lights per scene
+        uint32 maxLights{100};
+        //! Number of nodes updates per frame for asynchronous scene updates
+        uint32 maxAsyncNodesUpdatedPerFrame{50};
+        //! Maximum number of mesh instances per scene
+        uint32 maxMeshInstancesPerScene{10000};
+        //! Maximum number of mesh surfaces instances  per scene
+        uint32 maxMeshSurfacePerPipeline{100000};
     };
 
-    /**
-     * %Scene orchestrator.
-     *
-     *  - Track nodes added to the scene (cameras, lights, mesh instances, environment).
-     *  - Own GPU-side resources necessary for scene rendering (uniform buffers, descriptor sets).
-     *  - Build and maintain per-pipeline instance data and indirect draw commands.
-     *  - Perform frustum culling via compute pipelines and submit culled draws.
-     *  - Manage shadow-map renderers and their images.
-     *
-     * Thread-safety: methods are intended to be called only from the render thread.
-     */
-    class SceneRenderContext {
+    class SceneContext : public Resource {
     public:
-        /** Descriptor binding for SceneData uniform buffer. */
+         /** Descriptor binding for SceneData uniform buffer. */
         static constexpr vireo::DescriptorIndex BINDING_SCENE{0};
         /** Descriptor binding for per-model/instance data buffer. */
         static constexpr vireo::DescriptorIndex BINDING_MODELS{1};
@@ -75,7 +49,7 @@ export namespace lysa {
         /** Creates all static descriptor layouts used by scenes and pipelines. */
         static void createDescriptorLayouts(
             const std::shared_ptr<vireo::Vireo>& vireo,
-            const SceneRenderContextConfiguration& config);
+            uint32 maxShadowMaps);
         /** Destroys static descriptor layouts created by createDescriptorLayouts(). */
         static void destroyDescriptorLayouts();
 
@@ -94,17 +68,16 @@ export namespace lysa {
          *
          * @param ctx
          * @param config             Scene high-level configuration (buffers sizes, features).
-         * @param renderingConfig    Global rendering configuration.
          * @param framesInFlight     Number of buffered frames.
          */
-        SceneRenderContext(
+        SceneContext(
             const Context& ctx,
-            const SceneRenderContextConfiguration& config,
-            const RendererConfiguration& renderingConfig,
-            uint32 framesInFlight);
+            const SceneContextConfiguration& config,
+            uint32 framesInFlight,
+            uint32 maxShadowMaps);
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(const std::shared_ptr<MeshInstanceDesc> &node);
+        void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
 
         /** Removes a node previously added to the scene. */
         virtual void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node);
@@ -173,17 +146,15 @@ export namespace lysa {
         /** Returns a view over the shadow map renderers values. */
         // auto getShadowMapRenderers() const { return std::views::values(shadowMapRenderers); }
 
-        virtual ~SceneRenderContext() = default;
-        SceneRenderContext(SceneRenderContext&) = delete;
-        SceneRenderContext& operator=(SceneRenderContext&) = delete;
+        virtual ~SceneContext() = default;
+        SceneContext(SceneContext&) = delete;
+        SceneContext& operator=(SceneContext&) = delete;
 
     private:
         const Context& ctx;
         MaterialManager& materialManager;
-        /** Read-only reference to scene configuration (sizes, toggles). */
-        const SceneRenderContextConfiguration& config;
-        /** Read-only reference to global rendering configuration. */
-        const RendererConfiguration& renderingConfig;
+        /** Read-only reference to scene configuration. */
+        const SceneContextConfiguration& config;
         /** Number of frames processed in-flight. */
         const uint32 framesInFlight;
         /** Main descriptor set for scene bindings (scene, models, lights, textures). */
@@ -261,7 +232,29 @@ export namespace lysa {
         // void enableLightShadowCasting(const std::shared_ptr<Node>&node);
 
         // void disableLightShadowCasting(const std::shared_ptr<Light>&light);
+    };
 
+    class SceneContextManager : public ResourcesManager<SceneContext> {
+    public:
+        /**
+         * @brief Construct a manager bound to the given runtime context.
+         * @param ctx Instance wide context
+         * @param capacity Initial capacity
+         * @param maxShadowMaps
+         * @param framesInFlight
+         */
+        SceneContextManager(Context& ctx, size_t capacity, uint32 maxShadowMaps, uint32 framesInFlight);
+
+        ~SceneContextManager() override {
+            cleanup();
+        }
+
+        SceneContext& create(const SceneContextConfiguration& configuration);
+
+    private:
+        uint32 maxShadowMaps;
+        uint32 framesInFlight;
     };
 
 }
+

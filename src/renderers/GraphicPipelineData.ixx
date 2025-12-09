@@ -20,6 +20,32 @@ import lysa.renderers.configuration;
 export namespace lysa {
 
     /**
+     * Per-frame scene uniform payload consumed by shaders.
+     *
+     * Contains camera transforms, ambient lighting, and feature toggles. The
+     * layout/alignas qualifiers are chosen to satisfy typical std140/std430
+     * alignment constraints on most backends.
+     */
+    struct SceneData {
+        /** World-space camera position in XYZ; W is unused. */
+        float3      cameraPosition;
+        /** Projection matrix used for rendering (clip-from-view). */
+        alignas(16) float4x4 projection;
+        /** View matrix (view-from-world). */
+        float4x4    view;
+        /** Inverse of the view matrix (world-from-view). */
+        float4x4    viewInverse;
+        /** Ambient light RGB color in xyz and strength in w. */
+        float4      ambientLight{1.0f, 1.0f, 1.0f, 1.0f}; // RGB + strength
+        /** Number of active lights currently bound. */
+        uint32      lightsCount{0};
+        /** Toggle for bloom post-process (1 enabled, 0 disabled). */
+        uint32      bloomEnabled{0};
+        /** Toggle for SSAO post-process (1 enabled, 0 disabled). */
+        uint32      ssaoEnabled{0};
+    };
+
+    /**
     * Struct to pass camera data from the ECS/POO systems to the rendering system
     */
     struct CameraDesc {
@@ -151,8 +177,6 @@ export namespace lysa {
 
         /** Identifier of the material/pipeline family. */
         pipeline_id pipelineId;
-        /** Reference to the scene configuration. */
-        const SceneRenderContextConfiguration& config;
         /** Descriptor set bound when drawing with this pipeline. */
         std::shared_ptr<vireo::DescriptorSet> descriptorSet;
         /** Compute pipeline used to cull draw commands against the frustum. */
@@ -191,9 +215,9 @@ export namespace lysa {
          */
         GraphicPipelineData::GraphicPipelineData(
             const Context& ctx,
-            const SceneRenderContextConfiguration& config,
             uint32 pipelineId,
-            const DeviceMemoryArray& meshInstancesDataArray);
+            const DeviceMemoryArray& meshInstancesDataArray,
+            uint32 maxMeshSurfacePerPipeline);
 
         /** Registers a mesh instance into this pipeline data object. */
         void addInstance(

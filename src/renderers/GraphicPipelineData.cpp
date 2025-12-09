@@ -47,25 +47,24 @@ namespace lysa {
 
     GraphicPipelineData::GraphicPipelineData(
         const Context& ctx,
-        const SceneRenderContextConfiguration& config,
         const uint32 pipelineId,
-        const DeviceMemoryArray& meshInstancesDataArray) :
+        const DeviceMemoryArray& meshInstancesDataArray,
+        const uint32 maxMeshSurfacePerPipeline) :
         pipelineId{pipelineId},
-        config{config},
         frustumCullingPipeline{ctx, true, meshInstancesDataArray},
         materialManager(ctx.res.get<MaterialManager>()),
         vireo(vireo),
         instancesArray{
             ctx.vireo,
             sizeof(InstanceData),
-            config.maxMeshSurfacePerPipeline,
-            config.maxMeshSurfacePerPipeline,
+            maxMeshSurfacePerPipeline,
+            maxMeshSurfacePerPipeline,
             vireo::BufferType::DEVICE_STORAGE,
             "Pipeline instances array"},
-        drawCommands(config.maxMeshSurfacePerPipeline),
+        drawCommands(maxMeshSurfacePerPipeline),
         drawCommandsBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::DEVICE_STORAGE,
-            sizeof(DrawCommand) * config.maxMeshSurfacePerPipeline,
+            sizeof(DrawCommand) * maxMeshSurfacePerPipeline,
             1,
             "Pipeline draw commands")},
         culledDrawCommandsCountBuffer{ctx.vireo->createBuffer(
@@ -75,7 +74,7 @@ namespace lysa {
             "Pipeline draw commands counter")},
         culledDrawCommandsBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::READWRITE_STORAGE,
-            sizeof(DrawCommand) * config.maxMeshSurfacePerPipeline,
+            sizeof(DrawCommand) * maxMeshSurfacePerPipeline,
             1,
             "Pipeline culled draw commands")}
     {

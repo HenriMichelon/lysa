@@ -252,7 +252,6 @@ end
                 .addProperty("rendering_window_handle", &RenderTargetConfiguration::renderingWindowHandle)
                 .addProperty("swap_chain_format", &RenderTargetConfiguration::swapChainFormat)
                 .addProperty("present_mode", &RenderTargetConfiguration::presentMode)
-                .addProperty("frames_in_flight", &RenderTargetConfiguration::framesInFlight)
                 .addProperty("renderer_configuration", &RenderTargetConfiguration::rendererConfiguration)
             .endClass()
             .beginNamespace("RenderTargetEventType")
@@ -271,7 +270,7 @@ end
                .addFunction("rendering_window_handle", &RenderTarget::getRenderingWindowHandle)
             .endClass()
             .beginClass<RenderTargetManager>("RenderTargetManager")
-                .addConstructor<void(Context&, unique_id)>()
+                .addConstructor<void(Context&, unique_id, uint32)>()
                 .addFunction("create", +[](RenderTargetManager* self, const RenderTargetConfiguration& config) -> RenderTarget& {
                     return self->create(config);
                 })

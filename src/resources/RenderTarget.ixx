@@ -13,8 +13,8 @@ import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderer;
-import lysa.renderers.scene_render_context;
 import lysa.resources.resource_manager;
+import lysa.resources.scene_context;
 
 export namespace lysa {
 
@@ -25,8 +25,6 @@ export namespace lysa {
         vireo::ImageFormat swapChainFormat{vireo::ImageFormat::R8G8B8A8_UNORM};
         //! Presentation mode
         vireo::PresentMode presentMode{vireo::PresentMode::IMMEDIATE};
-        //! Number of simultaneous frames during rendering
-        uint32 framesInFlight{2};
         RendererConfiguration rendererConfiguration;
     };
 
@@ -44,7 +42,7 @@ export namespace lysa {
 
     class RenderTarget : public Resource {
     public:
-        RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration);
+        RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, uint32 framesInFlight);
 
         ~RenderTarget() override;
 
@@ -52,7 +50,7 @@ export namespace lysa {
             const vireo::Viewport& viewport,
             const vireo::Rect& scissors,
             const CameraDesc& camera,
-            SceneRenderContext& scene) const;
+            SceneContext& scene) const;
 
         void pause(bool pause);
 
@@ -101,8 +99,9 @@ export namespace lysa {
          * @brief Construct a manager bound to the given runtime context.
          * @param ctx Instance wide context
          * @param capacity Initial capacity
+         * @param framesInFlight
          */
-        RenderTargetManager(Context& ctx, size_t capacity);
+        RenderTargetManager(Context& ctx, size_t capacity, uint32 framesInFlight);
 
         ~RenderTargetManager() override {
             cleanup();
@@ -117,6 +116,8 @@ export namespace lysa {
         void pause(const void* renderingWindowHandle, bool pause);
 
     private:
+        uint32 framesInFlight;
+
         friend class Lysa;
         void update() const;
 

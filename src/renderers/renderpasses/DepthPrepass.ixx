@@ -9,8 +9,8 @@ export module lysa.renderers.renderpass.depth_prepass;
 import vireo;
 import lysa.context;
 import lysa.renderers.configuration;
-import lysa.renderers.scene_render_context;
 import lysa.renderers.renderpasses.renderpass;
+import lysa.resources.scene_context;
 
 export namespace lysa {
     class DepthPrepass : public Renderpass {
@@ -21,7 +21,7 @@ export namespace lysa {
 
         void render(
             vireo::CommandList& commandList,
-            const SceneRenderContext& scene,
+            const SceneContext& scene,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment);
 
     private:
