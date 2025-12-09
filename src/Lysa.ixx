@@ -21,9 +21,11 @@ export import lysa.math;
 export import lysa.types;
 export import lysa.virtual_fs;
 
+#ifdef ECS_SCENES
 export import lysa.ecs.components;
 export import lysa.ecs.flecs;
 export import lysa.ecs.systems;
+#endif
 
 export import lysa.renderers.configuration;
 export import lysa.renderers.global_descriptor_set;

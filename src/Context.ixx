@@ -12,7 +12,9 @@ import lysa.async_queue;
 import lysa.async_pool;
 import lysa.command_buffer;
 import lysa.event;
+#ifdef ECS_SCENES
 import lysa.ecs.flecs;
+#endif
 #ifdef LUA_BINDING
 import lysa.lua;
 #endif
@@ -68,11 +70,12 @@ export namespace  lysa {
          */
         AsyncPool threads;
 
+#ifdef ECS_SCENES
         /**
          * ECS world
          */
         flecs::world world;
-
+#endif
         /**
          * Resource resolution and access facility.
          */

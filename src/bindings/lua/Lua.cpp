@@ -97,6 +97,7 @@ end
             .endClass()
         .endNamespace();
 
+#ifdef ECS_SYSTEM
         beginNamespace("flecs")
             .beginClass<flecs::world>("world")
                 .addFunction("entity", +[](const flecs::world* w) { return w->entity<>(); })
@@ -106,6 +107,7 @@ end
                 .addFunction("destruct", &flecs::entity::destruct)
             .endClass()
         .endNamespace();
+#endif
 
         vireo::LuaBindings::_register(L);
 

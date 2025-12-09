@@ -36,7 +36,9 @@ namespace  lysa {
                .addProperty("vireo", [this] { return &vireo;})
                .addProperty("fs",  [this] { return &fs;})
                .addProperty("events", [this] { return &events;})
+#ifdef ECS_SCENES
                .addProperty("world", [this] { return &world;})
+#endif
                .addProperty("res", [this] { return &res;})
                .addProperty("graphic_queue", [this] { return &graphicQueue;})
             .endNamespace()

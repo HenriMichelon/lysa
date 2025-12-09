@@ -6,7 +6,9 @@
 */
 module lysa;
 
+#ifdef ECS_SCENES
 import lysa.ecs.systems;
+#endif
 
 namespace lysa {
 
@@ -39,8 +41,10 @@ namespace lysa {
         ctx.descriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.descriptorSet = globalDescriptors.getDescriptorSet();
         SceneContext::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
+#ifdef ECS_SCENES
         ctx.world.set<ecs::Context>({&ctx});
         ecs::_register(ctx.world);
+#endif
     }
 
     Lysa::~Lysa() {
@@ -60,7 +64,9 @@ namespace lysa {
             if (ctx.samplers.isUpdateNeeded()) {
                 ctx.samplers.update();
             }
+#ifdef ECS_SCENES
             ctx.world.progress();
+#endif
 
             // https://gafferongames.com/post/fix_your_timestep/
             const double newTime = std::chrono::duration_cast<std::chrono::duration<double>>(
