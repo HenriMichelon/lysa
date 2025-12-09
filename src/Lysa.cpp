@@ -6,6 +6,8 @@
 */
 module lysa;
 
+import lysa.ecs.systems;
+
 namespace lysa {
 
     Lysa::Lysa(const LysaConfiguration& config) :
@@ -33,8 +35,7 @@ namespace lysa {
         ctx.descriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.descriptorSet = globalDescriptors.getDescriptorSet();
         ctx.world.set<ecs::Context>({&ctx});
-        ctx.world.import<ecs::TransformModule>();
-        ctx.world.import<ecs::MeshInstanceModule>();
+        ecs::_register(ctx.world);
     }
 
     Lysa::~Lysa() {

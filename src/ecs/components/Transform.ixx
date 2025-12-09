@@ -24,6 +24,7 @@ export namespace lysa::ecs {
         float4x4 global{};
     };
 
+
     /**
     * Returns the world space position
     */

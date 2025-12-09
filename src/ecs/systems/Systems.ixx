@@ -22,4 +22,10 @@ export namespace lysa::ecs {
         MeshInstanceModule(const flecs::world& w);
     };
 
+    struct RenderModule {
+        RenderModule(const flecs::world& w);
+    };
+
+    void _register(flecs::world& w);
+
 }

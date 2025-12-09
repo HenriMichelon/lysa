@@ -9,7 +9,7 @@ export module lysa.resources.render_target;
 import vireo;
 import lysa.context;
 import lysa.event;
-import lysa.types;
+import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderer;
@@ -55,6 +55,8 @@ export namespace lysa {
             SceneRenderContext& scene) const;
 
         void pause(bool pause);
+
+        float getAspectRatio() const { return swapChain->getAspectRatio(); }
 
         auto getSwapChain() const { return swapChain; }
 

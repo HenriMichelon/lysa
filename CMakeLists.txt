@@ -234,6 +234,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Utils.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
 
+        ${ENGINE_SRC_DIR}/ecs/components/Components.cpp
         ${ENGINE_SRC_DIR}/ecs/components/Transform.cpp
         ${ENGINE_SRC_DIR}/ecs/systems/Systems.cpp
         ${ENGINE_SRC_DIR}/ecs/systems/Transform.cpp
