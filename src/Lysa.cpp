@@ -18,7 +18,6 @@ namespace lysa {
             ,config.luaConfiguration
 #endif
             ),
-        viewportManager(ctx, config.resourcesCapacity.viewports),
         renderTargetManager(ctx, config.resourcesCapacity.renderTarget),
         renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
         imageManager(ctx, config.resourcesCapacity.images),
@@ -43,6 +42,7 @@ namespace lysa {
     }
 
     void Lysa::run(
+        const std::function<void()>& onRender,
         const std::function<void(float)>& onProcess,
         const std::function<void(float)>& onPhysicsProcess,
         const std::function<void()>& onQuit) {
@@ -67,20 +67,22 @@ namespace lysa {
                 if (onPhysicsProcess) { onPhysicsProcess(FIXED_DELTA_TIME); }
                 accumulator -= FIXED_DELTA_TIME;
             }
-            onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
+            if (onProcess) onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
 
             renderTargetManager.update();
-            renderTargetManager.render();
+            onRender();
         }
         if (onQuit) onQuit();
     }
 
 #ifdef LUA_BINDING
     void Lysa::run(
+        const luabridge::LuaRef& onRender,
         const luabridge::LuaRef& onProcess,
         const luabridge::LuaRef& onPhysicsProcess,
         const luabridge::LuaRef& onQuit) {
         run(
+            [&](){ onRender(); },
             [&](float dt){ onProcess(dt); },
             [&](float dt){ if (onPhysicsProcess) onPhysicsProcess(dt); },
             [&]{ if (onQuit) onQuit(); }

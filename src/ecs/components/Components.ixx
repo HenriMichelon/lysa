@@ -6,6 +6,7 @@
 */
 export module lysa.ecs.components;
 
+import vireo;
 import lysa.aabb;
 import lysa.context;
 import lysa.math;
@@ -25,6 +26,17 @@ export namespace lysa::ecs {
         unique_id mesh{INVALID_ID};
         bool castShadows{false};
         AABB worldAABB;
+    };
+
+    struct Viewport {
+        //! Low‑level viewport (x, y, width, height, minDepth, maxDepth).
+        vireo::Viewport viewport{};
+        //! Scissors rectangle limiting rendering to a sub‑area.
+        vireo::Rect scissors{};
+    };
+
+    struct Scene {
+
     };
 
 }

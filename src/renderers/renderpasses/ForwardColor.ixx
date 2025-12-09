@@ -18,7 +18,8 @@ export namespace lysa {
     public:
         ForwardColor(
             const Context& ctx,
-            const RendererConfiguration& config);
+            const RendererConfiguration& config,
+            uint32 framesInFlight);
 
         void render(
             vireo::CommandList& commandList,

@@ -6,20 +6,27 @@
 */
 export module lysa.resources.render_target;
 
+import vireo;
 import lysa.context;
 import lysa.event;
 import lysa.types;
 import lysa.renderers.configuration;
+import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderer;
+import lysa.renderers.scene_render_context;
 import lysa.resources.resource_manager;
-import lysa.resources.viewport;
 
 export namespace lysa {
 
     struct RenderTargetConfiguration : ResourceConfiguration {
         //! Set this field if you want to render in a window
         void* renderingWindowHandle{nullptr};
-
+        //! Postprocessing & swap chain image format
+        vireo::ImageFormat swapChainFormat{vireo::ImageFormat::R8G8B8A8_UNORM};
+        //! Presentation mode
+        vireo::PresentMode presentMode{vireo::PresentMode::IMMEDIATE};
+        //! Number of simultaneous frames during rendering
+        uint32 framesInFlight{2};
         RendererConfiguration rendererConfiguration;
     };
 
@@ -39,7 +46,13 @@ export namespace lysa {
     public:
         RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration);
 
-        ~RenderTarget();
+        ~RenderTarget() override;
+
+        void render(
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors,
+            const CameraDesc& camera,
+            SceneRenderContext& scene) const;
 
         void pause(bool pause);
 
@@ -75,12 +88,9 @@ export namespace lysa {
         // associated OS window handler
         void* renderingWindowHandle{nullptr};
 
-        ViewportManager& viewportManager;
-
         friend class RenderTargetManager;
         void resize() const;
         void update() const;
-        void render() const;
     };
 
     class RenderTargetManager : public ResourcesManager<RenderTarget> {
@@ -107,7 +117,6 @@ export namespace lysa {
     private:
         friend class Lysa;
         void update() const;
-        void render() const;
 
         friend class ResourcesRegistry;
     };

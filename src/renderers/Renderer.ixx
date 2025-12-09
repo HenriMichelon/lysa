@@ -29,7 +29,8 @@ export namespace lysa {
     public:
         static std::unique_ptr<Renderer> create(
             Context& ctx,
-            const RendererConfiguration& config);
+            const RendererConfiguration& config,
+            uint32 framesInFlight);
 
         /** Returns the color attachment of the current renderer for the frame. */
         std::shared_ptr<vireo::RenderTarget> getCurrentColorAttachment(uint32 frameIndex) const;
@@ -116,6 +117,7 @@ export namespace lysa {
         Renderer(
             const Context& ctx,
             const RendererConfiguration& config,
+            uint32 framesInFlight,
             bool withStencil);
 
         /**

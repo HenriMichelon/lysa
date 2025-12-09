@@ -96,22 +96,12 @@ export namespace lysa {
          * @param config             Scene high-level configuration (buffers sizes, features).
          * @param renderingConfig    Global rendering configuration.
          * @param framesInFlight     Number of buffered frames.
-         * @param viewport           Default viewport used for render passes.
-         * @param scissors           Default scissors rectangle.
          */
         SceneRenderContext(
             const Context& ctx,
             const SceneRenderContextConfiguration& config,
             const RendererConfiguration& renderingConfig,
-            uint32 framesInFlight,
-            const vireo::Viewport& viewport,
-            const vireo::Rect& scissors);
-
-        /** Returns the default viewport for this scene. */
-        auto getViewport() const { return viewport; }
-
-        /** Returns the default scissors rectangle for this scene. */
-        auto getScissors() const { return scissors; }
+            uint32 framesInFlight);
 
         /** Adds a mesh instance to the scene. */
         void addInstance(const std::shared_ptr<MeshInstanceDesc> &node);
@@ -126,7 +116,10 @@ export namespace lysa {
         void compute(const CameraDesc& camera, vireo::CommandList& commandList) const;
 
         /** Writes initial GPU state required before issuing draw calls. */
-        void setInitialState(const vireo::CommandList& commandList) const;
+        void setInitialState(
+            const vireo::CommandList& commandList,
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors) const;
 
         /**
          * Issues draw calls for opaque models using the supplied pipelines map.
@@ -193,10 +186,6 @@ export namespace lysa {
         const RendererConfiguration& renderingConfig;
         /** Number of frames processed in-flight. */
         const uint32 framesInFlight;
-        /** Default viewport for render passes. */
-        const vireo::Viewport& viewport;
-        /** Default scissors rectangle for render passes. */
-        const vireo::Rect& scissors;
         /** Main descriptor set for scene bindings (scene, models, lights, textures). */
         std::shared_ptr<vireo::DescriptorSet> descriptorSet;
         /** Optional descriptor set for special passes (e.g., transparency). */

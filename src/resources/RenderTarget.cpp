@@ -6,6 +6,7 @@
 */
 module lysa.resources.render_target;
 
+import vireo;
 import lysa.exception;
 import lysa.log;
 import lysa.renderers.renderer;
@@ -13,23 +14,22 @@ import lysa.renderers.renderer;
 namespace lysa {
 
     RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration) :
-        ctx(ctx),
-        viewportManager(ctx.res.get<ViewportManager>()){
+        ctx(ctx) {
         if (configuration.renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
-        if (configuration.rendererConfiguration.framesInFlight <= 0) {
+        if (configuration.framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
         this->renderingWindowHandle = configuration.renderingWindowHandle;
         swapChain = ctx.vireo->createSwapChain(
-            configuration.rendererConfiguration.swapChainFormat,
+            configuration.swapChainFormat,
             ctx.graphicQueue,
             configuration.renderingWindowHandle,
-            configuration.rendererConfiguration.presentMode,
-            configuration.rendererConfiguration.framesInFlight);
-        renderer = Renderer::create(ctx, configuration.rendererConfiguration);
-        framesData.resize(configuration.rendererConfiguration.framesInFlight);
+            configuration.presentMode,
+            configuration.framesInFlight);
+        renderer = Renderer::create(ctx, configuration.rendererConfiguration, configuration.framesInFlight);
+        framesData.resize(configuration.framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
@@ -50,7 +50,7 @@ namespace lysa {
 
     RenderTarget::~RenderTarget() {
         swapChain->waitIdle();
-        viewportManager.destroyByRenderTarget(id);
+        // viewportManager.destroyByRenderTarget(id);
         swapChain.reset();
         framesData.clear();
     }
@@ -69,7 +69,7 @@ namespace lysa {
         const auto newExtent = swapChain->getExtent();
         if (previousExtent.width != newExtent.width || previousExtent.height != newExtent.height) {
             const auto& frame = framesData[0];
-            viewportManager.resize(id, newExtent);
+            // viewportManager.resize(id, newExtent);
             frame.commandAllocator->reset();
             frame.prepareCommandList->begin();
             renderer->resize(newExtent, frame.prepareCommandList);
@@ -83,10 +83,14 @@ namespace lysa {
     void RenderTarget::update() const {
         if (paused) return;
         const auto frameIndex = swapChain->getCurrentFrameIndex();
-        viewportManager.update(id, frameIndex);
+        // viewportManager.update(id, *renderer, frameIndex);
     }
 
-    void RenderTarget::render() const {
+    void RenderTarget::render(
+        const vireo::Viewport& viewport,
+        const vireo::Rect& scissors,
+        const CameraDesc& camera,
+        SceneRenderContext& scene) const {
         if (paused) return;
         const auto frameIndex =swapChain->getCurrentFrameIndex();
         const auto& frame = framesData[frameIndex];
@@ -95,7 +99,7 @@ namespace lysa {
         frame.commandAllocator->reset();
 
         frame.prepareCommandList->begin();
-        viewportManager.prepare(id, *renderer, *frame.prepareCommandList, frameIndex);
+        // viewportManager.prepare(id, *renderer, *frame.prepareCommandList, frameIndex);
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
                    vireo::WaitStage::ALL_COMMANDS,
@@ -104,7 +108,7 @@ namespace lysa {
 
         auto& commandList = frame.renderCommandList;
         commandList->begin();
-        viewportManager.render(id, *renderer, *frame.renderCommandList, frameIndex);
+        // viewportManager.render(id, *renderer, *frame.renderCommandList, frameIndex);
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
 
@@ -161,12 +165,6 @@ namespace lysa {
     void RenderTargetManager::update() const {
         for (auto& renderTarget : getResources()) {
             renderTarget->update();
-        }
-    }
-
-    void RenderTargetManager::render() const {
-        for (auto& renderTarget : getResources()) {
-            renderTarget->render();
         }
     }
 

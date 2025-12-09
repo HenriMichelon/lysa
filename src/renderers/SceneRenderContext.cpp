@@ -41,9 +41,7 @@ namespace lysa {
         const Context& ctx,
         const SceneRenderContextConfiguration& config,
         const RendererConfiguration& renderingConfig,
-        const uint32 framesInFlight,
-        const vireo::Viewport& viewport,
-        const vireo::Rect& scissors) :
+        const uint32 framesInFlight) :
         ctx(ctx),
         materialManager(ctx.res.get<MaterialManager>()),
         config{config},
@@ -62,8 +60,6 @@ namespace lysa {
             vireo::BufferType::UNIFORM,
             sizeof(SceneData), 1,
             "Scene Data")},
-        scissors{scissors},
-        viewport{viewport},
         framesInFlight{framesInFlight},
         renderingConfig{renderingConfig} {
 
@@ -328,7 +324,10 @@ namespace lysa {
         drawModels(commandList, pipelines, shaderMaterialPipelinesData);
     }
 
-    void SceneRenderContext::setInitialState(const vireo::CommandList& commandList) const {
+    void SceneRenderContext::setInitialState(
+        const vireo::CommandList& commandList,
+        const vireo::Viewport& viewport,
+        const vireo::Rect& scissors) const {
         commandList.setViewport(viewport);
         commandList.setScissors(scissors);
     }

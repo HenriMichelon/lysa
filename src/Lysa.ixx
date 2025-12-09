@@ -40,7 +40,6 @@ export import lysa.resources.rendering_window;
 export import lysa.resources.resource_manager;
 export import lysa.resources.samplers;
 export import lysa.resources.texture;
-export import lysa.resources.viewport;
 
 #ifdef LUA_BINDING
 export import lysa.lua;
@@ -112,12 +111,14 @@ export namespace  lysa {
         /**
          * @brief Run the main loop until quit is requested.
          *
+         * @param onRender Callback invoked after all updates & processes
          * @param onProcess Callback invoked every iteration (i.e. each frame).
          * @param onPhysicsProcess Callback invoked every physics update
          * @param onQuit Optional callback invoked once after the loop exits, before the instance shutdown
          */
         void run(
-            const std::function<void(float)>& onProcess,
+            const std::function<void()>& onRender,
+            const std::function<void(float)>& onProcess = {},
             const std::function<void(float)>& onPhysicsProcess = {},
             const std::function<void()>& onQuit = {});
 
@@ -125,12 +126,14 @@ export namespace  lysa {
         /**
          * @brief Run the main loop until quit is requested.
          *
+         * @param onRender Callback invoked after all updates & processes
          * @param onProcess Callback invoked every iteration (i.e. each frame).
          * @param onPhysicsProcess Callback invoked every physics update
          * @param onQuit Optional callback invoked once after the loop exits, before the instance shutdown
          */
         void run(
-            const luabridge::LuaRef& onProcess,
+            const luabridge::LuaRef& onRender,
+            const luabridge::LuaRef& onProcess = nullptr,
             const luabridge::LuaRef& onPhysicsProcess = nullptr,
             const luabridge::LuaRef& onQuit = nullptr);
 #endif
@@ -148,7 +151,6 @@ export namespace  lysa {
         double currentTime{0.0};
         double accumulator{0.0};
 
-        ViewportManager viewportManager;
         RenderTargetManager renderTargetManager;
         RenderingWindowManager renderingWindowManager;
         ImageManager imageManager;

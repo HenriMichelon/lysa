@@ -9,7 +9,8 @@ module lysa.renderers.renderpasses.forward_color;
 namespace lysa {
     ForwardColor::ForwardColor(
         const Context& ctx,
-        const RendererConfiguration& config):
+        const RendererConfiguration& config,
+        const uint32 framesInFlight):
         Renderpass{ctx, config, "Forward Color"} {
         pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat); // Color
 
@@ -22,7 +23,7 @@ namespace lysa {
             1.0f};
         renderingConfig.clearDepthStencil = false;
 
-        framesData.resize(config.framesInFlight);
+        framesData.resize(framesInFlight);
     }
 
     void ForwardColor::render(

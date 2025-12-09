@@ -247,33 +247,12 @@ end
                    )
             .endClass()
 
-            .beginClass<ViewportConfiguration>("ViewportConfiguration")
-                .addConstructor<void()>()
-                .addProperty("render_target", &ViewportConfiguration::renderTarget)
-                .addProperty("viewport", &ViewportConfiguration::viewport)
-                .addProperty("scissors", &ViewportConfiguration::scissors)
-            .endClass()
-            .beginClass<Viewport>("Viewport")
-                .addProperty("id", &Viewport::id)
-                .addProperty("render_target", &Viewport::getRenderTarget)
-            .endClass()
-            .beginClass<ViewportManager>("ViewportManager")
-                .addConstructor<void(Context&, unique_id)>()
-                .addFunction("create", +[](ViewportManager* self, const ViewportConfiguration& config) -> Viewport& {
-                    return self->create(config);
-                })
-                .addFunction("get",
-                    luabridge::nonConstOverload<const unique_id>(&ViewportManager::get),
-                    luabridge::constOverload<const unique_id>(&ViewportManager::get)
-                )
-                .addFunction("destroyAll", &ViewportManager::destroy)
-                .addFunction("destroy",
-                  luabridge::overload<const unique_id>(&Manager<Viewport>::destroy))
-            .endClass()
-
             .beginClass<RenderTargetConfiguration>("RenderTargetConfiguration")
                 .addConstructor<void()>()
                 .addProperty("rendering_window_handle", &RenderTargetConfiguration::renderingWindowHandle)
+                .addProperty("swap_chain_format", &RenderTargetConfiguration::swapChainFormat)
+                .addProperty("present_mode", &RenderTargetConfiguration::presentMode)
+                .addProperty("frames_in_flight", &RenderTargetConfiguration::framesInFlight)
                 .addProperty("renderer_configuration", &RenderTargetConfiguration::rendererConfiguration)
             .endClass()
             .beginNamespace("RenderTargetEventType")
@@ -316,9 +295,6 @@ end
             .beginClass<RendererConfiguration>("RendererConfiguration")
                 .addConstructor<void()>()
                 .addProperty("renderer_type", &RendererConfiguration::rendererType)
-                .addProperty("swap_chain_format", &RendererConfiguration::swapChainFormat)
-                .addProperty("present_mode", &RendererConfiguration::presentMode)
-                .addProperty("frames_in_flight", &RendererConfiguration::framesInFlight)
                 .addProperty("color_rendering_format", &RendererConfiguration::colorRenderingFormat)
                 .addProperty("depth_stencil_format", &RendererConfiguration::depthStencilFormat)
                 .addProperty("clear_color", &RendererConfiguration::clearColor)
@@ -331,10 +307,6 @@ end
                 .addProperty("render_target_manager",
                     +[](const ResourcesRegistry* rl) -> RenderTargetManager& {
                         return rl->get<RenderTargetManager>();
-                    })
-                .addProperty("viewport_manager",
-                    +[](const ResourcesRegistry* rl) -> ViewportManager& {
-                        return rl->get<ViewportManager>();
                     })
                 .addProperty("rendering_window_manager",
                     +[](const ResourcesRegistry* rl) -> RenderingWindowManager& {
