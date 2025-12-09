@@ -26,6 +26,10 @@ export namespace lysa::ecs {
         RenderModule(const flecs::world& w);
     };
 
+    struct SceneModule {
+        SceneModule(const flecs::world& w);
+    };
+
     void _register(flecs::world& w);
 
 }

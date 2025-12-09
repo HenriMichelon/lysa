@@ -7,6 +7,7 @@
 module lysa.ecs.systems;
 
 import lysa.aabb;
+import lysa.log;
 import lysa.math;
 import lysa.resources.mesh;
 import lysa.resources.render_target;
@@ -18,6 +19,7 @@ namespace lysa::ecs {
     void _register(flecs::world& w) {
         w.import<TransformModule>();
         w.import<RenderModule>();
+        w.import<SceneModule>();
         w.import<MeshInstanceModule>();
     }
 
@@ -35,6 +37,20 @@ namespace lysa::ecs {
             });
     }
 
+    SceneModule::SceneModule(const flecs::world& w) {
+        w.module<SceneModule>();
+        w.component<Scene>();
+        w.component<SceneRef>();
+        w.observer<Scene, const MeshInstance, const Transform>()
+            .term_at(0).parent()
+            .event(flecs::OnSet)
+            .event(flecs::OnAdd)
+            .each([&](Scene& scene, const MeshInstance& mi, const Transform& tr) {
+                if (mi.mesh == INVALID_ID) { return; }
+                Log::info("scene add");
+            });
+    }
+
     RenderModule::RenderModule(const flecs::world& w) {
         auto& renderTargetManager = w.get<Context>().ctx->res.get<RenderTargetManager>();
         auto& sceneContextManager = w.get<Context>().ctx->res.get<SceneContextManager>();
@@ -43,8 +59,6 @@ namespace lysa::ecs {
         w.component<CameraRef>();
         w.component<Viewport>();
         w.component<RenderTarget>();
-        w.component<Scene>();
-        w.component<SceneRef>();
         w.observer<Camera>()
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
