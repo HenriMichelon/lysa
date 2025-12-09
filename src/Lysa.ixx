@@ -118,13 +118,11 @@ export namespace  lysa {
         /**
          * @brief Run the main loop until quit is requested.
          *
-         * @param onRender Callback invoked after all updates & processes
          * @param onProcess Callback invoked every iteration (i.e. each frame).
          * @param onPhysicsProcess Callback invoked every physics update
          * @param onQuit Optional callback invoked once after the loop exits, before the instance shutdown
          */
         void run(
-            const std::function<void()>& onRender,
             const std::function<void(float)>& onProcess = {},
             const std::function<void(float)>& onPhysicsProcess = {},
             const std::function<void()>& onQuit = {});
@@ -133,13 +131,11 @@ export namespace  lysa {
         /**
          * @brief Run the main loop until quit is requested.
          *
-         * @param onRender Callback invoked after all updates & processes
          * @param onProcess Callback invoked every iteration (i.e. each frame).
          * @param onPhysicsProcess Callback invoked every physics update
          * @param onQuit Optional callback invoked once after the loop exits, before the instance shutdown
          */
-        void run(
-            const luabridge::LuaRef& onRender,
+        void runLua(
             const luabridge::LuaRef& onProcess = nullptr,
             const luabridge::LuaRef& onPhysicsProcess = nullptr,
             const luabridge::LuaRef& onQuit = nullptr);

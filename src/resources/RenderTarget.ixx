@@ -47,8 +47,8 @@ export namespace lysa {
         ~RenderTarget() override;
 
         void render(
-            const vireo::Viewport& viewport,
-            const vireo::Rect& scissors,
+            vireo::Viewport viewport,
+            vireo::Rect scissors,
             const CameraDesc& camera,
             SceneContext& scene) const;
 
@@ -90,7 +90,6 @@ export namespace lysa {
 
         friend class RenderTargetManager;
         void resize() const;
-        void update() const;
     };
 
     class RenderTargetManager : public ResourcesManager<RenderTarget> {
@@ -119,7 +118,6 @@ export namespace lysa {
         uint32 framesInFlight;
 
         friend class Lysa;
-        void update() const;
 
         friend class ResourcesRegistry;
     };

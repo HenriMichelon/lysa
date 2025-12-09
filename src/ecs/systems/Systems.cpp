@@ -10,6 +10,7 @@ import lysa.aabb;
 import lysa.math;
 import lysa.resources.mesh;
 import lysa.resources.render_target;
+import lysa.resources.scene_context;
 import lysa.renderers.graphic_pipeline_data;
 
 namespace lysa::ecs {
@@ -27,7 +28,7 @@ namespace lysa::ecs {
         w.observer<const Transform, MeshInstance>()
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
-            .each([&](flecs::entity _, const Transform& tr, MeshInstance& mi) {
+            .each([&](const Transform& tr, MeshInstance& mi) {
                 if (mi.mesh == INVALID_ID) { return; }
                 const AABB local = meshManager[mi.mesh].getAABB();
                 mi.worldAABB = local.toGlobal(tr.global);
@@ -36,6 +37,7 @@ namespace lysa::ecs {
 
     RenderModule::RenderModule(const flecs::world& w) {
         auto& renderTargetManager = w.get<Context>().ctx->res.get<RenderTargetManager>();
+        auto& sceneContextManager = w.get<Context>().ctx->res.get<SceneContextManager>();
         w.module<RenderModule>();
         w.component<CameraProjection>();
         w.component<Camera>();
@@ -45,7 +47,7 @@ namespace lysa::ecs {
         w.observer<CameraProjection>()
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
-            .each([&](flecs::entity _, CameraProjection& cp) {
+            .each([&](CameraProjection& cp) {
                 if (cp.isPerspective) {
                     cp.projection = perspective(radians(cp.fov), cp.aspectRatio, cp.near, cp.far);
                 } else {
@@ -53,12 +55,16 @@ namespace lysa::ecs {
                 }
             });
         w.system<const RenderTarget, const Viewport, const Camera>()
+            .with<Scene>().parent()
             .kind(flecs::OnUpdate)
             .each([&](
                 flecs::entity e,
                 const RenderTarget& rt,
                 const Viewport& vp,
-                const Camera& camref){
+                const Camera& camref) {
+                    const auto& renderTarget = renderTargetManager[rt.renderTarget];
+                    if (renderTarget.isPaused()) { return; }
+                    auto& scene = sceneContextManager[e.parent().get<Scene>().sceneContext];
                     const auto cameraProjection = camref.camera.get<CameraProjection>();
                     const auto cameraTransform = camref.camera.get<Transform>().global;
                     auto cameraDesc = CameraDesc{
@@ -66,9 +72,7 @@ namespace lysa::ecs {
                         .transform = cameraTransform,
                         .projection = cameraProjection.projection
                     };
-                    const auto ctx = w.get<Context>().ctx;
-                    const auto& renderTarget = renderTargetManager[rt.renderTarget];
-                    //renderTarget.render(vp.viewport, vp.scissors, cameraDesc, scene);
+                    renderTarget.render(vp.viewport, vp.scissors, cameraDesc, scene);
                 });
             }
 

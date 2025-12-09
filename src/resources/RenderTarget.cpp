@@ -12,7 +12,6 @@ import lysa.log;
 import lysa.renderers.renderer;
 
 namespace lysa {
-
     RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, const uint32 framesInFlight) :
         ctx(ctx) {
         if (configuration.renderingWindowHandle == nullptr) {
@@ -80,26 +79,38 @@ namespace lysa {
         }
     }
 
-    void RenderTarget::update() const {
-        if (paused) return;
-        const auto frameIndex = swapChain->getCurrentFrameIndex();
-        // viewportManager.update(id, *renderer, frameIndex);
-    }
-
     void RenderTarget::render(
-        const vireo::Viewport& viewport,
-        const vireo::Rect& scissors,
+        vireo::Viewport viewport,
+        vireo::Rect scissors,
         const CameraDesc& camera,
         SceneContext& scene) const {
         if (paused) return;
+        if (viewport.width == 0.0f || viewport.height == 0.0f) {
+            viewport.width = static_cast<float>(swapChain->getExtent().width);
+            viewport.height = static_cast<float>(swapChain->getExtent().height);
+        }
+        if (scissors.width   == 0.0f || scissors.height == 0.0f) {
+            scissors.x = static_cast<int32>(viewport.x);
+            scissors.y = static_cast<int32>(viewport.y);
+            scissors.width = static_cast<int32>(viewport.width);
+            scissors.height = static_cast<int32>(viewport.height);
+        }
+
         const auto frameIndex =swapChain->getCurrentFrameIndex();
         const auto& frame = framesData[frameIndex];
+
+        if (scene.isMaterialsUpdated()) {
+            //renderer.updatePipelines(scene);
+            scene.resetMaterialsUpdated();
+        }
+        renderer->update(frameIndex);
 
         if (!swapChain->acquire(frame.inFlightFence)) { return; }
         frame.commandAllocator->reset();
 
         frame.prepareCommandList->begin();
-        // viewportManager.prepare(id, *renderer, *frame.prepareCommandList, frameIndex);
+        scene.setInitialState(*frame.prepareCommandList, viewport, scissors);
+        scene.update(camera, *frame.prepareCommandList);
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
                    vireo::WaitStage::ALL_COMMANDS,
@@ -108,7 +119,7 @@ namespace lysa {
 
         auto& commandList = frame.renderCommandList;
         commandList->begin();
-        // viewportManager.render(id, *renderer, *frame.renderCommandList, frameIndex);
+        renderer->render(*commandList, scene, true, frameIndex);
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
 
@@ -141,7 +152,10 @@ namespace lysa {
     void RenderTargetManager::destroy(const void* renderingWindowHandle) {
         for (const auto& renderTarget : getResources()) {
             if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-                Manager::destroy(renderTarget->id);
+                renderTarget->pause(true);
+                ctx.defer.push([&] {
+                    Manager::destroy(renderTarget->id);
+                });
             }
         }
     }
@@ -159,12 +173,6 @@ namespace lysa {
             if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
                 renderTarget->resize();
             }
-        }
-    }
-
-    void RenderTargetManager::update() const {
-        for (auto& renderTarget : getResources()) {
-            renderTarget->update();
         }
     }
 

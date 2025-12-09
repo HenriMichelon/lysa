@@ -49,7 +49,6 @@ namespace lysa {
     }
 
     void Lysa::run(
-        const std::function<void()>& onRender,
         const std::function<void(float)>& onProcess,
         const std::function<void(float)>& onPhysicsProcess,
         const std::function<void()>& onQuit) {
@@ -75,21 +74,17 @@ namespace lysa {
                 accumulator -= FIXED_DELTA_TIME;
             }
             if (onProcess) onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
-
-            renderTargetManager.update();
-            onRender();
         }
+        ctx.defer._process();
         if (onQuit) onQuit();
     }
 
 #ifdef LUA_BINDING
-    void Lysa::run(
-        const luabridge::LuaRef& onRender,
+    void Lysa::runLua(
         const luabridge::LuaRef& onProcess,
         const luabridge::LuaRef& onPhysicsProcess,
         const luabridge::LuaRef& onQuit) {
         run(
-            [&](){ onRender(); },
             [&](float dt){ onProcess(dt); },
             [&](float dt){ if (onPhysicsProcess) onPhysicsProcess(dt); },
             [&]{ if (onQuit) onQuit(); }
