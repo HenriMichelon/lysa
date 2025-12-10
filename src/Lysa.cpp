@@ -9,6 +9,7 @@ module lysa;
 #ifdef ECS_SCENES
 import lysa.ecs.systems;
 #endif
+import lysa.renderers.scene_render_context;
 
 namespace lysa {
 
@@ -32,7 +33,10 @@ namespace lysa {
             config.resourcesCapacity.vertices,
             config.resourcesCapacity.indices,
             config.resourcesCapacity.surfaces),
-        sceneContextManager(ctx,
+        sceneManager(ctx,
+            config.resourcesCapacity.lightsPerScene,
+            config.resourcesCapacity.meshInstancesPerScene,
+            config.resourcesCapacity.meshSurfacePerPipeline,
             config.resourcesCapacity.scenes,
             config.resourcesCapacity.shadowMapsPerScene,
             config.framesInFlight),
@@ -40,7 +44,7 @@ namespace lysa {
     {
         ctx.descriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.descriptorSet = globalDescriptors.getDescriptorSet();
-        SceneContext::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
+        SceneRenderContext::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
 #ifdef ECS_SCENES
         ctx.world.set<ecs::Context>({&ctx});
         ecs::_register(ctx.world);
@@ -49,7 +53,7 @@ namespace lysa {
 
     Lysa::~Lysa() {
         ctx.graphicQueue->waitIdle();
-        SceneContext::destroyDescriptorLayouts();
+        SceneRenderContext::destroyDescriptorLayouts();
     }
 
     void Lysa::run(

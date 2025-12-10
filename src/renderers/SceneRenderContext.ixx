@@ -4,7 +4,7 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.resources.scene_context;
+export module lysa.renderers.scene_render_context;
 
 import vireo;
 import lysa.context;
@@ -17,18 +17,7 @@ import lysa.resources.resource_manager;
 
 export namespace lysa {
 
-    struct SceneContextConfiguration : ResourceConfiguration {
-        //! Maximum number of lights per scene
-        uint32 maxLights{100};
-        //! Number of nodes updates per frame for asynchronous scene updates
-        uint32 maxAsyncNodesUpdatedPerFrame{50};
-        //! Maximum number of mesh instances per scene
-        uint32 maxMeshInstancesPerScene{10000};
-        //! Maximum number of mesh surfaces instances  per scene
-        uint32 maxMeshSurfacePerPipeline{100000};
-    };
-
-    class SceneContext : public Resource {
+    class SceneRenderContext {
     public:
          /** Descriptor binding for SceneData uniform buffer. */
         static constexpr vireo::DescriptorIndex BINDING_SCENE{0};
@@ -63,24 +52,13 @@ export namespace lysa {
             .size = sizeof(InstanceIndexConstant),
         };
 
-        /**
-         * Constructs a Scene for a given configuration and viewport/scissors.
-         *
-         * @param ctx
-         * @param config             Scene high-level configuration (buffers sizes, features).
-         * @param framesInFlight     Number of buffered frames.
-         */
-        SceneContext(
+        SceneRenderContext(
             const Context& ctx,
-            const SceneContextConfiguration& config,
+            uint32 maxLights,
+            uint32 maxMeshInstancesPerScene,
+            uint32 maxMeshSurfacePerPipeline,
             uint32 framesInFlight,
             uint32 maxShadowMaps);
-
-        /** Adds a mesh instance to the scene. */
-        void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
-
-        /** Removes a node previously added to the scene. */
-        virtual void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node);
 
         /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
         void prepare(
@@ -91,6 +69,12 @@ export namespace lysa {
 
         /** Executes compute workloads such as frustum culling. */
         void compute(const CameraDesc& camera, vireo::CommandList& commandList) const;
+
+        /** Adds a mesh instance to the scene. */
+        void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
+
+        /** Removes a node previously added to the scene. */
+        void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node);
 
         /**
          * Issues draw calls for opaque models using the supplied pipelines map.
@@ -144,15 +128,15 @@ export namespace lysa {
         /** Returns a view over the shadow map renderers values. */
         // auto getShadowMapRenderers() const { return std::views::values(shadowMapRenderers); }
 
-        virtual ~SceneContext() = default;
-        SceneContext(SceneContext&) = delete;
-        SceneContext& operator=(SceneContext&) = delete;
+        ~SceneRenderContext() = default;
+        SceneRenderContext(SceneRenderContext&) = delete;
+        SceneRenderContext& operator=(SceneRenderContext&) = delete;
 
     private:
         const Context& ctx;
         MaterialManager& materialManager;
-        /** Read-only reference to scene configuration. */
-        const SceneContextConfiguration& config;
+        const uint32 maxLights;
+        const uint32 maxMeshSurfacePerPipeline;
         /** Number of frames processed in-flight. */
         const uint32 framesInFlight;
         /** Main descriptor set for scene bindings (scene, models, lights, textures). */
@@ -230,28 +214,6 @@ export namespace lysa {
         // void enableLightShadowCasting(const std::shared_ptr<Node>&node);
 
         // void disableLightShadowCasting(const std::shared_ptr<Light>&light);
-    };
-
-    class SceneContextManager : public ResourcesManager<SceneContext> {
-    public:
-        /**
-         * @brief Construct a manager bound to the given runtime context.
-         * @param ctx Instance wide context
-         * @param capacity Initial capacity
-         * @param maxShadowMaps
-         * @param framesInFlight
-         */
-        SceneContextManager(Context& ctx, size_t capacity, uint32 maxShadowMaps, uint32 framesInFlight);
-
-        ~SceneContextManager() override {
-            cleanup();
-        }
-
-        SceneContext& create(const SceneContextConfiguration& configuration);
-
-    private:
-        uint32 maxShadowMaps;
-        uint32 framesInFlight;
     };
 
 }

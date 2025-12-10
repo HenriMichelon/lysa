@@ -4,7 +4,7 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-module lysa.renderers.renderpass.depth_prepass;
+module lysa.renderers.renderpasses.depth_prepass;
 
 import lysa.renderers.graphic_pipeline_data;
 
@@ -41,7 +41,7 @@ namespace lysa {
 
     void DepthPrepass::render(
         vireo::CommandList& commandList,
-        const SceneContext& scene,
+        const SceneRenderContext& scene,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment) {
         renderingConfig.depthStencilRenderTarget = depthAttachment;
         commandList.beginRendering(renderingConfig);

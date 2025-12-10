@@ -53,7 +53,7 @@ namespace lysa::ecs {
 
     RenderModule::RenderModule(const flecs::world& w) {
         auto& renderTargetManager = w.get<Context>().ctx->res.get<RenderTargetManager>();
-        auto& sceneContextManager = w.get<Context>().ctx->res.get<SceneContextManager>();
+        auto& sceneManager = w.get<Context>().ctx->res.get<SceneManager>();
         w.module<RenderModule>();
         w.component<Camera>();
         w.component<CameraRef>();
@@ -79,7 +79,7 @@ namespace lysa::ecs {
                     if (child.has<CameraRef>() && child.has<SceneRef>()) {
                         auto& cameraRef = child.get<CameraRef>();
                         auto& sceneRef = child.get<SceneRef>();
-                        auto& scene = sceneContextManager[sceneRef.scene.get<Scene>().sceneContext];
+                        auto& scene = sceneManager[sceneRef.scene.get<Scene>().sceneContext];
                         const auto camera = cameraRef.camera.get<Camera>();
                         const auto cameraTransform = cameraRef.camera.get<Transform>().global;
                         const auto cameraDesc = CameraDesc{

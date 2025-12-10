@@ -28,9 +28,13 @@ export import lysa.ecs.systems;
 #endif
 
 export import lysa.renderers.configuration;
+export import lysa.renderers.forward_renderer;
 export import lysa.renderers.global_descriptor_set;
 export import lysa.renderers.graphic_pipeline_data;
 export import lysa.renderers.renderer;
+export import lysa.renderers.scene_render_context;
+export import lysa.renderers.renderpasses.depth_prepass;
+export import lysa.renderers.renderpasses.forward_color;
 export import lysa.renderers.renderpasses.renderpass;
 
 export import lysa.resources.image;
@@ -75,6 +79,12 @@ export namespace  lysa {
         size_t surfaces{200000};
         //! Maximum number of shadow maps per scene
         uint32 shadowMapsPerScene{20};
+        //! Maximum number of lights per scene
+        uint32 lightsPerScene{100};
+        //! Maximum number of mesh instances per frame per scene
+        uint32 meshInstancesPerScene{10000};
+        //! Maximum number of mesh surfaces instances per pipeline
+        uint32 meshSurfacePerPipeline{100000};
     };
 
     /**
@@ -85,6 +95,8 @@ export namespace  lysa {
         vireo::Backend backend{vireo::Backend::VULKAN};
         //! Number of simultaneous frames during rendering
         uint32 framesInFlight{2};
+        //! Number of nodes updates per frame for asynchronous scene updates
+        uint32 asyncObjectUpdatesPerFrame{50};
         //! Resource capacity configuration
         ResourcesCapacity resourcesCapacity;
         size_t eventsReserveCapacity{100};
@@ -162,7 +174,7 @@ export namespace  lysa {
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
         MeshManager meshManager;
-        SceneContextManager sceneContextManager;
+        SceneManager sceneManager;
         GlobalDescriptorSet globalDescriptors;
 
         // Consume platform-specific events.

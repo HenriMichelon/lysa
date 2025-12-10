@@ -81,6 +81,7 @@ namespace lysa {
 
     void RenderTarget::render(std::list<RenderView>& views) const {
         if (paused) return;
+        const auto frameIndex =swapChain->getCurrentFrameIndex();
         for (auto& view : views) {
             if (view.viewport.width == 0.0f || view.viewport.height == 0.0f) {
                 view.viewport.width = static_cast<float>(swapChain->getExtent().width);
@@ -92,13 +93,12 @@ namespace lysa {
                 view.scissors.width = static_cast<int32>(view.viewport.width);
                 view.scissors.height = static_cast<int32>(view.viewport.height);
             }
-            if (view.scene.isMaterialsUpdated()) {
-                renderer->updatePipelines(view.scene);
-                view.scene.resetMaterialsUpdated();
+            if (view.scene[frameIndex].isMaterialsUpdated()) {
+                renderer->updatePipelines(view.scene[frameIndex]);
+                view.scene[frameIndex].resetMaterialsUpdated();
             }
         }
 
-        const auto frameIndex =swapChain->getCurrentFrameIndex();
         const auto& frame = framesData[frameIndex];
 
         renderer->update(frameIndex);
@@ -108,7 +108,7 @@ namespace lysa {
 
         frame.prepareCommandList->begin();
         for (auto& view : views) {
-            view.scene.prepare(*frame.prepareCommandList, view.viewport, view.scissors, view.camera);
+            view.scene[frameIndex].prepare(*frame.prepareCommandList, view.viewport, view.scissors, view.camera);
         }
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
@@ -119,7 +119,7 @@ namespace lysa {
         auto& commandList = frame.renderCommandList;
         commandList->begin();
         for (auto& view : views) {
-            renderer->render(*commandList, view.scene, true, frameIndex);
+            renderer->render(*commandList, view.scene[frameIndex], true, frameIndex);
         }
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);

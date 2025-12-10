@@ -261,6 +261,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/GlobalDescriptorSet.cpp
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.cpp
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
+        ${ENGINE_SRC_DIR}/renderers/SceneRenderContext.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
 
@@ -270,7 +271,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
         ${ENGINE_SRC_DIR}/resources/Samplers.cpp
-        ${ENGINE_SRC_DIR}/resources/SceneContext.cpp
+        ${ENGINE_SRC_DIR}/resources/Scene.cpp
 
         ${OS_SRC}
         ${PHYSICS_SRC}
@@ -307,6 +308,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/renderers/GlobalDescriptorSet.ixx
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.ixx
         ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
+        ${ENGINE_SRC_DIR}/renderers/SceneRenderContext.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
 
@@ -318,7 +320,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesRegistry.ixx
         ${ENGINE_SRC_DIR}/resources/Samplers.ixx
-        ${ENGINE_SRC_DIR}/resources/SceneContext.ixx
+        ${ENGINE_SRC_DIR}/resources/Scene.ixx
         ${ENGINE_SRC_DIR}/resources/Texture.ixx
 
         ${OS_MODULES}
