@@ -134,6 +134,7 @@ namespace lysa {
         auto& commandList = frame.renderCommandList;
         commandList->begin();
         for (auto& view : views) {
+            view.scene[frameIndex].prepare(*commandList, view.viewport, view.scissors);
             renderer->render(*commandList, view.scene[frameIndex], true, frameIndex);
         }
 

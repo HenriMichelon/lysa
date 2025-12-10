@@ -69,6 +69,7 @@ namespace lysa {
             if (ctx.samplers.isUpdateNeeded()) {
                 ctx.samplers.update();
             }
+            globalDescriptors.update();
 #ifdef ECS_SCENES
             ctx.world.progress();
 #endif

@@ -18,8 +18,7 @@ namespace lysa {
         descriptorLayout = ctx.vireo->createDescriptorLayout("Global");
         descriptorLayout->add(BINDING_MATERIALS, vireo::DescriptorType::DEVICE_STORAGE);
         descriptorLayout->add(BINDING_SURFACES, vireo::DescriptorType::DEVICE_STORAGE);
-        descriptorLayout->add(BINDING_TEXTURES, vireo::DescriptorType::SAMPLED_IMAGE,
-            imageManager.getCapacity());
+        descriptorLayout->add(BINDING_TEXTURES, vireo::DescriptorType::SAMPLED_IMAGE, imageManager.getCapacity());
         descriptorLayout->build();
 
         descriptorSet = ctx.vireo->createDescriptorSet(descriptorLayout, "Global");

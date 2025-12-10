@@ -8,9 +8,17 @@
 
 float4 fragmentMain(VertexOutput input) : SV_Target {
     Material mat = materials[input.materialIndex];
+    float4 color = mat.albedoColor;
+     if (mat.diffuseTexture.index != -1) {
+            color = textures[mat.diffuseTexture.index].Sample(
+                samplers[mat.diffuseTexture.samplerIndex],
+                input.uv);
+        }
+    return color;
+   /* Material mat = materials[input.materialIndex];
     float4 color = fetchColor(input.uv, mat);
     if (mat.transparency != Transparency.DISABLED && color.a < 0.99) {
        discard;
     }
-    return getColor(input, mat, color);
+    return getColor(input, mat, color);*/
 }

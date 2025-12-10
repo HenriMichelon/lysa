@@ -92,6 +92,7 @@ namespace lysa {
         auto& result = ResourcesManager::create(image, name);
         result.index = result.id;
         images[result.index] = image;
+        updated = true;
         return result;
     }
 
