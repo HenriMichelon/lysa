@@ -399,7 +399,7 @@ namespace lysa {
             const auto& pipeline = pipelines.at(pipelineId);
             commandList.bindPipeline(pipeline);
                 commandList.bindDescriptors({
-                    ctx.descriptorSet,
+                    ctx.globalDescriptorSet,
                     ctx.samplers.getDescriptorSet(),
                     descriptorSet,
                     pipelineData->descriptorSet,

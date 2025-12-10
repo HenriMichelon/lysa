@@ -101,8 +101,8 @@ export namespace  lysa {
          */
         AsyncQueue asyncQueue;
 
-        std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
-        std::shared_ptr<vireo::DescriptorSet> descriptorSet;
+        std::shared_ptr<vireo::DescriptorLayout> globalDescriptorLayout;
+        std::shared_ptr<vireo::DescriptorSet> globalDescriptorSet;
 
         Context(
             vireo::Backend backend,

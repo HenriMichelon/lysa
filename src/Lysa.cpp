@@ -43,8 +43,8 @@ namespace lysa {
             config.framesInFlight),
         globalDescriptors(ctx)
     {
-        ctx.descriptorLayout = globalDescriptors.getDescriptorLayout();
-        ctx.descriptorSet = globalDescriptors.getDescriptorSet();
+        ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();
+        ctx.globalDescriptorSet = globalDescriptors.getDescriptorSet();
         SceneRenderContext::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
 #ifdef ECS_SCENES
         ctx.world.set<ecs::Context>({&ctx});

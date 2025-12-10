@@ -13,17 +13,18 @@ namespace lysa {
         const Context& ctx,
         const RendererConfiguration& config,
         const bool withStencil):
-        Renderpass{ctx, config, "Depth pre-pass"} {
+        Renderpass{ctx, config, "Depth pre-pass"},
+        materialManager(ctx.res.get<MaterialManager>()) {
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
         pipelineConfig.stencilTestEnable = withStencil;
         pipelineConfig.backStencilOpState = pipelineConfig.frontStencilOpState;
-        // pipelineConfig.resources = ctx.vireo->createPipelineResources({
-        //     Resources::descriptorLayout,
-        //     Application::getResources().getSamplers().getDescriptorLayout(),
-        //     Scene::sceneDescriptorLayout,
-        //     Scene::pipelineDescriptorLayout,
-        //     Scene::sceneDescriptorLayoutOptional1},
-        //     Scene::instanceIndexConstantDesc, name);
+        pipelineConfig.resources = ctx.vireo->createPipelineResources({
+            ctx.globalDescriptorLayout,
+            ctx.samplers.getDescriptorLayout(),
+            SceneRenderContext::sceneDescriptorLayout,
+            GraphicPipelineData::pipelineDescriptorLayout,
+            SceneRenderContext::sceneDescriptorLayoutOptional1},
+            SceneRenderContext::instanceIndexConstantDesc, name);
         renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
     }
 
@@ -31,10 +32,10 @@ namespace lysa {
         for (const auto& [pipelineId, materials] : pipelineIds) {
             if (!pipelines.contains(pipelineId)) {
                 const auto& material = materials.at(0);
-                // pipelineConfig.cullMode = material->getCullMode();
-                // pipelineConfig.vertexShader = loadShader(VERTEX_SHADER);
-                // pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
-                // pipelines[pipelineId] = ctx.vireo->createGraphicPipeline(pipelineConfig, name);
+                pipelineConfig.cullMode = materialManager[material].getCullMode();
+                pipelineConfig.vertexShader = loadShader(VERTEX_SHADER);
+                pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
+                pipelines[pipelineId] = ctx.vireo->createGraphicPipeline(pipelineConfig, name);
             }
         }
     }

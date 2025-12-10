@@ -11,6 +11,7 @@ import lysa.context;
 import lysa.renderers.configuration;
 import lysa.renderers.renderpasses.renderpass;
 import lysa.renderers.scene_render_context;
+import lysa.resources.material;
 
 export namespace lysa {
     class DepthPrepass : public Renderpass {
@@ -46,6 +47,7 @@ export namespace lysa {
             .clearDepthStencil = true,
         };
 
+        const MaterialManager& materialManager;
         std::shared_ptr<vireo::GraphicPipeline> pipeline;
         std::unordered_map<pipeline_id, std::shared_ptr<vireo::GraphicPipeline>> pipelines;
     };
