@@ -14,6 +14,7 @@ import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderpasses.depth_prepass;
 import lysa.renderers.scene_render_context;
+import lysa.resources.mesh;
 
 export namespace lysa {
 
@@ -70,11 +71,12 @@ export namespace lysa {
         /** Executes compute workloads such as frustum culling. */
         void compute(
             vireo::CommandList& commandList,
-            const SceneRenderContext& scene,
+            SceneRenderContext& scene,
+            const CameraDesc& camera,
             uint32 frameIndex) const;
 
         /** Pre-render stage: uploads, layout transitions, depth pre pass and shadow maps. */
-        void preRender(
+        void prepare(
             vireo::CommandList& commandList,
             const SceneRenderContext& scene,
             uint32 frameIndex);
@@ -139,6 +141,7 @@ export namespace lysa {
             std::shared_ptr<vireo::RenderTarget> depthAttachment;
         };
 
+        const MeshManager& meshManager;
         vireo::Extent currentExtent{};
         std::vector<FrameData> framesData;
 

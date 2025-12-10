@@ -204,6 +204,10 @@ export namespace lysa {
 
         auto getMeshSurfaceBuffer() const { return meshSurfaceArray.getBuffer(); }
 
+        auto getVertexBuffer() const { return vertexArray.getBuffer(); }
+
+        auto getIndexBuffer() const { return indexArray.getBuffer(); }
+
     private:
         MaterialManager& materialManager;
         /** Device memory array that stores all vertex buffers. */

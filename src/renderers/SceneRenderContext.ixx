@@ -60,15 +60,17 @@ export namespace lysa {
             uint32 framesInFlight,
             uint32 maxShadowMaps);
 
-        /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
+        /** Set initial dynamic states */
         void prepare(
             const vireo::CommandList& commandList,
             const vireo::Viewport& viewport,
-            const vireo::Rect& scissors,
-            const CameraDesc& camera);
+            const vireo::Rect& scissors) const;
+
+        /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
+        void update(const vireo::CommandList& commandList, const CameraDesc& camera);
 
         /** Executes compute workloads such as frustum culling. */
-        void compute(const CameraDesc& camera, vireo::CommandList& commandList) const;
+        void compute(vireo::CommandList& commandList, const CameraDesc& camera) const;
 
         /** Adds a mesh instance to the scene. */
         void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);

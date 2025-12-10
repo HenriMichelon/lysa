@@ -34,7 +34,8 @@ namespace lysa {
         ctx(ctx),
         withStencil(withStencil),
         config(config),
-        depthPrePass(ctx, config, withStencil) {
+        depthPrePass(ctx, config, withStencil),
+        meshManager(ctx.res.get<MeshManager>()) {
         framesData.resize(framesInFlight);
     }
 
@@ -58,29 +59,37 @@ namespace lysa {
 
     void Renderer::compute(
        vireo::CommandList& commandList,
-       const SceneRenderContext& scene,
+       SceneRenderContext& scene,
+       const CameraDesc& camera,
        const uint32 frameIndex) const {
         // auto resourcesLock = std::lock_guard{Application::getResources().getMutex()};
         // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
-        //     shadowMapRenderer->update(frameIndex);
+            // shadowMapRenderer->update(frameIndex);
         // }
-        // scene.update(commandList);
-        // scene.compute(commandList);
+        scene.update(commandList, camera);
+        scene.compute(commandList, camera);
     }
 
-    void Renderer::preRender(
+    void Renderer::prepare(
         vireo::CommandList& commandList,
         const SceneRenderContext& scene,
         const uint32 frameIndex) {
+        commandList.bindVertexBuffer(meshManager.getVertexBuffer());
+        commandList.bindIndexBuffer(meshManager.getIndexBuffer());
+        // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
+            // static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->render(commandList, scene);
+        // }
         depthPrePass.render(commandList, scene, framesData[frameIndex].depthAttachment);
     }
 
     void Renderer::render(
-       vireo::CommandList& commandList,
-       const SceneRenderContext& scene,
-       const bool clearAttachment,
-       const uint32 frameIndex) {
+        vireo::CommandList& commandList,
+        const SceneRenderContext& scene,
+        const bool clearAttachment,
+        const uint32 frameIndex) {
         const auto& frame = framesData[frameIndex];
+        commandList.bindVertexBuffer(meshManager.getVertexBuffer());
+        commandList.bindIndexBuffer(meshManager.getIndexBuffer());
         colorPass(commandList, scene, frame.colorAttachment, frame.depthAttachment, clearAttachment, frameIndex);
     }
 

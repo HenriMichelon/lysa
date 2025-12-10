@@ -86,7 +86,7 @@ namespace lysa {
         lightsBuffer->map();
     }
 
-    void SceneRenderContext::compute(const CameraDesc& camera, vireo::CommandList& commandList) const {
+    void SceneRenderContext::compute(vireo::CommandList& commandList, const CameraDesc& camera) const {
         compute(camera, commandList, opaquePipelinesData);
         compute(camera, commandList, shaderMaterialPipelinesData);
         compute(camera, commandList, transparentPipelinesData);
@@ -124,10 +124,14 @@ namespace lysa {
     void SceneRenderContext::prepare(
         const vireo::CommandList& commandList,
         const vireo::Viewport& viewport,
-        const vireo::Rect& scissors,
-        const CameraDesc& camera) {
+        const vireo::Rect& scissors) const {
         commandList.setViewport(viewport);
         commandList.setScissors(scissors);
+    }
+
+    void SceneRenderContext::update(
+        const vireo::CommandList& commandList,
+        const CameraDesc& camera) {
         if (!drawCommandsStagingBufferRecycleBin.empty()) {
             drawCommandsStagingBufferRecycleBin.clear();
         }

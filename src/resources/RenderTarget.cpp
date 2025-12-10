@@ -32,7 +32,9 @@ namespace lysa {
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
+            frame.computeSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY);
             frame.prepareSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY);
+            frame.computeCommandList = frame.commandAllocator->createCommandList();
             frame.prepareCommandList = frame.commandAllocator->createCommandList();
             frame.renderCommandList = frame.commandAllocator->createCommandList();
         }
@@ -101,21 +103,33 @@ namespace lysa {
         }
 
         const auto& frame = framesData[frameIndex];
-
         renderer->update(frameIndex);
 
         if (!swapChain->acquire(frame.inFlightFence)) { return; }
         frame.commandAllocator->reset();
 
+        frame.computeCommandList->begin();
+        for (auto& view : views) {
+            renderer->compute(*frame.computeCommandList, view.scene[frameIndex], view.camera, frameIndex);
+        }
+        frame.computeCommandList->end();
+        ctx.graphicQueue->submit(
+            vireo::WaitStage::COMPUTE_SHADER,
+            frame.computeSemaphore,
+            {frame.computeCommandList});
+
         frame.prepareCommandList->begin();
         for (auto& view : views) {
-            view.scene[frameIndex].prepare(*frame.prepareCommandList, view.viewport, view.scissors, view.camera);
+            view.scene[frameIndex].prepare(*frame.prepareCommandList, view.viewport, view.scissors);
+            renderer->prepare(*frame.prepareCommandList, view.scene[frameIndex], frameIndex);
         }
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
-                   vireo::WaitStage::ALL_COMMANDS,
-                   frame.prepareSemaphore,
-                   {frame.prepareCommandList});
+            frame.computeSemaphore,
+            vireo::WaitStage::VERTEX_INPUT,
+            vireo::WaitStage::ALL_COMMANDS,
+            frame.prepareSemaphore,
+            {frame.prepareCommandList});
 
         auto& commandList = frame.renderCommandList;
         commandList->begin();
