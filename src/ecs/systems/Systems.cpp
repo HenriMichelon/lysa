@@ -55,6 +55,7 @@ namespace lysa::ecs {
                     mi.visible,
                     mi.castShadows,
                     mi.worldAABB,
+                    tr.global,
                     sceneManager.getFramesInFlight()),
                     false);
             });

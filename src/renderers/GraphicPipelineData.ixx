@@ -136,11 +136,13 @@ export namespace lysa {
             const bool visible,
             const bool castShadows,
             const AABB& worldAABB,
+            const float4x4& worldTransform,
             const uint32 framesInFLight) :
             mesh(mesh),
             visible(visible),
             castShadows(castShadows),
             worldAABB(worldAABB),
+            worldTransform(worldTransform),
             pendingUpdates(framesInFLight),
             maxUpdates(framesInFLight) {}
     };

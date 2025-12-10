@@ -32,6 +32,11 @@ export namespace lysa {
             const RendererConfiguration& config,
             uint32 framesInFlight);
 
+        /** Updates/creates pipelines following the materials mapping. */
+        void updatePipelines(
+            const std::unordered_map<pipeline_id,
+            std::vector<unique_id>>& pipelineIds) override;
+
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
     protected:

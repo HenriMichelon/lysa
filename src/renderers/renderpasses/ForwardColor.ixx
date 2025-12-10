@@ -10,7 +10,9 @@ import vireo;
 import lysa.context;
 import lysa.types;
 import lysa.renderers.configuration;
+import lysa.renderers.scene_render_context;
 import lysa.renderers.renderpasses.renderpass;
+import lysa.resources.material;
 
 export namespace lysa {
 
@@ -21,8 +23,11 @@ export namespace lysa {
             const RendererConfiguration& config,
             uint32 framesInFlight);
 
+        void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
+
         void render(
             vireo::CommandList& commandList,
+            const SceneRenderContext& scene,
             const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             bool clearAttachment,
@@ -48,6 +53,7 @@ export namespace lysa {
         struct FrameData {
         };
 
+        const MaterialManager& materialManager;
         std::vector<FrameData> framesData;
         std::unordered_map<pipeline_id, std::shared_ptr<vireo::GraphicPipeline>> pipelines;
 

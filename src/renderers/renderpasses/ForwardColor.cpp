@@ -6,16 +6,26 @@
 */
 module lysa.renderers.renderpasses.forward_color;
 
+import lysa.renderers.graphic_pipeline_data;
+
 namespace lysa {
     ForwardColor::ForwardColor(
         const Context& ctx,
         const RendererConfiguration& config,
         const uint32 framesInFlight):
-        Renderpass{ctx, config, "Forward Color"} {
+        Renderpass{ctx, config, "Forward Color"},
+        materialManager(ctx.res.get<MaterialManager>()) {
         pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat); // Color
 
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
-
+        pipelineConfig.resources = ctx.vireo->createPipelineResources({
+                   ctx.globalDescriptorLayout,
+                   ctx.samplers.getDescriptorLayout(),
+                   SceneRenderContext::sceneDescriptorLayout,
+                   GraphicPipelineData::pipelineDescriptorLayout,
+                   SceneRenderContext::sceneDescriptorLayoutOptional1},
+                   SceneRenderContext::instanceIndexConstantDesc, name);
+        pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
         renderingConfig.colorRenderTargets[0].clearValue = {
             config.clearColor.r,
             config.clearColor.g,
@@ -26,8 +36,23 @@ namespace lysa {
         framesData.resize(framesInFlight);
     }
 
+    void ForwardColor::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
+        for (const auto& [pipelineId, materials] : pipelineIds) {
+            if (!pipelines.contains(pipelineId)) {
+                const auto& material = materialManager[materials.at(0)];
+                std::string vertShaderName = DEFAULT_VERTEX_SHADER;
+                std::string fragShaderName = /*config.bloomEnabled ? DEFAULT_FRAGMENT_BLOOM_SHADER :*/ DEFAULT_FRAGMENT_SHADER;
+                pipelineConfig.cullMode = material.getCullMode();
+                pipelineConfig.vertexShader = loadShader(vertShaderName);
+                pipelineConfig.fragmentShader = loadShader(fragShaderName);
+                pipelines[pipelineId] = ctx.vireo->createGraphicPipeline(pipelineConfig, name);
+            }
+        }
+    }
+
     void ForwardColor::render(
         vireo::CommandList& commandList,
+        const SceneRenderContext& scene,
         const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
         const bool clearAttachment,
@@ -43,6 +68,12 @@ namespace lysa {
             vireo::ResourceState::UNDEFINED,
             vireo::ResourceState::RENDER_TARGET_COLOR);
         commandList.beginRendering(renderingConfig);
+        scene.drawOpaquesModels(
+            commandList,
+            pipelines);
+        scene.drawTransparentModels(
+            commandList,
+            pipelines);
         commandList.endRendering();
         commandList.barrier(
             colorAttachment,
