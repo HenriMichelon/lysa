@@ -63,12 +63,13 @@ export namespace lysa::ecs {
 
     struct MeshInstance {
         unique_id mesh{INVALID_ID};
+        bool visible{true};
         bool castShadows{false};
         AABB worldAABB;
     };
 
     struct Scene {
-        unique_id sceneContext{INVALID_ID};
+        unique_id scene{INVALID_ID};
     };
 
     struct SceneRef {

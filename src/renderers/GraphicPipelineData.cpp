@@ -53,7 +53,7 @@ namespace lysa {
         pipelineId{pipelineId},
         frustumCullingPipeline{ctx, true, meshInstancesDataArray},
         materialManager(ctx.res.get<MaterialManager>()),
-        vireo(vireo),
+        vireo(ctx.vireo),
         instancesArray{
             ctx.vireo,
             sizeof(InstanceData),

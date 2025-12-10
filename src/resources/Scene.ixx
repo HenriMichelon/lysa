@@ -8,6 +8,7 @@ export module lysa.resources.scene_context;
 
 import lysa.context;
 import lysa.types;
+import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_render_context;
 import lysa.resources.resource_manager;
 
@@ -19,36 +20,57 @@ export namespace lysa {
          * Constructs a Scene for a given configuration
          *
          * @param ctx
-         * @param config             Scene high-level configuration (buffers sizes, features).
+         * @param maxAsyncNodesUpdatedPerFrame
+         * @param maxLights
+         * @param maxMeshInstancesPerScene
+         * @param maxMeshSurfacePerPipeline
          * @param framesInFlight     Number of buffered frames.
          * @param maxShadowMaps
          */
         Scene(
             const Context& ctx,
+            uint32 maxAsyncNodesUpdatedPerFrame,
             uint32 maxLights,
             uint32 maxMeshInstancesPerScene,
             uint32 maxMeshSurfacePerPipeline,
             uint32 framesInFlight,
             uint32 maxShadowMaps);
 
-        SceneRenderContext& operator [](const uint32 frameIndex) const { return *framesData[frameIndex]; }
+        /** Adds a mesh instance to the scene. */
+        void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, bool async);
+
+        /** Removes a node previously added to the scene. */
+        void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node, bool async);
+
+        void processDeferredOperations(uint32 frameIndex);
+
+        SceneRenderContext& operator [](const uint32 frameIndex) const { return *framesData[frameIndex].scene; }
 
     private:
-        std::vector<std::unique_ptr<SceneRenderContext>> framesData;
+        /** Per‑frame state and deferred operations processed at frame boundaries. */
+        struct FrameData {
+            /** Nodes to add on the next frame (synchronous path). */
+            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> addedNodes;
+            /** Nodes to add on the next frame (async path). */
+            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> addedNodesAsync;
+            /** Nodes to remove on the next frame (synchronous path). */
+            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> removedNodes;
+            /** Nodes to remove on the next frame (async path). */
+            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> removedNodesAsync;
+            /** Scene instance associated with this frame. */
+            std::unique_ptr<SceneRenderContext> scene;
+        };
+        const uint32 maxAsyncNodesUpdatedPerFrame;
+        std::vector<FrameData> framesData;
+        std::mutex frameDataMutex;
     };
 
     class SceneManager : public ResourcesManager<Scene> {
     public:
-        /**
-         * @brief Construct a manager bound to the given runtime context.
-         * @param ctx Instance wide context
-         * @param capacity Initial capacity
-         * @param maxShadowMaps
-         * @param framesInFlight
-         */
         SceneManager(
             Context& ctx,
             size_t capacity,
+            uint32 maxAsyncNodesUpdatedPerFrame,
             uint32 maxLights,
             uint32 maxMeshInstancesPerScene,
             uint32 maxMeshSurfacePerPipeline,
@@ -61,7 +83,10 @@ export namespace lysa {
 
         Scene& create();
 
+        uint32 getFramesInFlight() const { return framesInFlight; }
+
     private:
+        const uint32 maxAsyncNodesUpdatedPerFrame;
         const uint32 maxLights;
         const uint32 maxMeshInstancesPerScene;
         const uint32 maxMeshSurfacePerPipeline;

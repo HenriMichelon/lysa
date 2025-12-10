@@ -38,16 +38,25 @@ namespace lysa::ecs {
     }
 
     SceneModule::SceneModule(const flecs::world& w) {
+        auto& meshManager = w.get<Context>().ctx->res.get<MeshManager>();
+        auto& sceneManager = w.get<Context>().ctx->res.get<SceneManager>();
         w.module<SceneModule>();
         w.component<Scene>();
         w.component<SceneRef>();
-        w.observer<Scene, const MeshInstance, const Transform>()
+        w.observer<const Scene, const MeshInstance, const Transform>()
             .term_at(0).parent()
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
-            .each([&](Scene& scene, const MeshInstance& mi, const Transform& tr) {
+            .each([&](const Scene& sceneRef, const MeshInstance& mi, const Transform& tr) {
                 if (mi.mesh == INVALID_ID) { return; }
-                Log::info("scene add");
+                auto& scene = sceneManager[sceneRef.scene];
+                scene.addInstance(std::make_shared<MeshInstanceDesc>(
+                    meshManager[mi.mesh],
+                    mi.visible,
+                    mi.castShadows,
+                    mi.worldAABB,
+                    sceneManager.getFramesInFlight()),
+                    false);
             });
     }
 
@@ -71,7 +80,7 @@ namespace lysa::ecs {
             });
         w.system<const RenderTarget>()
             .kind(flecs::OnUpdate)
-            .each([&](flecs::entity e, const RenderTarget& rt) {
+            .each([&](const flecs::entity e, const RenderTarget& rt) {
                 const auto& renderTarget = renderTargetManager[rt.renderTarget];
                 if (renderTarget.isPaused()) { return; }
                 auto views = std::list<RenderView>();
@@ -79,7 +88,7 @@ namespace lysa::ecs {
                     if (child.has<CameraRef>() && child.has<SceneRef>()) {
                         auto& cameraRef = child.get<CameraRef>();
                         auto& sceneRef = child.get<SceneRef>();
-                        auto& scene = sceneManager[sceneRef.scene.get<Scene>().sceneContext];
+                        auto& scene = sceneManager[sceneRef.scene.get<Scene>().scene];
                         const auto camera = cameraRef.camera.get<Camera>();
                         const auto cameraTransform = cameraRef.camera.get<Transform>().global;
                         const auto cameraDesc = CameraDesc{

@@ -93,6 +93,7 @@ namespace lysa {
                 view.scissors.width = static_cast<int32>(view.viewport.width);
                 view.scissors.height = static_cast<int32>(view.viewport.height);
             }
+            view.scene.processDeferredOperations(frameIndex);
             if (view.scene[frameIndex].isMaterialsUpdated()) {
                 renderer->updatePipelines(view.scene[frameIndex]);
                 view.scene[frameIndex].resetMaterialsUpdated();

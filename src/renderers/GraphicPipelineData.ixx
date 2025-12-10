@@ -130,6 +130,19 @@ export namespace lysa {
         unique_id getSurfaceMaterial(uint32 surfaceIndex) const;
 
         MeshInstanceData getData() const;
+
+        MeshInstanceDesc(
+            Mesh& mesh,
+            const bool visible,
+            const bool castShadows,
+            const AABB& worldAABB,
+            const uint32 framesInFLight) :
+            mesh(mesh),
+            visible(visible),
+            castShadows(castShadows),
+            worldAABB(worldAABB),
+            pendingUpdates(framesInFLight),
+            maxUpdates(framesInFLight) {}
     };
 
     /**
