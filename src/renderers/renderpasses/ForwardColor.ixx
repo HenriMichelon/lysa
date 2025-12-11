@@ -40,7 +40,7 @@ export namespace lysa {
         const std::string DEFAULT_FRAGMENT_SHADER{"forward.frag"};
 
         vireo::GraphicPipelineConfiguration pipelineConfig {
-            .colorBlendDesc = { {}},
+            .colorBlendDesc = { { .blendEnable = true }},
             .depthTestEnable = true,
             .depthWriteEnable = true,
         };

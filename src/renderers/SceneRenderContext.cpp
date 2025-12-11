@@ -170,29 +170,15 @@ namespace lysa {
         }
         sceneUniformBuffer->write(&sceneUniform);
 
-        // for (const auto& meshInstance : std::views::keys(meshInstancesDataMemoryBlocks)) {
-        //     if (meshInstance->pendingUpdates > 0) {
-        //         const auto meshInstanceData = meshInstance->getData();
-        //         meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
-        //         meshInstancesDataUpdated = true;
-        //         meshInstance->pendingUpdates -= 1;
-        //     }
-        // }
         if (meshInstancesDataUpdated) {
             meshInstancesDataArray.flush(commandList);
             meshInstancesDataArray.postBarrier(commandList);
             meshInstancesDataUpdated = false;
         }
 
-        // const auto start = std::chrono::high_resolution_clock::now();
         updatePipelinesData(commandList, opaquePipelinesData);
         updatePipelinesData(commandList, shaderMaterialPipelinesData);
         updatePipelinesData(commandList, transparentPipelinesData);
-        // const auto end = std::chrono::high_resolution_clock::now();
-        // const std::chrono::duration<double, std::milli> duration = end - start;
-        // if (duration.count() > 0.01) {
-            // std::cout << "updatePipelinesData " << duration.count() << " ms\n";
-        // }
 
         if (!lights.empty()) {
             if (lights.size() > lightsBufferCount) {
@@ -243,15 +229,11 @@ namespace lysa {
     }
 
     void SceneRenderContext::addInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
-        if (meshInstancesDataMemoryBlocks.contains(meshInstance)) {
-            return;
-        }
-
         const auto& mesh = meshInstance->mesh;
+        assert([&]{ return !meshInstancesDataMemoryBlocks.contains(meshInstance);}, "Mesh instance already in the scene");
         assert([&]{return !mesh.getMaterials().empty(); }, "Models without materials are not supported");
-        if (!mesh.isUploaded()) {
-            throw Exception("Mesh instance is not in VRAM");
-        }
+        assert([&]{return mesh.isUploaded(); }, "Mesh instance is not in VRAM");
+
         const auto meshInstanceData = meshInstance->getData();
         meshInstancesDataMemoryBlocks[meshInstance] = meshInstancesDataArray.alloc(1);
         meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
