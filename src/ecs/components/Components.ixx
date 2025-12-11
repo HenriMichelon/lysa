@@ -16,8 +16,9 @@ export import lysa.ecs.flecs;
 import lysa.renderers.graphic_pipeline_data;
 
 export namespace lysa::ecs {
-
-    struct Updated { };
+    struct Updated {};
+    struct Visible {};
+    struct CastShadows {};
 
     struct Context {
         lysa::Context* ctx;
@@ -63,9 +64,7 @@ export namespace lysa::ecs {
 
     struct MeshInstance {
         unique_id mesh{INVALID_ID};
-        bool visible{true};
-        bool castShadows{false};
-        AABB worldAABB;
+        std::shared_ptr<MeshInstanceDesc> meshInstance;
     };
 
     struct Scene {

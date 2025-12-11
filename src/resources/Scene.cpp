@@ -18,6 +18,7 @@ namespace lysa {
         const uint32 maxMeshSurfacePerPipeline,
         const uint32 framesInFlight,
         uint32 maxShadowMaps) :
+        framesInFlight(framesInFlight),
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
         framesData.resize(framesInFlight);
         for (auto& data : framesData) {
@@ -33,6 +34,7 @@ namespace lysa {
 
     void Scene::addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, const bool async) {
         assert([&]{return meshInstance != nullptr;}, "meshInstance can't be null");
+        meshInstance->pendingUpdates = framesInFlight;
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
@@ -40,6 +42,15 @@ namespace lysa {
             } else {
                 frame.addedNodes.push_back(meshInstance);
             }
+        }
+    }
+
+    void Scene::updateInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance) {
+        assert([&]{return meshInstance != nullptr;}, "meshInstance can't be null");
+        meshInstance->pendingUpdates = framesInFlight;
+        auto lock = std::lock_guard(frameDataMutex);
+        for (auto& frame : framesData) {
+            frame.updatedNodes.push_back(meshInstance);
         }
     }
 

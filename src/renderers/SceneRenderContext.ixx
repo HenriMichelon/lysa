@@ -75,6 +75,9 @@ export namespace lysa {
         /** Adds a mesh instance to the scene. */
         void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
 
+        /** Adds a mesh instance to the scene. */
+        void updateInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
+
         /** Removes a node previously added to the scene. */
         void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node);
 

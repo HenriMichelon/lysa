@@ -176,6 +176,9 @@ export namespace  lysa {
         MeshManager meshManager;
         SceneManager sceneManager;
         GlobalDescriptorSet globalDescriptors;
+#ifdef ECS_SCENES
+        std::unique_ptr<ecs::Modules> ecsModules;
+#endif
 
         // Consume platform-specific events.
         void processPlatformEvents();

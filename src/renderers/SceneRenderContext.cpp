@@ -170,15 +170,14 @@ namespace lysa {
         }
         sceneUniformBuffer->write(&sceneUniform);
 
-        for (const auto& meshInstance : std::views::keys(meshInstancesDataMemoryBlocks)) {
-            if (meshInstance->pendingUpdates > 0) {
-                const auto meshInstanceData = meshInstance->getData();
-                meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
-                meshInstancesDataUpdated = true;
-                meshInstance->pendingUpdates -= 1;
-            }
-        }
-
+        // for (const auto& meshInstance : std::views::keys(meshInstancesDataMemoryBlocks)) {
+        //     if (meshInstance->pendingUpdates > 0) {
+        //         const auto meshInstanceData = meshInstance->getData();
+        //         meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
+        //         meshInstancesDataUpdated = true;
+        //         meshInstance->pendingUpdates -= 1;
+        //     }
+        // }
         if (meshInstancesDataUpdated) {
             meshInstancesDataArray.flush(commandList);
             meshInstancesDataArray.postBarrier(commandList);
@@ -253,12 +252,10 @@ namespace lysa {
         if (!mesh.isUploaded()) {
             throw Exception("Mesh instance is not in VRAM");
         }
-
+        const auto meshInstanceData = meshInstance->getData();
         meshInstancesDataMemoryBlocks[meshInstance] = meshInstancesDataArray.alloc(1);
-        meshInstance->maxUpdates = framesInFlight;
-        if (meshInstance->pendingUpdates == 0) {
-            meshInstance->pendingUpdates = meshInstance->maxUpdates;
-        }
+        meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
+        meshInstancesDataUpdated = true;
 
         auto haveTransparentMaterial{false};
         auto haveShaderMaterial{false};
@@ -283,6 +280,15 @@ namespace lysa {
             } else {
                 addInstance(pipelineId, meshInstance, opaquePipelinesData);
             }
+        }
+    }
+
+    void SceneRenderContext::updateInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+        if (meshInstance->pendingUpdates > 0) {
+            const auto meshInstanceData = meshInstance->getData();
+            meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
+            meshInstancesDataUpdated = true;
+            meshInstance->pendingUpdates -= 1;
         }
     }
 

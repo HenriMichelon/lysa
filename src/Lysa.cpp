@@ -48,12 +48,14 @@ namespace lysa {
         SceneRenderContext::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
 #ifdef ECS_SCENES
         ctx.world.set<ecs::Context>({&ctx});
-        ecs::_register(ctx.world);
+        ecsModules = std::make_unique<ecs::Modules>(ctx.world);
+        //ecs::_register(ctx.world);
 #endif
     }
 
     Lysa::~Lysa() {
         ctx.graphicQueue->waitIdle();
+        ecsModules.reset();
         SceneRenderContext::destroyDescriptorLayouts();
     }
 

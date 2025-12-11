@@ -124,8 +124,6 @@ export namespace lysa {
         std::unordered_map<uint32, unique_id> materialsOverride;
         /** Current number of pending updates to process. */
         uint32 pendingUpdates{0};
-        /** Upper bound on pendingUpdates; */
-        uint32 maxUpdates{0};
 
         unique_id getSurfaceMaterial(uint32 surfaceIndex) const;
 
@@ -142,9 +140,7 @@ export namespace lysa {
             visible(visible),
             castShadows(castShadows),
             worldAABB(worldAABB),
-            worldTransform(worldTransform),
-            pendingUpdates(framesInFLight),
-            maxUpdates(framesInFLight) {}
+            worldTransform(worldTransform) {}
     };
 
     /**

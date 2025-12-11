@@ -18,18 +18,27 @@ export namespace lysa::ecs {
         static void updateGlobalTransform(flecs::entity e, Transform& t);
     };
 
-    struct MeshInstanceModule {
+    class MeshInstanceModule {
+    public:
         MeshInstanceModule(const flecs::world& w);
+        void disable() const;
+    private:
+        flecs::observer observerTransform;
+        flecs::observer observerVisible;
     };
 
     struct RenderModule {
         RenderModule(const flecs::world& w);
     };
 
-    struct SceneModule {
-        SceneModule(const flecs::world& w);
+    class Modules {
+    public:
+        Modules(flecs::world& w);
+        ~Modules();
+    private:
+        flecs::entity renderModule;
+        flecs::entity meshInstanceModule;
+        flecs::entity transformModule;
     };
-
-    void _register(flecs::world& w);
 
 }

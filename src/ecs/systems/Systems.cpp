@@ -16,49 +16,62 @@ import lysa.renderers.graphic_pipeline_data;
 
 namespace lysa::ecs {
 
-    void _register(flecs::world& w) {
-        w.import<TransformModule>();
-        w.import<RenderModule>();
-        w.import<SceneModule>();
-        w.import<MeshInstanceModule>();
+    Modules::Modules(flecs::world& w) {
+        w.component<Scene>();
+        w.component<SceneRef>();
+        meshInstanceModule = w.import<MeshInstanceModule>();
+        renderModule = w.import<RenderModule>();
+        transformModule = w.import<TransformModule>();
+    }
+
+    Modules::~Modules() {
+        transformModule.disable();
+        renderModule.disable();
+        meshInstanceModule.disable();
     }
 
     MeshInstanceModule::MeshInstanceModule(const flecs::world& w) {
         auto& meshManager = w.get<Context>().ctx->res.get<MeshManager>();
-        w.module<MeshInstanceModule>();
-        w.component<MeshInstance>();
-        w.observer<const Transform, MeshInstance>()
-            .event(flecs::OnSet)
-            .event(flecs::OnAdd)
-            .each([&](const Transform& tr, MeshInstance& mi) {
-                if (mi.mesh == INVALID_ID) { return; }
-                const AABB local = meshManager[mi.mesh].getAABB();
-                mi.worldAABB = local.toGlobal(tr.global);
-            });
-    }
-
-    SceneModule::SceneModule(const flecs::world& w) {
-        auto& meshManager = w.get<Context>().ctx->res.get<MeshManager>();
         auto& sceneManager = w.get<Context>().ctx->res.get<SceneManager>();
-        w.module<SceneModule>();
-        w.component<Scene>();
-        w.component<SceneRef>();
-        w.observer<const Scene, const MeshInstance, const Transform>()
+        w.module<MeshInstanceModule>();
+        w.component<Visible>();
+        w.component<CastShadows>();
+        w.component<MeshInstance>();
+        observerTransform = w.observer<const Scene, MeshInstance, const Transform>()
             .term_at(0).parent()
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
-            .each([&](const Scene& sceneRef, const MeshInstance& mi, const Transform& tr) {
+            .each([&](const flecs::entity e, const Scene& sceneRef, MeshInstance& mi, const Transform& tr) {
                 if (mi.mesh == INVALID_ID) { return; }
                 auto& scene = sceneManager[sceneRef.scene];
-                scene.addInstance(std::make_shared<MeshInstanceDesc>(
-                    meshManager[mi.mesh],
-                    mi.visible,
-                    mi.castShadows,
-                    mi.worldAABB,
-                    tr.global,
-                    sceneManager.getFramesInFlight()),
-                    false);
+                auto aabb = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
+                if (mi.meshInstance) {
+                    mi.meshInstance->worldAABB = aabb;
+                    mi.meshInstance->worldTransform = tr.global;
+                    scene.updateInstance(mi.meshInstance);
+                } else {
+                    mi.meshInstance = std::make_shared<MeshInstanceDesc>(
+                        meshManager[mi.mesh],
+                        e.has<Visible>(),
+                        e.has<CastShadows>(),
+                        aabb,
+                        tr.global,
+                        sceneManager.getFramesInFlight());
+                    scene.addInstance(mi.meshInstance, false);
+                }
             });
+        observerVisible = w.observer<const Scene, const MeshInstance, const Visible>()
+           .term_at(0).parent()
+           .event(flecs::OnAdd)
+           .event(flecs::OnRemove)
+           .each([&](const flecs::entity e, const Scene& sceneRef, const MeshInstance& mi, const Visible& _) {
+               if (mi.mesh == INVALID_ID) { return; }
+               if (mi.meshInstance) {
+                   auto& scene = sceneManager[sceneRef.scene];
+                   mi.meshInstance->visible = e.has<Visible>();
+                   scene.updateInstance(mi.meshInstance);
+               }
+           });
     }
 
     RenderModule::RenderModule(const flecs::world& w) {
