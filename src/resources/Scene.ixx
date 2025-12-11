@@ -7,7 +7,7 @@
 export module lysa.resources.scene_context;
 
 import lysa.context;
-import lysa.types;
+import lysa.math;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_render_context;
 import lysa.resources.resource_manager;
@@ -35,6 +35,8 @@ export namespace lysa {
             uint32 maxMeshSurfacePerPipeline,
             uint32 framesInFlight,
             uint32 maxShadowMaps);
+
+        void setAmbientLight(const float4& ambientLight) { this->ambientLight = ambientLight; }
 
         /** Adds a mesh instance to the scene. */
         void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, bool async);
@@ -69,6 +71,7 @@ export namespace lysa {
         const uint32 maxAsyncNodesUpdatedPerFrame;
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
+        float4 ambientLight;
     };
 
     class SceneManager : public ResourcesManager<Scene> {

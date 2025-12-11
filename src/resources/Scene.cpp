@@ -69,6 +69,7 @@ namespace lysa {
     void Scene::processDeferredOperations(const uint32 frameIndex) {
         auto lock = std::lock_guard(frameDataMutex);
         auto &data = framesData[frameIndex];
+        data.scene->setAmbientLight(ambientLight);
         // Remove from the renderer the nodes previously removed from the scene tree
         // Immediate removes
         if (!data.removedNodes.empty()) {

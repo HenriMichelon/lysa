@@ -8,8 +8,8 @@ export module lysa.renderers.scene_render_context;
 
 import vireo;
 import lysa.context;
+import lysa.math;
 import lysa.memory;
-import lysa.types;
 import lysa.pipelines.frustum_culling;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.resources.material;
@@ -59,6 +59,10 @@ export namespace lysa {
             uint32 maxMeshSurfacePerPipeline,
             uint32 framesInFlight,
             uint32 maxShadowMaps);
+
+        void setAmbientLight(const float4& ambientLight) {
+            environment.ambientColorIntensity = ambientLight;
+        }
 
         /** Set initial dynamic states */
         void prepare(
@@ -143,7 +147,7 @@ export namespace lysa {
         /** Uniform buffer containing SceneData. */
         std::shared_ptr<vireo::Buffer> sceneUniformBuffer;
         /** Current environment settings (skybox, etc.). */
-        std::shared_ptr<EnvironmentDesc> environment{};
+        EnvironmentDesc environment{};
         /** Map of lights to their shadow-map renderpasses. */
         // std::map<std::shared_ptr<Light>, std::shared_ptr<Renderpass>> shadowMapRenderers;
         /** Array of shadow map images. */
@@ -184,10 +188,6 @@ export namespace lysa {
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>> opaquePipelinesData;
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>> shaderMaterialPipelinesData;
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>> transparentPipelinesData;
-
-        void setEnvironment(const std::shared_ptr<EnvironmentDesc>& environmentDesc) {
-            environment = environmentDesc;
-        }
 
         void updatePipelinesData(
             const vireo::CommandList& commandList,

@@ -161,13 +161,11 @@ namespace lysa {
             .projection = camera.projection,
             .view = inverse(camera.transform),
             .viewInverse = camera.transform,
+            .ambientLight = environment.ambientColorIntensity,
             .lightsCount = static_cast<uint32>(lights.size()),
             // .bloomEnabled = renderingConfig.bloomEnabled ? 1u : 0u,
             // .ssaoEnabled = renderingConfig.ssaoEnabled ? 1u : 0u,
         };
-        if (environment) {
-            sceneUniform.ambientLight = environment->ambientColorIntensity;
-        }
         sceneUniformBuffer->write(&sceneUniform);
 
         if (meshInstancesDataUpdated) {

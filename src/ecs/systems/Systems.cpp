@@ -102,6 +102,13 @@ namespace lysa::ecs {
                     cp.projection = orthographic(cp.left, cp.right, cp.top, cp.bottom, cp.near, cp.far);
                 }
             });
+        w.observer<Scene, const AmbientLight>()
+            .event(flecs::OnSet)
+            .event(flecs::OnAdd)
+            .each([&](const Scene& sc, const AmbientLight& al) {
+                auto& scene = sceneManager[sc.scene];
+                scene.setAmbientLight(float4(al.color, al.intensity));
+            });
         w.system<const RenderTarget>()
             .kind(flecs::OnUpdate)
             .each([&](const flecs::entity e, const RenderTarget& rt) {

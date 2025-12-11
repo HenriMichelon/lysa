@@ -98,7 +98,7 @@ export namespace lysa {
     * Struct to pass environment data from the ECS/POO systems to the rendering system
     */
     struct EnvironmentDesc {
-        float4 ambientColorIntensity;
+        float4 ambientColorIntensity{1.0f, 1.0f, 1.0f, 0.0f};
     };
 
     /**
