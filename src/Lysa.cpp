@@ -63,6 +63,10 @@ namespace lysa {
         const std::function<void(float)>& onPhysicsProcess,
         const std::function<void()>& onQuit) {
         while (!ctx.exit) {
+            materialManager.flush();
+            meshManager.flush();
+            globalDescriptors.update();
+
             ctx.defer._process();
             ctx.threads._process();
             processPlatformEvents();
@@ -70,7 +74,7 @@ namespace lysa {
             if (ctx.samplers.isUpdateNeeded()) {
                 ctx.samplers.update();
             }
-            globalDescriptors.update();
+
 #ifdef ECS_SCENES
             ctx.world.progress();
 #endif

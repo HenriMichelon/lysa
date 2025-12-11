@@ -209,7 +209,7 @@ namespace lysa {
 
     void MaterialManager::flush() {
         if (updated) {
-            auto lock = std::unique_lock(mutex, std::try_to_lock);
+            auto lock = std::unique_lock(mutex);
             const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
             memoryArray.flush(*command.commandList);
             ctx.asyncQueue.endCommand(command);
