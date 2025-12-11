@@ -49,7 +49,6 @@ namespace lysa {
 #ifdef ECS_SCENES
         ctx.world.set<ecs::Context>({&ctx});
         ecsModules = std::make_unique<ecs::Modules>(ctx.world);
-        //ecs::_register(ctx.world);
 #endif
     }
 

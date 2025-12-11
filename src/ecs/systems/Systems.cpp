@@ -17,8 +17,6 @@ import lysa.renderers.graphic_pipeline_data;
 namespace lysa::ecs {
 
     Modules::Modules(flecs::world& w) {
-        w.component<Scene>();
-        w.component<SceneRef>();
         meshInstanceModule = w.import<MeshInstanceModule>();
         renderModule = w.import<RenderModule>();
         transformModule = w.import<TransformModule>();
@@ -37,7 +35,7 @@ namespace lysa::ecs {
         w.component<Visible>();
         w.component<CastShadows>();
         w.component<MeshInstance>();
-        observerTransform = w.observer<const Scene, MeshInstance, const Transform>()
+        w.observer<const Scene, MeshInstance, const Transform>()
             .term_at(0).parent()
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
@@ -60,24 +58,36 @@ namespace lysa::ecs {
                     scene.addInstance(mi.meshInstance, false);
                 }
             });
-        observerVisible = w.observer<const Scene, const MeshInstance, const Visible>()
+        w.observer<const Scene, const MeshInstance, const Visible>()
            .term_at(0).parent()
            .event(flecs::OnAdd)
-           .event(flecs::OnRemove)
-           .each([&](const flecs::entity e, const Scene& sceneRef, const MeshInstance& mi, const Visible& _) {
+           .each([&](const Scene& sceneRef, const MeshInstance& mi, const Visible& _) {
                if (mi.mesh == INVALID_ID) { return; }
                if (mi.meshInstance) {
                    auto& scene = sceneManager[sceneRef.scene];
-                   mi.meshInstance->visible = e.has<Visible>();
+                   mi.meshInstance->visible = true;
                    scene.updateInstance(mi.meshInstance);
                }
            });
+        w.observer<const Scene, const MeshInstance, const Visible>()
+           .term_at(0).parent()
+            .event(flecs::OnRemove)
+            .each([&](const Scene& sceneRef, const MeshInstance& mi, const Visible& _) {
+            if (mi.mesh == INVALID_ID) { return; }
+            if (mi.meshInstance) {
+                auto& scene = sceneManager[sceneRef.scene];
+                mi.meshInstance->visible = false;
+                scene.updateInstance(mi.meshInstance);
+            }
+        });
     }
 
     RenderModule::RenderModule(const flecs::world& w) {
         auto& renderTargetManager = w.get<Context>().ctx->res.get<RenderTargetManager>();
         auto& sceneManager = w.get<Context>().ctx->res.get<SceneManager>();
         w.module<RenderModule>();
+        w.component<Scene>();
+        w.component<SceneRef>();
         w.component<Camera>();
         w.component<CameraRef>();
         w.component<Viewport>();
