@@ -350,9 +350,7 @@ export namespace lysa {
         }
 
         ShaderMaterial& create(const std::string &fragShaderFileName,
-                                    const std::string &vertShaderFileName = "") {
-            return dynamic_cast<ShaderMaterial&>(allocate(std::make_unique<ShaderMaterial>(ctx, fragShaderFileName, vertShaderFileName)));
-        }
+                               const std::string &vertShaderFileName = "");
 
         void upload(unique_id material_id);
 

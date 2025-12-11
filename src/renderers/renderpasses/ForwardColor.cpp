@@ -42,10 +42,19 @@ namespace lysa {
                 const auto& material = materialManager[materials.at(0)];
                 std::string vertShaderName = DEFAULT_VERTEX_SHADER;
                 std::string fragShaderName = /*config.bloomEnabled ? DEFAULT_FRAGMENT_BLOOM_SHADER :*/ DEFAULT_FRAGMENT_SHADER;
+                if (material.getType() == Material::SHADER) {
+                    const auto& shaderMaterial = dynamic_cast<const ShaderMaterial&>(material);
+                    if (!shaderMaterial.getVertFileName().empty()) {
+                        vertShaderName = shaderMaterial.getVertFileName();
+                    }
+                    if (!shaderMaterial.getFragFileName().empty()) {
+                        fragShaderName = shaderMaterial.getFragFileName();
+                    }
+                }
                 pipelineConfig.cullMode = material.getCullMode();
                 pipelineConfig.vertexShader = loadShader(vertShaderName);
                 pipelineConfig.fragmentShader = loadShader(fragShaderName);
-                pipelines[pipelineId] = ctx.vireo->createGraphicPipeline(pipelineConfig, name);
+                pipelines[pipelineId] = ctx.vireo->createGraphicPipeline(pipelineConfig, vertShaderName + "+" + fragShaderName);
             }
         }
     }
@@ -72,6 +81,9 @@ namespace lysa {
             commandList,
             pipelines);
         scene.drawTransparentModels(
+            commandList,
+            pipelines);
+        scene.drawShaderMaterialModels(
             commandList,
             pipelines);
         commandList.endRendering();

@@ -324,6 +324,7 @@ namespace lysa {
         drawModels(commandList, pipelines, shaderMaterialPipelinesData);
     }
 
+
     void SceneRenderContext::drawModels(
         vireo::CommandList& commandList,
         const uint32 set,
@@ -386,13 +387,13 @@ namespace lysa {
                 pipelineData->frustumCullingPipeline.getDrawCommandsCount() == 0) { continue; }
             const auto& pipeline = pipelines.at(pipelineId);
             commandList.bindPipeline(pipeline);
-                commandList.bindDescriptors({
-                    ctx.globalDescriptorSet,
-                    ctx.samplers.getDescriptorSet(),
-                    descriptorSet,
-                    pipelineData->descriptorSet,
-                    descriptorSetOpt1,
-                });
+            commandList.bindDescriptors({
+                ctx.globalDescriptorSet,
+                ctx.samplers.getDescriptorSet(),
+                descriptorSet,
+                pipelineData->descriptorSet,
+                descriptorSetOpt1,
+            });
 
             commandList.drawIndexedIndirectCount(
                 pipelineData->culledDrawCommandsBuffer,

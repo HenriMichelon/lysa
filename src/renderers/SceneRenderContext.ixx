@@ -100,14 +100,6 @@ export namespace lysa {
            vireo::CommandList& commandList,
            const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const;
 
-        /**
-         * Common draw helper that dispatches indirect draws per pipeline using culled lists.
-         * @param commandList Command buffer to record into.
-         * @param set         Descriptor set index to bind for the pipelines family.
-         * @param culledDrawCommandsBuffers Per-pipeline indirect commands buffer.
-         * @param culledDrawCommandsCountBuffers Per-pipeline commands count buffer.
-         * @param frustumCullingPipelines Per-pipeline frustum culling compute pipelines.
-         */
         void drawModels(
            vireo::CommandList& commandList,
            uint32 set,

@@ -151,7 +151,6 @@ namespace lysa {
         Material{ctx, SHADER},
         fragFileName{fragShaderFileName},
         vertFileName{vertShaderFileName} {
-        upload();
     }
 
     void ShaderMaterial::setParameter(const int index, const float4& value) {
@@ -186,6 +185,14 @@ namespace lysa {
             vireo::BufferType::DEVICE_STORAGE,
             "Global material array"} {
         ctx.res.enroll(*this);
+    }
+
+    ShaderMaterial& MaterialManager::create(
+        const std::string &fragShaderFileName,
+        const std::string &vertShaderFileName) {
+        auto& material = dynamic_cast<ShaderMaterial&>(allocate(std::make_unique<ShaderMaterial>(ctx, fragShaderFileName, vertShaderFileName)));
+        material.upload();
+        return material;
     }
 
     void MaterialManager::upload(const unique_id material_id) {

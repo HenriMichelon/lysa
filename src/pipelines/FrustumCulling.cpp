@@ -45,7 +45,7 @@ namespace lysa {
             DEBUG_NAME);
         auto tempBuffer = std::vector<char>{};
         ctx.fs.loadShader(isForScene ? SHADER_SCENE : SHADER_SHADOWMAP, tempBuffer);
-        const auto shader = vireo.createShaderModule(tempBuffer);
+        const auto shader = vireo.createShaderModule(tempBuffer, DEBUG_NAME);
         pipeline = vireo.createComputePipeline(pipelineResources, shader, DEBUG_NAME);
     }
 

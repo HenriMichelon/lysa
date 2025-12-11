@@ -36,7 +36,7 @@ export namespace lysa {
         /** Inverse of the view matrix (world-from-view). */
         float4x4    viewInverse;
         /** Ambient light RGB color in xyz and strength in w. */
-        float4      ambientLight{1.0f, 1.0f, 1.0f, 1.0f}; // RGB + strength
+        float4      ambientLight{1.0f, 1.0f, 1.0f, 0.0f}; // RGB + strength
         /** Number of active lights currently bound. */
         uint32      lightsCount{0};
         /** Toggle for bloom post-process (1 enabled, 0 disabled). */
