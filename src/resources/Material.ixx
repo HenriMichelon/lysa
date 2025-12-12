@@ -141,7 +141,7 @@ export namespace lysa {
          * References and properties of a texture
          */
         struct TextureInfo {
-            ImageTexture* texture{nullptr};
+            const ImageTexture* texture{nullptr};
             float3x3 transform{float3x3::identity()};
         };
 
