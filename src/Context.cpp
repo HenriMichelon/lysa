@@ -4,9 +4,50 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
+module;
+#ifdef _WIN32
+#include <windows.h>
+#undef ERROR
+#endif
 module lysa.context;
 
+import lysa.exception;
+import lysa.log;
+
 namespace  lysa {
+
+    void vireoDebugCallback(const vireo::DebugLevel level, const std::string& message) {
+        switch (level) {
+        case vireo::DebugLevel::VERBOSE:
+        case vireo::DebugLevel::INFO:
+#ifdef _WIN32
+            if (IsDebuggerPresent()) {
+                OutputDebugStringA(message.c_str());
+                OutputDebugStringA("\n");
+            } else {
+                Log::info(message);
+            }
+#else
+            Log::info(message);
+#endif
+            break;
+        case vireo::DebugLevel::WARNING:
+#ifdef _WIN32
+            if (IsDebuggerPresent()) {
+                OutputDebugStringA(message.c_str());
+                OutputDebugStringA("\n");
+            } else {
+                Log::warning(message);
+            }
+#else
+            Log::warning(message);
+#endif
+            break;
+        case vireo::DebugLevel::ERROR:
+            Log::error(message);
+            break;
+        }
+    }
 
     Context::Context(
         const vireo::Backend backend,
@@ -18,14 +59,14 @@ namespace  lysa {
         ,const LuaConfiguration& luaConfiguration
 #endif
         ) :
-        vireo(vireo::Vireo::create(backend)),
+        vireo(vireo::Vireo::create(backend, vireoDebugCallback)),
         fs(virtualFsConfiguration, vireo),
-        samplers(vireo, samplersCapacity),
 #ifdef LUA_BINDING
         lua(luaConfiguration, fs),
 #endif
         events(eventsCapacity),
         defer(commandsCapacity),
+        samplers(vireo, samplersCapacity),
         graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")),
         transferQueue(vireo->createSubmitQueue(vireo::CommandType::TRANSFER, "Main transfer queue")),
         asyncQueue(vireo, transferQueue, graphicQueue) {
