@@ -7,6 +7,7 @@
 module lysa.resources.scene_context;
 
 import lysa.exception;
+import lysa.log;
 
 namespace lysa {
 
@@ -74,7 +75,9 @@ namespace lysa {
         // Immediate removes
         if (!data.removedNodes.empty()) {
             for (const auto &node : data.removedNodes) {
-                data.scene->removeInstance(std::get<std::shared_ptr<MeshInstanceDesc>>(node));
+                auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(node);
+                data.scene->removeInstance(mi);
+                data.updatedNodes.remove(mi);
             }
             data.removedNodes.clear();
         }
@@ -82,8 +85,10 @@ namespace lysa {
         if (!data.removedNodesAsync.empty()) {
             auto count = 0;
             for (auto it = data.removedNodesAsync.begin(); it != data.removedNodesAsync.end();) {
-                data.scene->removeInstance(std::get<std::shared_ptr<MeshInstanceDesc>>(*it));
+                auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(*it);
+                data.scene->removeInstance(mi);
                 it = data.removedNodesAsync.erase(it);
+                data.updatedNodes.remove(mi);
                 count += 1;
                 if (count > maxAsyncNodesUpdatedPerFrame) { break; }
             }
@@ -92,7 +97,9 @@ namespace lysa {
         // Immediate additions
         if (!data.addedNodes.empty()) {
             for (const auto &node : data.addedNodes) {
-                data.scene->addInstance(std::get<std::shared_ptr<MeshInstanceDesc>>(node));
+                auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(node);
+                data.scene->addInstance(mi);
+                data.updatedNodes.remove(mi);
             }
             data.addedNodes.clear();
         }
@@ -100,11 +107,19 @@ namespace lysa {
         if (!data.addedNodesAsync.empty()) {
             auto count = 0;
             for (auto it = data.addedNodesAsync.begin(); it != data.addedNodesAsync.end();) {
-                data.scene->addInstance(std::get<std::shared_ptr<MeshInstanceDesc>>(*it));
+                auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(*it);
+                data.scene->addInstance(mi);
                 it = data.addedNodesAsync.erase(it);
+                data.updatedNodes.remove(mi);
                 count += 1;
                 if (count > maxAsyncNodesUpdatedPerFrame) { break; }
             }
+        }
+        if (!data.updatedNodes.empty()) {
+            for (const auto &node : data.updatedNodes) {
+                data.scene->updateInstance(std::get<std::shared_ptr<MeshInstanceDesc>>(node));
+            }
+            data.updatedNodes.clear();
         }
     }
 

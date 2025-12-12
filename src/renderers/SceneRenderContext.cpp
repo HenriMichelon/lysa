@@ -7,6 +7,7 @@
 module lysa.renderers.scene_render_context;
 
 import lysa.exception;
+import lysa.log;
 import lysa.math;
 import lysa.resources.image;
 
@@ -156,7 +157,7 @@ namespace lysa {
             shadowMapsUpdated = false;
         }
 
-        auto sceneUniform = SceneData {
+        const auto sceneUniform = SceneData {
             .cameraPosition = camera.position,
             .projection = camera.projection,
             .view = inverse(camera.transform),

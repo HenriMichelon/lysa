@@ -6,11 +6,12 @@
 */
 module lysa.ecs.systems;
 
+import lysa.log;
 import lysa.math;
 
 namespace lysa::ecs {
 
-     void TransformModule::updateGlobalTransform(const flecs::entity e,Transform& t) {
+     void TransformModule::updateGlobalTransform(const flecs::entity e, Transform& t) {
           const float4x4 parentMatrix = e.parent() && e.parent().has<Transform>()
                ? e.parent().get<Transform>().global
                : float4x4::identity();
@@ -27,10 +28,10 @@ namespace lysa::ecs {
           w.module<TransformModule>();
           w.component<Transform>();
           w.observer<Transform>()
-          .event(flecs::OnSet)
-          .event(flecs::OnAdd)
-          .each([](const flecs::entity e,Transform& t) {
-               updateGlobalTransform(e, t);
+            .event(flecs::OnSet)
+            .event(flecs::OnAdd)
+            .each([](const flecs::entity e,Transform& t) {
+                updateGlobalTransform(e, t);
           });
      }
 

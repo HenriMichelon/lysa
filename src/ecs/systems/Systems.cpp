@@ -41,13 +41,11 @@ namespace lysa::ecs {
             .event(flecs::OnAdd)
             .each([&](const flecs::entity e, const Scene& sceneRef, MeshInstance& mi, const Transform& tr) {
                 if (mi.mesh == INVALID_ID) { return; }
-                auto& scene = sceneManager[sceneRef.scene];
-                auto aabb = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
                 if (mi.meshInstance) {
-                    mi.meshInstance->worldAABB = aabb;
-                    mi.meshInstance->worldTransform = tr.global;
-                    scene.updateInstance(mi.meshInstance);
+                    e.add<Updated>();
                 } else {
+                    auto& scene = sceneManager[sceneRef.scene];
+                    auto aabb = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
                     mi.meshInstance = std::make_shared<MeshInstanceDesc>(
                         meshManager[mi.mesh],
                         e.has<Visible>(),
@@ -59,27 +57,26 @@ namespace lysa::ecs {
                 }
             });
         w.observer<const Scene, const MeshInstance, const Visible>()
-           .term_at(0).parent()
-           .event(flecs::OnAdd)
-           .each([&](const Scene& sceneRef, const MeshInstance& mi, const Visible& _) {
-               if (mi.mesh == INVALID_ID) { return; }
-               if (mi.meshInstance) {
-                   auto& scene = sceneManager[sceneRef.scene];
-                   mi.meshInstance->visible = true;
-                   scene.updateInstance(mi.meshInstance);
+            .term_at(0).parent()
+            .event(flecs::OnAdd)
+            .event(flecs::OnRemove)
+            .each([&](const flecs::entity e, const Scene&, const MeshInstance& mi, const Visible&) {
+               if (mi.mesh != INVALID_ID && mi.meshInstance) {
+                   e.add<Updated>();
                }
            });
-        w.observer<const Scene, const MeshInstance, const Visible>()
-           .term_at(0).parent()
-            .event(flecs::OnRemove)
-            .each([&](const Scene& sceneRef, const MeshInstance& mi, const Visible& _) {
-            if (mi.mesh == INVALID_ID) { return; }
-            if (mi.meshInstance) {
-                auto& scene = sceneManager[sceneRef.scene];
-                mi.meshInstance->visible = false;
-                scene.updateInstance(mi.meshInstance);
-            }
-        });
+        w.system<const Scene, const MeshInstance, const Transform, const Updated>()
+            .term_at(0).parent()
+            .kind(flecs::OnUpdate)
+            .each([&](const flecs::entity e, const Scene& sc, const MeshInstance& mi, const Transform& tr, const Updated&) {
+                if (mi.mesh != INVALID_ID && mi.meshInstance) {
+                    e.remove<Updated>();
+                    mi.meshInstance->worldAABB = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
+                    mi.meshInstance->worldTransform = tr.global;
+                    auto& scene = sceneManager[sc.scene];
+                    scene.updateInstance(mi.meshInstance);
+                }
+            });
     }
 
     RenderModule::RenderModule(const flecs::world& w) {
