@@ -9,9 +9,12 @@ module;
 module lysa.resources.rendering_window;
 
 import lysa.exception;
+import lysa.input;
 import lysa.log;
 
 namespace lysa {
+
+    bool RenderingWindow::_resettingMousePosition{false};
 
     struct MonitorEnumData {
         int  enumIndex{0};
@@ -161,7 +164,7 @@ namespace lysa {
         case WM_MBUTTONUP:
         case WM_MOUSEWHEEL:
         case WM_MOUSEMOVE:
-            // return Input::windowProcedure(hWnd, message, wParam, lParam);
+            return Input::_windowProcedure(hWnd, message, wParam, lParam);
         default:;
         }
         return DefWindowProc(hWnd, message, wParam, lParam);

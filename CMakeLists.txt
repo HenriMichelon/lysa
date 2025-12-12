@@ -159,6 +159,7 @@ compile_options(xxhash)
 #######################################################
 if(WIN32)
     set(OS_SRC
+            ${ENGINE_SRC_DIR}/os/win32/Input.cpp
             ${ENGINE_SRC_DIR}/os/win32/Main.cpp
             ${ENGINE_SRC_DIR}/os/win32/RenderingWindow.cpp
     )
@@ -247,6 +248,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Frustum.cpp
+        ${ENGINE_SRC_DIR}/Input.cpp
         ${ENGINE_SRC_DIR}/Log.cpp
         ${ENGINE_SRC_DIR}/Lysa.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
@@ -291,6 +293,8 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Frustum.ixx
+        ${ENGINE_SRC_DIR}/Input.ixx
+        ${ENGINE_SRC_DIR}/InputEvent.ixx
         ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
         ${ENGINE_SRC_DIR}/Manager.ixx

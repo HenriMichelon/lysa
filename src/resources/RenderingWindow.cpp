@@ -15,6 +15,11 @@ namespace lysa {
         ctx.res.enroll(*this);
     }
 
+    void RenderingWindow::_input(const InputEvent& inputEvent) const {
+        if (stopped) { return; }
+        ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::INPUT), inputEvent});
+    }
+
     void RenderingWindow::_closing() {
         if (stopped) { return; }
         stopped = true;

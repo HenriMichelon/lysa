@@ -14,6 +14,7 @@ import vireo;
 
 import lysa.context;
 import lysa.event;
+import lysa.input_event;
 import lysa.types;
 import lysa.resources.resource_manager;
 
@@ -43,6 +44,8 @@ export namespace lysa {
         static inline const event_type CLOSING{"RENDERING_WINDOW_CLOSING"};
         //! The window has been resized
         static inline const event_type RESIZED{"RENDERING_WINDOW_RESIZED"};
+        //! User input
+        static inline const event_type INPUT{"RENDERING_WINDOW_INPUT"};
     };
 
     /**
@@ -97,6 +100,14 @@ export namespace lysa {
 
         void _setStopped(const bool state) { stopped = state; }
 
+        void _input(const InputEvent& inputEvent) const;
+
+
+#ifdef _WIN32
+        /** Internal flag used to suppress synthetic mouse‑move feedback. */
+        static bool _resettingMousePosition;
+#endif
+
     private:
         Context& ctx;
         //! Top-Left corner x position in pixels
@@ -111,6 +122,7 @@ export namespace lysa {
         bool stopped{false};
         //! Opaque OS window handle used for presentation.
         void* platformHandle{nullptr};
+
     };
 
     /**

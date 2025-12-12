@@ -15,6 +15,8 @@ export import lysa.context;
 export import lysa.event;
 export import lysa.exception;
 export import lysa.utils;
+export import lysa.input;
+export import lysa.input_event;
 export import lysa.log;
 export import lysa.manager;
 export import lysa.math;
