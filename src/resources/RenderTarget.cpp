@@ -32,8 +32,8 @@ namespace lysa {
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
-            frame.computeSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY);
-            frame.prepareSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY);
+            frame.computeSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY, "Compute");
+            frame.prepareSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY, "Prepare");
             frame.computeCommandList = frame.commandAllocator->createCommandList();
             frame.prepareCommandList = frame.commandAllocator->createCommandList();
             frame.renderCommandList = frame.commandAllocator->createCommandList();
