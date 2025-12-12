@@ -22,10 +22,12 @@ export namespace lysa {
      * @brief %Event message.
      */
     struct Event {
-        //! Target object of resource unique id
-        unique_id id;
+        //! Event source or target, if any
+        unique_id id{INVALID_ID};
         //! Event type name
         event_type type;
+        //! Event payload
+        std::any payload;
     };
 
     /**
@@ -57,6 +59,13 @@ export namespace lysa {
          */
         void subscribe(const event_type& type, unique_id id, const EventHandler& handler);
 
+        /**
+         * @brief Subscribe a C++ handler to a given global event type
+         * @param type The event kind to listen to.
+         * @param handler Reference to a callable receiving the event.
+         */
+        void subscribe(const event_type& type, const EventHandler& handler);
+
 #ifdef LUA_BINDING
         /**
          * @brief Subscribe a Lua handler to a given event type and target id.
@@ -65,23 +74,44 @@ export namespace lysa {
          * @param handler Lua function to be called with the event.
          */
         void subscribe(const event_type& type, unique_id id, luabridge::LuaRef handler);
+
+        /**
+         * @brief Subscribe a Lua handler to a given global event type
+         * @param type The event kind to listen to.
+         * @param handler Reference to a callable receiving the event.
+         */
+        void subscribe(const event_type& type, luabridge::LuaRef handler);
 #endif
 
         void _process();
+
+        /**
+         * Execute all handlers attached to a global event type
+         */
+        void fire(const Event& event);
 
         EventManager(size_t reservedCapacity);
         ~EventManager();
 
     private:
-        // Pending events waiting to be processed.
+        // Pending of resources events waiting to be processed.
         std::vector<Event> queue;
-        // Backup of events for processing without blocking too much the queue
+        // Backup of resources events for processing without blocking too much the queue
         std::vector<Event> processingQueue;
+        // Protect the resources events queue during data copy
         std::mutex queueMutex;
-        // C++ subscribers keyed by event type then id.
+        // C++ subscribers to global events
+        std::unordered_map<event_type, std::vector<EventHandler>> globalHandlers{};
+        // Protect the global events subscribers map
+        std::mutex globalHandlersMutex;
+        // C++ subscribers to resources events
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<EventHandler>>> handlers{};
+        // Protect the resources events subscribers map
+        std::mutex handlersMutex;
 #ifdef LUA_BINDING
-        // Lua subscribers keyed by event type then id.
+        // Lua subscribers to global events
+        std::unordered_map<event_type, std::vector<luabridge::LuaRef>> globalHandlersLua{};
+        // Lua subscribers resources events
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<luabridge::LuaRef>>> handlersLua{};
 #endif
     };

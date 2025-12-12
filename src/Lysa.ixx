@@ -93,6 +93,8 @@ export namespace  lysa {
     struct LysaConfiguration {
         //! Graphic API used by the graphic backend
         vireo::Backend backend{vireo::Backend::VULKAN};
+        //! Fixed delta time for the main loop
+        float deltaTime{1.0f/60.0f};
         //! Number of simultaneous frames during rendering
         uint32 framesInFlight{2};
         //! Number of nodes updates per frame for asynchronous scene updates
@@ -110,6 +112,19 @@ export namespace  lysa {
     };
 
     /**
+    * Global events fired during the main loop
+    */
+    struct MainLoopEvent : Event {
+        //! Fired on time per frame computed alpha time
+        static inline const event_type PROCESS{"MAIN_LOOP_PROCESS"};
+        //! Fired multiple times per frame with fixed delta time
+        static inline const event_type PHYSICS_PROCESS{"MAIN_LOOP_PHYSICS_PROCESS"};
+        //! Fired just after the main loop exit, but before resources destruction's
+        static inline const event_type QUIT{"MAIN_LOOP_QUIT"};
+    };
+
+
+    /**
      * @brief Main entry class of the Lysa runtime.
      *
      * This class owns the application @ref Context and the embedded @ref Lua
@@ -118,9 +133,6 @@ export namespace  lysa {
      */
     class Lysa final {
     public:
-        /** Fixed time step used by the physics update loop (in seconds). */
-        static constexpr float FIXED_DELTA_TIME{1.0f/60.0f};
-
         /**
          * @brief Construct the runtime and initialize subsystems.
          * @param config Configuration values used during startup.
@@ -131,29 +143,8 @@ export namespace  lysa {
 
         /**
          * @brief Run the main loop until quit is requested.
-         *
-         * @param onProcess Callback invoked every iteration (i.e. each frame).
-         * @param onPhysicsProcess Callback invoked every physics update
-         * @param onQuit Optional callback invoked once after the loop exits, before the instance shutdown
          */
-        void run(
-            const std::function<void(float)>& onProcess = {},
-            const std::function<void(float)>& onPhysicsProcess = {},
-            const std::function<void()>& onQuit = {});
-
-#ifdef LUA_BINDING
-        /**
-         * @brief Run the main loop until quit is requested.
-         *
-         * @param onProcess Callback invoked every iteration (i.e. each frame).
-         * @param onPhysicsProcess Callback invoked every physics update
-         * @param onQuit Optional callback invoked once after the loop exits, before the instance shutdown
-         */
-        void runLua(
-            const luabridge::LuaRef& onProcess = nullptr,
-            const luabridge::LuaRef& onPhysicsProcess = nullptr,
-            const luabridge::LuaRef& onQuit = nullptr);
-#endif
+        void run();
 
         /**
          * @brief Get the mutable application context.
@@ -165,6 +156,7 @@ export namespace  lysa {
         // Global runtime context (events, resources, etc.).
         Context ctx;
         // Fixed delta time bookkeeping for the physics update loop
+        const float fixedDeltaTime;
         double currentTime{0.0};
         double accumulator{0.0};
 

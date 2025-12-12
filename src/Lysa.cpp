@@ -23,6 +23,7 @@ namespace lysa {
             ,config.luaConfiguration
 #endif
             ),
+        fixedDeltaTime(config.deltaTime),
         renderTargetManager(ctx, config.resourcesCapacity.renderTarget, config.framesInFlight),
         renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
         imageManager(ctx, config.resourcesCapacity.images),
@@ -58,10 +59,7 @@ namespace lysa {
         SceneRenderContext::destroyDescriptorLayouts();
     }
 
-    void Lysa::run(
-        const std::function<void(float)>& onProcess,
-        const std::function<void(float)>& onPhysicsProcess,
-        const std::function<void()>& onQuit) {
+    void Lysa::run() {
         while (!ctx.exit) {
             materialManager.flush();
             meshManager.flush();
@@ -86,27 +84,22 @@ namespace lysa {
             if (frameTime > 0.25) frameTime = 0.25; // Note: Max frame time to avoid spiral of death
             currentTime = newTime;
             accumulator += frameTime;
-            while (accumulator >= FIXED_DELTA_TIME) {
-                if (onPhysicsProcess) { onPhysicsProcess(FIXED_DELTA_TIME); }
-                accumulator -= FIXED_DELTA_TIME;
+            while (accumulator >= fixedDeltaTime) {
+                ctx.events.fire({
+                    .type = MainLoopEvent::PHYSICS_PROCESS,
+                    .payload = fixedDeltaTime
+                });
+                accumulator -= fixedDeltaTime;
             }
-            if (onProcess) onProcess(static_cast<float>(accumulator / FIXED_DELTA_TIME));
+            ctx.events.fire({
+                .type = MainLoopEvent::PROCESS,
+                .payload = static_cast<float>(accumulator / fixedDeltaTime)
+            });
         }
         ctx.defer._process();
-        if (onQuit) onQuit();
+        ctx.events.fire({
+            .type = MainLoopEvent::QUIT,
+        });
     }
-
-#ifdef LUA_BINDING
-    void Lysa::runLua(
-        const luabridge::LuaRef& onProcess,
-        const luabridge::LuaRef& onPhysicsProcess,
-        const luabridge::LuaRef& onQuit) {
-        run(
-            [&](float dt){ onProcess(dt); },
-            [&](float dt){ if (onPhysicsProcess) onPhysicsProcess(dt); },
-            [&]{ if (onQuit) onQuit(); }
-            );
-    }
-#endif
 
 }
