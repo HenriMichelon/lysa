@@ -113,9 +113,9 @@ set(HLSLPP_SRC_DIR ${DEPENDS_SRC_DIR}/${HLSLPP_TARGET})
 # Slang shaders
 file(MAKE_DIRECTORY ${SHADERS_BUILD_DIR})
 set(SHADERS_SOURCE_FILES
-#        "${SHADERS_SRC_DIR}/default.vert.slang"
-#        "${SHADERS_SRC_DIR}/depth_prepass.vert.slang"
-#        "${SHADERS_SRC_DIR}/frustum_culling.comp.slang"
+        "${SHADERS_SRC_DIR}/default.vert.slang"
+        "${SHADERS_SRC_DIR}/depth_prepass.vert.slang"
+        "${SHADERS_SRC_DIR}/frustum_culling.comp.slang"
 #        "${SHADERS_SRC_DIR}/frustum_culling_shadowmap.comp.slang"
 #        "${SHADERS_SRC_DIR}/quad.vert.slang"
 #        "${SHADERS_SRC_DIR}/vector.slang"

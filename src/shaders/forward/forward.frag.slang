@@ -9,8 +9,8 @@
 float4 fragmentMain(VertexOutput input) : SV_Target {
     Material mat = materials[input.materialIndex];
     float4 color = fetchColor(input.uv, mat);
-    /*if (mat.transparency != Transparency.DISABLED && color.a < 0.99) {
+    if (mat.transparency != Transparency.DISABLED && color.a < 0.1) {
        discard;
-    }*/
+    }
     return getColor(input, mat, color);
 }
