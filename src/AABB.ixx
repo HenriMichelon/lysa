@@ -48,7 +48,9 @@ export namespace lysa {
          * @param min Minimum corner (x/y/z individually less-or-equal to max).
          * @param max Maximum corner (x/y/z individually greater-or-equal to min).
          */
-        inline AABB(const float3& min, const float3& max) : min{min}, max{max} {}
+        AABB(const float3& min, const float3& max) : min{min}, max{max} {}
+
+        AABB(const AABB& aabb) : min{aabb.min}, max{aabb.max} {}
 
         /**
          * Compute the world-space AABB that encloses this box transformed by the

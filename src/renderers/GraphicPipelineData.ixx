@@ -117,8 +117,8 @@ export namespace lysa {
      */
     struct MeshInstanceDesc {
         Mesh& mesh;
-        bool visible;
-        bool castShadows;
+        bool visible{false};
+        bool castShadows{false};
         AABB worldAABB;
         float4x4 worldTransform;
         std::unordered_map<uint32, unique_id> materialsOverride;
@@ -134,13 +134,19 @@ export namespace lysa {
             const bool visible,
             const bool castShadows,
             const AABB& worldAABB,
-            const float4x4& worldTransform,
-            const uint32 framesInFLight) :
+            const float4x4& worldTransform) :
             mesh(mesh),
             visible(visible),
             castShadows(castShadows),
             worldAABB(worldAABB),
             worldTransform(worldTransform) {}
+
+        MeshInstanceDesc(const MeshInstanceDesc& mi) :
+            mesh(mi.mesh),
+            visible(mi.visible),
+            castShadows(mi.castShadows),
+            worldAABB(mi.worldAABB),
+            worldTransform(mi.worldTransform) {}
     };
 
     /**

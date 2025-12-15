@@ -45,7 +45,7 @@ export namespace lysa {
         void updateInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node, bool async);
+        void removeInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, bool async);
 
         void processDeferredOperations(uint32 frameIndex);
 

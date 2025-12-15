@@ -62,6 +62,11 @@ export namespace lysa::ecs {
         flecs::entity camera;
     };
 
+    struct MaterialOverride {
+        uint32 surfaceIndex;
+        unique_id material;
+    };
+
     struct MeshInstance {
         unique_id mesh{INVALID_ID};
         std::shared_ptr<MeshInstanceDesc> meshInstance;

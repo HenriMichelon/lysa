@@ -51,8 +51,7 @@ namespace lysa::ecs {
                         e.has<Visible>(),
                         e.has<CastShadows>(),
                         aabb,
-                        tr.global,
-                        sceneManager.getFramesInFlight());
+                        tr.global);
                     scene.addInstance(mi.meshInstance, false);
                 }
             });
@@ -63,6 +62,30 @@ namespace lysa::ecs {
             .each([&](const flecs::entity e, const Scene&, const MeshInstance& mi, const Visible&) {
                if (mi.mesh != INVALID_ID && mi.meshInstance) {
                    e.add<Updated>();
+               }
+           });
+        w.observer<const Scene, MeshInstance, const MaterialOverride>()
+            .term_at(0).parent()
+            .event(flecs::OnSet)
+            .each([&](const Scene&sc, MeshInstance& mi, const MaterialOverride&mo) {
+               if (mi.mesh != INVALID_ID && mi.meshInstance) {
+                    auto& scene = sceneManager[sc.scene];
+                    scene.removeInstance(mi.meshInstance, false);
+                    mi.meshInstance = std::make_shared<MeshInstanceDesc>(*mi.meshInstance);
+                    mi.meshInstance->materialsOverride[mo.surfaceIndex] = mo.material;
+                    scene.addInstance(mi.meshInstance, false);
+               }
+           });
+        w.observer<const Scene, MeshInstance, const MaterialOverride>()
+            .term_at(0).parent()
+            .event(flecs::OnRemove)
+            .each([&](const Scene&sc, MeshInstance& mi, const MaterialOverride&mo) {
+               if (mi.mesh != INVALID_ID && mi.meshInstance) {
+                    auto& scene = sceneManager[sc.scene];
+                    scene.removeInstance(mi.meshInstance, false);
+                    mi.meshInstance = std::make_shared<MeshInstanceDesc>(*mi.meshInstance);
+                    mi.meshInstance->materialsOverride.erase(mo.surfaceIndex);
+                    scene.addInstance(mi.meshInstance, false);
                }
            });
         w.system<const Scene, const MeshInstance, const Transform, const Updated>()
