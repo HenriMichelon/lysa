@@ -194,6 +194,12 @@ export namespace lysa {
             return allocate(std::make_unique<Mesh>(ctx, vertices, indices, surfaces));
         }
 
+#ifdef LUA_BINDING
+        Mesh& create( const luabridge::LuaRef& vertices,
+              const luabridge::LuaRef& indices,
+              const luabridge::LuaRef&surfaces) ;
+#endif
+
         Mesh& create() {
             return allocate(std::make_unique<Mesh>(ctx));
         }

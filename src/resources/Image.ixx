@@ -116,9 +116,9 @@ export namespace lysa {
         auto getBlankCubeMap() const { return blankCubeMap; }
 
         /** Returns true if the descriptor sets using the images must be updated */
-        bool isUpdateNeeded() const { return updated; }
+        bool _isUpdateNeeded() const { return updated; }
 
-        void resetUpdateFlag() { updated = false; }
+        void _resetUpdateFlag() { updated = false; }
 
         /** Return the global GPU image array */
         auto getImages() const { return images; }

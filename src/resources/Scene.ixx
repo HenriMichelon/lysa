@@ -38,6 +38,8 @@ export namespace lysa {
 
         void setAmbientLight(const float4& ambientLight) { this->ambientLight = ambientLight; }
 
+        const float4& getAmbientLight() const { return ambientLight; }
+
         /** Adds a mesh instance to the scene. */
         void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, bool async);
 

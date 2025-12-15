@@ -147,4 +147,37 @@ namespace lysa {
         updated = true;
     }
 
+#ifdef LUA_BINDING
+    Mesh& MeshManager::create( const luabridge::LuaRef& vertices,
+          const luabridge::LuaRef& indices,
+          const luabridge::LuaRef&surfaces) {
+        if (!vertices.isTable() || !indices.isTable() || !surfaces.isTable()) {
+            throw Exception("Expected tables for vertices, indices, surfaces");
+        }
+
+        std::vector<Vertex> v;
+        for (int idx = 1; true; ++idx) {
+            auto val = vertices[idx];
+            if (val.isNil()) break;
+            v.push_back(val.cast<Vertex>().value());
+        }
+
+        std::vector<uint32> i;
+        for (int idx = 1; true; ++idx) {
+            auto val = indices[idx];
+            if (val.isNil()) break;
+            i.push_back(val.cast<uint32>().value());
+        }
+
+        std::vector<MeshSurface> s;
+        for (int idx = 1; true; ++idx) {
+            auto val = surfaces[idx];
+            if (val.isNil()) break;
+            s.push_back(val.cast<MeshSurface>().value());
+        }
+
+        return create(v, i, s);
+    }
+#endif
+
 }

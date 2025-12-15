@@ -33,11 +33,11 @@ namespace lysa {
     }
 
     void GlobalDescriptorSet::update() {
-        if (imageManager.isUpdateNeeded()) {
+        if (imageManager._isUpdateNeeded()) {
             auto lock = std::lock_guard(mutex);
             ctx.graphicQueue->waitIdle();
             descriptorSet->update(BINDING_TEXTURES, imageManager.getImages());
-            imageManager.resetUpdateFlag();
+            imageManager._resetUpdateFlag();
         }
     }
 

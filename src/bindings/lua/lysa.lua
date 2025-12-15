@@ -211,29 +211,6 @@ return {
     RenderingWindowManager = lysa.RenderingWindowManager,
 
     ------------------------------------------------------------------------
-    -- Viewports
-    ------------------------------------------------------------------------
-
-    ---@class lysa.ViewportConfiguration
-    ---@field render_target integer|lysa.RenderTarget
-    ---@field viewport any     @vireo.Viewport or similar
-    ---@field scissors any     @vireo.Rect or similar
-    ViewportConfiguration = lysa.ViewportConfiguration,
-
-    ---@class lysa.Viewport
-    ---@field id integer
-    ---@field render_target integer|lysa.RenderTarget
-    Viewport = lysa.Viewport,
-
-    ---@class lysa.ViewportManager
-    ---@field ID integer
-    ---@field create fun(self:lysa.ViewportManager, cfg:lysa.ViewportConfiguration):lysa.Viewport
-    ---@field get fun(self:lysa.ViewportManager, id:integer):lysa.Viewport
-    ---@field destroyAll fun(self:lysa.ViewportManager):nil
-    ---@field destroy fun(self:lysa.ViewportManager, id:integer):nil
-    ViewportManager = lysa.ViewportManager,
-
-    ------------------------------------------------------------------------
     -- Render targets
     ------------------------------------------------------------------------
 
