@@ -66,7 +66,7 @@ namespace lysa {
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
         const bool clearAttachment,
         const uint32 frameIndex) {
-        const auto& frame = framesData[frameIndex];
+        // const auto& frame = framesData[frameIndex];
 
         renderingConfig.colorRenderTargets[0].clear = clearAttachment;
         renderingConfig.colorRenderTargets[0].renderTarget = colorAttachment;
@@ -80,10 +80,10 @@ namespace lysa {
         scene.drawOpaquesModels(
             commandList,
             pipelines);
-        scene.drawTransparentModels(
+        scene.drawShaderMaterialModels(
             commandList,
             pipelines);
-        scene.drawShaderMaterialModels(
+        scene.drawTransparentModels(
             commandList,
             pipelines);
         commandList.endRendering();
