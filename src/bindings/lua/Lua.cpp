@@ -92,6 +92,11 @@ end
     void Lua::bind() {
         beginNamespace("std")
             .beginClass<std::string>("string")
+                .addFunction("append",
+                    static_cast<std::string& (std::string::*)(const char*)>(
+                           &std::string::append
+                       )
+                    )
             .endClass()
             .beginClass<std::u32string>("u32string")
             .endClass()
@@ -295,7 +300,9 @@ end
             .addProperty("image", &Image::getImage)
         .endClass()
         .beginClass<ImageManager>("ImageManager")
-            .addFunction("load", &ImageManager::load)
+            .addFunction("load", +[](ImageManager* self, const std::string& path) -> Image& {
+                return self->load(path);
+            })
             .addFunction("save", &ImageManager::save)
             .addProperty("blank_image", &ImageManager::getBlankImage)
             .addProperty("blank_cube_map", &ImageManager::getBlankCubeMap)
@@ -354,7 +361,7 @@ end
             .addProperty("type", &Material::getType)
         .endClass()
         .beginClass<StandardMaterial::TextureInfo>("TextureInfo")
-            .addConstructor<void(const ImageTexture*, float3x3)>()
+            .addConstructor<void(const ImageTexture*)>()
             .addProperty("texture", &StandardMaterial::TextureInfo::texture)
             .addProperty("transform", &StandardMaterial::TextureInfo::transform)
         .endClass()
@@ -413,10 +420,10 @@ end
             .addFunction("get_parameter", &ShaderMaterial::getParameter)
         .endClass()
         .beginClass<MaterialManager>("MaterialManager")
-               .addFunction("create", +[](MaterialManager* self) -> StandardMaterial& {
+               .addFunction("create_standard", +[](MaterialManager* self) -> StandardMaterial& {
                         return self->create();
                 })
-                .addFunction("create", +[](MaterialManager* self, const std::string &f, const std::string &v) -> ShaderMaterial& {
+                .addFunction("create_shared", +[](MaterialManager* self, const std::string &f, const std::string &v) -> ShaderMaterial& {
                          return self->create(f, v);
                  })
                .addFunction("get",
@@ -450,9 +457,9 @@ end
             .addFunction("aabb", &Mesh::getAABB)
         .endClass()
         .beginClass<MeshManager>("MeshManager")
-           .addFunction("create", +[](MeshManager* self) -> Mesh& {
-                    return self->create();
-            })
+           // .addFunction("create", +[](MeshManager* self) -> Mesh& {
+           //          return self->create();
+           //  })
             .addFunction("create", +[](MeshManager* self, const luabridge::LuaRef& v, const luabridge::LuaRef&i, const luabridge::LuaRef&s) -> Mesh& {
                      return self->create(v, i, s);
              })

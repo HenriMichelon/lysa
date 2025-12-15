@@ -154,29 +154,66 @@ namespace lysa {
         if (!vertices.isTable() || !indices.isTable() || !surfaces.isTable()) {
             throw Exception("Expected tables for vertices, indices, surfaces");
         }
-
-        std::vector<Vertex> v;
-        for (int idx = 1; true; ++idx) {
-            auto val = vertices[idx];
-            if (val.isNil()) break;
-            v.push_back(val.cast<Vertex>().value());
+        std::vector<Vertex> vVec;
+        const auto vLen = vertices.length();
+        vVec.reserve(vLen);
+        for (int i = 1; i <= vLen; ++i) {
+            const auto vref = vertices[i];
+            Vertex v{};
+            if (vref.isTable()) {
+                const auto pos = vref["position"]; if (pos.isInstance<float3>()) v.position = pos.cast<float3>().value();
+                const auto nrm = vref["normal"];   if (nrm.isInstance<float3>()) v.normal   = nrm.cast<float3>().value();
+                const auto uv  = vref["uv"];       if (uv.isInstance<float2>())  v.uv       = uv.cast<float2>().value();
+                const auto tan = vref["tangent"];  if (tan.isInstance<float4>()) v.tangent  = tan.cast<float4>().value();
+            } else if (vref.isInstance<Vertex>()) {
+                v = vref.cast<Vertex>().value();
+            } else {
+                throw Exception("Invalid vertex entry at index ", i);
+            }
+            vVec.emplace_back(v);
         }
 
-        std::vector<uint32> i;
-        for (int idx = 1; true; ++idx) {
-            auto val = indices[idx];
-            if (val.isNil()) break;
-            i.push_back(val.cast<uint32>().value());
+        std::vector<uint32> iVec;
+        const auto iLen = indices.length();
+        iVec.reserve(iLen);
+        for (int i = 1; i <= iLen; ++i) {
+            const auto iref = indices[i];
+            if (!iref.isNumber()) {
+                throw Exception("Invalid index entry at index ", i);
+            }
+            const auto val = static_cast<uint32>(iref.cast<unsigned int>().value());
+            iVec.emplace_back(val);
         }
 
-        std::vector<MeshSurface> s;
-        for (int idx = 1; true; ++idx) {
-            auto val = surfaces[idx];
-            if (val.isNil()) break;
-            s.push_back(val.cast<MeshSurface>().value());
+        std::vector<MeshSurface> sVec;
+        const auto sLen = surfaces.length();
+        sVec.reserve(sLen);
+        for (int i = 1; i <= sLen; ++i) {
+            const auto sref = surfaces[i];
+            if (sref.isInstance<MeshSurface>()) {
+                sVec.emplace_back(sref.cast<MeshSurface>().value());
+                continue;
+            }
+
+            if (sref.isTable()) {
+                uint32 firstIndex = 0;
+                uint32 indexCount = 0;
+                unique_id material = 0;
+
+                const auto fi = sref["firstIndex"]; if (fi.isNumber()) firstIndex = static_cast<uint32>(fi.cast<unsigned int>().value());
+                const auto ic = sref["indexCount"]; if (ic.isNumber()) indexCount = static_cast<uint32>(ic.cast<unsigned int>().value());
+                const auto mat = sref["material"];   if (mat.isNumber()) material  = static_cast<unique_id>(mat.cast<unsigned long long>().value());
+
+                MeshSurface ms{firstIndex, indexCount};
+                ms.material = material;
+                sVec.emplace_back(ms);
+                continue;
+            }
+
+            throw Exception("Invalid surface entry at index ", i);
         }
 
-        return create(v, i, s);
+        return create(vVec, iVec, sVec);
     }
 #endif
 

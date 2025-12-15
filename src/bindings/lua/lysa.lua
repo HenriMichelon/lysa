@@ -245,6 +245,60 @@ return {
     RenderTargetManager = lysa.RenderTargetManager,
 
     ------------------------------------------------------------------------
+    -- Images / Textures / Samplers
+    ------------------------------------------------------------------------
+
+    ---@class lysa.Samplers
+    ---@field NEAREST_NEAREST_CLAMP_TO_BORDER integer
+    ---@field LINEAR_LINEAR_CLAMP_TO_EDGE integer
+    ---@field LINEAR_LINEAR_CLAMP_TO_EDGE_LOD_CLAMP_NONE integer
+    ---@field LINEAR_LINEAR_REPEAT integer
+    ---@field NEAREST_NEAREST_REPEAT integer
+    Samplers = lysa.Samplers,
+
+    ---@class lysa.Image
+    ---@field id integer
+    ---@field width integer         @read-only (getter)
+    ---@field height integer        @read-only (getter)
+    ---@field size integer          @read-only (getter)
+    ---@field name string           @read-only (getter)
+    ---@field index integer         @read-only (getter)
+    ---@field image any             @lightuserdata or backend handle
+    Image = lysa.Image,
+
+    ---@class lysa.ImageManager
+    ---@field load fun(self:lysa.ImageManager, path:string):lysa.Image
+    ---@field save fun(self:lysa.ImageManager, img:lysa.Image, path:string):nil
+    ---@field blank_image lysa.Image
+    ---@field blank_cube_map lysa.Image
+    ---@field images fun(self:lysa.ImageManager):table<integer, lysa.Image>
+    ---@field get fun(self:lysa.ImageManager, id:integer):lysa.Image
+    ---@field destroy fun(self:lysa.ImageManager, id:integer):nil
+    ImageManager = lysa.ImageManager,
+
+    ---@class lysa.Texture
+    ---@field id integer
+    ---@field width integer         @read-only (getter)
+    ---@field height integer        @read-only (getter)
+    ---@field size integer          @read-only (getter)
+    ---@field name string           @read-only (getter)
+    Texture = lysa.Texture,
+
+    ---@class lysa.ImageTexture
+    ---@field id integer
+    ---@field width integer         @read-only (getter)
+    ---@field height integer        @read-only (getter)
+    ---@field image lysa.Image      @read-only (getter)
+    ---@field sampler_index integer @read-only (getter)
+    ImageTexture = lysa.ImageTexture,
+
+    ---@class lysa.ImageTextureManager
+    ---@field create fun(self:lysa.ImageTextureManager, image:lysa.Image, sampler:integer):lysa.ImageTexture
+    ---@field get fun(self:lysa.ImageTextureManager, id:integer):lysa.ImageTexture
+    ---@field destroy fun(self:lysa.ImageTextureManager, id:integer):nil
+    ImageTextureManager = lysa.ImageTextureManager,
+
+    ------------------------------------------------------------------------
     -- Render passes / renderer
     ------------------------------------------------------------------------
 
@@ -271,6 +325,106 @@ return {
     Renderer = lysa.Renderer,
 
     ------------------------------------------------------------------------
+    -- Materials
+    ------------------------------------------------------------------------
+
+    ---@class lysa.Transparency
+    ---@field DISABLED integer
+    ---@field ALPHA integer
+    Transparency = lysa.Transparency,
+
+    ---@class lysa.MaterialType
+    ---@field STANDARD integer
+    ---@field SHADER integer
+    MaterialType = lysa.MaterialType,
+
+    ---@class lysa.Material
+    ---@field id integer
+    ---@field cull_mode vireo.CullMode
+    ---@field transparency integer   @lysa.Transparency
+    ---@field alpha_scissor number
+    ---@field index integer          @read-only (getter)
+    ---@field type integer           @lysa.MaterialType, read-only
+    Material = lysa.Material,
+
+    ---@class lysa.TextureInfo
+    ---@field texture lysa.ImageTexture|nil
+    ---@field transform any          @float3x3
+    TextureInfo = lysa.TextureInfo,
+
+    ---@class lysa.StandardMaterial: lysa.Material
+    ---@field albedo_color lysa.float4
+    ---@field diffuse_texture lysa.TextureInfo|nil
+    ---@field normal_texture lysa.TextureInfo|nil
+    ---@field metallic_factor number
+    ---@field metallic_texture lysa.TextureInfo|nil
+    ---@field roughness_factor number
+    ---@field roughness_texture lysa.TextureInfo|nil
+    ---@field emissive_texture lysa.TextureInfo|nil
+    ---@field emissive_factor lysa.float3
+    ---@field emissive_strength number
+    ---@field normal_scale number
+    StandardMaterial = lysa.StandardMaterial,
+
+    ---@class lysa.ShaderMaterial: lysa.Material
+    ---@field frag_file_name string  @read-only (getter)
+    ---@field vert_file_name string  @read-only (getter)
+    ---@field set_parameter fun(self:lysa.ShaderMaterial, name:string, value:any):nil
+    ---@field get_parameter fun(self:lysa.ShaderMaterial, name:string):any
+    ShaderMaterial = lysa.ShaderMaterial,
+
+    ---@class lysa.MaterialManager
+    ---@field create_standard fun(self:lysa.MaterialManager):lysa.StandardMaterial
+    ---@field create_shared fun(self:lysa.MaterialManager, frag:string, vert:string):lysa.ShaderMaterial
+    ---@field get fun(self:lysa.MaterialManager, id:integer):lysa.Material
+    MaterialManager = lysa.MaterialManager,
+
+    ------------------------------------------------------------------------
+    -- Geometry / Meshes / Scenes
+    ------------------------------------------------------------------------
+
+    ---@class lysa.AABB
+    ---@field min lysa.float3
+    ---@field max lysa.float3
+    AABB = lysa.AABB,
+
+    ---@class lysa.Vertex
+    ---@field position lysa.float3
+    ---@field normal lysa.float3
+    ---@field uv lysa.float2
+    ---@field tangent lysa.float4
+    Vertex = lysa.Vertex,
+
+    ---@class lysa.MeshSurface
+    ---@field firstIndex integer
+    ---@field indexCount integer
+    ---@field material any           @lysa.Material or resource id
+    MeshSurface = lysa.MeshSurface,
+
+    ---@class lysa.Mesh
+    ---@field id integer
+    ---@field get_surface_material fun(self:lysa.Mesh, surfaceIndex:integer):lysa.Material|nil
+    ---@field set_surface_material fun(self:lysa.Mesh, surfaceIndex:integer, mat:integer):nil
+    ---@field aabb fun(self:lysa.Mesh):lysa.AABB
+    Mesh = lysa.Mesh,
+
+    ---@class lysa.MeshManager
+    ---@field create fun(self:lysa.MeshManager):lysa.Mesh
+    ---@field create fun(self:lysa.MeshManager, vertices:any, indices:any, surfaces:any):lysa.Mesh
+    ---@field get fun(self:lysa.MeshManager, id:integer):lysa.Mesh
+    MeshManager = lysa.MeshManager,
+
+    ---@class lysa.Scene
+    ---@field id integer
+    ---@field ambientLight lysa.float3
+    Scene = lysa.Scene,
+
+    ---@class lysa.SceneManager
+    ---@field create fun(self:lysa.SceneManager):lysa.Scene
+    ---@field get fun(self:lysa.SceneManager, id:integer):lysa.Scene
+    SceneManager = lysa.SceneManager,
+
+    ------------------------------------------------------------------------
     -- Resources locator
     ------------------------------------------------------------------------
 
@@ -279,6 +433,10 @@ return {
     ---@field render_target_manager lysa.RenderTargetManager
     ---@field viewport_manager lysa.ViewportManager
     ---@field rendering_window_manager lysa.RenderingWindowManager
+    ---@field image_manager lysa.ImageManager
+    ---@field image_texture_manager lysa.ImageTextureManager
+    ---@field material_manager lysa.MaterialManager
+    ---@field mesh_manager lysa.MeshManager
     ResourcesRegistry = lysa.ResourcesRegistry,
 
     ------------------------------------------------------------------------
@@ -291,7 +449,7 @@ return {
     ---@field fs lysa.VirtualFS
     ---@field events lysa.EventManager
     ---@field world flecs.world
-    ---@field resources lysa.ResourcesRegistry
+    ---@field res lysa.ResourcesRegistry
     ---@field graphic_queue vireo.SubmitQueue
     Context = lysa.Context,
 
