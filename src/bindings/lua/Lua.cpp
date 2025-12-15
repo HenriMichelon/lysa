@@ -568,9 +568,15 @@ end
             .endClass()
             .beginClass<ecs::Visible>("Visible").endClass()
             .beginClass<ecs::Transform>("Transform")
+                .addConstructor<void()>()
                 .addProperty("local", &ecs::Transform::local)
                 .addProperty("global", &ecs::Transform::global)
             .endClass()
+
+            .addFunction("set_position",
+                luabridge::overload<flecs::entity, const float3&>(&ecs::setPosition),
+                luabridge::overload<flecs::entity, float, float, float>(&ecs::setPosition)
+            )
 
             .beginClass<flecs::world>("world")
                 .addFunction("entity", +[](const flecs::world* w) { return w->entity<>(); })

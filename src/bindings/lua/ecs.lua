@@ -67,6 +67,10 @@ return {
     ---@field render_target  ecs.RenderTarget
     entity = ecs.entity,
 
+  ---@overload fun(e:ecs.entity, p:lysa.float3)
+  ---@overload fun(e:ecs.entity, x:float,y:float,z:float)
+    set_position = ecs.set_position,
+
     ---@class ecs.world
     ---@field entity fun(self:ecs.world):ecs.entity
     world = ecs.world,
