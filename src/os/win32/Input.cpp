@@ -254,13 +254,13 @@ namespace lysa {
             gamepadButtonJustPressedStates[button] = true;
             gamepadButtonJustReleasedStates[button] = false;
             auto event = InputEventGamepadButton(button, pressed);
-            window._input(event);
+            window._input({InputEventType::GAMEPAD_BUTTON, event});
         }
         if ((!pressed) && (gamepadButtonPressedStates[button])) {
             gamepadButtonJustPressedStates[button] = false;
             gamepadButtonJustReleasedStates[button] = true;
             auto event = InputEventGamepadButton(button, pressed);
-            window._input(event);
+            window._input({InputEventType::GAMEPAD_BUTTON, event});
         }
         gamepadButtonPressedStates[button] = pressed;
     }
@@ -407,7 +407,7 @@ namespace lysa {
                 keyJustReleasedStates[key] = false;
                 if (keyJustPressedStates[key]) {
                     auto event = InputEventKey{key, true, static_cast<int>(lParam & 0xFFFF), _getKeyboardModifiers()};
-                    window->_input(event);
+                    window->_input({InputEventType::KEY, event});
                 }
                 break;
             }
@@ -418,98 +418,112 @@ namespace lysa {
                 keyJustPressedStates[key] = false;
                 keyJustReleasedStates[key] = true;
                 auto event = InputEventKey{key, false, static_cast<int>(lParam & 0xFFFF), _getKeyboardModifiers()};
-                window->_input(event);
+                window->_input({InputEventType::KEY, event});
                 break;
             }
             case WM_LBUTTONDOWN: {
                 mouseButtonJustPressedStates[MouseButton::LEFT] = !mouseButtonPressedStates[MouseButton::LEFT];
                 mouseButtonPressedStates[MouseButton::LEFT] = true;
                 mouseButtonJustReleasedStates[MouseButton::LEFT] = false;
-                auto event = InputEventMouseButton(MouseButton::LEFT,
-                                                       true,
-                                                       _getKeyboardModifiers(),
-                                                       _getMouseButtonState(wParam),
-                                                       static_cast<float>(GET_X_LPARAM(lParam)),
-                                                       static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam));
-                window->_input(event);
+                auto event = InputEventMouseButton {
+                    float2( static_cast<float>(GET_X_LPARAM(lParam)),
+                        static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam)),
+                    _getMouseButtonState(wParam),
+                    _getKeyboardModifiers(),
+                    MouseButton::LEFT,
+                    true
+                };
+                window->_input({InputEventType::MOUSE_BUTTON, event});
                 break;
             }
             case WM_LBUTTONUP: {
                 mouseButtonJustPressedStates[MouseButton::LEFT] = false;
                 mouseButtonPressedStates[MouseButton::LEFT] = false;
                 mouseButtonJustReleasedStates[MouseButton::LEFT] = false;
-                auto event = InputEventMouseButton(MouseButton::LEFT,
-                                                       false,
-                                                       _getKeyboardModifiers(),
-                                                       _getMouseButtonState(wParam),
-                                                       static_cast<float>(GET_X_LPARAM(lParam)),
-                                                       static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam));
-                window->_input(event);
+                auto event = InputEventMouseButton {
+                    float2( static_cast<float>(GET_X_LPARAM(lParam)),
+                        static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam)),
+                    _getMouseButtonState(wParam),
+                    _getKeyboardModifiers(),
+                    MouseButton::LEFT,
+                    false
+                };
+                window->_input({InputEventType::MOUSE_BUTTON, event});
                 break;
             }
             case WM_RBUTTONDOWN: {
                 mouseButtonJustPressedStates[MouseButton::RIGHT] = !mouseButtonPressedStates[MouseButton::RIGHT];
                 mouseButtonPressedStates[MouseButton::RIGHT] = true;
                 mouseButtonJustReleasedStates[MouseButton::RIGHT] = false;
-                auto event = InputEventMouseButton(MouseButton::RIGHT,
-                                                       true,
-                                                       _getKeyboardModifiers(),
-                                                       _getMouseButtonState(wParam),
-                                                       static_cast<float>(GET_X_LPARAM(lParam)),
-                                                       static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam));
-                window->_input(event);
+                auto event = InputEventMouseButton {
+                    float2( static_cast<float>(GET_X_LPARAM(lParam)),
+                        static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam)),
+                    _getMouseButtonState(wParam),
+                    _getKeyboardModifiers(),
+                    MouseButton::RIGHT,
+                    true
+                };
+                window->_input({InputEventType::MOUSE_BUTTON, event});
                 break;
             }
             case WM_RBUTTONUP: {
                 mouseButtonJustPressedStates[MouseButton::RIGHT] = false;
                 mouseButtonPressedStates[MouseButton::RIGHT] = false;
                 mouseButtonJustReleasedStates[MouseButton::RIGHT] = false;
-                auto event = InputEventMouseButton(MouseButton::RIGHT,
-                                                       false,
-                                                       _getKeyboardModifiers(),
-                                                       _getMouseButtonState(wParam),
-                                                       static_cast<float>(GET_X_LPARAM(lParam)),
-                                                       static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam));
-                window->_input(event);
+                auto event = InputEventMouseButton {
+                    float2( static_cast<float>(GET_X_LPARAM(lParam)),
+                        static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam)),
+                    _getMouseButtonState(wParam),
+                    _getKeyboardModifiers(),
+                    MouseButton::RIGHT,
+                    false
+                };
+                window->_input({InputEventType::MOUSE_BUTTON, event});
                 break;
             }
             case WM_MBUTTONDOWN: {
                 mouseButtonJustPressedStates[MouseButton::MIDDLE] = !mouseButtonPressedStates[MouseButton::MIDDLE];
                 mouseButtonPressedStates[MouseButton::MIDDLE] = true;
                 mouseButtonJustReleasedStates[MouseButton::MIDDLE] = false;
-                auto event = InputEventMouseButton(MouseButton::MIDDLE,
-                                                       true,
-                                                       _getKeyboardModifiers(),
-                                                       _getMouseButtonState(wParam),
-                                                       static_cast<float>(GET_X_LPARAM(lParam)),
-                                                       static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam));
-                window->_input(event);
+                auto event = InputEventMouseButton {
+                    float2( static_cast<float>(GET_X_LPARAM(lParam)),
+                        static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam)),
+                    _getMouseButtonState(wParam),
+                    _getKeyboardModifiers(),
+                    MouseButton::MIDDLE,
+                    true
+                };
+                window->_input({InputEventType::MOUSE_BUTTON, event});
                 break;
             }
             case WM_MBUTTONUP: {
                 mouseButtonJustPressedStates[MouseButton::MIDDLE] = false;
                 mouseButtonPressedStates[MouseButton::MIDDLE] = false;
                 mouseButtonJustReleasedStates[MouseButton::MIDDLE] = false;
-                auto event = InputEventMouseButton(MouseButton::MIDDLE,
-                                                       false,
-                                                       _getKeyboardModifiers(),
-                                                       _getMouseButtonState(wParam),
-                                                       static_cast<float>(GET_X_LPARAM(lParam)),
-                                                       static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam));
-                window->_input(event);
+                auto event = InputEventMouseButton {
+                    float2( static_cast<float>(GET_X_LPARAM(lParam)),
+                        static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam)),
+                    _getMouseButtonState(wParam),
+                    _getKeyboardModifiers(),
+                    MouseButton::MIDDLE,
+                    false
+                };
+                window->_input({InputEventType::MOUSE_BUTTON, event});
                 break;
             }
             case WM_MOUSEWHEEL: {
                 mouseButtonJustPressedStates[MouseButton::MIDDLE] = false;
                 mouseButtonPressedStates[MouseButton::MIDDLE] = false;
                 mouseButtonJustReleasedStates[MouseButton::MIDDLE] = false;
-                auto event = InputEventMouseButton(MouseButton::WHEEL,
-                                                       GET_WHEEL_DELTA_WPARAM(wParam) < 0,
-                                                       _getKeyboardModifiers(),
-                                                       _getMouseButtonState(GET_KEYSTATE_WPARAM(wParam)),
-                                                       static_cast<float>(GET_X_LPARAM(lParam)),
-                                                       static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam));
-                window->_input(event);
+                auto event = InputEventMouseButton {
+                    float2( static_cast<float>(GET_X_LPARAM(lParam)),
+                        static_cast<float>(window->getHeight())-GET_Y_LPARAM(lParam)),
+                    _getMouseButtonState(wParam),
+                    _getKeyboardModifiers(),
+                    MouseButton::WHEEL,
+                    GET_WHEEL_DELTA_WPARAM(wParam) < 0
+                };
+                window->_input({InputEventType::MOUSE_BUTTON, event});
                 break;
             }
             case WM_MOUSEMOVE: {
@@ -526,11 +540,21 @@ namespace lysa {
                     if ((lastMouseX != -1) && (lastMouseY != -1)) {
                         auto dx = xPos - lastMouseX;
                         auto dy = yPos - lastMouseY;
-                        auto event = InputEventMouseMotion(_getMouseButtonState(wParam), _getKeyboardModifiers(), xPos, yPos, dx, dy);
-                        window->_input(event);
+                        auto event = InputEventMouseMotion {
+                            float2(xPos, yPos),
+                            _getMouseButtonState(wParam),
+                            _getKeyboardModifiers(),
+                            float2(dx, dy),
+                        };
+                        window->_input({InputEventType::MOUSE_MOTION, event});
                     } else {
-                        auto event = InputEventMouseMotion(_getMouseButtonState(wParam), _getKeyboardModifiers(), xPos, yPos, 0, 0);
-                        window->_input(event);
+                        auto event = InputEventMouseMotion {
+                            float2(xPos, yPos),
+                            _getMouseButtonState(wParam),
+                            _getKeyboardModifiers(),
+                            float2(0, 0),
+                        };
+                        window->_input({InputEventType::MOUSE_MOTION, event});
                     }
                 } else {
                     RenderingWindow::_resettingMousePosition = false;

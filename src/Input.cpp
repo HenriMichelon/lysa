@@ -17,15 +17,15 @@ namespace lysa {
         if (inputActions.contains(actionName)) {
             const auto& action = inputActions[actionName];
             for (const auto& entry : action.entries) {
-                if (entry.type == InputActionEntry::KEYBOARD && inputEvent.getType() == InputEventType::KEY) {
-                    const auto &event = static_cast<const InputEventKey &>(inputEvent);
-                    result = (event.getKey() == entry.value) && (event.isPressed() == entry.pressed) ;
-                } else if (entry.type == InputActionEntry::MOUSE && inputEvent.getType() == InputEventType::MOUSE_BUTTON) {
-                    const auto &event = static_cast<const InputEventMouseButton &>(inputEvent);
-                    result = (static_cast<uint8>(event.getMouseButton()) & entry.value) && (event.isPressed() == entry.pressed);
-                } else if (entry.type == InputActionEntry::GAMEPAD && inputEvent.getType() == InputEventType::GAMEPAD_BUTTON) {
-                    const auto &event = static_cast<const InputEventGamepadButton &>(inputEvent);
-                    result = (static_cast<uint8>(event.getGamepadButton()) & entry.value) && (event.isPressed() == entry.pressed);
+                if (entry.type == InputActionEntry::KEYBOARD && inputEvent.type == InputEventType::KEY) {
+                    const auto &event = std::get<InputEventKey>(inputEvent.data);
+                    result = (event.key == entry.value) && (event.pressed == entry.pressed) ;
+                } else if (entry.type == InputActionEntry::MOUSE && inputEvent.type == InputEventType::MOUSE_BUTTON) {
+                    const auto &event = std::get<InputEventMouseButton>(inputEvent.data);
+                    result = (static_cast<uint8>(event.button) & entry.value) && (event.pressed == entry.pressed);
+                } else if (entry.type == InputActionEntry::GAMEPAD && inputEvent.type == InputEventType::GAMEPAD_BUTTON) {
+                    const auto &event = std::get<InputEventGamepadButton>(inputEvent.data);
+                    result = (static_cast<uint8>(event.button) & entry.value) && (event.pressed == entry.pressed);
                 }
                 if (result) { break; }
             }
