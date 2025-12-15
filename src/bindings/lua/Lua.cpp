@@ -102,18 +102,6 @@ end
             .endClass()
         .endNamespace();
 
-#ifdef ECS_SCENES
-        beginNamespace("flecs")
-            .beginClass<flecs::world>("world")
-                .addFunction("entity", +[](const flecs::world* w) { return w->entity<>(); })
-            .endClass()
-            .beginClass<flecs::entity>("entity")
-                .addProperty("is_alive", +[](const flecs::entity* e) { return e->is_alive(); })
-                .addFunction("destruct", &flecs::entity::destruct)
-            .endClass()
-        .endNamespace();
-#endif
-
         vireo::LuaBindings::_register(L);
 
         beginNamespace()
@@ -526,7 +514,104 @@ end
                 +[](const ResourcesRegistry* rl) -> MeshManager& {
                 return rl->get<MeshManager>();
             })
+            .addProperty("scene_manager",
+                +[](const ResourcesRegistry* rl) -> SceneManager& {
+                return rl->get<SceneManager>();
+            })
         .endClass()
         .endNamespace();
+
+#ifdef ECS_SCENES
+        beginNamespace("ecs")
+            .beginClass<ecs::RenderTarget>("RenderTarget")
+                .addConstructor<void(unique_id)>()
+                .addProperty("render_target", &ecs::RenderTarget::renderTarget)
+            .endClass()
+            .beginClass<ecs::Viewport>("Viewport")
+                .addConstructor<void(vireo::Viewport, vireo::Rect)>()
+                .addProperty("viewport", &ecs::Viewport::viewport)
+                .addProperty("scissors", &ecs::Viewport::scissors)
+            .endClass()
+            .beginClass<ecs::Camera>("Camera")
+                .addProperty("is_perspective", &ecs::Camera::isPerspective)
+                .addProperty("fov", &ecs::Camera::fov)
+                .addProperty("aspectRatio", &ecs::Camera::aspectRatio)
+                .addProperty("near", &ecs::Camera::near)
+                .addProperty("far", &ecs::Camera::far)
+                .addProperty("left", &ecs::Camera::left)
+                .addProperty("right", &ecs::Camera::right)
+                .addProperty("top", &ecs::Camera::top)
+                .addProperty("bottom", &ecs::Camera::bottom)
+            .endClass()
+            .beginClass<ecs::CameraRef>("CameraRef")
+                .addProperty("camera", &ecs::CameraRef::camera)
+            .endClass()
+            .beginClass<ecs::MaterialOverride>("MaterialOverride")
+                .addProperty("surface_index", &ecs::MaterialOverride::surfaceIndex)
+                .addProperty("material", &ecs::MaterialOverride::material)
+            .endClass()
+            .beginClass<ecs::MeshInstance>("MeshInstance")
+                .addProperty("mesh", &ecs::MeshInstance::mesh)
+            .endClass()
+            .beginClass<ecs::Scene>("Scene")
+                .addConstructor<void(unique_id)>()
+                .addProperty("scene", &ecs::Scene::scene)
+            .endClass()
+            .beginClass<ecs::SceneRef>("SceneRef")
+                .addProperty("scene", &ecs::SceneRef::scene)
+            .endClass()
+            .beginClass<ecs::AmbientLight>("AmbientLight")
+                .addProperty("color", &ecs::AmbientLight::color)
+                .addProperty("intensity", &ecs::AmbientLight::intensity)
+            .endClass()
+            .beginClass<ecs::Visible>("Visible").endClass()
+            .beginClass<ecs::Transform>("Transform")
+                .addProperty("local", &ecs::Transform::local)
+                .addProperty("global", &ecs::Transform::global)
+            .endClass()
+
+            .beginClass<flecs::world>("world")
+                .addFunction("entity", +[](const flecs::world* w) { return w->entity<>(); })
+            .endClass()
+
+            .beginClass<flecs::entity>("entity")
+                .addProperty("is_alive", +[](const flecs::entity* e) { return e->is_alive(); })
+                .addFunction("destruct", &flecs::entity::destruct)
+                .addProperty("render_target",
+                    [](const flecs::entity* e) { return e->get<ecs::RenderTarget>(); },
+                    [](const flecs::entity* e, const ecs::RenderTarget& c) { e->set<ecs::RenderTarget>(c);})
+                .addProperty("viewport",
+                    [](const flecs::entity* e) { return e->get<ecs::Viewport>(); },
+                    [](const flecs::entity* e, const ecs::Viewport& c) { e->set<ecs::Viewport>(c);})
+                .addProperty("camera",
+                    [](const flecs::entity* e) { return e->get<ecs::Camera>(); },
+                    [](const flecs::entity* e, const ecs::Camera& c) { e->set<ecs::Camera>(c);})
+                .addProperty("camera_ref",
+                    [](const flecs::entity* e) { return e->get<ecs::CameraRef>(); },
+                    [](const flecs::entity* e, const ecs::CameraRef& c) { e->set<ecs::CameraRef>(c);})
+                .addProperty("material_override",
+                    [](const flecs::entity* e) { return e->get<ecs::MaterialOverride>(); },
+                    [](const flecs::entity* e, const ecs::MaterialOverride& c) { e->set<ecs::MaterialOverride>(c);})
+                .addProperty("mesh_instance",
+                    [](const flecs::entity* e) { return e->get<ecs::MeshInstance>(); },
+                    [](const flecs::entity* e, const ecs::MeshInstance& c) { e->set<ecs::MeshInstance>(c);})
+                .addProperty("scene",
+                    [](const flecs::entity* e) { return e->get<ecs::Scene>(); },
+                    [](const flecs::entity* e, const ecs::Scene& c) { e->set<ecs::Scene>(c);})
+                .addProperty("scene_ref",
+                    [](const flecs::entity* e) { return e->get<ecs::SceneRef>(); },
+                    [](const flecs::entity* e, const ecs::SceneRef& c) { e->set<ecs::SceneRef>(c);})
+                .addProperty("ambient_light",
+                    [](const flecs::entity* e) { return e->get<ecs::AmbientLight>(); },
+                    [](const flecs::entity* e, const ecs::AmbientLight& c) { e->set<ecs::AmbientLight>(c);})
+                .addProperty("visible",
+                    [](const flecs::entity* e) { return e->get<ecs::Visible>(); },
+                    [](const flecs::entity* e, const ecs::Visible& c) { e->set<ecs::Visible>(c);})
+                .addProperty("transform",
+                    [](const flecs::entity* e) { return e->get<ecs::Transform>(); },
+                    [](const flecs::entity* e, const ecs::Transform& c) { e->set<ecs::Transform>(c);})
+            .endClass()
+        .endNamespace();
+#endif
     }
 }

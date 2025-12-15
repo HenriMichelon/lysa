@@ -76,13 +76,14 @@ export namespace lysa::ecs {
         unique_id scene{INVALID_ID};
     };
 
+    struct SceneRef {
+        flecs::entity scene;
+    };
+
     struct AmbientLight {
         float3 color{1.0f, 1.0f, 1.0f};
         float intensity{1.0f};
     };
 
-    struct SceneRef {
-        flecs::entity scene;
-    };
 
 }

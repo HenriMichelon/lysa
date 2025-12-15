@@ -1,5 +1,5 @@
 local vireo = require('vireo')
-local flecs = require('flecs')
+local ecs = require('ecs')
 
 ---@diagnostic disable: missing-return
 --EmmyLua annotations and documentation for Lysa
@@ -437,6 +437,7 @@ return {
     ---@field image_texture_manager lysa.ImageTextureManager
     ---@field material_manager lysa.MaterialManager
     ---@field mesh_manager lysa.MeshManager
+    ---@field scene_manager lysa.sceneManager
     ResourcesRegistry = lysa.ResourcesRegistry,
 
     ------------------------------------------------------------------------
@@ -448,7 +449,7 @@ return {
     ---@field vireo vireo.Vireo
     ---@field fs lysa.VirtualFS
     ---@field events lysa.EventManager
-    ---@field world flecs.world
+    ---@field world ecs
     ---@field res lysa.ResourcesRegistry
     ---@field graphic_queue vireo.SubmitQueue
     Context = lysa.Context,
