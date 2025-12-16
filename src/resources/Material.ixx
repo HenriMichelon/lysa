@@ -358,6 +358,8 @@ export namespace lysa {
 
         auto getBuffer() const { return memoryArray.getBuffer(); }
 
+        void destroy(unique_id id) override;
+
     private:
         /** GPU memory array that stores material description blocks for shaders. */
         DeviceMemoryArray memoryArray;

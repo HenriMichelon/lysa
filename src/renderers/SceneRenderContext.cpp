@@ -87,10 +87,6 @@ namespace lysa {
         lightsBuffer->map();
     }
 
-    SceneRenderContext::~SceneRenderContext() {
-        Log::trace();
-    }
-
     void SceneRenderContext::compute(vireo::CommandList& commandList, const CameraDesc& camera) const {
         compute(camera, commandList, opaquePipelinesData);
         compute(camera, commandList, shaderMaterialPipelinesData);

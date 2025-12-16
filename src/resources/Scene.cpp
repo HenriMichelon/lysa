@@ -36,7 +36,6 @@ namespace lysa {
 
     Scene::~Scene() {
         ctx.graphicQueue->waitIdle();
-        Log::trace();
     }
 
     void Scene::addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, const bool async) {

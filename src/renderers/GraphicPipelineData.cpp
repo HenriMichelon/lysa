@@ -83,10 +83,6 @@ namespace lysa {
         descriptorSet->update(BINDING_INSTANCES, instancesArray.getBuffer());
     }
 
-    GraphicPipelineData::~GraphicPipelineData() {
-        Log::trace();
-    }
-
     void GraphicPipelineData::addInstance(
         const std::shared_ptr<MeshInstanceDesc>& meshInstance,
         const std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock>& meshInstancesDataMemoryBlocks) {

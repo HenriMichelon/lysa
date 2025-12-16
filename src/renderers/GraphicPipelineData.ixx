@@ -236,8 +236,6 @@ export namespace lysa {
             const DeviceMemoryArray& meshInstancesDataArray,
             uint32 maxMeshSurfacePerPipeline);
 
-        ~GraphicPipelineData();
-
         /** Registers a mesh instance into this pipeline data object. */
         void addInstance(
             const std::shared_ptr<MeshInstanceDesc>& meshInstance,
