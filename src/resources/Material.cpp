@@ -211,6 +211,7 @@ namespace lysa {
                 const auto materialData = material.getMaterialData();
                 memoryArray.write(material.memoryBloc, &materialData);
             }
+            needUpload.clear();
             const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
             memoryArray.flush(*command.commandList);
             ctx.asyncQueue.endCommand(command);

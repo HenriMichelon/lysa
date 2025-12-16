@@ -151,6 +151,7 @@ namespace lysa {
             }
             meshSurfaceArray.write(mesh.surfacesMemoryBlock, surfaceData.data());
         }
+        needUpload.clear();
 
         auto lock = std::unique_lock(mutex, std::try_to_lock);
         const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
