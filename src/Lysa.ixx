@@ -29,6 +29,8 @@ export import lysa.ecs.flecs;
 export import lysa.ecs.systems;
 #endif
 
+export import lysa.pipelines.frustum_culling;
+
 export import lysa.renderers.configuration;
 export import lysa.renderers.forward_renderer;
 export import lysa.renderers.global_descriptor_set;

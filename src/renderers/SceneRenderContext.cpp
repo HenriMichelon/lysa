@@ -46,24 +46,24 @@ namespace lysa {
         const uint32 framesInFlight,
         const uint32 maxShadowMaps) :
         ctx(ctx),
-        maxLights(maxLights),
-        maxMeshSurfacePerPipeline(maxMeshSurfacePerPipeline),
         lightsBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::UNIFORM,
             sizeof(LightData),
             1,
-            "Scene Lights")},
+            "lights")},
         meshInstancesDataArray{ctx.vireo,
             sizeof(MeshInstanceData),
             maxMeshInstancesPerScene,
             maxMeshInstancesPerScene,
             vireo::BufferType::DEVICE_STORAGE,
-            "meshInstances Data"},
+            "meshInstancesData"},
         sceneUniformBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::UNIFORM,
             sizeof(SceneData), 1,
-            "Scene Data")},
+            "sceneUniform")},
         framesInFlight{framesInFlight},
+        maxMeshSurfacePerPipeline(maxMeshSurfacePerPipeline),
+        maxLights(maxLights),
         materialManager(ctx.res.get<MaterialManager>()) {
 
         const auto blankImage = ctx.res.get<ImageManager>().getBlankImage();

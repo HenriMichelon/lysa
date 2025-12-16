@@ -58,6 +58,7 @@ namespace lysa {
         ecsModules.reset();
         SceneRenderContext::destroyDescriptorLayouts();
         Renderpass::destroyShaderModules();
+        FrustumCulling::cleanup();
     }
 
     void Lysa::run() {

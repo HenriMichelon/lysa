@@ -52,7 +52,7 @@ namespace lysa {
         const DeviceMemoryArray& meshInstancesDataArray,
         const uint32 maxMeshSurfacePerPipeline) :
         pipelineId{pipelineId},
-        frustumCullingPipeline{ctx, true, meshInstancesDataArray},
+        frustumCullingPipeline{ctx, true, meshInstancesDataArray, pipelineId},
         materialManager(ctx.res.get<MaterialManager>()),
         vireo(ctx.vireo),
         instancesArray{
@@ -61,25 +61,25 @@ namespace lysa {
             maxMeshSurfacePerPipeline,
             maxMeshSurfacePerPipeline,
             vireo::BufferType::DEVICE_STORAGE,
-            "Pipeline instances array"},
+            "instance:" + std::to_string(pipelineId)},
         drawCommands(maxMeshSurfacePerPipeline),
         drawCommandsBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::DEVICE_STORAGE,
             sizeof(DrawCommand) * maxMeshSurfacePerPipeline,
             1,
-            "Pipeline draw commands")},
+            "drawCommand:" + std::to_string(pipelineId))},
         culledDrawCommandsCountBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::READWRITE_STORAGE,
             sizeof(uint32),
             1,
-            "Pipeline draw commands counter")},
+            "culledDrawCommandsCount:" + std::to_string(pipelineId))},
         culledDrawCommandsBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::READWRITE_STORAGE,
             sizeof(DrawCommand) * maxMeshSurfacePerPipeline,
             1,
-            "Pipeline culled draw commands")}
+            "culledDrawCommands:" + std::to_string(pipelineId))}
     {
-        descriptorSet = ctx.vireo->createDescriptorSet(pipelineDescriptorLayout, "Pipeline");
+        descriptorSet = ctx.vireo->createDescriptorSet(pipelineDescriptorLayout, "Graphic : " + std::to_string(pipelineId));
         descriptorSet->update(BINDING_INSTANCES, instancesArray.getBuffer());
     }
 

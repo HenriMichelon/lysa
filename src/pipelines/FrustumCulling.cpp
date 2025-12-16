@@ -10,43 +10,62 @@ import lysa.log;
 import lysa.virtual_fs;
 
 namespace lysa {
+
+    std::shared_ptr<vireo::DescriptorLayout> FrustumCulling::descriptorLayout;
+    std::unordered_map<std::string, std::shared_ptr<vireo::ShaderModule>> FrustumCulling::shaderModules{};
+    std::unordered_map<std::string, std::shared_ptr<vireo::Pipeline>> FrustumCulling::pipelines{};
+
     FrustumCulling::FrustumCulling(
         const Context& ctx,
         const bool isForScene,
-        const DeviceMemoryArray& meshInstancesArray) {
+        const DeviceMemoryArray& meshInstancesArray,
+        pipeline_id pipelineId) {
         const auto& vireo = *ctx.vireo;
-        globalBuffer = vireo.createBuffer(vireo::BufferType::UNIFORM, sizeof(Utils), 1, DEBUG_NAME);
+        auto debugName = DEBUG_NAME + ":" + std::to_string(pipelineId);
+        globalBuffer = vireo.createBuffer(vireo::BufferType::UNIFORM, sizeof(Utils), 1, debugName + "/global");
         globalBuffer->map();
-        commandClearCounterBuffer = vireo.createBuffer(vireo::BufferType::BUFFER_UPLOAD, sizeof(uint32));
+        commandClearCounterBuffer = vireo.createBuffer(vireo::BufferType::BUFFER_UPLOAD, sizeof(uint32), 1, debugName + "/commandClearCounter");
         constexpr auto clearValue = 0;
         commandClearCounterBuffer->map();
         commandClearCounterBuffer->write(&clearValue);
         commandClearCounterBuffer->unmap();
 
-        downloadCounterBuffer = vireo.createBuffer(vireo::BufferType::BUFFER_DOWNLOAD, sizeof(uint32));
+        downloadCounterBuffer = vireo.createBuffer(vireo::BufferType::BUFFER_DOWNLOAD, sizeof(uint32), 1, debugName + "/downloadCounter");
         downloadCounterBuffer->map();
 
-        descriptorLayout = vireo.createDescriptorLayout(DEBUG_NAME);
-        descriptorLayout->add(BINDING_GLOBAL, vireo::DescriptorType::UNIFORM);
-        descriptorLayout->add(BINDING_MESHINSTANCES, vireo::DescriptorType::DEVICE_STORAGE);
-        descriptorLayout->add(BINDING_INSTANCES, vireo::DescriptorType::DEVICE_STORAGE);
-        descriptorLayout->add(BINDING_INPUT, vireo::DescriptorType::DEVICE_STORAGE);
-        descriptorLayout->add(BINDING_OUTPUT, vireo::DescriptorType::READWRITE_STORAGE);
-        descriptorLayout->add(BINDING_COUNTER, vireo::DescriptorType::READWRITE_STORAGE);
-        descriptorLayout->build();
+        if (descriptorLayout == nullptr) {
+            descriptorLayout = vireo.createDescriptorLayout(DEBUG_NAME);
+            descriptorLayout->add(BINDING_GLOBAL, vireo::DescriptorType::UNIFORM);
+            descriptorLayout->add(BINDING_MESHINSTANCES, vireo::DescriptorType::DEVICE_STORAGE);
+            descriptorLayout->add(BINDING_INSTANCES, vireo::DescriptorType::DEVICE_STORAGE);
+            descriptorLayout->add(BINDING_INPUT, vireo::DescriptorType::DEVICE_STORAGE);
+            descriptorLayout->add(BINDING_OUTPUT, vireo::DescriptorType::READWRITE_STORAGE);
+            descriptorLayout->add(BINDING_COUNTER, vireo::DescriptorType::READWRITE_STORAGE);
+            descriptorLayout->build();
+        }
 
-        descriptorSet = vireo.createDescriptorSet(descriptorLayout, DEBUG_NAME);
+        descriptorSet = vireo.createDescriptorSet(descriptorLayout, debugName);
         descriptorSet->update(BINDING_GLOBAL, globalBuffer);
         descriptorSet->update(BINDING_MESHINSTANCES, meshInstancesArray.getBuffer());
 
-        const auto pipelineResources = vireo.createPipelineResources(
-            { descriptorLayout },
-            {},
-            DEBUG_NAME);
-        auto tempBuffer = std::vector<char>{};
-        ctx.fs.loadShader(isForScene ? SHADER_SCENE : SHADER_SHADOWMAP, tempBuffer);
-        const auto shader = vireo.createShaderModule(tempBuffer, DEBUG_NAME);
-        pipeline = vireo.createComputePipeline(pipelineResources, shader, DEBUG_NAME);
+        auto& shaderName = isForScene ? SHADER_SCENE : SHADER_SHADOWMAP;
+        if (!shaderModules.contains(shaderName)) {
+            const auto pipelineResources = vireo.createPipelineResources(
+                { descriptorLayout },
+                {},
+                DEBUG_NAME);
+            auto tempBuffer = std::vector<char>{};
+            ctx.fs.loadShader(shaderName, tempBuffer);
+            shaderModules[shaderName] = vireo.createShaderModule(tempBuffer, shaderName);
+            pipelines[shaderName] = vireo.createComputePipeline(pipelineResources, shaderModules[shaderName], shaderName);
+        }
+        pipeline = pipelines[shaderName];
+    }
+
+    void FrustumCulling::cleanup() {
+        pipelines.clear();
+        shaderModules.clear();
+        descriptorLayout.reset();
     }
 
     void FrustumCulling::dispatch(

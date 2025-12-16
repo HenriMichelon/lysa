@@ -19,7 +19,8 @@ export namespace lysa {
         FrustumCulling(
             const Context& ctx,
             bool isForScene,
-            const DeviceMemoryArray& meshInstancesArray);
+            const DeviceMemoryArray& meshInstancesArray,
+            pipeline_id pipelineId);
 
         void dispatch(
             vireo::CommandList& commandList,
@@ -32,6 +33,8 @@ export namespace lysa {
             const vireo::Buffer& counter);
 
         uint32 getDrawCommandsCount() const;
+
+        static void cleanup();
 
         virtual ~FrustumCulling() = default;
         FrustumCulling(FrustumCulling&) = delete;
@@ -55,11 +58,14 @@ export namespace lysa {
             float4x4 viewMatrix;
         };
 
-        std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
         std::shared_ptr<vireo::DescriptorSet>    descriptorSet;
         std::shared_ptr<vireo::Buffer>           globalBuffer;
         std::shared_ptr<vireo::Buffer>           commandClearCounterBuffer;
         std::shared_ptr<vireo::Buffer>           downloadCounterBuffer;
         std::shared_ptr<vireo::Pipeline>         pipeline;
+
+        static std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
+        static std::unordered_map<std::string, std::shared_ptr<vireo::ShaderModule>> shaderModules;
+        static std::unordered_map<std::string, std::shared_ptr<vireo::Pipeline>> pipelines;
     };
 }
