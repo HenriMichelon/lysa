@@ -102,6 +102,16 @@ namespace lysa {
         needUpload.insert(mesh.id);
     }
 
+    void MeshManager::destroy(const unique_id id) {
+        const auto& mesh = (*this)[id];
+        if (mesh.isUploaded()) {
+            vertexArray.free(mesh.verticesMemoryBlock);
+            indexArray.free(mesh.indicesMemoryBlock);
+            meshSurfaceArray.free(mesh.surfacesMemoryBlock);
+        }
+        ResourcesManager::destroy(id);
+    }
+
     void MeshManager::flush() {
         if (needUpload.empty()) return;
         for (const auto id : needUpload) {

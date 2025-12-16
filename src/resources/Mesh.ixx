@@ -214,6 +214,8 @@ export namespace lysa {
 
         auto getIndexBuffer() const { return indexArray.getBuffer(); }
 
+        void destroy(unique_id id) override;
+
     private:
         MaterialManager& materialManager;
         /** Device memory array that stores all vertex buffers. */
