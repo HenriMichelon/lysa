@@ -64,12 +64,41 @@ return {
     ---@class ecs.entity
     ---@field is_alive boolean
     ---@field destruct fun(self:ecs.entity):nil
+    ---@field add fun(self:ecs.entity):ecs:entity
+    ---@field remove fun(self:ecs.entity):ecs:entity
     ---@field render_target  ecs.RenderTarget
+    ---@field viewport  ecs.RenderTarget
+    ---@field camera  ecs.Camera
+    ---@field camera_ref  ecs.CameraRef
+    ---@field material_override  ecs.MaterialOverride
+    ---@field mesh_instance  ecs.MeshInstance
+    ---@field scene  ecs.Scene
+    ---@field scene_ref  ecs.SceneRed
+    ---@field ambient_light  ecs.AmbientLight
+    ---@field visible  ecs.Visible
+    ---@field transform  ecs.Transform
     entity = ecs.entity,
 
-  ---@overload fun(e:ecs.entity, p:lysa.float3)
-  ---@overload fun(e:ecs.entity, x:float,y:float,z:float)
+    ---@overload fun(e:ecs.entity, p:lysa.float3)
+    ---@overload fun(e:ecs.entity, x:float,y:float,z:float)
     set_position = ecs.set_position,
+
+    ---@overload fun(e:ecs.entity, p:lysa.float3)
+    ---@overload fun(e:ecs.entity, x:float,y:float,z:float)
+    translate = ecs.translate,
+
+    ---@param e ecs.entity
+    ---@param angle number
+    rotate_x = ecs.rotate_x,
+
+    ---@param e ecs.entity
+    ---@param angle number
+    rotate_y = ecs.rotate_y,
+
+    ---@param e ecs.entity
+    ---@param angle number
+    rotate_z = ecs.rotate_z,
+
 
     ---@class ecs.world
     ---@field entity fun(self:ecs.world):ecs.entity

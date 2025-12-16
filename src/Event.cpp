@@ -50,8 +50,8 @@ namespace lysa {
         }
 #ifdef LUA_BINDING
         {
-            const auto itType = globalHandlers.find(event.type);
-            if (itType != globalHandlers.end()) {
+            const auto itType = globalHandlersLua.find(event.type);
+            if (itType != globalHandlersLua.end()) {
                 for (auto& handler : itType->second) {
                     handler(event);
                 }

@@ -156,6 +156,7 @@ namespace lysa {
             return 0;
         case WM_KEYDOWN:
         case WM_KEYUP:
+            return Input::_windowProcedure(hWnd, message, wParam, lParam);
         case WM_LBUTTONDOWN:
         case WM_LBUTTONUP:
         case WM_RBUTTONDOWN:

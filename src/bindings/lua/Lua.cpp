@@ -22,6 +22,15 @@ template <> struct luabridge::Stack<lysa::LogLevel> : Enum<lysa::LogLevel> {};
 template <> struct luabridge::Stack<lysa::LoggingMode> : Enum<lysa::LoggingMode> {};
 template <> struct luabridge::Stack<lysa::RendererType> : Enum<lysa::RendererType> {};
 template <> struct luabridge::Stack<lysa::RenderingWindowMode> : Enum<lysa::RenderingWindowMode> {};
+template <> struct luabridge::Stack<lysa::InputEventType> : Enum<lysa::InputEventType> {};
+template <> struct luabridge::Stack<lysa::KeyModifier> : Enum<lysa::KeyModifier> {};
+template <> struct luabridge::Stack<lysa::Key> : Enum<lysa::Key> {};
+template <> struct luabridge::Stack<lysa::MouseButton> : Enum<lysa::MouseButton> {};
+template <> struct luabridge::Stack<lysa::GamepadButton> : Enum<lysa::GamepadButton> {};
+template <> struct luabridge::Stack<lysa::GamepadAxisJoystick> : Enum<lysa::GamepadAxisJoystick> {};
+template <> struct luabridge::Stack<lysa::GamepadAxis> : Enum<lysa::GamepadAxis> {};
+template <> struct luabridge::Stack<lysa::MouseMode> : Enum<lysa::MouseMode> {};
+template <> struct luabridge::Stack<lysa::MouseCursor> : Enum<lysa::MouseCursor> {};
 
 namespace lysa {
 
@@ -106,14 +115,14 @@ end
 
         beginNamespace()
         .beginClass<float2>("float2")
-           .addConstructor<void(float, float)>()
+           .addConstructor<void(float), void(float, float)>()
            .addProperty("x", &float2::x)
            .addProperty("r", &float2::r)
            .addProperty("y", &float2::y)
            .addProperty("g", &float2::g)
        .endClass()
        .beginClass<float3>("float3")
-           .addConstructor<void(float, float, float)>()
+           .addConstructor<void(float), void(float, float, float)>()
            .addProperty("x", &float3::x)
            .addProperty("r", &float3::r)
            .addProperty("y", &float3::y)
@@ -122,7 +131,7 @@ end
            .addProperty("b", &float3::b)
        .endClass()
        .beginClass<float4>("float4")
-           .addConstructor<void(float, float, float, float)>()
+           .addConstructor<void(float), void(float, float, float, float)>()
            .addProperty("x", &float4::x)
            .addProperty("r", &float4::r)
            .addProperty("y", &float4::y)
@@ -174,15 +183,164 @@ end
            .addStaticFunction("error", +[](const char*msg) { Log::error(msg); })
            .addStaticFunction("critical", +[](const char*msg) { Log::critical(msg); })
         .endClass()
+        
+        .beginNamespace("Key")
+
+            .addProperty("KEY_NONE", +[]{ return (uint32)KEY_NONE; })
+            .addProperty("KEY_SPACE", +[]{ return (uint32)KEY_SPACE; })
+            .addProperty("KEY_DASH", +[]{ return (uint32)KEY_DASH; })
+            .addProperty("KEY_PIPE", +[]{ return (uint32)KEY_PIPE; })
+            .addProperty("KEY_APOSTROPHE", +[]{ return (uint32)KEY_APOSTROPHE; })
+            .addProperty("KEY_COMMA", +[]{ return (uint32)KEY_COMMA; })
+            .addProperty("KEY_PERIOD", +[]{ return (uint32)KEY_PERIOD; })
+            .addProperty("KEY_QUESTIONMARK", +[]{ return (uint32)KEY_QUESTIONMARK; })
+
+            .addProperty("KEY_0", +[]{ return (uint32)KEY_0; })
+            .addProperty("KEY_1", +[]{ return (uint32)KEY_1; })
+            .addProperty("KEY_2", +[]{ return (uint32)KEY_2; })
+            .addProperty("KEY_3", +[]{ return (uint32)KEY_3; })
+            .addProperty("KEY_4", +[]{ return (uint32)KEY_4; })
+            .addProperty("KEY_5", +[]{ return (uint32)KEY_5; })
+            .addProperty("KEY_6", +[]{ return (uint32)KEY_6; })
+            .addProperty("KEY_7", +[]{ return (uint32)KEY_7; })
+            .addProperty("KEY_8", +[]{ return (uint32)KEY_8; })
+            .addProperty("KEY_9", +[]{ return (uint32)KEY_9; })
+
+            .addProperty("KEY_SEMICOLON", +[]{ return (uint32)KEY_SEMICOLON; })
+            .addProperty("KEY_EQUAL", +[]{ return (uint32)KEY_EQUAL; })
+
+            .addProperty("KEY_A", +[]{ return (uint32)KEY_A; })
+            .addProperty("KEY_B", +[]{ return (uint32)KEY_B; })
+            .addProperty("KEY_C", +[]{ return (uint32)KEY_C; })
+            .addProperty("KEY_D", +[]{ return (uint32)KEY_D; })
+            .addProperty("KEY_E", +[]{ return (uint32)KEY_E; })
+            .addProperty("KEY_F", +[]{ return (uint32)KEY_F; })
+            .addProperty("KEY_G", +[]{ return (uint32)KEY_G; })
+            .addProperty("KEY_H", +[]{ return (uint32)KEY_H; })
+            .addProperty("KEY_I", +[]{ return (uint32)KEY_I; })
+            .addProperty("KEY_J", +[]{ return (uint32)KEY_J; })
+            .addProperty("KEY_K", +[]{ return (uint32)KEY_K; })
+            .addProperty("KEY_L", +[]{ return (uint32)KEY_L; })
+            .addProperty("KEY_M", +[]{ return (uint32)KEY_M; })
+            .addProperty("KEY_N", +[]{ return (uint32)KEY_N; })
+            .addProperty("KEY_O", +[]{ return (uint32)KEY_O; })
+            .addProperty("KEY_P", +[]{ return (uint32)KEY_P; })
+            .addProperty("KEY_Q", +[]{ return (uint32)KEY_Q; })
+            .addProperty("KEY_R", +[]{ return (uint32)KEY_R; })
+            .addProperty("KEY_S", +[]{ return (uint32)KEY_S; })
+            .addProperty("KEY_T", +[]{ return (uint32)KEY_T; })
+            .addProperty("KEY_U", +[]{ return (uint32)KEY_U; })
+            .addProperty("KEY_V", +[]{ return (uint32)KEY_V; })
+            .addProperty("KEY_W", +[]{ return (uint32)KEY_W; })
+            .addProperty("KEY_X", +[]{ return (uint32)KEY_X; })
+            .addProperty("KEY_Y", +[]{ return (uint32)KEY_Y; })
+            .addProperty("KEY_Z", +[]{ return (uint32)KEY_Z; })
+
+            .addProperty("KEY_LEFT_BRACKET", +[]{ return (uint32)KEY_LEFT_BRACKET; })
+            .addProperty("KEY_BACKSLASH", +[]{ return (uint32)KEY_BACKSLASH; })
+            .addProperty("KEY_RIGHT_BRACKET", +[]{ return (uint32)KEY_RIGHT_BRACKET; })
+            .addProperty("KEY_GRAVE_ACCENT", +[]{ return (uint32)KEY_GRAVE_ACCENT; })
+
+            .addProperty("KEY_ESCAPE", +[]{ return (uint32)KEY_ESCAPE; })
+            .addProperty("KEY_ENTER", +[]{ return (uint32)KEY_ENTER; })
+            .addProperty("KEY_TAB", +[]{ return (uint32)KEY_TAB; })
+            .addProperty("KEY_BACKSPACE", +[]{ return (uint32)KEY_BACKSPACE; })
+
+            .addProperty("KEY_INSERT", +[]{ return (uint32)KEY_INSERT; })
+            .addProperty("KEY_DELETE", +[]{ return (uint32)KEY_DELETE; })
+
+            .addProperty("KEY_RIGHT", +[]{ return (uint32)KEY_RIGHT; })
+            .addProperty("KEY_LEFT", +[]{ return (uint32)KEY_LEFT; })
+            .addProperty("KEY_DOWN", +[]{ return (uint32)KEY_DOWN; })
+            .addProperty("KEY_UP", +[]{ return (uint32)KEY_UP; })
+
+            .addProperty("KEY_PAGE_UP", +[]{ return (uint32)KEY_PAGE_UP; })
+            .addProperty("KEY_PAGE_DOWN", +[]{ return (uint32)KEY_PAGE_DOWN; })
+            .addProperty("KEY_HOME", +[]{ return (uint32)KEY_HOME; })
+            .addProperty("KEY_END", +[]{ return (uint32)KEY_END; })
+
+            .addProperty("KEY_CAPS_LOCK", +[]{ return (uint32)KEY_CAPS_LOCK; })
+            .addProperty("KEY_SCROLL_LOCK", +[]{ return (uint32)KEY_SCROLL_LOCK; })
+            .addProperty("KEY_NUM_LOCK", +[]{ return (uint32)KEY_NUM_LOCK; })
+            .addProperty("KEY_PRINT_SCREEN", +[]{ return (uint32)KEY_PRINT_SCREEN; })
+            .addProperty("KEY_PAUSE", +[]{ return (uint32)KEY_PAUSE; })
+
+            .addProperty("KEY_F1", +[]{ return (uint32)KEY_F1; })
+            .addProperty("KEY_F2", +[]{ return (uint32)KEY_F2; })
+            .addProperty("KEY_F3", +[]{ return (uint32)KEY_F3; })
+            .addProperty("KEY_F4", +[]{ return (uint32)KEY_F4; })
+            .addProperty("KEY_F5", +[]{ return (uint32)KEY_F5; })
+            .addProperty("KEY_F6", +[]{ return (uint32)KEY_F6; })
+            .addProperty("KEY_F7", +[]{ return (uint32)KEY_F7; })
+            .addProperty("KEY_F8", +[]{ return (uint32)KEY_F8; })
+            .addProperty("KEY_F9", +[]{ return (uint32)KEY_F9; })
+            .addProperty("KEY_F10", +[]{ return (uint32)KEY_F10; })
+            .addProperty("KEY_F11", +[]{ return (uint32)KEY_F11; })
+            .addProperty("KEY_F12", +[]{ return (uint32)KEY_F12; })
+
+            .addProperty("KEY_KP_0", +[]{ return (uint32)KEY_KP_0; })
+            .addProperty("KEY_KP_1", +[]{ return (uint32)KEY_KP_1; })
+            .addProperty("KEY_KP_2", +[]{ return (uint32)KEY_KP_2; })
+            .addProperty("KEY_KP_3", +[]{ return (uint32)KEY_KP_3; })
+            .addProperty("KEY_KP_4", +[]{ return (uint32)KEY_KP_4; })
+            .addProperty("KEY_KP_5", +[]{ return (uint32)KEY_KP_5; })
+            .addProperty("KEY_KP_6", +[]{ return (uint32)KEY_KP_6; })
+            .addProperty("KEY_KP_7", +[]{ return (uint32)KEY_KP_7; })
+            .addProperty("KEY_KP_8", +[]{ return (uint32)KEY_KP_8; })
+            .addProperty("KEY_KP_9", +[]{ return (uint32)KEY_KP_9; })
+
+            .addProperty("KEY_KP_PERIOD", +[]{ return (uint32)KEY_KP_PERIOD; })
+            .addProperty("KEY_KP_DIVIDE", +[]{ return (uint32)KEY_KP_DIVIDE; })
+            .addProperty("KEY_KP_MULTIPLY", +[]{ return (uint32)KEY_KP_MULTIPLY; })
+            .addProperty("KEY_KP_SUBTRACT", +[]{ return (uint32)KEY_KP_SUBTRACT; })
+            .addProperty("KEY_KP_ADD", +[]{ return (uint32)KEY_KP_ADD; })
+            .addProperty("KEY_KP_ENTER", +[]{ return (uint32)KEY_KP_ENTER; })
+            .addProperty("KEY_KP_EQUAL", +[]{ return (uint32)KEY_KP_EQUAL; })
+
+            .addProperty("KEY_LEFT_SHIFT", +[]{ return (uint32)KEY_LEFT_SHIFT; })
+            .addProperty("KEY_LEFT_CONTROL", +[]{ return (uint32)KEY_LEFT_CONTROL; })
+            .addProperty("KEY_LEFT_ALT", +[]{ return (uint32)KEY_LEFT_ALT; })
+            .addProperty("KEY_LEFT_SUPER", +[]{ return (uint32)KEY_LEFT_SUPER; })
+
+            .addProperty("KEY_RIGHT_SHIFT", +[]{ return (uint32)KEY_RIGHT_SHIFT; })
+            .addProperty("KEY_RIGHT_CONTROL", +[]{ return (uint32)KEY_RIGHT_CONTROL; })
+            .addProperty("KEY_RIGHT_ALT", +[]{ return (uint32)KEY_RIGHT_ALT; })
+            .addProperty("KEY_RIGHT_SUPER", +[]{ return (uint32)KEY_RIGHT_SUPER; })
+
+        .endNamespace()
+
+
+        .beginNamespace("InputEventType")
+            .addVariable("KEY", InputEventType::KEY)
+            .addVariable("MOUSE_MOTION", InputEventType::MOUSE_MOTION)
+            .addVariable("MOUSE_BUTTON", InputEventType::MOUSE_BUTTON)
+            .addVariable("GAMEPAD_BUTTON", InputEventType::GAMEPAD_BUTTON)
+        .endNamespace()
+        .beginClass<InputEventKey>("InputEventKey")
+            .addProperty("key", &InputEventKey::key)
+            .addProperty("pressed", &InputEventKey::pressed)
+            .addProperty("repeat", &InputEventKey::repeat)
+            .addProperty("modifiers", &InputEventKey::modifiers)
+        .endClass()
+        .beginClass<InputEvent>("InputEvent")
+            .addProperty("type", &InputEvent::type)
+            .addProperty("input_event_key", +[](const InputEvent*e) { return std::get<InputEventKey>(e->data);})
+        .endClass()
 
         .beginClass<Event>("Event")
             .addProperty("id", &Event::id)
             .addProperty("type", &Event::type)
+            .addFunction("get_float", +[](const Event*e) { return std::any_cast<float>(e->payload);})
+            .addFunction("get_int32", +[](const Event*e) { return std::any_cast<uint32>(e->payload);})
+            .addFunction("get_input_event", +[](const Event*e) { return std::any_cast<const InputEvent>(e->payload);})
         .endClass()
         .beginClass<EventManager>("EventManager")
             .addFunction("push", &EventManager::push)
+            .addFunction("fire", &EventManager::fire)
             .addFunction("subscribe",
-                luabridge::overload<const event_type&, unique_id, luabridge::LuaRef>(&EventManager::subscribe))
+                luabridge::overload<const event_type&, unique_id, luabridge::LuaRef>(&EventManager::subscribe),
+                luabridge::overload<const event_type&, luabridge::LuaRef>(&EventManager::subscribe)
+            )
         .endClass()
         .beginClass<VirtualFS>("VirtualFS")
             .addFunction("get_path", &VirtualFS::getPath)
@@ -199,6 +357,7 @@ end
             .addVariable("READY", &RenderingWindowEvent::READY)
             .addVariable("CLOSING", &RenderingWindowEvent::CLOSING)
             .addVariable("RESIZED", &RenderingWindowEvent::RESIZED)
+            .addVariable("INPUT", &RenderingWindowEvent::INPUT)
         .endNamespace()
         .beginClass<RenderingWindowEvent>("RenderingWindowEvent")
             .addProperty("id", &RenderingWindowEvent::id)
@@ -342,11 +501,11 @@ end
         .endNamespace()
         .beginClass<Material>("Material")
             .addProperty("id", &Material::id)
-            .addProperty("cull_mode", &Material::getCullMode, &Material::setCullMode)
-            .addProperty("transparency", &Material::getTransparency, &Material::setTransparency)
-            .addProperty("alpha_scissor", &Material::getAlphaScissor, &Material::setAlphaScissor)
-            .addProperty("index", &Material::getIndex)
             .addProperty("type", &Material::getType)
+            // .addProperty("cull_mode", &Material::getCullMode, &Material::setCullMode)
+            // .addProperty("transparency", &Material::getTransparency, &Material::setTransparency)
+            // .addProperty("alpha_scissor", &Material::getAlphaScissor, &Material::setAlphaScissor)
+            // .addProperty("index", &Material::getIndex)
         .endClass()
         .beginClass<StandardMaterial::TextureInfo>("TextureInfo")
             .addConstructor<void(const ImageTexture*)>()
@@ -355,6 +514,7 @@ end
         .endClass()
         .beginClass<StandardMaterial>("StandardMaterial")
             .addProperty("id", &StandardMaterial::id)
+            // .addProperty("type", &StandardMaterial::getType)
             .addProperty("cull_mode",
                 +[](const StandardMaterial* self) -> vireo::CullMode {
                     return self->getCullMode();
@@ -364,11 +524,11 @@ end
                 }
             )
             .addProperty("transparency",
-                +[](const StandardMaterial* self) -> Transparency {
-                    return self->getTransparency();
+                +[](const StandardMaterial* self) -> uint32 {
+                    return static_cast<uint32>(self->getTransparency());
                 },
-                +[](StandardMaterial* self, Transparency t) {
-                    return self->setTransparency(t);
+                +[](StandardMaterial* self, uint32 t) {
+                    return self->setTransparency(static_cast<Transparency>(t));
                 }
             )
             .addProperty("albedo_color", &StandardMaterial::getAlbedoColor, &StandardMaterial::setAlbedoColor)
@@ -386,6 +546,7 @@ end
         .endClass()
         .beginClass<ShaderMaterial>("ShaderMaterial")
             .addProperty("id", &ShaderMaterial::id)
+            // .addProperty("type", &ShaderMaterial::getType)
             .addProperty("cull_mode",
                 +[](const ShaderMaterial* self) -> vireo::CullMode {
                     return self->getCullMode();
@@ -489,6 +650,12 @@ end
         .beginClass<Renderer>("Renderer")
         .endClass()
 
+        .beginNamespace("MainLoopEvent")
+            .addVariable("PROCESS", MainLoopEvent::PROCESS)
+            .addVariable("PHYSICS_PROCESS", MainLoopEvent::PHYSICS_PROCESS)
+            .addVariable("QUIT", MainLoopEvent::QUIT)
+        .endNamespace()
+
         .beginClass<ResourcesRegistry>("ResourcesRegistry")
             .addProperty("render_target_manager",
                 +[](const ResourcesRegistry* rl) -> RenderTargetManager& {
@@ -528,7 +695,7 @@ end
                 .addProperty("render_target", &ecs::RenderTarget::renderTarget)
             .endClass()
             .beginClass<ecs::Viewport>("Viewport")
-                .addConstructor<void(vireo::Viewport, vireo::Rect)>()
+                .addConstructor<void(vireo::Viewport), void(vireo::Viewport, vireo::Rect)>()
                 .addProperty("viewport", &ecs::Viewport::viewport)
                 .addProperty("scissors", &ecs::Viewport::scissors)
             .endClass()
@@ -545,13 +712,16 @@ end
                 .addProperty("bottom", &ecs::Camera::bottom)
             .endClass()
             .beginClass<ecs::CameraRef>("CameraRef")
+                .addConstructor<void(flecs::entity)>()
                 .addProperty("camera", &ecs::CameraRef::camera)
             .endClass()
             .beginClass<ecs::MaterialOverride>("MaterialOverride")
+                .addConstructor<void(), void(uint32, unique_id)>()
                 .addProperty("surface_index", &ecs::MaterialOverride::surfaceIndex)
                 .addProperty("material", &ecs::MaterialOverride::material)
             .endClass()
             .beginClass<ecs::MeshInstance>("MeshInstance")
+                .addConstructor<void(unique_id)>()
                 .addProperty("mesh", &ecs::MeshInstance::mesh)
             .endClass()
             .beginClass<ecs::Scene>("Scene")
@@ -559,6 +729,7 @@ end
                 .addProperty("scene", &ecs::Scene::scene)
             .endClass()
             .beginClass<ecs::SceneRef>("SceneRef")
+                .addConstructor<void(flecs::entity)>()
                 .addProperty("scene", &ecs::SceneRef::scene)
             .endClass()
             .beginClass<ecs::AmbientLight>("AmbientLight")
@@ -566,7 +737,9 @@ end
                 .addProperty("color", &ecs::AmbientLight::color)
                 .addProperty("intensity", &ecs::AmbientLight::intensity)
             .endClass()
-            .beginClass<ecs::Visible>("Visible").endClass()
+            .beginClass<ecs::Visible>("Visible")
+                .addConstructor<void()>()
+            .endClass()
             .beginClass<ecs::Transform>("Transform")
                 .addConstructor<void()>()
                 .addProperty("local", &ecs::Transform::local)
@@ -577,6 +750,13 @@ end
                 luabridge::overload<flecs::entity, const float3&>(&ecs::setPosition),
                 luabridge::overload<flecs::entity, float, float, float>(&ecs::setPosition)
             )
+            .addFunction("translate",
+                luabridge::overload<flecs::entity, const float3&>(&ecs::translate),
+                luabridge::overload<flecs::entity, float, float, float>(&ecs::translate)
+            )
+            .addFunction("rotate_x",&ecs::rotateX)
+            .addFunction("rotate_y",&ecs::rotateY)
+            .addFunction("rotate_z",&ecs::rotateZ)
 
             .beginClass<flecs::world>("world")
                 .addFunction("entity", +[](const flecs::world* w) { return w->entity<>(); })
@@ -585,39 +765,132 @@ end
             .beginClass<flecs::entity>("entity")
                 .addProperty("is_alive", +[](const flecs::entity* e) { return e->is_alive(); })
                 .addFunction("destruct", &flecs::entity::destruct)
-                .addProperty("render_target",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::RenderTarget>(); },
-                    [](const flecs::entity* e, const ecs::RenderTarget& c) { e->set<ecs::RenderTarget>(c);})
-                .addProperty("viewport",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::Viewport>(); },
-                    [](const flecs::entity* e, const ecs::Viewport& c) { e->set<ecs::Viewport>(c);})
-                .addProperty("camera",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::Camera>(); },
-                    [](const flecs::entity* e, const ecs::Camera& c) { e->set<ecs::Camera>(c);})
-                .addProperty("camera_ref",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::CameraRef>(); },
-                    [](const flecs::entity* e, const ecs::CameraRef& c) { e->set<ecs::CameraRef>(c);})
-                .addProperty("material_override",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::MaterialOverride>(); },
-                    [](const flecs::entity* e, const ecs::MaterialOverride& c) { e->set<ecs::MaterialOverride>(c);})
-                .addProperty("mesh_instance",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::MeshInstance>(); },
-                    [](const flecs::entity* e, const ecs::MeshInstance& c) { e->set<ecs::MeshInstance>(c);})
-                .addProperty("scene",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::Scene>(); },
-                    [](const flecs::entity* e, const ecs::Scene& c) { e->set<ecs::Scene>(c);})
-                .addProperty("scene_ref",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::SceneRef>(); },
-                    [](const flecs::entity* e, const ecs::SceneRef& c) { e->set<ecs::SceneRef>(c);})
-                .addProperty("ambient_light",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::AmbientLight>(); },
-                    [](const flecs::entity* e, const ecs::AmbientLight& c) { e->set<ecs::AmbientLight>(c);})
-                .addProperty("visible",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::Visible>(); },
-                    [](const flecs::entity* e, const ecs::Visible& c) { e->set<ecs::Visible>(c);})
-                .addProperty("transform",
-                    [](const flecs::entity* e) { return e->get_mut<ecs::Transform>(); },
-                    [](const flecs::entity* e, const ecs::Transform& c) { e->set<ecs::Transform>(c);})
+                .addFunction("child_of", +[](const flecs::entity* e, const flecs::entity p) {
+                    return e->add(flecs::ChildOf, p);
+                })
+                .addFunction("add",
+                    luabridge::overload<const flecs::entity*, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity c) {
+                       return e->set(c);
+                   }),
+                   luabridge::overload<const flecs::entity*, const ecs::RenderTarget&>(+[](const flecs::entity* e, const ecs::RenderTarget& p) {
+                        return e->set<ecs::RenderTarget>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Viewport&>(+[](const flecs::entity* e, const ecs::Viewport& p) {
+                        return e->set<ecs::Viewport>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Camera&>(+[](const flecs::entity* e, const ecs::Camera& p) {
+                        return e->set<ecs::Camera>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::CameraRef&>(+[](const flecs::entity* e, const ecs::CameraRef& p) {
+                        return e->set<ecs::CameraRef>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::MaterialOverride&>(+[](const flecs::entity* e, const ecs::MaterialOverride& p) {
+                        return e->set<ecs::MaterialOverride>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::MeshInstance&>(+[](const flecs::entity* e, const ecs::MeshInstance& p) {
+                        return e->set<ecs::MeshInstance>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Scene&>(+[](const flecs::entity* e, const ecs::Scene& p) {
+                        return e->set<ecs::Scene>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::SceneRef&>(+[](const flecs::entity* e, const ecs::SceneRef& p) {
+                        return e->set<ecs::SceneRef>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::AmbientLight&>(+[](const flecs::entity* e, const ecs::AmbientLight& p) {
+                        return e->set<ecs::AmbientLight>(p);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Visible&>(+[](const flecs::entity* e, const ecs::Visible&) {
+                        return e->add<ecs::Visible>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Transform&>(+[](const flecs::entity* e, const ecs::Transform& p) {
+                        return e->set<ecs::Transform>(p);
+                    })
+                    )
+                .addFunction("has",
+                    luabridge::overload<const flecs::entity*, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity c) {
+                       return e->has(c);
+                   }),
+                   luabridge::overload<const flecs::entity*, const ecs::RenderTarget&>(+[](const flecs::entity* e, const ecs::RenderTarget& p) {
+                        return e->has<ecs::RenderTarget>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Viewport&>(+[](const flecs::entity* e, const ecs::Viewport& p) {
+                        return e->has<ecs::Viewport>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Camera&>(+[](const flecs::entity* e, const ecs::Camera& p) {
+                        return e->has<ecs::Camera>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::CameraRef&>(+[](const flecs::entity* e, const ecs::CameraRef& p) {
+                        return e->has<ecs::CameraRef>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::MaterialOverride&>(+[](const flecs::entity* e, const ecs::MaterialOverride& p) {
+                        return e->has<ecs::MaterialOverride>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::MeshInstance&>(+[](const flecs::entity* e, const ecs::MeshInstance& p) {
+                        return e->has<ecs::MeshInstance>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Scene&>(+[](const flecs::entity* e, const ecs::Scene& p) {
+                        return e->has<ecs::Scene>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::SceneRef&>(+[](const flecs::entity* e, const ecs::SceneRef& p) {
+                        return e->has<ecs::SceneRef>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::AmbientLight&>(+[](const flecs::entity* e, const ecs::AmbientLight& p) {
+                        return e->has<ecs::AmbientLight>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Visible&>(+[](const flecs::entity* e, const ecs::Visible&) {
+                        return e->has<ecs::Visible>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Transform&>(+[](const flecs::entity* e, const ecs::Transform& p) {
+                        return e->has<ecs::Transform>();
+                    })
+                )
+                .addFunction("remove",
+                     luabridge::overload<const flecs::entity*, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity c) {
+                        return e->remove(c);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::RenderTarget&>(+[](const flecs::entity* e, const ecs::RenderTarget& p) {
+                        return e->remove<ecs::RenderTarget>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Viewport&>(+[](const flecs::entity* e, const ecs::Viewport& p) {
+                        return e->remove<ecs::Viewport>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Camera&>(+[](const flecs::entity* e, const ecs::Camera& p) {
+                        return e->remove<ecs::Camera>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::CameraRef&>(+[](const flecs::entity* e, const ecs::CameraRef& p) {
+                        return e->remove<ecs::CameraRef>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::MaterialOverride&>(+[](const flecs::entity* e, const ecs::MaterialOverride& p) {
+                        return e->remove<ecs::MaterialOverride>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::MeshInstance&>(+[](const flecs::entity* e, const ecs::MeshInstance& p) {
+                        return e->remove<ecs::MeshInstance>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Scene&>(+[](const flecs::entity* e, const ecs::Scene& p) {
+                        return e->remove<ecs::Scene>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::SceneRef&>(+[](const flecs::entity* e, const ecs::SceneRef& p) {
+                        return e->remove<ecs::SceneRef>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::AmbientLight&>(+[](const flecs::entity* e, const ecs::AmbientLight& p) {
+                        return e->remove<ecs::AmbientLight>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Visible&>(+[](const flecs::entity* e, const ecs::Visible&) {
+                        return e->remove<ecs::Visible>();
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::Transform&>(+[](const flecs::entity* e, const ecs::Transform& p) {
+                        return e->remove<ecs::Transform>();
+                    })
+                )
+                .addProperty("render_target", [](const flecs::entity* e) { return e->get<ecs::RenderTarget>(); })
+                .addProperty("viewport", [](const flecs::entity* e) { return e->get<ecs::Viewport>(); })
+                .addProperty("camera", [](const flecs::entity* e) { return e->get_mut<ecs::Camera>(); })
+                .addProperty("camera_ref", [](const flecs::entity* e) { return e->get<ecs::CameraRef>(); })
+                .addProperty("material_override", [](const flecs::entity* e) { return e->get<ecs::MaterialOverride>(); })
+                .addProperty("mesh_instance", [](const flecs::entity* e) { return e->get<ecs::MeshInstance>(); })
+                .addProperty("scene_ref", [](const flecs::entity* e) { return e->get<ecs::SceneRef>(); })
+                .addProperty("ambient_light", [](const flecs::entity* e) { return e->get<ecs::AmbientLight>(); })
+                .addProperty("transform", [](const flecs::entity* e) { return e->get<ecs::Transform>(); })
             .endClass()
         .endNamespace();
 #endif

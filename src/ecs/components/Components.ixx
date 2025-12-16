@@ -33,6 +33,10 @@ export namespace lysa::ecs {
         vireo::Viewport viewport{};
         //! Scissors rectangle limiting rendering to a sub‑area.
         vireo::Rect scissors{};
+
+        Viewport() = default;
+        Viewport(const vireo::Viewport& v) : viewport(v) {}
+        Viewport(const vireo::Viewport& v, const vireo::Rect& s) : viewport(v), scissors(s) {}
     };
 
     struct Camera {
@@ -69,7 +73,7 @@ export namespace lysa::ecs {
 
     struct MeshInstance {
         unique_id mesh{INVALID_ID};
-        std::shared_ptr<MeshInstanceDesc> meshInstance;
+        std::shared_ptr<MeshInstanceDesc> meshInstance{};
     };
 
     struct Scene {

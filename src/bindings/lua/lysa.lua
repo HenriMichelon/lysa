@@ -141,14 +141,142 @@ return {
     -- Events
     ------------------------------------------------------------------------
 
+    ---@class Key
+    ---@field KEY_NONE integer
+    ---@field KEY_SPACE integer
+    ---@field KEY_DASH integer
+    ---@field KEY_PIPE integer
+    ---@field KEY_APOSTROPHE integer
+    ---@field KEY_COMMA integer
+    ---@field KEY_PERIOD integer
+    ---@field KEY_QUESTIONMARK integer
+    ---@field KEY_0 integer
+    ---@field KEY_1 integer
+    ---@field KEY_2 integer
+    ---@field KEY_3 integer
+    ---@field KEY_4 integer
+    ---@field KEY_5 integer
+    ---@field KEY_6 integer
+    ---@field KEY_7 integer
+    ---@field KEY_8 integer
+    ---@field KEY_9 integer
+    ---@field KEY_SEMICOLON integer
+    ---@field KEY_EQUAL integer
+    ---@field KEY_A integer
+    ---@field KEY_B integer
+    ---@field KEY_C integer
+    ---@field KEY_D integer
+    ---@field KEY_E integer
+    ---@field KEY_F integer
+    ---@field KEY_G integer
+    ---@field KEY_H integer
+    ---@field KEY_I integer
+    ---@field KEY_J integer
+    ---@field KEY_K integer
+    ---@field KEY_L integer
+    ---@field KEY_M integer
+    ---@field KEY_N integer
+    ---@field KEY_O integer
+    ---@field KEY_P integer
+    ---@field KEY_Q integer
+    ---@field KEY_R integer
+    ---@field KEY_S integer
+    ---@field KEY_T integer
+    ---@field KEY_U integer
+    ---@field KEY_V integer
+    ---@field KEY_W integer
+    ---@field KEY_X integer
+    ---@field KEY_Y integer
+    ---@field KEY_Z integer
+    ---@field KEY_LEFT_BRACKET integer
+    ---@field KEY_BACKSLASH integer
+    ---@field KEY_RIGHT_BRACKET integer
+    ---@field KEY_GRAVE_ACCENT integer
+    ---@field KEY_ESCAPE integer
+    ---@field KEY_ENTER integer
+    ---@field KEY_TAB integer
+    ---@field KEY_BACKSPACE integer
+    ---@field KEY_INSERT integer
+    ---@field KEY_DELETE integer
+    ---@field KEY_RIGHT integer
+    ---@field KEY_LEFT integer
+    ---@field KEY_DOWN integer
+    ---@field KEY_UP integer
+    ---@field KEY_PAGE_UP integer
+    ---@field KEY_PAGE_DOWN integer
+    ---@field KEY_HOME integer
+    ---@field KEY_END integer
+    ---@field KEY_CAPS_LOCK integer
+    ---@field KEY_SCROLL_LOCK integer
+    ---@field KEY_NUM_LOCK integer
+    ---@field KEY_PRINT_SCREEN integer
+    ---@field KEY_PAUSE integer
+    ---@field KEY_F1 integer
+    ---@field KEY_F2 integer
+    ---@field KEY_F3 integer
+    ---@field KEY_F4 integer
+    ---@field KEY_F5 integer
+    ---@field KEY_F6 integer
+    ---@field KEY_F7 integer
+    ---@field KEY_F8 integer
+    ---@field KEY_F9 integer
+    ---@field KEY_F10 integer
+    ---@field KEY_F11 integer
+    ---@field KEY_F12 integer
+    ---@field KEY_KP_0 integer
+    ---@field KEY_KP_1 integer
+    ---@field KEY_KP_2 integer
+    ---@field KEY_KP_3 integer
+    ---@field KEY_KP_4 integer
+    ---@field KEY_KP_5 integer
+    ---@field KEY_KP_6 integer
+    ---@field KEY_KP_7 integer
+    ---@field KEY_KP_8 integer
+    ---@field KEY_KP_9 integer
+    ---@field KEY_KP_PERIOD integer
+    ---@field KEY_KP_DIVIDE integer
+    ---@field KEY_KP_MULTIPLY integer
+    ---@field KEY_KP_SUBTRACT integer
+    ---@field KEY_KP_ADD integer
+    ---@field KEY_KP_ENTER integer
+    ---@field KEY_KP_EQUAL integer
+    ---@field KEY_LEFT_SHIFT integer
+    ---@field KEY_LEFT_CONTROL integer
+    ---@field KEY_LEFT_ALT integer
+    ---@field KEY_LEFT_SUPER integer
+    ---@field KEY_RIGHT_SHIFT integer
+    ---@field KEY_RIGHT_CONTROL integer
+    ---@field KEY_RIGHT_ALT integer
+    ---@field KEY_RIGHT_SUPER integer
+    Key = lysa.Key,
+
+    ---@class lysa.InputEventType
+    ---@field KEY integer
+    ---@field MOUSE_MOTION integer
+    ---@field MOUSE_BUTTON integer
+    ---@field GAMEPAD_BUTTON integer
+    InputEventType = lysa.InputEventType,
+
+    ---@class lysa.InputEventKey
+    ---@field key integer
+    ---@field pressed boolean
+    ---@field repeat integer
+    ---@field modifiers integer
+    InputEventKey = lysa.InputEventKey,
+
+    ---@class lysa.InputEvent
+    ---@field type integer
+    InputEvent = lysa.InputEvent,
+
     ---@class lysa.Event
     ---@field id integer
-    ---@field type integer
+    ---@field type any
     Event = lysa.Event,
 
     ---@class lysa.EventManager
     ---@field push fun(self:lysa.EventManager, e:lysa.Event):nil
-    ---@field subscribe fun(self:lysa.EventManager, type:any, id:integer, cb:function):nil
+    ---@field subscribe fun(self:lysa.EventManager, type:any, id:any, cb:function):nil
+    ---@field subscribe fun(self:lysa.EventManager, type:any, cb:function):nil
     EventManager = lysa.EventManager,
 
     ------------------------------------------------------------------------
@@ -172,9 +300,10 @@ return {
     RenderingWindowMode = lysa.RenderingWindowMode,
 
     ---@class lysa.RenderingWindowEventType
-    ---@field READY integer
-    ---@field CLOSING integer
-    ---@field RESIZED integer
+    ---@field READY any
+    ---@field CLOSING any
+    ---@field RESIZED any
+    ---@field INPUT any
     RenderingWindowEventType = lysa.RenderingWindowEventType,
 
     ---@class lysa.RenderingWindowEvent
@@ -369,8 +498,8 @@ return {
     ---@class lysa.ShaderMaterial: lysa.Material
     ---@field frag_file_name string  @read-only (getter)
     ---@field vert_file_name string  @read-only (getter)
-    ---@field set_parameter fun(self:lysa.ShaderMaterial, name:string, value:any):nil
-    ---@field get_parameter fun(self:lysa.ShaderMaterial, name:string):any
+    ---@field set_parameter fun(self:lysa.ShaderMaterial, index:integer, value:lysa.float4):nil
+    ---@field get_parameter fun(self:lysa.ShaderMaterial, index:integer):lysa.float4
     ShaderMaterial = lysa.ShaderMaterial,
 
     ---@class lysa.MaterialManager
@@ -425,9 +554,6 @@ return {
     SceneManager = lysa.SceneManager,
 
     ------------------------------------------------------------------------
-    -- Resources locator
-    ------------------------------------------------------------------------
-
     ---@class lysa.ResourcesRegistry
     ---@field get fun(self:lysa.ResourcesRegistry, id:integer):any
     ---@field render_target_manager lysa.RenderTargetManager
@@ -440,9 +566,11 @@ return {
     ---@field scene_manager lysa.sceneManager
     ResourcesRegistry = lysa.ResourcesRegistry,
 
-    ------------------------------------------------------------------------
-    -- Context
-    ------------------------------------------------------------------------
+    ---@class MainLoopEvent
+    ---@field PROCESS any
+    ---@field PHYSICS_PROCESS any
+    ---@field QUIT any
+    MainLoopEvent = lysa.MainLoopEvent,
 
     ---@class lysa.Context
     ---@field exit boolean
