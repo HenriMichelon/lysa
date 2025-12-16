@@ -204,7 +204,7 @@ export namespace lysa {
             return allocate(std::make_unique<Mesh>(ctx));
         }
 
-        void upload(unique_id mesh_id);
+        void upload(const Mesh& mesh);
 
         void flush();
 
@@ -224,7 +224,7 @@ export namespace lysa {
         DeviceMemoryArray meshSurfaceArray;
         /** Mutex to guard mutations to memory array. */
         std::mutex mutex;
-        bool updated{false};
+        std::unordered_set<unique_id> needUpload;
     };
 }
 

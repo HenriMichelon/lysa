@@ -38,7 +38,7 @@ namespace lysa {
         assert([&]{return surfaceIndex < surfaces.size();}, "Invalid surface index");
         surfaces[surfaceIndex].material = material;
         materials.insert(surfaces[surfaceIndex].material);
-        ctx.res.get<MeshManager>().upload(id);
+        ctx.res.get<MeshManager>().upload(*this);
     }
 
     bool Mesh::operator==(const Mesh &other) const {
@@ -97,54 +97,57 @@ namespace lysa {
         ctx.res.enroll(*this);
     }
 
-    void MeshManager::flush() {
-        if (updated) {
-            auto lock = std::unique_lock(mutex, std::try_to_lock);
-            const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
-            vertexArray.flush(*command.commandList);
-            indexArray.flush(*command.commandList);
-            meshSurfaceArray.flush(*command.commandList);
-            ctx.asyncQueue.endCommand(command);
-        }
+      void MeshManager::upload(const Mesh& mesh) {
+        // if (mesh.bypassUpload) { return; }
+        needUpload.insert(mesh.id);
     }
 
-    void MeshManager::upload(const unique_id mesh_id) {
-        auto& mesh = get(mesh_id);
-        if (!mesh.isUploaded()) {
-            mesh.verticesMemoryBlock = vertexArray.alloc(mesh.vertices.size());
-            mesh.indicesMemoryBlock = indexArray.alloc(mesh.indices.size());
-            mesh.surfacesMemoryBlock = meshSurfaceArray.alloc(mesh.surfaces.size());
-        }
-
-        auto lock = std::unique_lock(mutex);
-
-        // Uploading all vertices
-        auto vertexData = std::vector<VertexData>(mesh.vertices.size());
-        for (int i = 0; i < mesh.vertices.size(); i++) {
-            const auto& v = mesh.vertices[i];
-            vertexData[i].position = float4(v.position.x, v.position.y, v.position.z, v.uv.x);
-            vertexData[i].normal = float4(v.normal.x, v.normal.y, v.normal.z, v.uv.y);
-            vertexData[i].tangent = v.tangent;
-        }
-        vertexArray.write(mesh.verticesMemoryBlock, vertexData.data());
-
-        // Uploading all indices
-        indexArray.write(mesh.indicesMemoryBlock, mesh.indices.data());
-
-        // Uploading all surfaces & materials
-        auto surfaceData = std::vector<MeshSurfaceData>(mesh.surfaces.size());
-        for (int i = 0; i < mesh.surfaces.size(); i++) {
-            const auto& surface = mesh.surfaces[i];
-            const auto& material = materialManager[surface.material];
-            if (!material.isUploaded()) {
-               material.upload();
+    void MeshManager::flush() {
+        if (needUpload.empty()) return;
+        for (const auto id : needUpload) {
+            auto& mesh = get(id);
+            if (!mesh.isUploaded()) {
+                mesh.verticesMemoryBlock = vertexArray.alloc(mesh.vertices.size());
+                mesh.indicesMemoryBlock = indexArray.alloc(mesh.indices.size());
+                mesh.surfacesMemoryBlock = meshSurfaceArray.alloc(mesh.surfaces.size());
             }
-            surfaceData[i].indexCount = surface.indexCount;
-            surfaceData[i].indicesIndex = mesh.indicesMemoryBlock.instanceIndex + surface.firstIndex;
-            surfaceData[i].verticesIndex = mesh.verticesMemoryBlock.instanceIndex;
+
+            auto lock = std::unique_lock(mutex);
+
+            // Uploading all vertices
+            auto vertexData = std::vector<VertexData>(mesh.vertices.size());
+            for (int i = 0; i < mesh.vertices.size(); i++) {
+                const auto& v = mesh.vertices[i];
+                vertexData[i].position = float4(v.position.x, v.position.y, v.position.z, v.uv.x);
+                vertexData[i].normal = float4(v.normal.x, v.normal.y, v.normal.z, v.uv.y);
+                vertexData[i].tangent = v.tangent;
+            }
+            vertexArray.write(mesh.verticesMemoryBlock, vertexData.data());
+
+            // Uploading all indices
+            indexArray.write(mesh.indicesMemoryBlock, mesh.indices.data());
+
+            // Uploading all surfaces & materials
+            auto surfaceData = std::vector<MeshSurfaceData>(mesh.surfaces.size());
+            for (int i = 0; i < mesh.surfaces.size(); i++) {
+                const auto& surface = mesh.surfaces[i];
+                const auto& material = materialManager[surface.material];
+                if (!material.isUploaded()) {
+                    material.upload();
+                }
+                surfaceData[i].indexCount = surface.indexCount;
+                surfaceData[i].indicesIndex = mesh.indicesMemoryBlock.instanceIndex + surface.firstIndex;
+                surfaceData[i].verticesIndex = mesh.verticesMemoryBlock.instanceIndex;
+            }
+            meshSurfaceArray.write(mesh.surfacesMemoryBlock, surfaceData.data());
         }
-        meshSurfaceArray.write(mesh.surfacesMemoryBlock, surfaceData.data());
-        updated = true;
+
+        auto lock = std::unique_lock(mutex, std::try_to_lock);
+        const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
+        vertexArray.flush(*command.commandList);
+        indexArray.flush(*command.commandList);
+        meshSurfaceArray.flush(*command.commandList);
+        ctx.asyncQueue.endCommand(command);
     }
 
 #ifdef LUA_BINDING

@@ -352,7 +352,7 @@ export namespace lysa {
         ShaderMaterial& create(const std::string &fragShaderFileName,
                                const std::string &vertShaderFileName = "");
 
-        void upload(unique_id material_id);
+        void upload(const Material& material);
 
         void flush();
 
@@ -363,7 +363,7 @@ export namespace lysa {
         DeviceMemoryArray memoryArray;
         /** Mutex to guard mutations to memory array. */
         std::mutex mutex;
-        bool updated{false};
+        std::unordered_set<unique_id> needUpload;
     };
 
 }

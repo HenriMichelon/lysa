@@ -7,6 +7,7 @@
 module lysa.renderers.graphic_pipeline_data;
 
 import vireo;
+import lysa.log;
 
 namespace lysa {
 
@@ -80,6 +81,10 @@ namespace lysa {
     {
         descriptorSet = ctx.vireo->createDescriptorSet(pipelineDescriptorLayout, "Pipeline");
         descriptorSet->update(BINDING_INSTANCES, instancesArray.getBuffer());
+    }
+
+    GraphicPipelineData::~GraphicPipelineData() {
+        Log::trace();
     }
 
     void GraphicPipelineData::addInstance(

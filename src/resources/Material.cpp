@@ -14,7 +14,7 @@ namespace lysa {
     }
 
     void Material::upload() const {
-        ctx.res.get<MaterialManager>().upload(id);
+        ctx.res.get<MaterialManager>().upload(*this);
     }
 
     MaterialData StandardMaterial::getMaterialData() const {
@@ -195,21 +195,22 @@ namespace lysa {
         return material;
     }
 
-    void MaterialManager::upload(const unique_id material_id) {
-        auto& material = (*this)[material_id];
+    void MaterialManager::upload(const Material& material) {
         if (material.bypassUpload) { return; }
-        auto lock = std::unique_lock(mutex);
-        if (!material.isUploaded()) {
-            material.memoryBloc = memoryArray.alloc(1);
-        }
-        const auto materialData = material.getMaterialData();
-        memoryArray.write(material.memoryBloc, &materialData);
-        updated = true;
+        needUpload.insert(material.id);
     }
 
     void MaterialManager::flush() {
-        if (updated) {
+        if (!needUpload.empty()) {
             auto lock = std::unique_lock(mutex);
+            for (const auto id : needUpload) {
+                auto& material = (*this)[id];
+                if (!material.isUploaded()) {
+                    material.memoryBloc = memoryArray.alloc(1);
+                }
+                const auto materialData = material.getMaterialData();
+                memoryArray.write(material.memoryBloc, &materialData);
+            }
             const auto command = ctx.asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
             memoryArray.flush(*command.commandList);
             ctx.asyncQueue.endCommand(command);

@@ -19,6 +19,7 @@ namespace lysa {
         const uint32 maxMeshSurfacePerPipeline,
         const uint32 framesInFlight,
         uint32 maxShadowMaps) :
+        ctx(ctx),
         framesInFlight(framesInFlight),
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
         framesData.resize(framesInFlight);
@@ -31,6 +32,11 @@ namespace lysa {
                 framesInFlight,
                 maxShadowMaps);
         }
+    }
+
+    Scene::~Scene() {
+        ctx.graphicQueue->waitIdle();
+        Log::trace();
     }
 
     void Scene::addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, const bool async) {

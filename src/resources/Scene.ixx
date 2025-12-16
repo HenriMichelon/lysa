@@ -36,6 +36,8 @@ export namespace lysa {
             uint32 framesInFlight,
             uint32 maxShadowMaps);
 
+        ~Scene() override;
+
         void setAmbientLight(const float4& ambientLight) { this->ambientLight = ambientLight; }
 
         const float4& getAmbientLight() const { return ambientLight; }
@@ -69,6 +71,7 @@ export namespace lysa {
             /** Scene instance associated with this frame. */
             std::unique_ptr<SceneRenderContext> scene;
         };
+        const Context& ctx;
         const uint32 framesInFlight;
         const uint32 maxAsyncNodesUpdatedPerFrame;
         std::vector<FrameData> framesData;

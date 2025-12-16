@@ -230,11 +230,13 @@ export namespace lysa {
         /**
          * Create a pipeline data object for a specific material/pipeline ID
          */
-        GraphicPipelineData::GraphicPipelineData(
+        GraphicPipelineData(
             const Context& ctx,
             uint32 pipelineId,
             const DeviceMemoryArray& meshInstancesDataArray,
             uint32 maxMeshSurfacePerPipeline);
+
+        ~GraphicPipelineData();
 
         /** Registers a mesh instance into this pipeline data object. */
         void addInstance(

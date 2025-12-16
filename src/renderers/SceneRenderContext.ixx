@@ -129,7 +129,7 @@ export namespace lysa {
         /** Returns a view over the shadow map renderers values. */
         // auto getShadowMapRenderers() const { return std::views::values(shadowMapRenderers); }
 
-        ~SceneRenderContext() = default;
+        ~SceneRenderContext();
         SceneRenderContext(SceneRenderContext&) = delete;
         SceneRenderContext& operator=(SceneRenderContext&) = delete;
 

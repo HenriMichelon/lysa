@@ -84,6 +84,11 @@ namespace lysa::ecs {
                     }
                 });
             });
+        w.observer<const Scene>()
+            .event(flecs::OnRemove)
+            .each([&](const Scene&sc) {
+                sceneManager.destroy(sc.scene);
+            });
         w.observer<const Scene, const MeshInstance, const Transform>()
             .term_at(0).parent()
             .event(flecs::OnRemove)
@@ -182,7 +187,15 @@ namespace lysa::ecs {
                 e.children([&](const flecs::entity child) {
                     if (child.has<CameraRef>() && child.has<SceneRef>()) {
                         auto& cameraRef = child.get<CameraRef>();
+                        if  (!cameraRef.camera.is_alive()) {
+                            child.remove(flecs::ChildOf, e);
+                            return;
+                        }
                         auto& sceneRef = child.get<SceneRef>();
+                        if  (!sceneRef.scene.is_alive()) {
+                            child.remove(flecs::ChildOf, e);
+                            return;
+                        }
                         auto& scene = sceneManager[sceneRef.scene.get<Scene>().scene];
                         const auto camera = cameraRef.camera.get<Camera>();
                         const auto cameraTransform = cameraRef.camera.get<Transform>().global;
