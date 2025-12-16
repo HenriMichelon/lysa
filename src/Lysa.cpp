@@ -57,6 +57,7 @@ namespace lysa {
         ctx.graphicQueue->waitIdle();
         ecsModules.reset();
         SceneRenderContext::destroyDescriptorLayouts();
+        Renderpass::destroyShaderModules();
     }
 
     void Lysa::run() {

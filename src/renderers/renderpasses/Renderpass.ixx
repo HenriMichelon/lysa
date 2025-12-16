@@ -43,6 +43,8 @@ export namespace lysa {
         Renderpass(Renderpass&) = delete;
         Renderpass& operator=(Renderpass&) = delete;
 
+        static void destroyShaderModules() { shaderModules.clear(); }
+
     protected:
         const Context& ctx;
         /** Debug/name label for the pass. */
@@ -52,5 +54,9 @@ export namespace lysa {
 
         /** Utility to load a shader module by name (backend-agnostic). */
         std::shared_ptr<vireo::ShaderModule> loadShader(const std::string& shaderName) const;
+
+        static std::mutex shaderModulesMutex;
+        static std::unordered_map<std::string, std::shared_ptr<vireo::ShaderModule>> shaderModules;
+
     };
 }

@@ -48,7 +48,6 @@ export namespace lysa {
         };
 
         const MaterialManager& materialManager;
-        std::shared_ptr<vireo::GraphicPipeline> pipeline;
         std::unordered_map<pipeline_id, std::shared_ptr<vireo::GraphicPipeline>> pipelines;
     };
 }
