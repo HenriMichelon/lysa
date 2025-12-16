@@ -394,6 +394,7 @@ end
                luabridge::nonConstOverload<const unique_id>(&RenderingWindowManager::get),
                luabridge::constOverload<const unique_id>(&RenderingWindowManager::get)
                )
+            .addFunction("destroy", &RenderingWindowManager::destroy)
         .endClass()
 
         .beginClass<RenderTargetConfiguration>("RenderTargetConfiguration")
@@ -462,9 +463,7 @@ end
                luabridge::nonConstOverload<const unique_id>(&ImageManager::get),
                luabridge::constOverload<const unique_id>(&ImageManager::get)
                )
-            .addFunction("destroy",
-              luabridge::overload<const unique_id>(&Manager<Image>::destroy)
-           )
+            .addFunction("destroy",&ImageManager::destroy)
         .endClass()
 
         .beginClass<Texture>("Texture")
@@ -583,6 +582,7 @@ end
                  luabridge::nonConstOverload<const unique_id>(&MaterialManager::get),
                  luabridge::constOverload<const unique_id>(&MaterialManager::get)
                  )
+            .addFunction("destroy",&MaterialManager::destroy)
         .endClass()
 
         .beginClass<AABB>("AABB")
@@ -620,6 +620,7 @@ end
              luabridge::nonConstOverload<const unique_id>(&MeshManager::get),
              luabridge::constOverload<const unique_id>(&MeshManager::get)
              )
+            .addFunction("destroy",&MeshManager::destroy)
         .endClass()
 
         .beginClass<Scene>("Scene")

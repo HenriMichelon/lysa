@@ -339,6 +339,7 @@ return {
     ---@field ID integer
     ---@field create fun(self:lysa.RenderingWindowManager, cfg:lysa.RenderingWindowConfiguration):lysa.RenderingWindow
     ---@field get fun(self:lysa.RenderingWindowManager, id:integer):lysa.RenderingWindow
+    ---@field destroy fun(self:lysa.RenderingWindowManager, id:integer):nil
     RenderingWindowManager = lysa.RenderingWindowManager,
 
     ------------------------------------------------------------------------
@@ -508,6 +509,7 @@ return {
     ---@field create_standard fun(self:lysa.MaterialManager):lysa.StandardMaterial
     ---@field create_shared fun(self:lysa.MaterialManager, frag:string, vert:string):lysa.ShaderMaterial
     ---@field get fun(self:lysa.MaterialManager, id:integer):lysa.Material
+    ---@field destroy fun(self:lysa.MaterialManager, id:integer):nil
     MaterialManager = lysa.MaterialManager,
 
     ------------------------------------------------------------------------
@@ -543,6 +545,7 @@ return {
     ---@field create fun(self:lysa.MeshManager):lysa.Mesh
     ---@field create fun(self:lysa.MeshManager, vertices:any, indices:any, surfaces:any):lysa.Mesh
     ---@field get fun(self:lysa.MeshManager, id:integer):lysa.Mesh
+    ---@field destroy fun(self:lysa.MeshManager, id:integer):nil
     MeshManager = lysa.MeshManager,
 
     ---@class lysa.Scene
