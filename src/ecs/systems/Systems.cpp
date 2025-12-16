@@ -94,6 +94,7 @@ namespace lysa::ecs {
             .each([&](const flecs::entity e, const Scene& sc, const MeshInstance& mi, const Transform& tr, const Updated&) {
                 if (mi.mesh != INVALID_ID && mi.meshInstance) {
                     e.remove<Updated>();
+                    mi.meshInstance->visible = e.has<Visible>();
                     mi.meshInstance->worldAABB = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
                     mi.meshInstance->worldTransform = tr.global;
                     auto& scene = sceneManager[sc.scene];
