@@ -123,6 +123,8 @@ export namespace lysa {
         /** Return the global GPU image array */
         auto getImages() const { return images; }
 
+        void destroy(unique_id id) override;
+
     private:
         /** Flag indicating that one or more textures changed and need syncing. */
         bool updated{false};

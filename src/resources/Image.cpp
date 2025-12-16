@@ -151,4 +151,9 @@ namespace lysa {
         }
     }
 
+    void ImageManager::destroy(const unique_id id) {
+        images[id].reset();
+        ResourcesManager::destroy(id);
+    }
+
 }
