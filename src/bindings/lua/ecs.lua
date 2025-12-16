@@ -65,7 +65,9 @@ return {
     ---@field is_alive boolean
     ---@field destruct fun(self:ecs.entity):nil
     ---@field add fun(self:ecs.entity):ecs:entity
-    ---@field remove fun(self:ecs.entity):ecs:entity
+    ---@field remove fun(self:ecs.entity, e:ecs.entity):ecs:entity
+    ---@field remove fun(self:ecs.entity, self:ecs.entity):ecs:entity
+    ---@field remove fun(self:ecs.entity, f:ecs.entity, s:ecs.entity):ecs:entity
     ---@field render_target  ecs.RenderTarget
     ---@field viewport  ecs.RenderTarget
     ---@field camera  ecs.Camera
@@ -99,6 +101,8 @@ return {
     ---@param angle number
     rotate_z = ecs.rotate_z,
 
+    ---@return ecs.entity
+    child_of = ecs.child_of,
 
     ---@class ecs.world
     ---@field entity fun(self:ecs.world):ecs.entity

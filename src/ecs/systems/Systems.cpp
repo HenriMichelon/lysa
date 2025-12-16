@@ -38,7 +38,6 @@ namespace lysa::ecs {
         w.observer<const Scene, MeshInstance, const Transform>()
             .term_at(0).parent()
             .event(flecs::OnSet)
-            .event(flecs::OnAdd)
             .each([&](const flecs::entity e, const Scene& sceneRef, MeshInstance& mi, const Transform& tr) {
                 if (mi.mesh == INVALID_ID) { return; }
                 if (mi.meshInstance) {
@@ -54,6 +53,21 @@ namespace lysa::ecs {
                         tr.global);
                     scene.addInstance(mi.meshInstance, false);
                 }
+            });
+        w.observer<const Scene, MeshInstance, const Transform>()
+            .term_at(0).parent()
+            .event(flecs::OnAdd)
+            .each([&](const flecs::entity e, const Scene& sceneRef, MeshInstance& mi, const Transform& tr) {
+                if (mi.mesh == INVALID_ID) { return; }
+                auto& scene = sceneManager[sceneRef.scene];
+                auto aabb = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
+                mi.meshInstance = std::make_shared<MeshInstanceDesc>(
+                    meshManager[mi.mesh],
+                    e.has<Visible>(),
+                    e.has<CastShadows>(),
+                    aabb,
+                    tr.global);
+                scene.addInstance(mi.meshInstance, false);
             });
         w.observer<const Scene, MeshInstance, const Transform>()
             .term_at(0).parent()

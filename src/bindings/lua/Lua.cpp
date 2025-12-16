@@ -761,6 +761,7 @@ end
             .beginClass<flecs::world>("world")
                 .addFunction("entity", +[](const flecs::world* w) { return w->entity<>(); })
             .endClass()
+            .addProperty("child_of", +[]{ return flecs::ChildOf;})
 
             .beginClass<flecs::entity>("entity")
                 .addProperty("is_alive", +[](const flecs::entity* e) { return e->is_alive(); })
@@ -771,8 +772,14 @@ end
                 .addFunction("add",
                     luabridge::overload<const flecs::entity*, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity c) {
                        return e->set(c);
-                   }),
-                   luabridge::overload<const flecs::entity*, const ecs::RenderTarget&>(+[](const flecs::entity* e, const ecs::RenderTarget& p) {
+                    }),
+                    luabridge::overload<const flecs::entity*, const flecs::entity, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity f, const flecs::entity s) {
+                      return e->add(f, s);
+                    }),
+                    luabridge::overload<const flecs::entity*, const flecs::entity_t, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity_t f, const flecs::entity s) {
+                      return e->add(f, s);
+                    }),
+                    luabridge::overload<const flecs::entity*, const ecs::RenderTarget&>(+[](const flecs::entity* e, const ecs::RenderTarget& p) {
                         return e->set<ecs::RenderTarget>(p);
                     }),
                     luabridge::overload<const flecs::entity*, const ecs::Viewport&>(+[](const flecs::entity* e, const ecs::Viewport& p) {
@@ -847,6 +854,12 @@ end
                 .addFunction("remove",
                      luabridge::overload<const flecs::entity*, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity c) {
                         return e->remove(c);
+                    }),
+                    luabridge::overload<const flecs::entity*, const flecs::entity, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity f, const flecs::entity s) {
+                       return e->remove(f, s);
+                    }),
+                    luabridge::overload<const flecs::entity*, const flecs::entity_t, const flecs::entity>(+[](const flecs::entity* e, const flecs::entity_t f, const flecs::entity s) {
+                       return e->remove(f, s);
                     }),
                     luabridge::overload<const flecs::entity*, const ecs::RenderTarget&>(+[](const flecs::entity* e, const ecs::RenderTarget& p) {
                         return e->remove<ecs::RenderTarget>();
