@@ -15,6 +15,7 @@ extern "C"
 }
 module lysa.lua;
 
+import lua_bridge;
 import vireo.lua;
 import lysa;
 
@@ -34,7 +35,7 @@ template <> struct luabridge::Stack<lysa::MouseCursor> : Enum<lysa::MouseCursor>
 
 namespace lysa {
 
-    Lua::Lua(const LuaConfiguration& luaConfiguration, const VirtualFS& virtualFs) : virtualFs(virtualFs) {
+    Lua::Lua(Context& ctx, const LuaConfiguration& luaConfiguration) : ctx(ctx) {
         L = luaL_newstate();
         luaL_openlibs(L);
         luaL_requiref(L, "socket", luaopen_socket_core, 1);
@@ -44,7 +45,7 @@ namespace lysa {
         luabridge::enableExceptions(L);
         bind();
 
-        const std::string path_chunk = "package.path = package.path .. ';?.lua;" + virtualFs.getScriptsDirectory()  + "/?.lua'";
+        const std::string path_chunk = "package.path = package.path .. ';?.lua;" + ctx.fs.getScriptsDirectory()  + "/?.lua'";
         if (luaL_dostring(L, path_chunk.c_str()) != LUA_OK) {
             Log::warning("[Lua] error: ", std::string(lua_tostring(L, -1)));
             lua_pop(L, 1);
@@ -82,23 +83,27 @@ end
         return luabridge::getGlobal(L, name.c_str());
     }
 
-    luabridge::LuaResult Lua::execute(Context& ctx, const std::string& scriptName) const{
-        std::vector<char> data;
-        virtualFs.loadScript(scriptName, data);
-        const auto script = std::string(data.begin(), data.end());
-        if (script.empty()) {
-            throw Exception("Lua error: failed to load script");
-        }
-
-        if (luaL_dostring(L, script.c_str()) != LUA_OK) {
-            const char* err = lua_tostring(L, -1);
-            std::string msg = err ? err : "(unknown error)";
-            lua_pop(L, 1);
-            throw Exception("Lua error : ", msg);
-        }
-        const luabridge::LuaRef factory = luabridge::LuaRef::fromStack(L, -1);
-        return factory(ctx);
-    }
+    // luabridge::LuaRef Lua::execute(const std::string& scriptName) const {
+    //     std::vector<char> data;
+    //     ctx.fs.loadScript(scriptName, data);
+    //     const auto script = std::string(data.begin(), data.end());
+    //     if (script.empty()) {
+    //         throw Exception("Lua error: failed to load script");
+    //     }
+    //
+    //     if (luaL_dostring(L, script.c_str()) != LUA_OK) {
+    //         const char* err = lua_tostring(L, -1);
+    //         std::string msg = err ? err : "(unknown error)";
+    //         lua_pop(L, 1);
+    //         throw Exception("Lua error : ", msg);
+    //     }
+    //     const auto factory = luabridge::LuaRef::fromStack(L, -1);
+    //     const auto result = factory(ctx);
+    //     if (result.wasOk() && result[0].isTable()) {
+    //         return result[0];
+    //     }
+    //     throw Exception("Error executing the Lua script " + scriptName + " or incorrect return type");
+    // }
 
     void Lua::bind() {
         beginNamespace("std")
@@ -337,6 +342,7 @@ end
             .addFunction("get_input_event", +[](const Event*e) { return std::any_cast<const InputEvent>(e->payload);})
         .endClass()
         .beginClass<EventManager>("EventManager")
+            .addFunction("h", +[](EventManager*){ Log::info("h"); })
             .addFunction("push", &EventManager::push)
             .addFunction("fire", &EventManager::fire)
             .addFunction("subscribe",
@@ -695,17 +701,19 @@ end
         .endClass()
 
         .beginClass<Context>("Context")
-               .addProperty("exit", &Context::exit)
-               .addProperty("vireo", [](const Context* self) { return self->vireo;})
-               .addProperty("fs",  [](const Context* self) { return &self->fs;})
-               .addProperty("events", [](const Context* self) { return &self->events;})
-#ifdef ECS_SCENES
-               .addProperty("world",[](const Context* self) { return &self->world;})
-#endif
-               .addProperty("res", [](const Context* self) { return &self->res;})
-               .addProperty("graphic_queue",[](const Context* self) { return self->graphicQueue;})
-        .endClass()
+           .addProperty("exit", [this](Context*) { return &ctx.exit;})
+           .addProperty("vireo", [this](Context*) { return ctx.vireo;})
+           .addProperty("fs",  [this](Context*) { return &ctx.fs;})
+           .addProperty("events", [this](Context*) { return &ctx.events;})
+   #ifdef ECS_SCENES
+           .addProperty("world", [this](Context*) { return &ctx.world;})
+   #endif
+           .addProperty("res", [this](Context*) { return &ctx.res;})
+           .addProperty("graphic_queue", [this](Context*) { return ctx.graphicQueue;})
+       .endClass()
+
         .endNamespace();
+
 
 #ifdef ECS_SCENES
         beginNamespace("ecs")

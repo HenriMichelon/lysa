@@ -5,14 +5,18 @@
 * https://opensource.org/licenses/MIT
 */
 module;
+extern "C"
+{
 #include "lua.h"
+#include "lauxlib.h"
+}
 export module lysa.lua;
 
 export import lua_bridge; // from Vireo
 
 import lysa.context;
+import lysa.exception;
 import lysa.types;
-import lysa.virtual_fs;
 
 export namespace lysa {
 
@@ -66,18 +70,39 @@ export namespace lysa {
         /**
          * @brief Execute a Lua script file in the current state.
          *
+         * @param ctx
          * @param scriptName name of the script file to execute, relative to the script directory of the VFS
          */
-        luabridge::LuaResult execute(Context& ctx, const std::string& scriptName) const;
+        template <typename... Args>
+        luabridge::LuaRef execute(const std::string& scriptName, Args&&... args) const {
+            std::vector<char> data;
+            ctx.fs.loadScript(scriptName, data);
+            const auto script = std::string(data.begin(), data.end());
+            if (script.empty()) {
+                throw Exception("Lua error: failed to load script");
+            }
+            if (luaL_dostring(L, script.c_str()) != LUA_OK) {
+                const char* err = lua_tostring(L, -1);
+                std::string msg = err ? err : "(unknown error)";
+                lua_pop(L, 1);
+                throw Exception("Lua error : ", msg);
+            }
+            const auto factory = luabridge::LuaRef::fromStack(L, -1);
+            const auto result = factory(ctx, std::forward<Args>(args)...);
+            if (result.wasOk() && result[0].isTable()) {
+                return result[0];
+            }
+            throw Exception("Error executing the Lua script " + scriptName + " or incorrect return type");
+        }
 
-        Lua(const LuaConfiguration& luaConfiguration, const VirtualFS& virtualFs);
+        Lua(Context& ctx, const LuaConfiguration& luaConfiguration);
 
         ~Lua();
 
         lua_State* get() const { return L; }
 
     private:
-        const VirtualFS &virtualFs;
+        Context& ctx;
         lua_State* L;
 
         void bind();

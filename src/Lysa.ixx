@@ -109,10 +109,6 @@ export namespace  lysa {
         size_t commandsReserveCapacity{1000};
         //! Virtual file system configuration
         VirtualFSConfiguration virtualFsConfiguration;
-#ifdef LUA_BINDING
-        //! Configuration for Lua integration and tooling.
-        LuaConfiguration luaConfiguration;
-#endif
     };
 
     /**
