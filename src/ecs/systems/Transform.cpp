@@ -30,7 +30,7 @@ namespace lysa::ecs {
           w.observer<Transform>()
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
-            .each([](const flecs::entity e,Transform& t) {
+            .each([](const flecs::entity e, Transform& t) {
                 updateGlobalTransform(e, t);
           });
      }

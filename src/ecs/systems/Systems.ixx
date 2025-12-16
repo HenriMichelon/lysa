@@ -14,7 +14,6 @@ export namespace lysa::ecs {
     class TransformModule {
     public:
         TransformModule(const flecs::world& w);
-    private:
         static void updateGlobalTransform(flecs::entity e, Transform& t);
     };
 

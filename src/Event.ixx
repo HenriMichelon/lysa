@@ -34,7 +34,12 @@ export namespace lysa {
      * @brief Callback signature for event handlers.
      * @param e The event received by the handler.
      */
-    using EventHandler = std::function<void(const Event&)>;
+    using EventHandlerCallback = std::function<void(const Event&)>;
+
+    struct EventHandler {
+        unique_id id;
+        EventHandlerCallback fn;
+    };
 
     /**
      * @brief Simple event manager.
@@ -55,16 +60,31 @@ export namespace lysa {
          * @brief Subscribe a C++ handler to a given event type and target id.
          * @param type The event kind to listen to.
          * @param id The specific target id to filter on.
-         * @param handler Reference to a callable receiving the event.
+         * @param callback Reference to a callable receiving the event.
          */
-        void subscribe(const event_type& type, unique_id id, const EventHandler& handler);
+        unique_id subscribe(const event_type& type, unique_id id, const EventHandlerCallback& callback);
 
         /**
          * @brief Subscribe a C++ handler to a given global event type
          * @param type The event kind to listen to.
-         * @param handler Reference to a callable receiving the event.
+         * @param callback Reference to a callable receiving the event.
          */
-        void subscribe(const event_type& type, const EventHandler& handler);
+        unique_id subscribe(const event_type& type, const EventHandlerCallback& callback);
+
+        /**
+         * @brief Unsubscribe a C++ handler to a given global event type
+         * @param type The event kind.
+         * @param handler Previously registered handler
+         */
+        void unsubscribe(const event_type& type, unique_id handler);
+
+        /**
+         * @brief Unsubscribe a C++ handler to a given event type and target id.
+         * @param type The event kind
+         * @param id The specific target id to filter on.
+         * @param handler Previously registered handler
+         */
+        void unsubscribe(const event_type& type, unique_id id, unique_id handler);
 
 #ifdef LUA_BINDING
         /**
@@ -73,14 +93,19 @@ export namespace lysa {
          * @param id The specific target id to filter on.
          * @param handler Lua function to be called with the event.
          */
-        void subscribe(const event_type& type, unique_id id, luabridge::LuaRef handler);
+        void subscribe(const event_type& type, unique_id id, const luabridge::LuaRef& handler);
 
         /**
          * @brief Subscribe a Lua handler to a given global event type
          * @param type The event kind to listen to.
          * @param handler Reference to a callable receiving the event.
          */
-        void subscribe(const event_type& type, luabridge::LuaRef handler);
+        void subscribe(const event_type& type, const luabridge::LuaRef& handler);
+
+        void unsubscribe(const event_type& type,  unique_id id, const luabridge::LuaRef& handler);
+
+        void unsubscribe(const event_type& type, const luabridge::LuaRef& handler);
+
 #endif
 
         void _process();
@@ -108,6 +133,7 @@ export namespace lysa {
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<EventHandler>>> handlers{};
         // Protect the resources events subscribers map
         std::mutex handlersMutex;
+        std::atomic<unique_id> nextId{1};
 #ifdef LUA_BINDING
         // Lua subscribers to global events
         std::unordered_map<event_type, std::vector<luabridge::LuaRef>> globalHandlersLua{};

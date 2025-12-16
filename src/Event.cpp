@@ -17,34 +17,105 @@ namespace lysa {
         queue.push_back(e);
     }
 
-    void EventManager::subscribe(const event_type& type, const unique_id id, const EventHandler& handler) {
+    unique_id EventManager::subscribe(const event_type& type, const unique_id id, const EventHandlerCallback& callback) {
         auto lock = std::lock_guard(handlersMutex);
-        handlers[type][id].push_back(std::move(handler));
+        const auto handler = EventHandler{nextId++, callback};
+        handlers[type][id].push_back(handler);
+        return handler.id;
     }
 
-    void EventManager::subscribe(const event_type& type, const EventHandler& handler) {
+    unique_id EventManager::subscribe(const event_type& type, const EventHandlerCallback& callback) {
         auto lock = std::lock_guard(globalHandlersMutex);
-        globalHandlers[type].push_back(std::move(handler));
+        const auto handler = EventHandler{nextId++, callback};
+        globalHandlers[type].push_back(handler);
+        return handler.id;
+    }
+
+    void EventManager::unsubscribe(const event_type& type,  const unique_id id, const unique_id handler) {
+        auto lock = std::lock_guard(handlersMutex);
+        const auto it = handlers.find(type);
+        if (it == handlers.end()) return;
+
+        auto& perId = it->second;
+        const auto itId = perId.find(id);
+        if (itId == perId.end()) return;
+
+        auto& vec = itId->second;
+        std::erase_if(vec,[&](const EventHandler& e) { return e.id == handler; });
+
+        if (vec.empty()) {
+            perId.erase(itId);
+            if (perId.empty()) {
+                handlers.erase(it);
+            }
+        }
+    }
+
+    void EventManager::unsubscribe(const event_type& type, const unique_id handler) {
+        auto lock = std::lock_guard(globalHandlersMutex);
+        const auto it = globalHandlers.find(type);
+        if (it == globalHandlers.end()) return;
+        auto& vec = it->second;
+        std::erase_if(vec,[&](const EventHandler& e) { return e.id == handler; });
+        if (vec.empty()) {
+            globalHandlers.erase(it);
+        }
     }
 
 #ifdef LUA_BINDING
-    void EventManager::subscribe(const event_type& type, const unique_id id, luabridge::LuaRef handler) {
+    void EventManager::subscribe(const event_type& type, const unique_id id, const luabridge::LuaRef& handler) {
         auto lock = std::lock_guard(handlersMutex);
-        handlersLua[type][id].push_back(std::move(handler));
+        handlersLua[type][id].push_back(handler);
     }
-    void EventManager::subscribe(const event_type& type, luabridge::LuaRef handler) {
+
+    void EventManager::subscribe(const event_type& type, const luabridge::LuaRef& handler) {
         auto lock = std::lock_guard(globalHandlersMutex);
-        globalHandlersLua[type].push_back(std::move(handler));
+        globalHandlersLua[type].push_back(handler);
+    }
+
+    void EventManager::unsubscribe(const event_type& type,  const unique_id id, const luabridge::LuaRef& handler) {
+        auto lock = std::lock_guard(handlersMutex);
+        const auto it = handlersLua.find(type);
+        if (it == handlersLua.end()) return;
+
+        auto& perId = it->second;
+        const auto itId = perId.find(id);
+        if (itId == perId.end()) return;
+
+        auto& vec = itId->second;
+        std::erase_if(vec,[&](const luabridge::LuaRef& e) { return e == handler; });
+
+        if (vec.empty()) {
+            perId.erase(itId);
+            if (perId.empty()) {
+                handlersLua.erase(it);
+            }
+        }
+    }
+
+    void EventManager::unsubscribe(const event_type& type, const luabridge::LuaRef& handler) {
+        auto lock = std::lock_guard(globalHandlersMutex);
+        const auto it = globalHandlersLua.find(type);
+        if (it == globalHandlersLua.end()) return;
+        auto& vec = it->second;
+        std::erase_if(vec,[&](const luabridge::LuaRef& e) { return e == handler; });
+        if (vec.empty()) {
+            globalHandlersLua.erase(it);
+        }
     }
 #endif
 
     void EventManager::fire(const Event& event) {
-        auto lock = std::lock_guard(globalHandlersMutex);
         {
             const auto itType = globalHandlers.find(event.type);
             if (itType != globalHandlers.end()) {
-                for (auto& handler : itType->second) {
-                    handler(event);
+                std::vector<EventHandler> queue;
+                {
+                    auto lock = std::lock_guard(globalHandlersMutex);
+                    queue = itType->second;
+                }
+                for (auto& handler : queue) {
+                    handler.fn(event);
                 }
             }
         }
@@ -52,7 +123,12 @@ namespace lysa {
         {
             const auto itType = globalHandlersLua.find(event.type);
             if (itType != globalHandlersLua.end()) {
-                for (auto& handler : itType->second) {
+                std::vector<luabridge::LuaRef> queue;
+                {
+                    auto lock = std::lock_guard(globalHandlersMutex);
+                    queue = itType->second;
+                }
+                for (auto& handler : queue) {
                     handler(event);
                 }
             }
@@ -73,7 +149,7 @@ namespace lysa {
                     const auto itId = itType->second.find(e.id);
                     if (itId != itType->second.end()) {
                         for (auto& handler : itId->second) {
-                            handler(e);
+                            handler.fn(e);
                         }
                     }
                 }

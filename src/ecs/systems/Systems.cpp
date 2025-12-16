@@ -54,28 +54,48 @@ namespace lysa::ecs {
                     scene.addInstance(mi.meshInstance, false);
                 }
             });
-        w.observer<const Scene, MeshInstance, const Transform>()
+        w.observer<const Scene, MeshInstance, Transform>()
             .term_at(0).parent()
             .event(flecs::OnAdd)
-            .each([&](const flecs::entity e, const Scene& sceneRef, MeshInstance& mi, const Transform& tr) {
+            .each([&](const flecs::entity e, const Scene& sceneRef, MeshInstance& mi, Transform& tr) {
                 if (mi.mesh == INVALID_ID) { return; }
                 auto& scene = sceneManager[sceneRef.scene];
-                auto aabb = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
+                TransformModule::updateGlobalTransform(e, tr);
                 mi.meshInstance = std::make_shared<MeshInstanceDesc>(
                     meshManager[mi.mesh],
                     e.has<Visible>(),
                     e.has<CastShadows>(),
-                    aabb,
+                    meshManager[mi.mesh].getAABB().toGlobal(tr.global),
                     tr.global);
                 scene.addInstance(mi.meshInstance, false);
+                e.children([&](const flecs::entity child) {
+                    if (child.has<Transform>() && child.has<MeshInstance>()) {
+                        auto& m = child.get_mut<MeshInstance>();
+                        if (!m.meshInstance) {
+                            auto& t = child.get<Transform>();
+                            m.meshInstance = std::make_shared<MeshInstanceDesc>(
+                                meshManager[m.mesh],
+                                child.has<Visible>(),
+                                child.has<CastShadows>(),
+                                meshManager[m.mesh].getAABB().toGlobal(t.global),
+                                t.global);
+                        }
+                        scene.addInstance(m.meshInstance, false);
+                    }
+                });
             });
-        w.observer<const Scene, MeshInstance, const Transform>()
+        w.observer<const Scene, const MeshInstance, const Transform>()
             .term_at(0).parent()
             .event(flecs::OnRemove)
-            .each([&](const flecs::entity e, const Scene& sc, MeshInstance& mi, const Transform& tr) {
+            .each([&](const flecs::entity e, const Scene& sc, const MeshInstance& mi, const Transform&) {
                 if (mi.mesh != INVALID_ID && mi.meshInstance) {
                     auto& scene = sceneManager[sc.scene];
                     scene.removeInstance(mi.meshInstance, false);
+                    e.children([&](const flecs::entity child) {
+                        if (child.has<Transform>() && child.has<MeshInstance>()) {
+                            scene.removeInstance(child.get<MeshInstance>().meshInstance, false);
+                        }
+                    });
                 }
             });
         w.observer<const Scene, const MeshInstance, const Visible>()

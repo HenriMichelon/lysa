@@ -275,8 +275,10 @@ return {
 
     ---@class lysa.EventManager
     ---@field push fun(self:lysa.EventManager, e:lysa.Event):nil
-    ---@field subscribe fun(self:lysa.EventManager, type:any, id:any, cb:function):nil
+    ---@field subscribe fun(self:lysa.EventManager, type:any, id:integer, cb:function):nil
     ---@field subscribe fun(self:lysa.EventManager, type:any, cb:function):nil
+    ---@field unsubscribe fun(self:lysa.EventManager, type:any, id:integer, cb:function):nil
+    ---@field unsubscribe fun(self:lysa.EventManager, type:any, cb:function):nil
     EventManager = lysa.EventManager,
 
     ------------------------------------------------------------------------
