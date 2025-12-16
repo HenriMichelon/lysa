@@ -55,6 +55,15 @@ namespace lysa::ecs {
                     scene.addInstance(mi.meshInstance, false);
                 }
             });
+        w.observer<const Scene, MeshInstance, const Transform>()
+            .term_at(0).parent()
+            .event(flecs::OnRemove)
+            .each([&](const flecs::entity e, const Scene& sc, MeshInstance& mi, const Transform& tr) {
+                if (mi.mesh != INVALID_ID && mi.meshInstance) {
+                    auto& scene = sceneManager[sc.scene];
+                    scene.removeInstance(mi.meshInstance, false);
+                }
+            });
         w.observer<const Scene, const MeshInstance, const Visible>()
             .term_at(0).parent()
             .event(flecs::OnAdd)
