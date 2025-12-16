@@ -55,36 +55,15 @@ namespace  lysa {
         const size_t commandsCapacity,
         const size_t samplersCapacity,
         const VirtualFSConfiguration& virtualFsConfiguration
-#ifdef LUA_BINDING
-        ,const LuaConfiguration& luaConfiguration
-#endif
         ) :
         vireo(vireo::Vireo::create(backend, vireoDebugCallback)),
         fs(virtualFsConfiguration, vireo),
-#ifdef LUA_BINDING
-        lua(luaConfiguration, fs),
-#endif
         events(eventsCapacity),
         defer(commandsCapacity),
         samplers(vireo, samplersCapacity),
         graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")),
         transferQueue(vireo->createSubmitQueue(vireo::CommandType::TRANSFER, "Main transfer queue")),
         asyncQueue(vireo, transferQueue, graphicQueue) {
-#ifdef LUA_BINDING
-        lua.beginNamespace()
-            .beginNamespace("ctx")
-               .addProperty("exit", &exit)
-               .addProperty("vireo", [this] { return vireo;})
-               .addProperty("fs",  [this] { return &fs;})
-               .addProperty("events", [this] { return &events;})
-#ifdef ECS_SCENES
-               .addProperty("world", [this] { return &world;})
-#endif
-               .addProperty("res", [this] { return &res;})
-               .addProperty("graphic_queue", [this] { return graphicQueue;})
-            .endNamespace()
-        .endNamespace();
-#endif
     }
 
 }

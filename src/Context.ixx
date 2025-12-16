@@ -15,9 +15,6 @@ import lysa.event;
 #ifdef ECS_SCENES
 import lysa.ecs.flecs;
 #endif
-#ifdef LUA_BINDING
-import lysa.lua;
-#endif
 import lysa.virtual_fs;
 import lysa.types;
 import lysa.resources.samplers;
@@ -47,13 +44,6 @@ export namespace  lysa {
          * Read and write resources referenced by URI
          */
         const VirtualFS fs;
-
-#ifdef LUA_BINDING
-        /**
-         * Embedded Lua execution environment.
-         */
-        const Lua lua;
-#endif
 
         /**
          * Central event dispatcher for the application.
@@ -110,9 +100,6 @@ export namespace  lysa {
             size_t commandsCapacity,
             size_t samplersCapacity,
             const VirtualFSConfiguration& virtualFsConfiguration
-#ifdef LUA_BINDING
-            ,const LuaConfiguration& luaConfiguration
-#endif
             );
     };
 

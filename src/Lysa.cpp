@@ -19,9 +19,6 @@ namespace lysa {
             config.commandsReserveCapacity,
             config.resourcesCapacity.samplers,
             config.virtualFsConfiguration
-#ifdef LUA_BINDING
-            ,config.luaConfiguration
-#endif
             ),
         fixedDeltaTime(config.deltaTime),
         renderTargetManager(ctx, config.resourcesCapacity.renderTarget, config.framesInFlight),

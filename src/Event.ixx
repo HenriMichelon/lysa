@@ -7,7 +7,7 @@
 export module lysa.event;
 
 #ifdef LUA_BINDING
-import lysa.lua;
+import lua_bridge;
 #endif
 import lysa.types;
 

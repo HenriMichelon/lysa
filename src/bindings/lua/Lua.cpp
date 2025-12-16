@@ -82,7 +82,7 @@ end
         return luabridge::getGlobal(L, name.c_str());
     }
 
-    void Lua::execute(const std::string& scriptName) const{
+    luabridge::LuaResult Lua::execute(Context& ctx, const std::string& scriptName) const{
         std::vector<char> data;
         virtualFs.loadScript(scriptName, data);
         const auto script = std::string(data.begin(), data.end());
@@ -96,6 +96,8 @@ end
             lua_pop(L, 1);
             throw Exception("Lua error : ", msg);
         }
+        const luabridge::LuaRef factory = luabridge::LuaRef::fromStack(L, -1);
+        return factory(ctx);
     }
 
     void Lua::bind() {
@@ -690,6 +692,18 @@ end
                 +[](const ResourcesRegistry* rl) -> SceneManager& {
                 return rl->get<SceneManager>();
             })
+        .endClass()
+
+        .beginClass<Context>("Context")
+               .addProperty("exit", &Context::exit)
+               .addProperty("vireo", [](const Context* self) { return self->vireo;})
+               .addProperty("fs",  [](const Context* self) { return &self->fs;})
+               .addProperty("events", [](const Context* self) { return &self->events;})
+#ifdef ECS_SCENES
+               .addProperty("world",[](const Context* self) { return &self->world;})
+#endif
+               .addProperty("res", [](const Context* self) { return &self->res;})
+               .addProperty("graphic_queue",[](const Context* self) { return self->graphicQueue;})
         .endClass()
         .endNamespace();
 

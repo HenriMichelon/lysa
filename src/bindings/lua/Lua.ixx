@@ -10,6 +10,7 @@ export module lysa.lua;
 
 export import lua_bridge; // from Vireo
 
+import lysa.context;
 import lysa.types;
 import lysa.virtual_fs;
 
@@ -67,7 +68,7 @@ export namespace lysa {
          *
          * @param scriptName name of the script file to execute, relative to the script directory of the VFS
          */
-        void execute(const std::string& scriptName) const;
+        luabridge::LuaResult execute(Context& ctx, const std::string& scriptName) const;
 
         Lua(const LuaConfiguration& luaConfiguration, const VirtualFS& virtualFs);
 
