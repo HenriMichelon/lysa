@@ -208,6 +208,7 @@ namespace lysa::ecs {
             .event(flecs::OnRemove)
             .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &cr, const SceneRef&sr) {
                 Log::info("remove view");
+                if (!renderTargetManager.have(rt.renderTarget)) return;
                 auto& renderTarget = renderTargetManager[rt.renderTarget];
                 const auto id = static_cast<const unique_id>(e.id());
                 renderTarget.waitIdle();
@@ -219,6 +220,7 @@ namespace lysa::ecs {
             .kind(flecs::OnUpdate)
             .each([&](const RenderTarget& rt) {
                 auto& renderTarget = renderTargetManager[rt.renderTarget];
+                if (!renderTargetManager.have(rt.renderTarget)) return;
                 renderTarget.render();
             });
         }

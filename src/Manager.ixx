@@ -75,6 +75,8 @@ export namespace lysa {
             freeList.push_back(id);
         }
 
+        bool have(const unique_id id) const { return resources.at(id) != nullptr; }
+
         unique_id getCapacity() const { return resources.size(); }
 
     protected:
