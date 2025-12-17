@@ -35,8 +35,9 @@ template <> struct luabridge::Stack<lysa::MouseCursor> : Enum<lysa::MouseCursor>
 
 namespace lysa {
 
-    Lua::Lua(Context& ctx, const LuaConfiguration& luaConfiguration) : ctx(ctx) {
-        L = luaL_newstate();
+    Lua::Lua(Context& ctx, const LuaConfiguration& luaConfiguration) :
+        ctx(ctx),
+        L(luaL_newstate()) {
         luaL_openlibs(L);
         luaL_requiref(L, "socket", luaopen_socket_core, 1);
         lua_pop(L, 1);
@@ -65,6 +66,7 @@ end
                 lua_pop(L, 1);
             }
         }
+
     }
 
     Lua::~Lua() {
@@ -82,28 +84,6 @@ end
     luabridge::LuaRef Lua::getGlobal(const std::string & name) const {
         return luabridge::getGlobal(L, name.c_str());
     }
-
-    // luabridge::LuaRef Lua::execute(const std::string& scriptName) const {
-    //     std::vector<char> data;
-    //     ctx.fs.loadScript(scriptName, data);
-    //     const auto script = std::string(data.begin(), data.end());
-    //     if (script.empty()) {
-    //         throw Exception("Lua error: failed to load script");
-    //     }
-    //
-    //     if (luaL_dostring(L, script.c_str()) != LUA_OK) {
-    //         const char* err = lua_tostring(L, -1);
-    //         std::string msg = err ? err : "(unknown error)";
-    //         lua_pop(L, 1);
-    //         throw Exception("Lua error : ", msg);
-    //     }
-    //     const auto factory = luabridge::LuaRef::fromStack(L, -1);
-    //     const auto result = factory(ctx);
-    //     if (result.wasOk() && result[0].isTable()) {
-    //         return result[0];
-    //     }
-    //     throw Exception("Error executing the Lua script " + scriptName + " or incorrect return type");
-    // }
 
     void Lua::bind() {
         beginNamespace("std")
