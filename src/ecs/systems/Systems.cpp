@@ -182,10 +182,9 @@ namespace lysa::ecs {
             .term_at(0).parent()
             .event(flecs::OnSet)
             .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &cr, const SceneRef&sr) {
-                auto sceneId = sr.scene.get<Scene>().scene;
-                if (!renderTargetManager.have(rt.renderTarget) || !sceneManager.have(sceneId)) return;
+                if (!renderTargetManager.have(rt.renderTarget)) return;
                 auto& renderTarget = renderTargetManager[rt.renderTarget];
-                auto& scene = sceneManager[sceneId];
+                auto& scene = sceneManager[sr.scene.get<Scene>().scene];
                 const auto camera = cr.camera.get<Camera>();
                 const auto cameraTransform = cr.camera.get<Transform>().global;
                 const auto cameraDesc = CameraDesc{
@@ -208,7 +207,7 @@ namespace lysa::ecs {
         w.observer<const RenderTarget, const CameraRef, const SceneRef>()
             .term_at(0).parent()
             .event(flecs::OnRemove)
-            .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &cr, const SceneRef&sr) {
+            .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &, const SceneRef&) {
                 if (!renderTargetManager.have(rt.renderTarget)) return;
                 auto& renderTarget = renderTargetManager[rt.renderTarget];
                 const auto id = static_cast<const unique_id>(e.id());

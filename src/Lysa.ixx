@@ -123,7 +123,6 @@ export namespace  lysa {
         static inline const event_type QUIT{"MAIN_LOOP_QUIT"};
     };
 
-
     /**
      * @brief Main entry class of the Lysa runtime.
      *
@@ -174,6 +173,8 @@ export namespace  lysa {
 
         // Consume platform-specific events.
         void processPlatformEvents();
+
+        void uploadData();
     };
 
 }

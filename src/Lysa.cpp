@@ -58,21 +58,23 @@ namespace lysa {
         FrustumCulling::cleanup();
     }
 
+    void Lysa::uploadData() {
+        if (ctx.samplers.isUpdateNeeded()) {
+            ctx.samplers.update();
+        }
+        materialManager.flush();
+        meshManager.flush();
+        globalDescriptors.update();
+    }
+
     void Lysa::run() {
         while (!ctx.exit) {
-            materialManager.flush();
-            meshManager.flush();
-            globalDescriptors.update();
+            uploadData();
             ctx.defer._process();
             ctx.threads._process();
             processPlatformEvents();
             ctx.events._process();
-            if (ctx.samplers.isUpdateNeeded()) {
-                ctx.samplers.update();
-            }
-            materialManager.flush();
-            meshManager.flush();
-            globalDescriptors.update();
+            uploadData();
 
 #ifdef ECS_SCENES
             ctx.world.progress();

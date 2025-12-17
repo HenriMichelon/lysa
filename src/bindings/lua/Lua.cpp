@@ -308,9 +308,7 @@ end
             .addProperty("KEY_RIGHT_CONTROL", +[]{ return (uint32)KEY_RIGHT_CONTROL; })
             .addProperty("KEY_RIGHT_ALT", +[]{ return (uint32)KEY_RIGHT_ALT; })
             .addProperty("KEY_RIGHT_SUPER", +[]{ return (uint32)KEY_RIGHT_SUPER; })
-
         .endNamespace()
-
 
         .beginNamespace("InputEventType")
             .addVariable("KEY", InputEventType::KEY)

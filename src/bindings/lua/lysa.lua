@@ -266,11 +266,15 @@ return {
 
     ---@class lysa.InputEvent
     ---@field type integer
+    ---@field input_event_key lysa.InputEventKey
     InputEvent = lysa.InputEvent,
 
     ---@class lysa.Event
     ---@field id integer
     ---@field type any
+    ---@field get_float fun(self:lysa.Event):number
+    ---@field get_int32 fun(self:lysa.Event):integer
+    ---@field get_input_event fun(self:lysa.Event):lysa.InputEvent
     Event = lysa.Event,
 
     ---@class lysa.EventManager
