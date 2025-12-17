@@ -109,7 +109,7 @@ namespace lysa {
     }
 
     void ImageManager::save(const unique_id image_id, const std::string& filepath) {
-        const auto image = get(image_id).getImage();
+        const auto image = (*this)[image_id].getImage();
         const auto buffer = ctx.vireo->createBuffer(vireo::BufferType::IMAGE_DOWNLOAD, image->getAlignedImageSize());
         {
             auto lock = std::lock_guard(mutex);

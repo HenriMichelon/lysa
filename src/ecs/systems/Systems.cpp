@@ -182,7 +182,10 @@ namespace lysa::ecs {
             .term_at(0).parent()
             .event(flecs::OnSet)
             .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &cr, const SceneRef&sr) {
-                auto& scene = sceneManager[sr.scene.get<Scene>().scene];
+                auto sceneId = sr.scene.get<Scene>().scene;
+                if (!renderTargetManager.have(rt.renderTarget) || !sceneManager.have(sceneId)) return;
+                auto& renderTarget = renderTargetManager[rt.renderTarget];
+                auto& scene = sceneManager[sceneId];
                 const auto camera = cr.camera.get<Camera>();
                 const auto cameraTransform = cr.camera.get<Transform>().global;
                 const auto cameraDesc = CameraDesc{
@@ -194,8 +197,7 @@ namespace lysa::ecs {
                 if (e.has<Viewport>()) {
                    viewport = e.get<Viewport>();
                 }
-                Log::info("add view");
-                auto& renderTarget = renderTargetManager[rt.renderTarget];
+                renderTarget.waitIdle();
                 renderTarget.getViews().push_back({
                     static_cast<const unique_id>(e.id()),
                     viewport.viewport,
@@ -207,7 +209,6 @@ namespace lysa::ecs {
             .term_at(0).parent()
             .event(flecs::OnRemove)
             .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &cr, const SceneRef&sr) {
-                Log::info("remove view");
                 if (!renderTargetManager.have(rt.renderTarget)) return;
                 auto& renderTarget = renderTargetManager[rt.renderTarget];
                 const auto id = static_cast<const unique_id>(e.id());

@@ -102,7 +102,6 @@ namespace lysa {
         // Immediate additions
         // Log::info("pDO", frameIndex);
         if (!data.addedNodes.empty()) {
-            Log::info("pDO addedNodes", frameIndex);
             for (const auto &node : data.addedNodes) {
                 auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(node);
                 data.scene->addInstance(mi);

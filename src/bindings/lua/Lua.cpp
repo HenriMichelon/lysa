@@ -394,8 +394,8 @@ end
         .beginClass<RenderingWindowManager>("RenderingWindowManager")
            .addFunction("create", &RenderingWindowManager::create)
            .addFunction("get",
-               luabridge::nonConstOverload<const unique_id>(&RenderingWindowManager::get),
-               luabridge::constOverload<const unique_id>(&RenderingWindowManager::get)
+               luabridge::nonConstOverload<const unique_id>(&RenderingWindowManager::operator[]),
+               luabridge::constOverload<const unique_id>(&RenderingWindowManager::operator[])
                )
             .addFunction("destroy", &RenderingWindowManager::destroy)
         .endClass()
@@ -428,8 +428,8 @@ end
                 return self->create(config);
             })
             .addFunction("get",
-                luabridge::nonConstOverload<const unique_id>(&RenderTargetManager::get),
-                luabridge::constOverload<const unique_id>(&RenderTargetManager::get)
+                luabridge::nonConstOverload<const unique_id>(&RenderTargetManager::operator[]),
+                luabridge::constOverload<const unique_id>(&RenderTargetManager::operator[])
                 )
             .addFunction("destroy",
                luabridge::overload<const unique_id>(&Manager<RenderTarget>::destroy),
@@ -463,8 +463,8 @@ end
             .addProperty("blank_cube_map", &ImageManager::getBlankCubeMap)
             .addProperty("images", &ImageManager::getImages)
             .addFunction("get",
-               luabridge::nonConstOverload<const unique_id>(&ImageManager::get),
-               luabridge::constOverload<const unique_id>(&ImageManager::get)
+               luabridge::nonConstOverload<const unique_id>(&ImageManager::operator[]),
+               luabridge::constOverload<const unique_id>(&ImageManager::operator[])
                )
             .addFunction("destroy",&ImageManager::destroy)
         .endClass()
@@ -489,8 +489,8 @@ end
                     return self->create(image, sampler);
             })
            .addFunction("get",
-              luabridge::nonConstOverload<const unique_id>(&ImageTextureManager::get),
-              luabridge::constOverload<const unique_id>(&ImageTextureManager::get)
+              luabridge::nonConstOverload<const unique_id>(&ImageTextureManager::operator[]),
+              luabridge::constOverload<const unique_id>(&ImageTextureManager::operator[])
               )
            .addFunction("destroy",
              luabridge::overload<const unique_id>(&Manager<ImageTexture>::destroy)
@@ -582,8 +582,8 @@ end
                          return self->create(f, v);
                  })
                .addFunction("get",
-                 luabridge::nonConstOverload<const unique_id>(&MaterialManager::get),
-                 luabridge::constOverload<const unique_id>(&MaterialManager::get)
+                 luabridge::nonConstOverload<const unique_id>(&MaterialManager::operator[]),
+                 luabridge::constOverload<const unique_id>(&MaterialManager::operator[])
                  )
             .addFunction("destroy",&MaterialManager::destroy)
         .endClass()
@@ -620,8 +620,8 @@ end
                      return self->create(v, i, s);
              })
            .addFunction("get",
-             luabridge::nonConstOverload<const unique_id>(&MeshManager::get),
-             luabridge::constOverload<const unique_id>(&MeshManager::get)
+             luabridge::nonConstOverload<const unique_id>(&MeshManager::operator[]),
+             luabridge::constOverload<const unique_id>(&MeshManager::operator[])
              )
             .addFunction("destroy",&MeshManager::destroy)
         .endClass()
@@ -635,8 +635,8 @@ end
                     return self->create();
             })
            .addFunction("get",
-             luabridge::nonConstOverload<const unique_id>(&SceneManager::get),
-             luabridge::constOverload<const unique_id>(&SceneManager::get)
+             luabridge::nonConstOverload<const unique_id>(&SceneManager::operator[]),
+             luabridge::constOverload<const unique_id>(&SceneManager::operator[])
              )
         .endClass()
 

@@ -29,41 +29,27 @@ export namespace lysa {
     class Manager {
     public:
         /**
-         * @brief Retrieve a mutable reference to the resource with the given ID.
-         * @param id The unique identifier of the resource.
-         * @return T& Reference to the resource.
-         * @throws std::out_of_range if id is invalid (as thrown by std::vector::at).
-         */
-        inline T& get(const unique_id id) { return *resources.at(id); }
-
-        /**
-         * @brief Retrieve a read-only reference to the resource with the given ID.
-         * @param id The unique identifier of the resource.
-         * @return const T& Const reference to the resource.
-         * @throws std::out_of_range if id is invalid (as thrown by std::vector::at).
-         */
-        inline const T& get(const unique_id id) const { return *resources.at(id); }
-
-        /**
          * @brief Bracket operator for mutable access without bounds checking.
          * @param id The unique identifier of the resource.
          * @return T& Reference to the resource.
-         * @warning No bounds checking is performed (uses vector::operator[]). Prefer get() when
-         *          you need range checking.
          */
-        inline T& operator[](const unique_id id) { return *resources[id]; }
+        inline T& operator[](const unique_id id) {
+            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
+            return *resources[id];
+        }
 
         /**
          * @brief Bracket operator for const access without bounds checking.
          * @param id The unique identifier of the resource.
          * @return const T& Const reference to the resource.
-         * @warning No bounds checking is performed (uses vector::operator[]). Prefer const get()
-         *          when you need range checking.
          */
-        inline const T& operator[](const unique_id id) const { return *resources[id]; }
+        inline const T& operator[](const unique_id id) const {
+            assert([&]{ return have(id); }, "Manager : invalid id ");
+            return *resources[id];
+        }
 
         virtual ~Manager() {
-            assert([&]{ return freeList.size() == resources.size(); }, "ResourcesManager : cleanup() not called");
+            assert([&]{ return freeList.size() == resources.size(); }, "Manager : cleanup() not called");
         }
 
         Manager(Manager&) = delete;
@@ -71,11 +57,12 @@ export namespace lysa {
 
         // Release a resource, returning its slot to the free list.
         virtual void destroy(const unique_id id) {
+            assert([&]{ return have(id); }, "Manager : invalid id ");
             resources[id].reset();
             freeList.push_back(id);
         }
 
-        bool have(const unique_id id) const { return resources.at(id) != nullptr; }
+        bool have(const unique_id id) const { return id < resources.size() && resources.at(id) != nullptr; }
 
         unique_id getCapacity() const { return resources.size(); }
 

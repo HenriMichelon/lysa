@@ -115,7 +115,7 @@ namespace lysa {
     void MeshManager::flush() {
         if (needUpload.empty()) return;
         for (const auto id : needUpload) {
-            auto& mesh = get(id);
+            auto& mesh = (*this)[id];
             if (!mesh.isUploaded()) {
                 mesh.verticesMemoryBlock = vertexArray.alloc(mesh.vertices.size());
                 mesh.indicesMemoryBlock = indexArray.alloc(mesh.indices.size());
