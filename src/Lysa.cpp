@@ -63,7 +63,6 @@ namespace lysa {
             materialManager.flush();
             meshManager.flush();
             globalDescriptors.update();
-
             ctx.defer._process();
             ctx.threads._process();
             processPlatformEvents();
@@ -71,6 +70,9 @@ namespace lysa {
             if (ctx.samplers.isUpdateNeeded()) {
                 ctx.samplers.update();
             }
+            materialManager.flush();
+            meshManager.flush();
+            globalDescriptors.update();
 
 #ifdef ECS_SCENES
             ctx.world.progress();

@@ -277,6 +277,7 @@ namespace lysa {
         pipeline_id pipelineId,
         const std::shared_ptr<MeshInstanceDesc>& meshInstance,
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
+        Log::info("addInstance");
         if (!pipelinesData.contains(pipelineId)) {
             pipelinesData[pipelineId] = std::make_unique<GraphicPipelineData>(
                 ctx, pipelineId, meshInstancesDataArray, maxMeshSurfacePerPipeline);

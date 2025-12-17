@@ -85,6 +85,21 @@ end
         return luabridge::getGlobal(L, name.c_str());
     }
 
+    void Lua::pushSandboxEnv() const {
+        // env = {}
+        lua_newtable(L);
+        // env._G = env
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -2, "_G");
+        // mt = {}
+        lua_newtable(L);
+        // mt.__index = _G
+        lua_pushglobaltable(L);
+        lua_setfield(L, -2, "__index");
+        // setmetatable(env, mt)
+        lua_setmetatable(L, -2);
+    }
+
     void Lua::bind() {
         beginNamespace("std")
             .beginClass<std::string>("string")

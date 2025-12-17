@@ -81,7 +81,19 @@ export namespace lysa {
             if (script.empty()) {
                 throw Exception("Lua error: failed to load script");
             }
-            if (luaL_dostring(L, script.c_str()) != LUA_OK) {
+            if (luaL_loadstring(L, script.c_str()) != LUA_OK) {
+                const char* err = lua_tostring(L, -1);
+                std::string msg = err ? err : "(unknown error)";
+                lua_pop(L, 1);
+                throw Exception("Lua error : ", msg);
+            }
+            pushSandboxEnv();
+            const char* upname = lua_setupvalue(L, -2, 1);
+            if (!upname) {
+                lua_pop(L, 1);
+                throw Exception("Lua error : _ENV missing");
+            }
+            if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
                 const char* err = lua_tostring(L, -1);
                 std::string msg = err ? err : "(unknown error)";
                 lua_pop(L, 1);
@@ -94,6 +106,8 @@ export namespace lysa {
             }
             throw Exception("Error executing the Lua script " + scriptName + " or incorrect return type");
         }
+
+        void pushSandboxEnv() const;
 
         Lua(Context& ctx, const LuaConfiguration& luaConfiguration);
 

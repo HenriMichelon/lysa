@@ -81,9 +81,10 @@ namespace lysa {
         }
     }
 
-    void RenderTarget::render(std::list<RenderView>& views) const {
+    void RenderTarget::render() {
         if (paused) return;
-        const auto frameIndex =swapChain->getCurrentFrameIndex();
+        const auto frameIndex = swapChain->getCurrentFrameIndex();
+        // Log::info("render ", frameIndex, " ", views.size());
         for (auto& view : views) {
             if (view.viewport.width == 0.0f || view.viewport.height == 0.0f) {
                 view.viewport.width = static_cast<float>(swapChain->getExtent().width);

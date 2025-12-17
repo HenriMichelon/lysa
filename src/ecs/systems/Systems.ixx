@@ -6,6 +6,8 @@
 */
 export module lysa.ecs.systems;
 
+import std;
+import lysa.types;
 export import lysa.ecs.components;
 export import lysa.ecs.flecs;
 

@@ -100,7 +100,9 @@ namespace lysa {
         }
         // Add to the scene the nodes previously added to the scene tree
         // Immediate additions
+        // Log::info("pDO", frameIndex);
         if (!data.addedNodes.empty()) {
+            Log::info("pDO addedNodes", frameIndex);
             for (const auto &node : data.addedNodes) {
                 auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(node);
                 data.scene->addInstance(mi);

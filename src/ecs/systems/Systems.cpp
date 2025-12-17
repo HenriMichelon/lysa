@@ -178,40 +178,48 @@ namespace lysa::ecs {
                 auto& scene = sceneManager[sc.scene];
                 scene.setAmbientLight(float4(al.color, al.intensity));
             });
+        w.observer<const RenderTarget, const CameraRef, const SceneRef>()
+            .term_at(0).parent()
+            .event(flecs::OnSet)
+            .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &cr, const SceneRef&sr) {
+                auto& scene = sceneManager[sr.scene.get<Scene>().scene];
+                const auto camera = cr.camera.get<Camera>();
+                const auto cameraTransform = cr.camera.get<Transform>().global;
+                const auto cameraDesc = CameraDesc{
+                   .position = cameraTransform[3].xyz,
+                   .transform = cameraTransform,
+                   .projection = camera.projection
+                };
+                Viewport viewport;
+                if (e.has<Viewport>()) {
+                   viewport = e.get<Viewport>();
+                }
+                Log::info("add view");
+                auto& renderTarget = renderTargetManager[rt.renderTarget];
+                renderTarget.getViews().push_back({
+                    static_cast<const unique_id>(e.id()),
+                    viewport.viewport,
+                    viewport.scissors,
+                    cameraDesc,
+                    scene});
+        });
+        w.observer<const RenderTarget, const CameraRef, const SceneRef>()
+            .term_at(0).parent()
+            .event(flecs::OnRemove)
+            .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &cr, const SceneRef&sr) {
+                Log::info("remove view");
+                auto& renderTarget = renderTargetManager[rt.renderTarget];
+                const auto id = static_cast<const unique_id>(e.id());
+                renderTarget.waitIdle();
+                renderTarget.getViews().remove_if([&](const RenderView&view) {
+                    return view.id == id;
+                });
+            });
         w.system<const RenderTarget>()
             .kind(flecs::OnUpdate)
-            .each([&](const flecs::entity e, const RenderTarget& rt) {
-                const auto& renderTarget = renderTargetManager[rt.renderTarget];
-                if (renderTarget.isPaused()) { return; }
-                auto views = std::list<RenderView>();
-                e.children([&](const flecs::entity child) {
-                    if (child.has<CameraRef>() && child.has<SceneRef>()) {
-                        auto& cameraRef = child.get<CameraRef>();
-                        if  (!cameraRef.camera.is_alive()) {
-                            child.remove(flecs::ChildOf, e);
-                            return;
-                        }
-                        auto& sceneRef = child.get<SceneRef>();
-                        if  (!sceneRef.scene.is_alive()) {
-                            child.remove(flecs::ChildOf, e);
-                            return;
-                        }
-                        auto& scene = sceneManager[sceneRef.scene.get<Scene>().scene];
-                        const auto camera = cameraRef.camera.get<Camera>();
-                        const auto cameraTransform = cameraRef.camera.get<Transform>().global;
-                        const auto cameraDesc = CameraDesc{
-                            .position = cameraTransform[3].xyz,
-                            .transform = cameraTransform,
-                            .projection = camera.projection
-                        };
-                        Viewport viewport;
-                        if (child.has<Viewport>()) {
-                            viewport = child.get<Viewport>();
-                        }
-                        views.push_back({viewport.viewport, viewport.scissors, cameraDesc, scene});
-                    }
-                });
-                renderTarget.render(views);
+            .each([&](const RenderTarget& rt) {
+                auto& renderTarget = renderTargetManager[rt.renderTarget];
+                renderTarget.render();
             });
         }
 

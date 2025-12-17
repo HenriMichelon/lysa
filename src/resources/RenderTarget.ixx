@@ -41,6 +41,7 @@ export namespace lysa {
     };
 
     struct RenderView {
+        const unique_id id;
         vireo::Viewport viewport;
         vireo::Rect scissors;
         const CameraDesc camera;
@@ -53,7 +54,7 @@ export namespace lysa {
 
         ~RenderTarget() override;
 
-        void render(std::list<RenderView>& views) const;
+        void render();
 
         void pause(bool pause);
 
@@ -64,6 +65,10 @@ export namespace lysa {
         auto getRenderingWindowHandle() const { return renderingWindowHandle; }
 
         auto isPaused() const { return paused; }
+
+        auto& getViews() { return views; }
+
+        void waitIdle() const { swapChain->waitIdle(); }
 
     private:
         struct FrameData {
@@ -94,6 +99,7 @@ export namespace lysa {
         std::unique_ptr<Renderer> renderer;
         // associated OS window handler
         void* renderingWindowHandle{nullptr};
+        std::list<RenderView> views;
 
         friend class RenderTargetManager;
         void resize() const;
