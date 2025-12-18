@@ -746,7 +746,7 @@ end
             .endClass()
             .beginClass<ecs::Scene>("Scene")
                 .addConstructor<void(unique_id)>()
-                .addProperty("scene", &ecs::Scene::scene)
+                .addProperty("scene", &ecs::Scene::context)
             .endClass()
             .beginClass<ecs::SceneRef>("SceneRef")
                 .addConstructor<void(flecs::entity)>()

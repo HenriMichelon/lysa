@@ -43,7 +43,7 @@ namespace lysa::ecs {
                 if (mi.meshInstance) {
                     e.add<Updated>();
                 } else {
-                    auto& scene = sceneContextManager[sceneRef.scene];
+                    auto& scene = sceneContextManager[sceneRef.context];
                     auto aabb = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
                     mi.meshInstance = std::make_shared<MeshInstanceDesc>(
                         meshManager[mi.mesh],
@@ -59,7 +59,7 @@ namespace lysa::ecs {
             .event(flecs::OnAdd)
             .each([&](const flecs::entity e, const Scene& sceneRef, MeshInstance& mi, Transform& tr) {
                 if (mi.mesh == INVALID_ID) { return; }
-                auto& scene = sceneContextManager[sceneRef.scene];
+                auto& scene = sceneContextManager[sceneRef.context];
                 TransformModule::updateGlobalTransform(e, tr);
                 mi.meshInstance = std::make_shared<MeshInstanceDesc>(
                     meshManager[mi.mesh],
@@ -87,14 +87,14 @@ namespace lysa::ecs {
         w.observer<const Scene>()
             .event(flecs::OnRemove)
             .each([&](const Scene&sc) {
-                sceneContextManager.destroy(sc.scene);
+                sceneContextManager.destroy(sc.context);
             });
         w.observer<const Scene, const MeshInstance, const Transform>()
             .term_at(0).parent()
             .event(flecs::OnRemove)
             .each([&](const flecs::entity e, const Scene& sc, const MeshInstance& mi, const Transform&) {
                 if (mi.mesh != INVALID_ID && mi.meshInstance) {
-                    auto& scene = sceneContextManager[sc.scene];
+                    auto& scene = sceneContextManager[sc.context];
                     scene.removeInstance(mi.meshInstance, false);
                     e.children([&](const flecs::entity child) {
                         if (child.has<Transform>() && child.has<MeshInstance>()) {
@@ -117,7 +117,7 @@ namespace lysa::ecs {
             .event(flecs::OnSet)
             .each([&](const Scene&sc, MeshInstance& mi, const MaterialOverride&mo) {
                if (mi.mesh != INVALID_ID && mi.meshInstance) {
-                    auto& scene = sceneContextManager[sc.scene];
+                    auto& scene = sceneContextManager[sc.context];
                     scene.removeInstance(mi.meshInstance, false);
                     mi.meshInstance = std::make_shared<MeshInstanceDesc>(*mi.meshInstance);
                     mi.meshInstance->materialsOverride[mo.surfaceIndex] = mo.material;
@@ -129,7 +129,7 @@ namespace lysa::ecs {
             .event(flecs::OnRemove)
             .each([&](const Scene&sc, MeshInstance& mi, const MaterialOverride&mo) {
                if (mi.mesh != INVALID_ID && mi.meshInstance) {
-                    auto& scene = sceneContextManager[sc.scene];
+                    auto& scene = sceneContextManager[sc.context];
                     scene.removeInstance(mi.meshInstance, false);
                     mi.meshInstance = std::make_shared<MeshInstanceDesc>(*mi.meshInstance);
                     mi.meshInstance->materialsOverride.erase(mo.surfaceIndex);
@@ -145,7 +145,7 @@ namespace lysa::ecs {
                     mi.meshInstance->visible = e.has<Visible>();
                     mi.meshInstance->worldAABB = meshManager[mi.mesh].getAABB().toGlobal(tr.global);
                     mi.meshInstance->worldTransform = tr.global;
-                    auto& scene = sceneContextManager[sc.scene];
+                    auto& scene = sceneContextManager[sc.context];
                     scene.updateInstance(mi.meshInstance);
                 }
             });
@@ -175,7 +175,7 @@ namespace lysa::ecs {
             .event(flecs::OnSet)
             .event(flecs::OnAdd)
             .each([&](const Scene& sc, const AmbientLight& al) {
-                auto& scene = sceneManager[sc.scene];
+                auto& scene = sceneManager[sc.context];
                 scene.setAmbientLight(float4(al.color, al.intensity));
             });
         w.observer<const RenderTarget, const CameraRef, const SceneRef>()
@@ -184,7 +184,7 @@ namespace lysa::ecs {
             .each([&](const flecs::entity e, const RenderTarget&rt, const CameraRef &cr, const SceneRef&sr) {
                 if (!renderTargetManager.have(rt.renderTarget)) return;
                 auto& renderTarget = renderTargetManager[rt.renderTarget];
-                auto& scene = sceneManager[sr.scene.get<Scene>().scene];
+                auto& scene = sceneManager[sr.scene.get<Scene>().context];
                 const auto camera = cr.camera.get<Camera>();
                 const auto cameraTransform = cr.camera.get<Transform>().global;
                 const auto cameraDesc = CameraDesc{

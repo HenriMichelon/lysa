@@ -77,7 +77,7 @@ export namespace lysa::ecs {
     };
 
     struct Scene {
-        unique_id scene{INVALID_ID};
+        unique_id context{INVALID_ID};
     };
 
     struct SceneRef {
