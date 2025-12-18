@@ -159,6 +159,7 @@ compile_options(xxhash)
 #######################################################
 if(WIN32)
     set(OS_SRC
+            ${ENGINE_SRC_DIR}/os/win32/DirectoryWatcher.cpp
             ${ENGINE_SRC_DIR}/os/win32/Input.cpp
             ${ENGINE_SRC_DIR}/os/win32/Main.cpp
             ${ENGINE_SRC_DIR}/os/win32/RenderingWindow.cpp
@@ -290,6 +291,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/AsyncPool.ixx
         ${ENGINE_SRC_DIR}/CommandBuffer.ixx
         ${ENGINE_SRC_DIR}/Context.ixx
+        ${ENGINE_SRC_DIR}/DirectoryWatcher.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Frustum.ixx

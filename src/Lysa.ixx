@@ -12,6 +12,7 @@ export import vireo;
 export import lysa.aabb;
 export import lysa.async_queue;
 export import lysa.context;
+export import lysa.directory_watcher;
 export import lysa.event;
 export import lysa.exception;
 export import lysa.utils;
