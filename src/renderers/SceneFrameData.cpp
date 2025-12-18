@@ -4,7 +4,7 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-module lysa.renderers.scene_render_context;
+module lysa.renderers.scene_frame_data;
 
 import lysa.exception;
 import lysa.log;
@@ -13,7 +13,7 @@ import lysa.resources.image;
 
 namespace lysa {
 
-    void SceneRenderContext::createDescriptorLayouts(
+    void SceneFrameData::createDescriptorLayouts(
         const std::shared_ptr<vireo::Vireo>& vireo,
         const uint32 maxShadowMaps) {
         sceneDescriptorLayout = vireo->createDescriptorLayout("Scene");
@@ -32,13 +32,13 @@ namespace lysa {
         GraphicPipelineData::createDescriptorLayouts(vireo);
     }
 
-    void SceneRenderContext::destroyDescriptorLayouts() {
+    void SceneFrameData::destroyDescriptorLayouts() {
         sceneDescriptorLayout.reset();
         sceneDescriptorLayoutOptional1.reset();
         GraphicPipelineData::destroyDescriptorLayouts();
     }
 
-    SceneRenderContext::SceneRenderContext(
+    SceneFrameData::SceneFrameData(
         const Context& ctx,
         const uint32 maxLights,
         const uint32 maxMeshInstancesPerScene,
@@ -87,13 +87,13 @@ namespace lysa {
         lightsBuffer->map();
     }
 
-    void SceneRenderContext::compute(vireo::CommandList& commandList, const CameraDesc& camera) const {
+    void SceneFrameData::compute(vireo::CommandList& commandList, const CameraDesc& camera) const {
         compute(camera, commandList, opaquePipelinesData);
         compute(camera, commandList, shaderMaterialPipelinesData);
         compute(camera, commandList, transparentPipelinesData);
     }
 
-    void SceneRenderContext::compute(
+    void SceneFrameData::compute(
         const CameraDesc& camera,
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {
@@ -114,7 +114,7 @@ namespace lysa {
         // }
     }
 
-    void SceneRenderContext::updatePipelinesData(
+    void SceneFrameData::updatePipelinesData(
         const vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
         for (const auto& [pipelineId, pipelineData] : pipelinesData) {
@@ -122,7 +122,7 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::prepare(
+    void SceneFrameData::prepare(
         const vireo::CommandList& commandList,
         const vireo::Viewport& viewport,
         const vireo::Rect& scissors) const {
@@ -130,7 +130,7 @@ namespace lysa {
         commandList.setScissors(scissors);
     }
 
-    void SceneRenderContext::update(
+    void SceneFrameData::update(
         const vireo::CommandList& commandList,
         const CameraDesc& camera) {
         if (!drawCommandsStagingBufferRecycleBin.empty()) {
@@ -227,7 +227,7 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::addInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+    void SceneFrameData::addInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
         const auto& mesh = meshInstance->mesh;
         assert([&]{ return !meshInstancesDataMemoryBlocks.contains(meshInstance);}, "Mesh instance already in the scene");
         assert([&]{return !mesh.getMaterials().empty(); }, "Models without materials are not supported");
@@ -264,7 +264,7 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::updateInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+    void SceneFrameData::updateInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
         if (meshInstance->pendingUpdates > 0) {
             const auto meshInstanceData = meshInstance->getData();
             meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
@@ -273,7 +273,7 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::addInstance(
+    void SceneFrameData::addInstance(
         pipeline_id pipelineId,
         const std::shared_ptr<MeshInstanceDesc>& meshInstance,
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
@@ -284,7 +284,7 @@ namespace lysa {
         pipelinesData[pipelineId]->addInstance(meshInstance, meshInstancesDataMemoryBlocks);
     }
 
-    void SceneRenderContext::removeInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+    void SceneFrameData::removeInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
         if (!meshInstancesDataMemoryBlocks.contains(meshInstance)) {
             return;
         }
@@ -302,21 +302,21 @@ namespace lysa {
         removedMeshInstances.push_back(meshInstance);
     }
 
-    void SceneRenderContext::drawOpaquesModels(
+    void SceneFrameData::drawOpaquesModels(
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const {
         if (opaquePipelinesData.empty()) { return; }
         drawModels(commandList, pipelines, opaquePipelinesData);
     }
 
-    void SceneRenderContext::drawTransparentModels(
+    void SceneFrameData::drawTransparentModels(
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const {
         if (transparentPipelinesData.empty()) { return; }
         drawModels(commandList, pipelines, transparentPipelinesData);
     }
 
-    void SceneRenderContext::drawShaderMaterialModels(
+    void SceneFrameData::drawShaderMaterialModels(
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const {
         if (shaderMaterialPipelinesData.empty()) { return; }
@@ -324,7 +324,7 @@ namespace lysa {
     }
 
 
-    void SceneRenderContext::drawModels(
+    void SceneFrameData::drawModels(
         vireo::CommandList& commandList,
         const uint32 set,
         const std::map<pipeline_id, std::shared_ptr<vireo::Buffer>>& culledDrawCommandsBuffers,
@@ -377,7 +377,7 @@ namespace lysa {
         }
     }
 
-    void SceneRenderContext::drawModels(
+    void SceneFrameData::drawModels(
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines,
         const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {

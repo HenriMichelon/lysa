@@ -13,7 +13,7 @@ import lysa.types;
 import lysa.renderers.configuration;
 import lysa.renderers.renderer;
 import lysa.renderers.renderpasses.forward_color;
-import lysa.renderers.scene_render_context;
+import lysa.renderers.scene_frame_data;
 
 export namespace lysa {
 
@@ -46,7 +46,7 @@ export namespace lysa {
         /** Records the forward color pass followed by transparency. */
         void colorPass(
             vireo::CommandList& commandList,
-            const SceneRenderContext& scene,
+            const SceneFrameData& scene,
             const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             bool clearAttachment,

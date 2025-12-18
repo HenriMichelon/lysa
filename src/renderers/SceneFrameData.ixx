@@ -4,20 +4,20 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.renderers.scene_render_context;
+export module lysa.renderers.scene_frame_data;
 
 import vireo;
 import lysa.context;
 import lysa.math;
 import lysa.memory;
-import lysa.pipelines.frustum_culling;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.resources.material;
 import lysa.resources.resource_manager;
+import lysa.renderers.pipelines.frustum_culling;
 
 export namespace lysa {
 
-    class SceneRenderContext {
+    class SceneFrameData {
     public:
          /** Descriptor binding for SceneData uniform buffer. */
         static constexpr vireo::DescriptorIndex BINDING_SCENE{0};
@@ -52,7 +52,7 @@ export namespace lysa {
             .size = sizeof(InstanceIndexConstant),
         };
 
-        SceneRenderContext(
+        SceneFrameData(
             const Context& ctx,
             uint32 maxLights,
             uint32 maxMeshInstancesPerScene,
@@ -129,8 +129,8 @@ export namespace lysa {
         /** Returns a view over the shadow map renderers values. */
         // auto getShadowMapRenderers() const { return std::views::values(shadowMapRenderers); }
 
-        SceneRenderContext(SceneRenderContext&) = delete;
-        SceneRenderContext& operator=(SceneRenderContext&) = delete;
+        SceneFrameData(SceneFrameData&) = delete;
+        SceneFrameData& operator=(SceneFrameData&) = delete;
 
     private:
         const Context& ctx;

@@ -14,8 +14,8 @@ import lysa.math;
 import lysa.memory;
 import lysa.resources.material;
 import lysa.resources.mesh;
-import lysa.pipelines.frustum_culling;
 import lysa.renderers.configuration;
+import lysa.renderers.pipelines.frustum_culling;
 
 export namespace lysa {
 

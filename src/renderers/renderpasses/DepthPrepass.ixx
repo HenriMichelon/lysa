@@ -10,7 +10,7 @@ import vireo;
 import lysa.context;
 import lysa.renderers.configuration;
 import lysa.renderers.renderpasses.renderpass;
-import lysa.renderers.scene_render_context;
+import lysa.renderers.scene_frame_data;
 import lysa.resources.material;
 
 export namespace lysa {
@@ -22,7 +22,7 @@ export namespace lysa {
 
         void render(
             vireo::CommandList& commandList,
-            const SceneRenderContext& scene,
+            const SceneFrameData& scene,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment);
 
     private:

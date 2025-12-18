@@ -9,7 +9,7 @@ export module lysa.resources.scene_context;
 import lysa.context;
 import lysa.math;
 import lysa.renderers.graphic_pipeline_data;
-import lysa.renderers.scene_render_context;
+import lysa.renderers.scene_frame_data;
 import lysa.resources.resource_manager;
 
 export namespace lysa {
@@ -53,7 +53,7 @@ export namespace lysa {
 
         void processDeferredOperations(uint32 frameIndex);
 
-        SceneRenderContext& operator [](const uint32 frameIndex) const { return *framesData[frameIndex].scene; }
+        SceneFrameData& operator [](const uint32 frameIndex) const { return *framesData[frameIndex].scene; }
 
     private:
         /** Per‑frame state and deferred operations processed at frame boundaries. */
@@ -69,7 +69,7 @@ export namespace lysa {
             /** Nodes to remove on the next frame (async path). */
             std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> removedNodesAsync;
             /** Scene instance associated with this frame. */
-            std::unique_ptr<SceneRenderContext> scene;
+            std::unique_ptr<SceneFrameData> scene;
         };
         const Context& ctx;
         const uint32 framesInFlight;

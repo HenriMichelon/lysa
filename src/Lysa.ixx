@@ -29,14 +29,13 @@ export import lysa.ecs.flecs;
 export import lysa.ecs.systems;
 #endif
 
-export import lysa.pipelines.frustum_culling;
-
 export import lysa.renderers.configuration;
 export import lysa.renderers.forward_renderer;
 export import lysa.renderers.global_descriptor_set;
 export import lysa.renderers.graphic_pipeline_data;
 export import lysa.renderers.renderer;
-export import lysa.renderers.scene_render_context;
+export import lysa.renderers.scene_frame_data;
+export import lysa.renderers.pipelines.frustum_culling;
 export import lysa.renderers.renderpasses.depth_prepass;
 export import lysa.renderers.renderpasses.forward_color;
 export import lysa.renderers.renderpasses.renderpass;

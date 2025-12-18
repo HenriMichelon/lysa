@@ -4,7 +4,7 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.pipelines.frustum_culling;
+export module lysa.renderers.pipelines.frustum_culling;
 
 import vireo;
 import lysa.context;

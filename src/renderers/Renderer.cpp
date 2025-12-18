@@ -43,7 +43,7 @@ namespace lysa {
         depthPrePass.update(frameIndex);
     }
 
-    void Renderer::updatePipelines(const SceneRenderContext& scene) {
+    void Renderer::updatePipelines(const SceneFrameData& scene) {
         const auto& pipelineIds = scene.getPipelineIds();
         // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
             // static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->updatePipelines(pipelineIds);
@@ -59,7 +59,7 @@ namespace lysa {
 
     void Renderer::compute(
        vireo::CommandList& commandList,
-       SceneRenderContext& scene,
+       SceneFrameData& scene,
        const CameraDesc& camera,
        const uint32 frameIndex) const {
         // auto resourcesLock = std::lock_guard{Application::getResources().getMutex()};
@@ -72,7 +72,7 @@ namespace lysa {
 
     void Renderer::prepare(
         vireo::CommandList& commandList,
-        const SceneRenderContext& scene,
+        const SceneFrameData& scene,
         const uint32 frameIndex) {
         commandList.bindVertexBuffer(meshManager.getVertexBuffer());
         commandList.bindIndexBuffer(meshManager.getIndexBuffer());
@@ -84,7 +84,7 @@ namespace lysa {
 
     void Renderer::render(
         vireo::CommandList& commandList,
-        const SceneRenderContext& scene,
+        const SceneFrameData& scene,
         const bool clearAttachment,
         const uint32 frameIndex) {
         const auto& frame = framesData[frameIndex];

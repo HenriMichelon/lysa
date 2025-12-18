@@ -24,7 +24,7 @@ namespace lysa {
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
         framesData.resize(framesInFlight);
         for (auto& data : framesData) {
-            data.scene =std::make_unique<SceneRenderContext>(
+            data.scene =std::make_unique<SceneFrameData>(
                 ctx,
                 maxLights,
                 maxMeshInstancesPerScene,

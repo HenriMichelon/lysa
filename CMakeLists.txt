@@ -256,14 +256,14 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Utils.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
 
-        ${ENGINE_SRC_DIR}/pipelines/FrustumCulling.cpp
 
         ${DEFERRED_RENDERER_SRC}
         ${FORWARD_RENDERER_SRC}
         ${ENGINE_SRC_DIR}/renderers/GlobalDescriptorSet.cpp
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.cpp
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
-        ${ENGINE_SRC_DIR}/renderers/SceneRenderContext.cpp
+        ${ENGINE_SRC_DIR}/renderers/SceneFrameData.cpp
+        ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
 
@@ -304,15 +304,14 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Utils.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
 
-        ${ENGINE_SRC_DIR}/pipelines/FrustumCulling.ixx
-
         ${FORWARD_RENDERER_MODULES}
         ${DEFERRED_RENDERER_MODULES}
         ${ENGINE_SRC_DIR}/renderers/Configuration.ixx
         ${ENGINE_SRC_DIR}/renderers/GlobalDescriptorSet.ixx
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.ixx
         ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
-        ${ENGINE_SRC_DIR}/renderers/SceneRenderContext.ixx
+        ${ENGINE_SRC_DIR}/renderers/SceneFrameData.ixx
+        ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
 

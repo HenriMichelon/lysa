@@ -9,7 +9,7 @@ module lysa;
 #ifdef ECS_SCENES
 import lysa.ecs.systems;
 #endif
-import lysa.renderers.scene_render_context;
+import lysa.renderers.scene_frame_data;
 
 namespace lysa {
 
@@ -43,7 +43,7 @@ namespace lysa {
     {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.globalDescriptorSet = globalDescriptors.getDescriptorSet();
-        SceneRenderContext::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
+        SceneFrameData::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
 #ifdef ECS_SCENES
         ctx.world.set<ecs::Context>({&ctx});
         ecsModules = std::make_unique<ecs::Modules>(ctx.world);
@@ -53,7 +53,7 @@ namespace lysa {
     Lysa::~Lysa() {
         ctx.graphicQueue->waitIdle();
         ecsModules.reset();
-        SceneRenderContext::destroyDescriptorLayouts();
+        SceneFrameData::destroyDescriptorLayouts();
         Renderpass::destroyShaderModules();
         FrustumCulling::cleanup();
     }

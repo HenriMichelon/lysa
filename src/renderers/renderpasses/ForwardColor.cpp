@@ -21,10 +21,10 @@ namespace lysa {
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
                    ctx.globalDescriptorLayout,
                    ctx.samplers.getDescriptorLayout(),
-                   SceneRenderContext::sceneDescriptorLayout,
+                   SceneFrameData::sceneDescriptorLayout,
                    GraphicPipelineData::pipelineDescriptorLayout,
-                   SceneRenderContext::sceneDescriptorLayoutOptional1},
-                   SceneRenderContext::instanceIndexConstantDesc, name);
+                   SceneFrameData::sceneDescriptorLayoutOptional1},
+                   SceneFrameData::instanceIndexConstantDesc, name);
         pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
         renderingConfig.colorRenderTargets[0].clearValue = {
             config.clearColor.r,
@@ -61,7 +61,7 @@ namespace lysa {
 
     void ForwardColor::render(
         vireo::CommandList& commandList,
-        const SceneRenderContext& scene,
+        const SceneFrameData& scene,
         const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
         const bool clearAttachment,

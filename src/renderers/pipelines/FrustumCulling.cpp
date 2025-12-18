@@ -4,7 +4,7 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-module lysa.pipelines.frustum_culling;
+module lysa.renderers.pipelines.frustum_culling;
 
 import lysa.log;
 import lysa.virtual_fs;

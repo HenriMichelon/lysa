@@ -21,10 +21,10 @@ namespace lysa {
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
             ctx.globalDescriptorLayout,
             ctx.samplers.getDescriptorLayout(),
-            SceneRenderContext::sceneDescriptorLayout,
+            SceneFrameData::sceneDescriptorLayout,
             GraphicPipelineData::pipelineDescriptorLayout,
-            SceneRenderContext::sceneDescriptorLayoutOptional1},
-            SceneRenderContext::instanceIndexConstantDesc, name);
+            SceneFrameData::sceneDescriptorLayoutOptional1},
+            SceneFrameData::instanceIndexConstantDesc, name);
         renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
     }
 
@@ -42,7 +42,7 @@ namespace lysa {
 
     void DepthPrepass::render(
         vireo::CommandList& commandList,
-        const SceneRenderContext& scene,
+        const SceneFrameData& scene,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment) {
         renderingConfig.depthStencilRenderTarget = depthAttachment;
         commandList.beginRendering(renderingConfig);
