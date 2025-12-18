@@ -38,7 +38,7 @@ namespace lysa {
         assert([&]{return surfaceIndex < surfaces.size();}, "Invalid surface index");
         surfaces[surfaceIndex].material = material;
         materials.insert(surfaces[surfaceIndex].material);
-        ctx.res.get<MeshManager>().upload(*this);
+        ctx.res.get<MeshManager>().upload(id);
     }
 
     bool Mesh::operator==(const Mesh &other) const {
@@ -97,9 +97,22 @@ namespace lysa {
         ctx.res.enroll(*this);
     }
 
-      void MeshManager::upload(const Mesh& mesh) {
-        // if (mesh.bypassUpload) { return; }
-        needUpload.insert(mesh.id);
+      void MeshManager::upload(const unique_id id) {
+        needUpload.insert(id);
+    }
+
+    Mesh& MeshManager::create(const std::vector<Vertex>& vertices,
+            const std::vector<uint32>& indices,
+            const std::vector<MeshSurface>&surfaces) {
+        auto& mesh =  allocate(std::make_unique<Mesh>(ctx, vertices, indices, surfaces));
+        upload(mesh.id);
+        return mesh;
+    }
+
+    Mesh& MeshManager::create() {
+        auto& mesh = allocate(std::make_unique<Mesh>(ctx));
+        upload(mesh.id);
+        return mesh;
     }
 
     void MeshManager::destroy(const unique_id id) {

@@ -70,6 +70,8 @@ export namespace lysa {
 
         void waitIdle() const { swapChain->waitIdle(); }
 
+        void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const;
+
     private:
         struct FrameData {
             /** Fence signaled when the frame's work has completed on GPU. */
@@ -124,6 +126,8 @@ export namespace lysa {
         void destroy(const void* renderingWindowHandle);
 
         void resize(const void* renderingWindowHandle) const;
+
+        void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const;
 
         void pause(const void* renderingWindowHandle, bool pause);
 

@@ -187,6 +187,19 @@ namespace lysa {
         ctx.res.enroll(*this);
     }
 
+    StandardMaterial& MaterialManager::create() {
+        auto& material = dynamic_cast<StandardMaterial&>(allocate(std::make_unique<StandardMaterial>(ctx)));
+        material.upload();
+        return material;
+    }
+
+
+    ShaderMaterial& MaterialManager::create(const std::shared_ptr<ShaderMaterial> &orig) {
+        auto& material = dynamic_cast<ShaderMaterial&>(allocate(std::make_unique<ShaderMaterial>(ctx, orig)));
+        material.upload();
+        return material;
+    }
+
     ShaderMaterial& MaterialManager::create(
         const std::string &fragShaderFileName,
         const std::string &vertShaderFileName) {

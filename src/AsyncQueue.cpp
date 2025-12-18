@@ -32,38 +32,38 @@ namespace lysa {
             auto lockCommands = std::lock_guard(commandsMutex);
             if (!commandsQueue.empty()) {
                 auto command = commandsQueue.front();
-                if (command.commandType == vireo::CommandType::TRANSFER) {
-                    // INFO("transfer command submit ", commandsQueue.size());
+                // if (command.commandType == vireo::CommandType::TRANSFER) {
+                    // Log::info("transfer command submit ", commandsQueue.size());
                     commandsQueue.pop_front();
                     submit(command);
-                }
+                // }
             }
         }
     }
-
-    void AsyncQueue::submitCommands() {
-        if (!commandsQueue.empty()) {
-            auto lockCommands = std::lock_guard(commandsMutex);
-            if (vireo->getDevice()->haveDedicatedTransferQueue()) {
-                auto it = commandsQueue.begin();
-                while (it != commandsQueue.end()) {
-                    auto& command = *it;
-                    if (command.commandType == vireo::CommandType::GRAPHIC) {
-                        // INFO("graphic command submit ", commandsQueue.size());
-                        submit(command);
-                        it = commandsQueue.erase(it);
-                    } else {
-                        ++it;
-                    }
-                }
-            } else {
-                for (auto& command : commandsQueue) {
-                    submit(command);
-                }
-                commandsQueue.clear();
-            }
-        }
-    }
+    //
+    // void AsyncQueue::submitCommands() {
+    //     if (!commandsQueue.empty()) {
+    //         auto lockCommands = std::lock_guard(commandsMutex);
+    //         if (vireo->getDevice()->haveDedicatedTransferQueue()) {
+    //             auto it = commandsQueue.begin();
+    //             while (it != commandsQueue.end()) {
+    //                 auto& command = *it;
+    //                 if (command.commandType == vireo::CommandType::GRAPHIC) {
+    //                     Log::info("graphic command submit ", commandsQueue.size());
+    //                     submit(command);
+    //                     it = commandsQueue.erase(it);
+    //                 } else {
+    //                     ++it;
+    //                 }
+    //             }
+    //         } else {
+    //             for (auto& command : commandsQueue) {
+    //                 submit(command);
+    //             }
+    //             commandsQueue.clear();
+    //         }
+    //     }
+    // }
 
     void AsyncQueue::submit(const Command& command) {
         submitFence->wait();

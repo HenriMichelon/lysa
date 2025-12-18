@@ -12,6 +12,7 @@ import lysa.virtual_fs;
 import lysa.resources.image;
 import lysa.resources.material;
 import lysa.resources.mesh;
+import lysa.resources.render_target;
 
 namespace lysa {
 
@@ -26,6 +27,8 @@ namespace lysa {
     }
 
     void AssetsPack::loadScene(Context& ctx, std::ifstream& stream) {
+        auto& materialManager = ctx.res.get<MaterialManager>();
+        auto& meshManager = ctx.res.get<MeshManager>();
         // Read the file global header
         stream.read(reinterpret_cast<std::istream::char_type *>(&header), sizeof(header));
         if (header.magic[0] != MAGIC[0] &&
@@ -65,8 +68,8 @@ namespace lysa {
 
         // Read the meshes & surfaces headers
         auto meshesHeaders = std::vector<MeshHeader>(header.meshesCount);
-        auto surfaceInfo = std::vector<std::vector<SurfaceInfo>> {header.meshesCount};
-        auto uvsInfos = std::vector<std::vector<std::vector<DataInfo>>> {header.meshesCount};
+        auto surfaceInfo = std::vector<std::vector<SurfaceInfo>> (header.meshesCount);
+        auto uvsInfos = std::vector<std::vector<std::vector<DataInfo>>> (header.meshesCount);
         for (auto meshIndex = 0; meshIndex < header.meshesCount; ++meshIndex) {
             stream.read(reinterpret_cast<std::istream::char_type *>(&meshesHeaders[meshIndex]), sizeof(MeshHeader));
             // print(meshesHeaders[meshIndex]);
@@ -154,7 +157,6 @@ namespace lysa {
         //     }
         // }
 
-
         // Read, upload and create the Image and Texture objets (Vireo specific)
         if (header.imagesCount > 0) {
             auto& asyncQueue = ctx.asyncQueue;
@@ -175,7 +177,7 @@ namespace lysa {
                 imageHeaders,
                 levelHeaders,
                 textureHeaders);
-            asyncQueue.endCommand(command);
+             asyncQueue.endCommand(command);
             const auto barriersCommand = asyncQueue.beginCommand(vireo::CommandType::GRAPHIC);
             for (auto textureIndex = 0; textureIndex < header.texturesCount; ++textureIndex) {
                 const auto& texture = textureHeaders[textureIndex];
@@ -194,11 +196,11 @@ namespace lysa {
 
         // Create the Material objects
         std::unordered_map<pipeline_id, std::vector<unique_id>> pipelineIds;
-        std::vector<unique_id> materials{header.materialsCount};
+        std::vector<unique_id> materials(header.materialsCount);
         std::map<unique_id, int> materialsTexCoords;
         for (auto materialIndex = 0; materialIndex < header.materialsCount; ++materialIndex) {
             auto& header = materialHeaders.at(materialIndex);
-            auto& material = ctx.res.get<MaterialManager>().create();
+            auto& material = materialManager.create();
             material.setBypassUpload(true);
             auto textureInfo = [&](const TextureInfo& info) {
                 auto texInfo = StandardMaterial::TextureInfo {
@@ -228,10 +230,10 @@ namespace lysa {
         }
 
         // Create the Mesh, Surface & Vertex objects
-        std::vector<unique_id> meshes{header.meshesCount};
+        std::vector<unique_id> meshes(header.meshesCount);
         for (auto meshIndex = 0; meshIndex < header.meshesCount; ++meshIndex) {
             auto& header   = meshesHeaders[meshIndex];
-            auto& mesh     = ctx.res.get<MeshManager>().create();
+            auto& mesh     = meshManager.create();
             auto& meshVertices = mesh.getVertices();
             auto& meshIndices  = mesh.getIndices();
             // print(header);
@@ -279,7 +281,7 @@ namespace lysa {
                     }
                 } else {
                     // Mesh have no material, use a default one
-                    const auto &material =  ctx.res.get<MaterialManager>().create();
+                    const auto &material =  materialManager.create();
                     surface.material = material.id;
                     mesh.getMaterials().insert(material.id);
                 }
@@ -310,6 +312,8 @@ namespace lysa {
             mesh.buildAABB();
             meshes[meshIndex] = mesh.id;
         }
+        materialManager.flush();
+        meshManager.flush();
         //Application::getResources().flush();
 
         // Create the Node objects
@@ -356,8 +360,8 @@ namespace lysa {
         //     }
         // }
 
-        // Update renderers pipelines
-        //Application::getInstance().updatePipelines(pipelineIds);
+        // Update renderers pipelines in current rendering targets
+        ctx.res.get<RenderTargetManager>().updatePipelines(pipelineIds);
     }
 
     std::vector<std::shared_ptr<vireo::Image>> AssetsPack::loadImagesAndTextures(

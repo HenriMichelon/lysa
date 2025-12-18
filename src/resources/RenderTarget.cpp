@@ -159,6 +159,10 @@ namespace lysa {
         swapChain->nextFrameIndex();
     }
 
+    void RenderTarget::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const {
+        renderer->updatePipelines(pipelineIds);
+    }
+
     RenderTargetManager::RenderTargetManager(Context& ctx, const size_t capacity, const uint32 framesInFlight) :
         ResourcesManager(ctx, capacity), framesInFlight(framesInFlight) {
         ctx.res.enroll(*this);
@@ -192,6 +196,12 @@ namespace lysa {
             if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
                 renderTarget->resize();
             }
+        }
+    }
+
+    void RenderTargetManager::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const {
+        for (const auto& renderTarget : getResources()) {
+            renderTarget->updatePipelines(pipelineIds);
         }
     }
 

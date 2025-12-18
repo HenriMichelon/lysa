@@ -15,7 +15,7 @@ import lysa.exception;
 namespace lysa {
 
     std::ifstream VirtualFS::openReadStream(const std::string &filepath) const {
-        std::ifstream file(getPath(filepath), std::ios::ate | std::ios::binary);
+        std::ifstream file(getPath(filepath), std::ios::binary);
         if (!file.is_open()) { throw Exception("Error: Could not open file ",  filepath); }
         return file;
     }

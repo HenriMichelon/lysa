@@ -190,9 +190,7 @@ export namespace lysa {
 
         Mesh& create(const std::vector<Vertex>& vertices,
              const std::vector<uint32>& indices,
-             const std::vector<MeshSurface>&surfaces) {
-            return allocate(std::make_unique<Mesh>(ctx, vertices, indices, surfaces));
-        }
+             const std::vector<MeshSurface>&surfaces);
 
 #ifdef LUA_BINDING
         Mesh& create( const luabridge::LuaRef& vertices,
@@ -200,11 +198,9 @@ export namespace lysa {
               const luabridge::LuaRef&surfaces) ;
 #endif
 
-        Mesh& create() {
-            return allocate(std::make_unique<Mesh>(ctx));
-        }
+        Mesh& create();
 
-        void upload(const Mesh& mesh);
+        void upload(unique_id id);
 
         void flush();
 

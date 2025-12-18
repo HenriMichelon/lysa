@@ -75,7 +75,7 @@ export namespace lysa {
          * Trigger submission of all pending commands. Usually invoked by the
          * engine tick; the background thread will also submit when woken.
          */
-        void submitCommands();
+        // void submitCommands();
 
         /**
          * Create a buffer that is tracked alongside the provided command so the

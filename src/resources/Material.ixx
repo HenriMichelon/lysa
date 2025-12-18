@@ -341,13 +341,9 @@ export namespace lysa {
 
         ~MaterialManager() override { cleanup(); }
 
-        StandardMaterial& create() {
-            return dynamic_cast<StandardMaterial&>(allocate(std::make_unique<StandardMaterial>(ctx)));
-        }
+        StandardMaterial& create();
 
-        ShaderMaterial& create(const std::shared_ptr<ShaderMaterial> &orig) {
-            return dynamic_cast<ShaderMaterial&>(allocate(std::make_unique<ShaderMaterial>(ctx, orig)));
-        }
+        ShaderMaterial& create(const std::shared_ptr<ShaderMaterial> &orig);
 
         ShaderMaterial& create(const std::string &fragShaderFileName,
                                const std::string &vertShaderFileName = "");

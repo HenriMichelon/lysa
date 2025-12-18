@@ -10,6 +10,7 @@ export import std;
 export import vireo;
 
 export import lysa.aabb;
+export import lysa.assets_pack;
 export import lysa.async_queue;
 export import lysa.context;
 export import lysa.directory_watcher;
