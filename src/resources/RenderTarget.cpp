@@ -133,9 +133,11 @@ namespace lysa {
 
         auto& commandList = frame.renderCommandList;
         commandList->begin();
+        auto clearAttachment{true};
         for (auto& view : views) {
             view.scene[frameIndex].prepare(*commandList, view.viewport, view.scissors);
-            renderer->render(*commandList, view.scene[frameIndex], true, frameIndex);
+            renderer->render(*commandList, view.scene[frameIndex], clearAttachment, frameIndex);
+            clearAttachment = false;
         }
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
