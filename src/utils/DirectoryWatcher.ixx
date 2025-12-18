@@ -13,6 +13,7 @@ export module lysa.directory_watcher;
 import std;
 import lysa.context;
 import lysa.event;
+import lysa.types;
 
 export namespace lysa {
 
@@ -23,7 +24,7 @@ export namespace lysa {
 
     class DirectoryWatcher {
     public:
-        DirectoryWatcher(Context& ctx, const std::string& uri);
+        DirectoryWatcher(Context& ctx, const std::string& uri, uint32 debounceTimer = 100);
 
         ~DirectoryWatcher();
 
@@ -33,12 +34,14 @@ export namespace lysa {
 
     private:
         Context& ctx;
+        const std::chrono::steady_clock::duration debounceTimer;
         std::thread worker;
         std::atomic_bool stopped{false};
 
         void run() const;
 
 #ifdef _WIN32
+        static constexpr auto filter{FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_SIZE};
         std::wstring directoryName;
         HANDLE directory{INVALID_HANDLE_VALUE};
         HANDLE stopEvent{nullptr};

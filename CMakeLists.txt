@@ -244,19 +244,19 @@ endif ()
 add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/AABB.cpp
         ${ENGINE_SRC_DIR}/AsyncQueue.cpp
-        ${ENGINE_SRC_DIR}/AsyncPool.cpp
-        ${ENGINE_SRC_DIR}/CommandBuffer.cpp
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Frustum.cpp
         ${ENGINE_SRC_DIR}/Input.cpp
-        ${ENGINE_SRC_DIR}/Log.cpp
         ${ENGINE_SRC_DIR}/Lysa.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
         ${ENGINE_SRC_DIR}/Memory.cpp
-        ${ENGINE_SRC_DIR}/Utils.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
 
+        ${ENGINE_SRC_DIR}/utils/AsyncPool.cpp
+        ${ENGINE_SRC_DIR}/utils/CommandBuffer.cpp
+        ${ENGINE_SRC_DIR}/utils/Log.cpp
+        ${ENGINE_SRC_DIR}/utils/Utils.cpp
 
         ${DEFERRED_RENDERER_SRC}
         ${FORWARD_RENDERER_SRC}
@@ -288,23 +288,24 @@ target_sources(${LYSA_TARGET}
     FILES
         ${ENGINE_SRC_DIR}/AABB.ixx
         ${ENGINE_SRC_DIR}/AsyncQueue.ixx
-        ${ENGINE_SRC_DIR}/AsyncPool.ixx
-        ${ENGINE_SRC_DIR}/CommandBuffer.ixx
         ${ENGINE_SRC_DIR}/Context.ixx
-        ${ENGINE_SRC_DIR}/DirectoryWatcher.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
         ${ENGINE_SRC_DIR}/Frustum.ixx
         ${ENGINE_SRC_DIR}/Input.ixx
         ${ENGINE_SRC_DIR}/InputEvent.ixx
-        ${ENGINE_SRC_DIR}/Log.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
         ${ENGINE_SRC_DIR}/Manager.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Memory.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
-        ${ENGINE_SRC_DIR}/Utils.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
+
+        ${ENGINE_SRC_DIR}/utils/AsyncPool.ixx
+        ${ENGINE_SRC_DIR}/utils/CommandBuffer.ixx
+        ${ENGINE_SRC_DIR}/utils/DirectoryWatcher.ixx
+        ${ENGINE_SRC_DIR}/utils/Log.ixx
+        ${ENGINE_SRC_DIR}/utils/Utils.ixx
 
         ${FORWARD_RENDERER_MODULES}
         ${DEFERRED_RENDERER_MODULES}
