@@ -103,6 +103,17 @@ export namespace lysa {
          * @param name Optional name
          */
         Image& create(
+            const std::shared_ptr<vireo::Image>& image,
+            const std::string& name = "Image");
+        /**
+         * Creates a bitmap from an array in memory
+         * @param data Pixels array
+         * @param width Width in pixels
+         * @param height Height in pixels
+         * @param imageFormat Pixel format
+         * @param name Optional name
+         */
+        Image& create(
             const void* data,
             uint32 width, uint32 height,
             vireo::ImageFormat imageFormat = vireo::ImageFormat::R8G8B8A8_SRGB,

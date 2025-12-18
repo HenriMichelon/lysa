@@ -68,6 +68,17 @@ namespace lysa {
     }
 
     Image& ImageManager::create(
+        const std::shared_ptr<vireo::Image>& image,
+        const std::string& name) {
+        if (isFull()) throw Exception("ImageManager : no more free slots");
+        auto& result = ResourcesManager::create(image, name);
+        result.index = result.id;
+        images[result.index] = image;
+        updated = true;
+        return result;
+    }
+
+    Image& ImageManager::create(
         const void* data,
         const uint32 width, const uint32 height,
         const vireo::ImageFormat imageFormat,
@@ -89,11 +100,7 @@ namespace lysa {
             ctx.graphicQueue->waitIdle();
         }
 
-        auto& result = ResourcesManager::create(image, name);
-        result.index = result.id;
-        images[result.index] = image;
-        updated = true;
-        return result;
+        return create(image, name);
     }
 
     Image& ImageManager::load(

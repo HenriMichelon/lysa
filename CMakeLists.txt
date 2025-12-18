@@ -244,6 +244,7 @@ endif ()
 add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/AABB.cpp
         ${ENGINE_SRC_DIR}/AsyncQueue.cpp
+        ${ENGINE_SRC_DIR}/AssetsPack.cpp
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
         ${ENGINE_SRC_DIR}/Frustum.cpp
@@ -288,6 +289,7 @@ target_sources(${LYSA_TARGET}
     FILES
         ${ENGINE_SRC_DIR}/AABB.ixx
         ${ENGINE_SRC_DIR}/AsyncQueue.ixx
+        ${ENGINE_SRC_DIR}/AssetsPack.ixx
         ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
