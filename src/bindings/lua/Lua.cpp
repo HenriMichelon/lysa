@@ -624,17 +624,17 @@ end
             .addFunction("destroy",&MeshManager::destroy)
         .endClass()
 
-        .beginClass<Scene>("Scene")
-            .addProperty("id", &Scene::id)
-            .addProperty("ambientLight", &Scene::getAmbientLight, &Scene::setAmbientLight)
+        .beginClass<SceneContext>("Scene")
+            .addProperty("id", &SceneContext::id)
+            .addProperty("ambientLight", &SceneContext::getAmbientLight, &SceneContext::setAmbientLight)
         .endClass()
-        .beginClass<SceneManager>("SceneManager")
-           .addFunction("create", +[](SceneManager* self) -> Scene& {
+        .beginClass<SceneContextManager>("SceneContextManager")
+           .addFunction("create", +[](SceneContextManager* self) -> SceneContext& {
                     return self->create();
             })
            .addFunction("get",
-             luabridge::nonConstOverload<const unique_id>(&SceneManager::operator[]),
-             luabridge::constOverload<const unique_id>(&SceneManager::operator[])
+             luabridge::nonConstOverload<const unique_id>(&SceneContextManager::operator[]),
+             luabridge::constOverload<const unique_id>(&SceneContextManager::operator[])
              )
         .endClass()
 
@@ -687,9 +687,9 @@ end
                 +[](const ResourcesRegistry* rl) -> MeshManager& {
                 return rl->get<MeshManager>();
             })
-            .addProperty("scene_manager",
-                +[](const ResourcesRegistry* rl) -> SceneManager& {
-                return rl->get<SceneManager>();
+            .addProperty("scene_context_manager",
+                +[](const ResourcesRegistry* rl) -> SceneContextManager& {
+                return rl->get<SceneContextManager>();
             })
         .endClass()
 

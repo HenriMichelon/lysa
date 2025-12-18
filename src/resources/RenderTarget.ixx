@@ -45,7 +45,7 @@ export namespace lysa {
         vireo::Viewport viewport;
         vireo::Rect scissors;
         const CameraDesc camera;
-        Scene& scene;
+        SceneContext& scene;
     };
 
     class RenderTarget : public Resource {

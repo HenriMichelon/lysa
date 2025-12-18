@@ -164,7 +164,7 @@ export namespace  lysa {
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
         MeshManager meshManager;
-        SceneManager sceneManager;
+        SceneContextManager sceneContextManager;
         GlobalDescriptorSet globalDescriptors;
 #ifdef ECS_SCENES
         std::unique_ptr<ecs::Modules> ecsModules;

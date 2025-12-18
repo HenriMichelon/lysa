@@ -14,7 +14,7 @@ import lysa.resources.resource_manager;
 
 export namespace lysa {
 
-    class Scene : public Resource {
+    class SceneContext : public Resource {
     public:
         /**
          * Constructs a Scene for a given configuration
@@ -27,7 +27,7 @@ export namespace lysa {
          * @param framesInFlight     Number of buffered frames.
          * @param maxShadowMaps
          */
-        Scene(
+        SceneContext(
             const Context& ctx,
             uint32 maxAsyncNodesUpdatedPerFrame,
             uint32 maxLights,
@@ -36,7 +36,7 @@ export namespace lysa {
             uint32 framesInFlight,
             uint32 maxShadowMaps);
 
-        ~Scene() override;
+        ~SceneContext() override;
 
         void setAmbientLight(const float4& ambientLight) { this->ambientLight = ambientLight; }
 
@@ -79,9 +79,9 @@ export namespace lysa {
         float4 ambientLight;
     };
 
-    class SceneManager : public ResourcesManager<Scene> {
+    class SceneContextManager : public ResourcesManager<SceneContext> {
     public:
-        SceneManager(
+        SceneContextManager(
             Context& ctx,
             size_t capacity,
             uint32 maxAsyncNodesUpdatedPerFrame,
@@ -91,11 +91,11 @@ export namespace lysa {
             uint32 maxShadowMaps,
             uint32 framesInFlight);
 
-        ~SceneManager() override {
+        ~SceneContextManager() override {
             cleanup();
         }
 
-        Scene& create();
+        SceneContext& create();
 
         uint32 getFramesInFlight() const { return framesInFlight; }
 
