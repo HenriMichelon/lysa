@@ -15,7 +15,7 @@ export namespace lysa {
         template<typename L>
         void push(L&& lambda) {
             auto lock = std::lock_guard(mutex);
-            pool.push_back(std::jthread(lambda));
+            pool.push_back(std::forward<L>(lambda));
         }
 
         void _process();

@@ -18,16 +18,16 @@ namespace lysa {
         queue.push_back(e);
     }
 
-    unique_id EventManager::subscribe(const event_type& type, const unique_id id, const EventHandlerCallback& callback) {
+    unique_id EventManager::subscribe(const event_type& type, const unique_id id, EventHandlerCallback callback) {
         auto lock = std::lock_guard(handlersMutex);
-        const auto handler = EventHandler{nextId++, callback};
+        const auto handler = EventHandler{nextId++, std::move(callback)};
         handlers[type][id].push_back(handler);
         return handler.id;
     }
 
-    unique_id EventManager::subscribe(const event_type& type, const EventHandlerCallback& callback) {
+    unique_id EventManager::subscribe(const event_type& type, EventHandlerCallback callback) {
         auto lock = std::lock_guard(globalHandlersMutex);
-        const auto handler = EventHandler{nextId++, callback};
+        const auto handler = EventHandler{nextId++, std::move(callback)};
         globalHandlers[type].push_back(handler);
         return handler.id;
     }

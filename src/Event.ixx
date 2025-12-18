@@ -62,14 +62,14 @@ export namespace lysa {
          * @param id The specific target id to filter on.
          * @param callback Reference to a callable receiving the event.
          */
-        unique_id subscribe(const event_type& type, unique_id id, const EventHandlerCallback& callback);
+        unique_id subscribe(const event_type& type, unique_id id, EventHandlerCallback callback);
 
         /**
          * @brief Subscribe a C++ handler to a given global event type
          * @param type The event kind to listen to.
          * @param callback Reference to a callable receiving the event.
          */
-        unique_id subscribe(const event_type& type, const EventHandlerCallback& callback);
+        unique_id subscribe(const event_type& type, EventHandlerCallback callback);
 
         /**
          * @brief Unsubscribe a C++ handler to a given global event type
