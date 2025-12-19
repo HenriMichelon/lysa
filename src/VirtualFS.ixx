@@ -50,6 +50,12 @@ export namespace lysa {
          */
         bool fileExists(const std::string &filepath) const;
 
+        /**
+         * Tests whether a directory exists at the given path or URI.
+         *
+         * @param dirPath URI.
+         * @return True if the file exists; false otherwise.
+         */
         bool directoryExists(const std::string& dirPath) const;
 
         /**

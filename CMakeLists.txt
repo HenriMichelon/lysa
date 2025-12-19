@@ -231,8 +231,8 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/Memory.cpp
         ${ENGINE_SRC_DIR}/VirtualFS.cpp
 
-        ${ENGINE_SRC_DIR}/utils/AsyncPool.cpp
-        ${ENGINE_SRC_DIR}/utils/CommandBuffer.cpp
+        ${ENGINE_SRC_DIR}/utils/AsyncTasksPool.cpp
+        ${ENGINE_SRC_DIR}/utils/DeferredTasksBuffer.cpp
         ${ENGINE_SRC_DIR}/utils/Log.cpp
         ${ENGINE_SRC_DIR}/utils/Utils.cpp
 
@@ -279,8 +279,8 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
 
-        ${ENGINE_SRC_DIR}/utils/AsyncPool.ixx
-        ${ENGINE_SRC_DIR}/utils/CommandBuffer.ixx
+        ${ENGINE_SRC_DIR}/utils/AsyncTasksPool.ixx
+        ${ENGINE_SRC_DIR}/utils/DeferredTasksBuffer.ixx
         ${ENGINE_SRC_DIR}/utils/DirectoryWatcher.ixx
         ${ENGINE_SRC_DIR}/utils/Log.ixx
         ${ENGINE_SRC_DIR}/utils/Utils.ixx

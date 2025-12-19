@@ -50,12 +50,12 @@ export namespace  lysa {
         /**
          * Deferred commands buffer
          */
-        CommandBuffer defer;
+        DeferredTasksBuffer defer;
 
         /**
          * Deferred commands buffer
          */
-        AsyncPool threads;
+        AsyncTasksPool threads;
 
         /**
          * Resource resolution and access facility.

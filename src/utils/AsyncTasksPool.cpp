@@ -8,7 +8,7 @@ module lysa.async_pool;
 
 namespace lysa {
 
-    void AsyncPool::_process() {
+    void AsyncTasksPool::_process() {
         if (!pool.empty()) {
             auto lock = std::lock_guard(mutex);
             for (auto it = pool.begin(); it != pool.end();) {
@@ -21,7 +21,7 @@ namespace lysa {
         }
     }
 
-    AsyncPool::~AsyncPool() {
+    AsyncTasksPool::~AsyncTasksPool() {
         for(auto&t : pool) {
             t.join();
         }

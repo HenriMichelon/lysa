@@ -8,7 +8,7 @@ module lysa.command_buffer;
 
 namespace lysa {
 
-    void CommandBuffer::_process() {
+    void DeferredTasksBuffer::_process() {
         {
             auto lock = std::scoped_lock (queueMutex);
             processingQueue.swap(queue);
@@ -19,7 +19,7 @@ namespace lysa {
         processingQueue.clear();
     }
 
-    CommandBuffer::CommandBuffer(const size_t reservedCapacity) {
+    DeferredTasksBuffer::DeferredTasksBuffer(const size_t reservedCapacity) {
         queue.reserve(reservedCapacity);
         processingQueue.reserve(reservedCapacity);
     }
