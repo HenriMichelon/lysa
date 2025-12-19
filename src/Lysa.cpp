@@ -6,9 +6,6 @@
 */
 module lysa;
 
-#ifdef ECS_SCENES
-import lysa.ecs.systems;
-#endif
 import lysa.renderers.scene_frame_data;
 
 namespace lysa {
@@ -70,10 +67,6 @@ namespace lysa {
             processPlatformEvents();
             ctx.events._process();
             uploadData();
-
-#ifdef ECS_SCENES
-            ctx.world.progress();
-#endif
 
             // https://gafferongames.com/post/fix_your_timestep/
             const double newTime = std::chrono::duration_cast<std::chrono::duration<double>>(
