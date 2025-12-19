@@ -249,15 +249,19 @@ export namespace lysa {
             // + keyCount * variant<float3, quat> keyValue
         };
 
+        using Callback = std::function<void(
+            const std::vector<NodeHeader>&,
+            std::vector<std::vector<uint32>>)>;
+
         /*
          * Load a scene from an assets pack file
          */
-        static void load(Context& ctx, const std::string &filename);
+        static void load(Context& ctx, const std::string &filename, const Callback& callback);
 
         /*
          * Load a scene from an assets pack data stream
          */
-        static void load(Context& ctx, std::ifstream &stream);
+        static void load(Context& ctx, std::ifstream &stream, const Callback& callback);
 
         AssetsPack() = default;
 
@@ -274,7 +278,7 @@ export namespace lysa {
         Header header{};
         std::vector<ImageTexture*> textures{};
 
-        void loadScene(Context& ctx, std::ifstream& stream);
+        void loadScene(Context& ctx, std::ifstream& stream, const Callback& callback);
 
         std::vector<std::shared_ptr<vireo::Image>> loadImagesAndTextures(
             Context& ctx,

@@ -16,17 +16,17 @@ import lysa.resources.render_target;
 
 namespace lysa {
 
-    void AssetsPack::load(Context& ctx, const std::string &filename) {
+    void AssetsPack::load(Context& ctx, const std::string &filename, const Callback& callback) {
         auto stream = ctx.fs.openReadStream(filename);
-        return load(ctx, stream);
+        return load(ctx, stream, callback);
     }
 
-    void AssetsPack::load(Context& ctx,  std::ifstream &stream) {
+    void AssetsPack::load(Context& ctx,  std::ifstream &stream, const Callback& callback) {
         AssetsPack loader;
-        loader.loadScene(ctx, stream);
+        loader.loadScene(ctx, stream, callback);
     }
 
-    void AssetsPack::loadScene(Context& ctx, std::ifstream& stream) {
+    void AssetsPack::loadScene(Context& ctx, std::ifstream& stream, const Callback& callback) {
         auto& materialManager = ctx.res.get<MaterialManager>();
         auto& meshManager = ctx.res.get<MeshManager>();
         // Read the file global header
@@ -314,7 +314,11 @@ namespace lysa {
         }
         materialManager.flush();
         meshManager.flush();
+
+        callback(nodeHeaders, childrenIndexes);
+
         //Application::getResources().flush();
+
 
         // Create the Node objects
         // std::vector<std::shared_ptr<Node>> nodes{(header.nodesCount)};
