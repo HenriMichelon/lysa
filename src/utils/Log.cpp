@@ -15,7 +15,7 @@ namespace lysa {
 
     std::unique_ptr<Log> Log::loggingStreams{nullptr};
 
-    void Log::_init(const LoggingConfiguration &loggingConfiguration) {
+    void Log::init(const LoggingConfiguration &loggingConfiguration) {
         if (loggingStreams != nullptr) { return; }
         loggingStreams = std::make_unique<Log>(loggingConfiguration);
         if (loggingStreams->loggingConfiguration.loggingMode & LOGGING_MODE_FILE) {
@@ -27,7 +27,7 @@ namespace lysa {
         log("START OF LOG");
     }
 
-    void Log::_shutdown() {
+    void Log::shutdown() {
         log("END OF LOG");
         if (loggingStreams->loggingConfiguration.loggingMode & LOGGING_MODE_FILE) {
             fclose(loggingStreams->logFile);

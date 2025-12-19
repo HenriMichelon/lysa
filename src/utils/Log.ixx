@@ -100,9 +100,9 @@ export namespace lysa {
      */
     class Log {
     public:
-        static void _init(const LoggingConfiguration &loggingConfiguration);
+        static void init(const LoggingConfiguration &loggingConfiguration);
 
-        static void _shutdown();
+        static void shutdown();
 
         /**
          * @brief Compile-time switch indicating whether logging produces output.
