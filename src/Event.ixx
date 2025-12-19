@@ -22,11 +22,11 @@ export namespace lysa {
      * @brief %Event message.
      */
     struct Event {
-        //! Event source or target, if any
+        /** @brief Event source or target, if any. */
         unique_id id{INVALID_ID};
-        //! Event type name
+        /** @brief Event type name. */
         event_type type;
-        //! Event payload
+        /** @brief Event payload. */
         std::any payload;
     };
 
@@ -36,8 +36,13 @@ export namespace lysa {
      */
     using EventHandlerCallback = std::function<void(const Event&)>;
 
+    /**
+     * @brief Internal structure for an event handler.
+     */
     struct EventHandler {
+        /** @brief The unique identifier of the handler. */
         unique_id id;
+        /** @brief The callback function to be executed. */
         EventHandlerCallback fn;
     };
 
@@ -102,8 +107,19 @@ export namespace lysa {
          */
         void subscribe(const event_type& type, const luabridge::LuaRef& handler);
 
+        /**
+         * @brief Unsubscribe a Lua handler to a given event type and target id.
+         * @param type The event kind.
+         * @param id The specific target id.
+         * @param handler Previously registered Lua handler.
+         */
         void unsubscribe(const event_type& type,  unique_id id, const luabridge::LuaRef& handler);
 
+        /**
+         * @brief Unsubscribe a Lua handler to a given global event type.
+         * @param type The event kind.
+         * @param handler Previously registered Lua handler.
+         */
         void unsubscribe(const event_type& type, const luabridge::LuaRef& handler);
 
 #endif
@@ -111,33 +127,40 @@ export namespace lysa {
         void _process();
 
         /**
-         * Execute all handlers attached to a global event type
+         * @brief Immediately deliver an event to all interested handlers.
+         * @param event The event to fire.
          */
         void fire(const Event& event);
 
+        /**
+         * @brief Creates an EventManager with an initial capacity for the event queue.
+         * @param reservedCapacity The initial number of events to reserve space for.
+         */
         EventManager(size_t reservedCapacity);
+
         ~EventManager();
 
     private:
-        // Pending of resources events waiting to be processed.
+        /*Pending events waiting to be processed. */
         std::vector<Event> queue;
-        // Backup of resources events for processing without blocking too much the queue
+        /* Backup of events for processing without blocking the main queue. */
         std::vector<Event> processingQueue;
-        // Protect the resources events queue during data copy
+        /* Protects the event queue during data operations. */
         std::mutex queueMutex;
-        // C++ subscribers to global events
+        /* C++ subscribers to global events. */
         std::unordered_map<event_type, std::vector<EventHandler>> globalHandlers{};
-        // Protect the global events subscribers map
+        /* Protects the global events subscribers map. */
         std::mutex globalHandlersMutex;
-        // C++ subscribers to resources events
+        /* C++ subscribers to targeted events. */
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<EventHandler>>> handlers{};
-        // Protect the resources events subscribers map
+        /* Protects the targeted events subscribers map. */
         std::mutex handlersMutex;
+        /* The identifier to be assigned to the next subscriber. */
         std::atomic<unique_id> nextId{1};
 #ifdef LUA_BINDING
-        // Lua subscribers to global events
+        /* Lua subscribers to global events. */
         std::unordered_map<event_type, std::vector<luabridge::LuaRef>> globalHandlersLua{};
-        // Lua subscribers resources events
+        /* Lua subscribers to targeted events. */
         std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<luabridge::LuaRef>>> handlersLua{};
 #endif
     };

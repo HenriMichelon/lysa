@@ -115,9 +115,8 @@ namespace lysa {
                 if ((changed != lastFileName) ||
                     ((now - lastFileTime) > debounceTimer)) {
                     ctx.events.fire({
-                        INVALID_ID,
-                        DirectoryWatcherEvent::FILE_CHANGE,
-                        to_string(changed)}
+                        .type = DirectoryWatcherEvent::FILE_CHANGE,
+                        .payload = to_string(changed)}
                     );
                     lastFileName = std::move(changed);
                     lastFileTime = now;
