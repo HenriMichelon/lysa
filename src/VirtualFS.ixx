@@ -50,6 +50,8 @@ export namespace lysa {
          */
         bool fileExists(const std::string &filepath) const;
 
+        bool directoryExists(const std::string& dirPath) const;
+
         /**
          * Opens an input stream for reading the file at path or URI.
          *

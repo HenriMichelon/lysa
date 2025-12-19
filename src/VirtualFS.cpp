@@ -131,4 +131,9 @@ namespace lysa {
         loadBinaryData(file, out);
     }
 
+    bool VirtualFS::directoryExists(const std::string& dirPath) const {
+        std::error_code ec;
+        return std::filesystem::is_directory(getPath(dirPath), ec);
+    }
+
 }
