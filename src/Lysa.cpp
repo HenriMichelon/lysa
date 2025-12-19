@@ -44,15 +44,10 @@ namespace lysa {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.globalDescriptorSet = globalDescriptors.getDescriptorSet();
         SceneFrameData::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
-#ifdef ECS_SCENES
-        ctx.world.set<ecs::Context>({&ctx});
-        ecsModules = std::make_unique<ecs::Modules>(ctx.world);
-#endif
     }
 
     Lysa::~Lysa() {
         ctx.graphicQueue->waitIdle();
-        ecsModules.reset();
         SceneFrameData::destroyDescriptorLayouts();
         Renderpass::destroyShaderModules();
         FrustumCulling::cleanup();

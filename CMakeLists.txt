@@ -20,7 +20,6 @@ endif()
 set(LYSA_TARGET ${PROJECT_NAME})
 set(DIRECTX_BACKEND ON)
 set(LUA_BINDING ON)
-set(ECS_SCENES ON)
 set(PHYSIC_ENGINE_JOLT ON)
 set(PHYSIC_ENGINE_PHYSX OFF)
 set(FORWARD_RENDERER ON)
@@ -36,9 +35,6 @@ endif()
 if (LUA_BINDING)
     add_compile_definitions(LUA_BINDING)
 endif ()
-if (ECS_SCENES)
-    add_compile_definitions(ECS_SCENES)
-endif ()
 
 #######################################################
 if(NOT FORWARD_RENDERER AND NOT DEFERRED_RENDERER)
@@ -51,7 +47,6 @@ if (DEFERRED_RENDERER)
     add_compile_definitions(DEFERRED_RENDERER)
 endif ()
 
-
 #######################################################
 if(WIN32)
     if(MSVC)
@@ -59,12 +54,11 @@ if(WIN32)
     endif()
     add_compile_definitions(UNICODE _UNICODE)
 endif ()
+
 #######################################################
 function(lysa_compile_options TARGET_NAME )
     compile_options(${TARGET_NAME})
-    if (MSVC)
-        target_compile_options(${TARGET_NAME} PRIVATE /wd4291) # for Flecs 'new' placement operator
-    endif()
+    target_compile_options(${TARGET_NAME} PRIVATE /wd4291) # for Flecs 'new' placement operator
 endfunction()
 
 #######################################################
@@ -95,11 +89,10 @@ include(cmake/libraries.cmake)
 include(cmake/shaders.cmake)
 
 #######################################################
-add_subdirectory(${VIREO_PROJECT_DIR} external_lib_build)
 set(VIREO_TARGET "vireo_rhi")
+add_subdirectory(${VIREO_PROJECT_DIR} external_lib_build/${VIREO_TARGET})
 
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(ENGINE_SRC_DIR ${SRC_DIR})
 set(SHADERS_SRC_DIR ${ENGINE_SRC_DIR}/shaders)
 set(SHADERS_INCLUDE_DIR ${ENGINE_SRC_DIR}/shaders/include)
@@ -225,22 +218,6 @@ if(DEFERRED_RENDERER)
 endif ()
 
 #######################################################
-if(ECS_SCENES)
-    set(ECS_SCENES_SRC
-            ${ENGINE_SRC_DIR}/ecs/components/Components.cpp
-            ${ENGINE_SRC_DIR}/ecs/components/Transform.cpp
-            ${ENGINE_SRC_DIR}/ecs/systems/Systems.cpp
-            ${ENGINE_SRC_DIR}/ecs/systems/Transform.cpp
-            ${DEPENDS_SRC_DIR}/flecs/src/flecs.c
-    )
-    set(ECS_SCENES_MODULES
-            ${ENGINE_SRC_DIR}/ecs/Flecs.ixx
-            ${ENGINE_SRC_DIR}/ecs/components/Components.ixx
-            ${ENGINE_SRC_DIR}/ecs/components/Transform.ixx
-            ${ENGINE_SRC_DIR}/ecs/systems/Systems.ixx
-    )
-endif ()
-#######################################################
 add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/AABB.cpp
         ${ENGINE_SRC_DIR}/AsyncQueue.cpp
@@ -280,7 +257,6 @@ add_library(${LYSA_TARGET} STATIC
         ${OS_SRC}
         ${PHYSICS_SRC}
         ${LUA_BINDINGS_SRC}
-        ${ECS_SCENES_SRC}
         ${DEPENDS_SRC_DIR}/stb/stb.cpp
 )
 target_sources(${LYSA_TARGET}
@@ -334,7 +310,6 @@ target_sources(${LYSA_TARGET}
         ${OS_MODULES}
         ${PHYSICS_MODULES}
         ${LUA_BINDINGS_MODULES}
-        ${ECS_SCENES_MODULES}
 )
 lysa_compile_options(${LYSA_TARGET})
 target_include_directories(${LYSA_TARGET} PUBLIC
@@ -342,10 +317,8 @@ target_include_directories(${LYSA_TARGET} PUBLIC
         ${HLSLPP_SRC_DIR}/include
         ${xxhash_SOURCE_DIR}
         ${DEPENDS_SRC_DIR}
-        ${DEPENDS_SRC_DIR}/flecs
         ${DEPENDS_SRC_DIR}/json
         ${DEPENDS_SRC_DIR}/stb
-        ${flecs_lua_SOURCE_DIR}/include
         ${freetype_SOURCE_DIR}/include
         ${harfbuzz_SOURCE_DIR}/src
         ${msdfgen_SOURCE_DIR}
