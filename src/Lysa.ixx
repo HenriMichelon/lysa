@@ -110,10 +110,10 @@ export namespace  lysa {
     * Global events fired during the main loop
     */
     struct MainLoopEvent : Event {
-        //! Fired on time per frame computed alpha time
-        static inline const event_type PROCESS{"MAIN_LOOP_PROCESS"};
-        //! Fired multiple times per frame with fixed delta time
+        //! Fired multiple times per frame with the fixed delta time
         static inline const event_type PHYSICS_PROCESS{"MAIN_LOOP_PHYSICS_PROCESS"};
+        //! Fired on time per frame after the physics with the remaining frame time
+        static inline const event_type PROCESS{"MAIN_LOOP_PROCESS"};
         //! Fired just after the main loop exit, but before resources destruction's
         static inline const event_type QUIT{"MAIN_LOOP_QUIT"};
     };
