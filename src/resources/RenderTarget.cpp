@@ -77,7 +77,7 @@ namespace lysa {
             frame.prepareCommandList->end();
             ctx.graphicQueue->submit({frame.prepareCommandList});
             ctx.graphicQueue->waitIdle();
-            ctx.events.push({id, static_cast<event_type>(RenderTargetEvent::RESIZED)});
+            ctx.events.push({id, static_cast<event_type>(RenderTargetEvent::RESIZED), newExtent});
         }
     }
 
