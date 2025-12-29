@@ -250,8 +250,9 @@ export namespace lysa {
         };
 
         using Callback = std::function<void(
-            const std::vector<NodeHeader>&,
-            std::vector<std::vector<uint32>>)>;
+            const std::vector<NodeHeader>& nodeHeaders,
+            const std::vector<unique_id>& meshes,
+            const std::vector<std::vector<uint32>>& childrenIndexes)>;
 
         /*
          * Load a scene from an assets pack file

@@ -29,11 +29,11 @@ namespace lysa {
             config.resourcesCapacity.indices,
             config.resourcesCapacity.surfaces),
         sceneContextManager(ctx,
+            config.resourcesCapacity.scenes,
             config.asyncObjectUpdatesPerFrame,
             config.resourcesCapacity.lightsPerScene,
             config.resourcesCapacity.meshInstancesPerScene,
             config.resourcesCapacity.meshSurfacePerPipeline,
-            config.resourcesCapacity.scenes,
             config.resourcesCapacity.shadowMapsPerScene,
             config.framesInFlight),
         globalDescriptors(ctx)

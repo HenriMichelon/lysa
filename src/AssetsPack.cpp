@@ -315,7 +315,7 @@ namespace lysa {
         materialManager.flush();
         meshManager.flush();
 
-        callback(nodeHeaders, childrenIndexes);
+        callback(nodeHeaders, meshes, childrenIndexes);
 
         //Application::getResources().flush();
 
