@@ -56,7 +56,7 @@ export namespace lysa {
          * @return T& Reference to the resource.
          */
         inline T& operator[](const unique_id id) {
-            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
+            assert([&]{ return have(id); }, name  + " : invalid id ");
             return *resources[id];
         }
 
@@ -66,13 +66,13 @@ export namespace lysa {
          * @return const T& Const reference to the resource.
          */
         inline const T& operator[](const unique_id id) const {
-            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
+            assert([&]{ return have(id); }, name  + " : invalid id ");
             return *resources[id];
         }
 
         virtual ~ResourcesManager() {
             assert([&]{ return freeList.size() == resources.size(); },
-                "ResourcesManager : resources still in use");
+                name  + " : resources still in use");
         }
 
         ResourcesManager(ResourcesManager&) = delete;
@@ -80,7 +80,7 @@ export namespace lysa {
 
         // Release a resource, returning its slot to the free list.
         virtual bool destroy(const unique_id id) {
-            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
+            assert([&]{ return have(id); }, name  + " : invalid id ");
             if (resources[id]->refCounter <= 1) {
                 resources[id].reset();
                 freeList.push_back(id);
@@ -92,7 +92,7 @@ export namespace lysa {
 
         // Increment the reference counter of the resources
         void use(const unique_id id) {
-            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
+            assert([&]{ return have(id); }, name  + " : invalid id ");
             resources[id]->refCounter += 1;
         }
 
@@ -108,9 +108,10 @@ export namespace lysa {
         CTX& ctx;
 
         // Construct a manager with a fixed number of slots.
-        ResourcesManager(CTX& ctx,const size_t capacity) :
+        ResourcesManager(CTX& ctx, const size_t capacity, const std::string& name) :
             ctx(ctx),
-            resources(capacity) {
+            resources(capacity),
+            name(name) {
             for (auto id = capacity; id > 0; --id) {
                 freeList.push_back(id-1);
             }
@@ -118,7 +119,7 @@ export namespace lysa {
 
         // Allocate a new resource
         T& allocate(std::unique_ptr<T> instance) {
-            if (isFull()) throw Exception("ResourcesManager : no more free slots");
+            assert([&]{ return !isFull(); }, name  + " : no more free slots");
             auto id = freeList.back();
             freeList.pop_back();
             resources[id] = std::move(instance);
@@ -138,6 +139,8 @@ export namespace lysa {
         }
 
     private:
+        // Name for debug & error messages
+        const std::string name;
         // Stack-like list of free slot IDs available for future creations.
         std::vector<unique_id> freeList{};
     };

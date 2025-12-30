@@ -212,7 +212,7 @@ namespace lysa {
     }
 
     MaterialManager::MaterialManager(Context& ctx, const size_t capacity) :
-        ResourcesManager(ctx, capacity),
+        ResourcesManager(ctx, capacity, "MaterialManager"),
         memoryArray {
             ctx.vireo,
             sizeof(MaterialData),

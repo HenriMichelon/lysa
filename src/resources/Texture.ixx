@@ -91,7 +91,8 @@ export namespace lysa {
          * @param ctx Instance wide context
          * @param capacity Initial capacity
          */
-        ImageTextureManager(Context& ctx, const unique_id capacity) : ResourcesManager(ctx, capacity) {
+        ImageTextureManager(Context& ctx, const unique_id capacity) :
+            ResourcesManager(ctx, capacity, "ImageTextureManager") {
             ctx.res.enroll(*this);
         }
 

@@ -164,7 +164,8 @@ namespace lysa {
     }
 
     RenderTargetManager::RenderTargetManager(Context& ctx, const size_t capacity, const uint32 framesInFlight) :
-        ResourcesManager(ctx, capacity), framesInFlight(framesInFlight) {
+        ResourcesManager(ctx, capacity, "RenderTargetManager"),
+        framesInFlight(framesInFlight) {
         ctx.res.enroll(*this);
     }
 

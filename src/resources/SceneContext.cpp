@@ -138,7 +138,7 @@ namespace lysa {
         const uint32 maxMeshSurfacePerPipeline,
         const uint32 maxShadowMaps,
         const uint32 framesInFlight) :
-        ResourcesManager(ctx, capacity),
+        ResourcesManager(ctx, capacity, "SceneContextManager"),
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame),
         maxLights(maxLights),
         maxMeshInstancesPerScene(maxMeshInstancesPerScene),

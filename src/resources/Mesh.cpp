@@ -79,7 +79,7 @@ namespace lysa {
         const size_t vertexCapacity,
         const size_t indexCapacity,
         const size_t surfaceCapacity) :
-        ResourcesManager(ctx, capacity),
+        ResourcesManager(ctx, capacity, "MeshManager"),
         materialManager(ctx.res.get<MaterialManager>()),
         vertexArray {
             ctx.vireo,
