@@ -16,8 +16,8 @@ import lysa.resources.render_target;
 
 namespace lysa {
 
-    void AssetsPack::load(Context& ctx, const std::string &filename, const Callback& callback) {
-        auto stream = ctx.fs.openReadStream(filename);
+    void AssetsPack::load(Context& ctx, const std::string &fileURI, const Callback& callback) {
+        auto stream = ctx.fs.openReadStream(fileURI);
         return load(ctx, stream, callback);
     }
 
