@@ -264,9 +264,33 @@ return {
     ---@field modifiers integer
     InputEventKey = lysa.InputEventKey,
 
+    ---@class lysa.InputEventMouseMotion
+    ---@field position lysa.float2
+    ---@field buttonsState integer
+    ---@field modifiers integer
+    ---@field relative lysa.float2
+    InputEventMouseMotion = lysa.InputEventMouseMotion,
+
+    ---@class lysa.MouseButton
+    ---@field LEFT integer
+    ---@field RIGHT integer
+    ---@field MIDDLE integer
+    ---@field WHEEL integer
+    MouseButton = lysa.MouseButton,
+
+    ---@class lysa.InputEventMouseButton
+    ---@field position lysa.float2
+    ---@field buttonsState integer
+    ---@field modifiers integer
+    ---@field button lysa.MouseButton
+    ---@field pressed boolean
+    InputEventMouseButton = lysa.InputEventMouseButton,
+
     ---@class lysa.InputEvent
     ---@field type integer
     ---@field input_event_key lysa.InputEventKey
+    ---@field input_event_mouse_motion lysa.InputEventMouseMotion
+    ---@field input_event_mouse_button lysa.InputEventMouseButton
     InputEvent = lysa.InputEvent,
 
     ---@class lysa.Event
@@ -299,6 +323,20 @@ return {
     ------------------------------------------------------------------------
     -- Rendering windows
     ------------------------------------------------------------------------
+
+    ---@class lysa.MouseMode
+    ---@field VISIBLE integer
+    ---@field VISIBLE_CAPTURED integer
+    ---@field HIDDEN integer
+    ---@field HIDDEN_CAPTURED integer
+    MouseMode = lysa.MouseMode,
+
+    ---@class lysa.MouseCursor
+    ---@field ARROW integer
+    ---@field WAIT integer
+    ---@field RESIZE_H integer
+    ---@field RESIZE_V integer
+    MouseCursor = lysa.MouseCursor,
 
     ---@class lysa.RenderingWindowMode
     ---@field WINDOWED integer
@@ -339,6 +377,11 @@ return {
     ---@field platform_handle lightuserdata
     ---@field show fun(self:lysa.RenderingWindow):nil
     ---@field close fun(self:lysa.RenderingWindow):nil
+    ---@field set_mouse_mode fun(self:lysa.RenderingWindow, mode:integer):nil
+    ---@field set_mouse_cursor fun(self:lysa.RenderingWindow, cursor:integer):nil
+    ---@field reset_mouse_position fun(self:lysa.RenderingWindow):nil
+    ---@field get_mouse_position fun(self:lysa.RenderingWindow):lysa.float2
+    ---@field set_mouse_position fun(self:lysa.RenderingWindow, pos:lysa.float2):nil
     RenderingWindow = lysa.RenderingWindow,
 
     ---@class lysa.RenderingWindowManager
