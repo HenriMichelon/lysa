@@ -339,7 +339,9 @@ export namespace lysa {
          */
         MaterialManager(Context& ctx, size_t capacity);
 
-        ~MaterialManager() override { cleanup(); }
+        ~MaterialManager() override {
+            cleanup();
+        }
 
         StandardMaterial& create();
 
@@ -354,7 +356,7 @@ export namespace lysa {
 
         auto getBuffer() const { return memoryArray.getBuffer(); }
 
-        void destroy(unique_id id) override;
+        bool destroy(unique_id id) override;
 
     private:
         /** GPU memory array that stores material description blocks for shaders. */

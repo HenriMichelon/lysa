@@ -267,6 +267,7 @@ namespace lysa {
                     // associate material to surface & mesh
                     const auto& material = materials[info.materialIndex];
                     surface.material = material;
+                    materialManager.use(material);
                     mesh.getMaterials().insert(material);
                     // load UVs
                     auto texCoord = 0;
@@ -283,6 +284,7 @@ namespace lysa {
                     // Mesh have no material, use a default one
                     const auto &material =  materialManager.create();
                     surface.material = material.id;
+                    materialManager.use(material.id);
                     mesh.getMaterials().insert(material.id);
                 }
                 // calculate missing tangents

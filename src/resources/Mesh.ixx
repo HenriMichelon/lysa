@@ -85,6 +85,8 @@ export namespace lysa {
 
         Mesh(Context& ctx) : ctx(ctx) {}
 
+        ~Mesh() override;
+
          /**
          * Returns the material for a given surface
          * @param surfaceIndex Zero-based index of the surface
@@ -210,7 +212,7 @@ export namespace lysa {
 
         auto getIndexBuffer() const { return indexArray.getBuffer(); }
 
-        void destroy(unique_id id) override;
+        bool destroy(unique_id id) override;
 
     private:
         MaterialManager& materialManager;

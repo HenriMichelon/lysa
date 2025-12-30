@@ -7,6 +7,7 @@
 export module lysa.resources.manager;
 
 import lysa.exception;
+import lysa.log;
 import lysa.types;
 
 export namespace lysa {
@@ -15,6 +16,7 @@ export namespace lysa {
     public:
         //! Unique ID
         unique_id id{INVALID_ID};
+        //! References counter
         uint32 refCounter{0};
 
         Resource() = default;
@@ -22,7 +24,6 @@ export namespace lysa {
         Resource& operator = (Resource&) = delete;
         virtual ~Resource() = default;
     };
-
 
     /**
      * @brief Generic object/resources manager using ID-based access.
@@ -65,26 +66,34 @@ export namespace lysa {
          * @return const T& Const reference to the resource.
          */
         inline const T& operator[](const unique_id id) const {
-            assert([&]{ return have(id); }, "Manager : invalid id ");
+            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
             return *resources[id];
         }
 
         virtual ~ResourcesManager() {
-            assert([&]{ return freeList.size() == resources.size(); }, "Manager : cleanup() not called");
+            assert([&]{ return freeList.size() == resources.size(); },
+                "ResourcesManager : cleanup() not called or resources still in use (refCounter > 0)");
         }
 
         ResourcesManager(ResourcesManager&) = delete;
         ResourcesManager& operator=(ResourcesManager&) = delete;
 
         // Release a resource, returning its slot to the free list.
-        virtual void destroy(const unique_id id) {
-            assert([&]{ return have(id); }, "Manager : invalid id ");
-            if (resources[id]->refCounter == 0) {
+        virtual bool destroy(const unique_id id) {
+            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
+            if (resources[id]->refCounter <= 1) {
                 resources[id].reset();
                 freeList.push_back(id);
-            } else {
-                resources[id]->refCounter -= 1;
+                return true;
             }
+            resources[id]->refCounter -= 1;
+            return false;
+        }
+
+        // Increment the reference counter of the resources
+        void use(const unique_id id) {
+            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
+            resources[id]->refCounter += 1;
         }
 
         bool have(const unique_id id) const { return id < resources.size() && resources.at(id) != nullptr; }

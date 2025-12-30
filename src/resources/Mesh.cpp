@@ -34,9 +34,17 @@ namespace lysa {
         buildAABB();
     }
 
+    Mesh::~Mesh() {
+        auto& materialManager = ctx.res.get<MaterialManager>();
+        for (const auto& surface : surfaces) {
+            materialManager.destroy(surface.material);
+        }
+    }
+
     void Mesh::setSurfaceMaterial(const uint32 surfaceIndex, const unique_id material) {
         assert([&]{return surfaceIndex < surfaces.size();}, "Invalid surface index");
         surfaces[surfaceIndex].material = material;
+        ctx.res.get<MaterialManager>().use(material);
         materials.insert(surfaces[surfaceIndex].material);
         ctx.res.get<MeshManager>().upload(id);
     }
@@ -115,14 +123,14 @@ namespace lysa {
         return mesh;
     }
 
-    void MeshManager::destroy(const unique_id id) {
+    bool MeshManager::destroy(const unique_id id) {
         const auto& mesh = (*this)[id];
-        if (mesh.isUploaded()) {
+        if (mesh.refCounter == 0 && mesh.isUploaded()) {
             vertexArray.free(mesh.verticesMemoryBlock);
             indexArray.free(mesh.indicesMemoryBlock);
             meshSurfaceArray.free(mesh.surfacesMemoryBlock);
         }
-        ResourcesManager::destroy(id);
+        return ResourcesManager::destroy(id);
     }
 
     void MeshManager::flush() {

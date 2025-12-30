@@ -231,12 +231,12 @@ namespace lysa {
         }
     }
 
-    void MaterialManager::destroy(const unique_id id) {
+    bool MaterialManager::destroy(const unique_id id) {
         const auto& material = (*this)[id];
-        if (material.isUploaded()) {
+        if (material.refCounter <= 1 && material.isUploaded()) {
             memoryArray.free(material.memoryBloc);
         }
-        ResourcesManager::destroy(id);
+        return ResourcesManager::destroy(id);
     }
 
 }

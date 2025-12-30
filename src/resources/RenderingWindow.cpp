@@ -40,10 +40,12 @@ namespace lysa {
         return instance;
     }
 
-    void RenderingWindowManager::destroy(const unique_id id) {
+    bool RenderingWindowManager::destroy(const unique_id id) {
         const auto& window = (*this)[id];
-        window.close();
-        ResourcesManager::destroy(id);
+        if (window.refCounter == 0) {
+            window.close();
+        }
+        return ResourcesManager::destroy(id);
     }
 
 }

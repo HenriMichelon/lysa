@@ -148,7 +148,7 @@ export namespace lysa {
          */
         RenderingWindow& create(const RenderingWindowConfiguration& configuration);
 
-        void destroy(unique_id id) override;
+        bool destroy(unique_id id) override;
     };
 
 }
