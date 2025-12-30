@@ -69,11 +69,11 @@ namespace lysa {
     }
 
     StandardMaterial::StandardMaterial(Context& ctx):
-        Material(ctx, STANDARD) {
+        Material(ctx, STANDARD),
+        imageTextureManager(ctx.res.get<ImageTextureManager>()){
     }
 
     StandardMaterial::~StandardMaterial() {
-        auto& imageTextureManager = ctx.res.get<ImageTextureManager>();
         if (diffuseTexture.texture) {
             imageTextureManager.destroy(diffuseTexture.texture->id);
         }
@@ -98,33 +98,43 @@ namespace lysa {
 
     void StandardMaterial::setDiffuseTexture(const TextureInfo &texture) {
         diffuseTexture = texture;
-        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
+        if (texture.texture) {
+            imageTextureManager.use(texture.texture->id);
+        }
         upload();
     }
 
     void StandardMaterial::setNormalTexture(const TextureInfo &texture) {
         normalTexture = texture;
-        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
+        if (texture.texture) {
+            imageTextureManager.use(texture.texture->id);
+        }
         upload();
     }
 
     void StandardMaterial::setMetallicTexture(const TextureInfo &texture) {
         metallicTexture = texture;
-        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
+        if (texture.texture) {
+            imageTextureManager.use(texture.texture->id);
+        }
         if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
         upload();
     }
 
     void StandardMaterial::setRoughnessTexture(const TextureInfo &texture) {
         roughnessTexture = texture;
-        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
+        if (texture.texture) {
+            imageTextureManager.use(texture.texture->id);
+        }
         if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
         upload();
     }
 
     void StandardMaterial::setEmissiveTexture(const TextureInfo &texture) {
         emissiveTexture = texture;
-        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
+        if (texture.texture) {
+            imageTextureManager.use(texture.texture->id);
+        }
         upload();
     }
 
@@ -216,7 +226,6 @@ namespace lysa {
     StandardMaterial& MaterialManager::create() {
         auto& material = dynamic_cast<StandardMaterial&>(allocate(std::make_unique<StandardMaterial>(ctx)));
         material.upload();
-        Log::info("alloc mat ", material.id);
         return material;
     }
 
@@ -261,7 +270,6 @@ namespace lysa {
         const auto& material = (*this)[id];
         if (material.refCounter <= 1 && material.isUploaded()) {
             memoryArray.free(material.memoryBloc);
-            Log::info("destroy mat ", material.id);
         }
         return ResourcesManager::destroy(id);
     }

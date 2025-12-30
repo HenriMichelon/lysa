@@ -269,6 +269,7 @@ export namespace lysa {
         pipeline_id getPipelineId() const override;
 
     private:
+        ImageTextureManager& imageTextureManager;
         float4       albedoColor{1.0f, 0.0f, 0.5f, 1.0f};
         TextureInfo  diffuseTexture{};
         float        metallicFactor{0.0f};
