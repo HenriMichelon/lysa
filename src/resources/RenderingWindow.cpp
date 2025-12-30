@@ -6,7 +6,6 @@
 */
 module lysa.resources.rendering_window;
 
-import lysa.resources.render_target;
 
 namespace lysa {
 
@@ -17,20 +16,21 @@ namespace lysa {
 
     void RenderingWindow::_input(const InputEvent& inputEvent) const {
         if (stopped) { return; }
+        renderTargetManager.input(platformHandle, inputEvent);
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::INPUT), inputEvent});
     }
 
     void RenderingWindow::_closing() {
         if (stopped) { return; }
         stopped = true;
-        ctx.res.get<RenderTargetManager>().destroy(platformHandle);
+        renderTargetManager.destroy(platformHandle);
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
         ctx.res.get<RenderingWindowManager>().destroy(id);
     }
 
     void RenderingWindow::_resized() const {
         if (stopped) { return; }
-        ctx.res.get<RenderTargetManager>().resize(platformHandle);
+        renderTargetManager.resize(platformHandle);
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
     }
 

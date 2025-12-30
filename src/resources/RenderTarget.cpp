@@ -81,6 +81,10 @@ namespace lysa {
         }
     }
 
+    void RenderTarget::input(const InputEvent& inputEvent) const {
+        ctx.events.push({id, static_cast<event_type>(RenderTargetEvent::INPUT), inputEvent});
+    }
+
     void RenderTarget::render() {
         if (paused) return;
         const auto frameIndex = swapChain->getCurrentFrameIndex();
@@ -196,6 +200,14 @@ namespace lysa {
         for (const auto& renderTarget : getResources()) {
             if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
                 renderTarget->resize();
+            }
+        }
+    }
+
+    void RenderTargetManager::input(const void* renderingWindowHandle, const InputEvent& inputEvent) const {
+        for (const auto& renderTarget : getResources()) {
+            if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
+                renderTarget->input(inputEvent);
             }
         }
     }

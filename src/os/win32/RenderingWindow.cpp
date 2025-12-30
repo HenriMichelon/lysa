@@ -37,7 +37,8 @@ namespace lysa {
     }
 
     RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config):
-        ctx(ctx) {
+        ctx(ctx),
+        renderTargetManager(ctx.res.get<RenderTargetManager>()) {
         const auto hInstance = GetModuleHandle(nullptr);
 
         const auto windowClass = WNDCLASSEX {

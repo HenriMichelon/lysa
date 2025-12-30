@@ -17,6 +17,7 @@ import lysa.event;
 import lysa.input_event;
 import lysa.types;
 import lysa.resources.manager;
+import lysa.resources.render_target;
 
 export namespace lysa {
 
@@ -110,6 +111,8 @@ export namespace lysa {
 
     private:
         Context& ctx;
+        RenderTargetManager& renderTargetManager;
+
         //! Top-Left corner x position in pixels
         int32 x{0};
         //! Top-Left corner Y position in pixels
@@ -145,6 +148,7 @@ export namespace lysa {
         RenderingWindow& create(const RenderingWindowConfiguration& configuration);
 
         bool destroy(unique_id id) override;
+
     };
 
 }
