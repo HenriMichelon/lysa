@@ -272,6 +272,7 @@ return {
     ---@class lysa.Event
     ---@field id integer
     ---@field type any
+    ---@field get_double fun(self:lysa.Event):number
     ---@field get_float fun(self:lysa.Event):number
     ---@field get_int32 fun(self:lysa.Event):integer
     ---@field get_input_event fun(self:lysa.Event):lysa.InputEvent

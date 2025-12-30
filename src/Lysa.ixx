@@ -93,7 +93,7 @@ export namespace  lysa {
         //! Graphic API used by the graphic backend
         vireo::Backend backend{vireo::Backend::VULKAN};
         //! Fixed delta time for the main loop
-        float deltaTime{1.0f/60.0f};
+        double deltaTime{1.0/60.0};
         //! Number of simultaneous frames during rendering
         uint32 framesInFlight{2};
         //! Number of nodes updates per frame for asynchronous scene updates
@@ -150,7 +150,7 @@ export namespace  lysa {
         // Global runtime context (events, resources, etc.).
         Context ctx;
         // Fixed delta time bookkeeping for the physics update loop
-        const float fixedDeltaTime;
+        const double fixedDeltaTime;
         double currentTime{0.0};
         double accumulator{0.0};
 

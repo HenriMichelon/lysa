@@ -330,6 +330,7 @@ end
         .beginClass<Event>("Event")
             .addProperty("id", &Event::id)
             .addProperty("type", &Event::type)
+            .addFunction("get_double", +[](const Event*e) { return std::any_cast<double>(e->payload);})
             .addFunction("get_float", +[](const Event*e) { return std::any_cast<float>(e->payload);})
             .addFunction("get_int32", +[](const Event*e) { return std::any_cast<uint32>(e->payload);})
             .addFunction("get_input_event", +[](const Event*e) { return std::any_cast<const InputEvent>(e->payload);})
