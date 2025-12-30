@@ -26,10 +26,7 @@ export namespace lysa {
         /** View projection */
         float4x4 projection;
 
-        Camera(Context&, const float3& position, const float4x4& transform, const float4x4& projection) :
-            position(position),
-            transform(transform),
-            projection(projection) {}
+        Camera(Context&) {}
     };
 
     class CameraManager : public ResourcesManager<Context, Camera> {
