@@ -15,11 +15,40 @@ import vireo;
 import lysa.context;
 import lysa.event;
 import lysa.input_event;
-import lysa.types;
+import lysa.math;
 import lysa.resources.manager;
 import lysa.resources.render_target;
 
 export namespace lysa {
+
+
+    /**
+     * Mouse visibility & capture mode
+     */
+    enum class MouseMode : uint8 {
+        //! Makes the mouse cursor visible
+        VISIBLE = 0,
+        //! Confines the mouse cursor to the game Window, and make it visible
+        VISIBLE_CAPTURED = 1,
+        //! Makes the mouse cursor hidden
+        HIDDEN = 2,
+        //! Confines the mouse cursor to the game Window, and make it hidden.
+        HIDDEN_CAPTURED = 3,
+    };
+
+    /**
+     * Mouse cursors types
+     */
+    enum class MouseCursor : uint8 {
+        //! "Normal" arrow cursor
+        ARROW = 0,
+        //! Waiting cursor
+        WAIT = 1,
+        //! Horizontal resize cursor
+        RESIZE_H = 2,
+        //! Vertical resize cursor
+        RESIZE_V = 3,
+    };
 
     /**
     * Rendering Window mode
@@ -95,6 +124,40 @@ export namespace lysa {
 
         void* getPlatformHandle() const { return platformHandle; }
 
+        /**
+          * Sets the mouse visibility and capture mode
+          *
+          * @param mode MouseMode (visible, hidden, captured, etc.).
+          */
+        void setMouseMode(MouseMode mode) const;
+
+        /**
+         * Sets the mouse cursor
+         *
+         * @param cursor MouseCursor enum selecting the cursor shape.
+         */
+        void setMouseCursor(MouseCursor cursor) const;
+
+        /**
+         * Sets the mouse position to the center of the window
+         */
+        void resetMousePosition() const;
+
+        /**
+         * Returns the mouse position
+         *
+         * @return Mouse coordinates in pixels relative to the client area.
+         */
+        float2 getMousePosition() const;
+
+        /**
+         * Returns the mouse position
+         *
+         * @param position Coordinates in pixels relative to the client area.
+         */
+        void setMousePosition(const float2& position) const;
+
+
         void _closing();
 
         void _resized() const;
@@ -105,8 +168,11 @@ export namespace lysa {
 
 
 #ifdef _WIN32
+        RECT _rect;
         /** Internal flag used to suppress synthetic mouse‑move feedback. */
         static bool _resettingMousePosition;
+        /** Cached OS cursors per MouseCursor enum value. */
+        static std::map<MouseCursor, HCURSOR> _mouseCursors;
 #endif
 
     private:

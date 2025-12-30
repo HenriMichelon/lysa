@@ -41,7 +41,7 @@ export namespace lysa {
         //! The render target has been resized
         static constexpr auto RESIZED{"RENDERING_TARGET_RESIZED"};
         //! Input inside the render target parent window
-        static constexpr auto INPUT{"RENDERING_TARGET_INPUT"};
+        //static constexpr auto INPUT{"RENDERING_TARGET_INPUT"};
     };
 
     struct RenderView {
@@ -109,7 +109,7 @@ export namespace lysa {
 
         friend class RenderTargetManager;
         void resize() const;
-        void input(const InputEvent& inputEvent) const;
+        //void input(const InputEvent& inputEvent) const;
     };
 
     class RenderTargetManager : public ResourcesManager<Context, RenderTarget> {
@@ -128,7 +128,7 @@ export namespace lysa {
 
         void resize(const void* renderingWindowHandle) const;
 
-        void input(const void* renderingWindowHandle, const InputEvent& inputEvent) const;
+        //void input(const void* renderingWindowHandle, const InputEvent& inputEvent) const;
 
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const;
 

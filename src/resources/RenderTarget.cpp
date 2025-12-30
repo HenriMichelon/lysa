@@ -81,9 +81,9 @@ namespace lysa {
         }
     }
 
-    void RenderTarget::input(const InputEvent& inputEvent) const {
-        ctx.events.push({id, static_cast<event_type>(RenderTargetEvent::INPUT), inputEvent});
-    }
+    // void RenderTarget::input(const InputEvent& inputEvent) const {
+    //     ctx.events.push({id, static_cast<event_type>(RenderTargetEvent::INPUT), inputEvent});
+    // }
 
     void RenderTarget::render() {
         if (paused) return;
@@ -204,13 +204,13 @@ namespace lysa {
         }
     }
 
-    void RenderTargetManager::input(const void* renderingWindowHandle, const InputEvent& inputEvent) const {
-        for (const auto& renderTarget : getResources()) {
-            if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-                renderTarget->input(inputEvent);
-            }
-        }
-    }
+    // void RenderTargetManager::input(const void* renderingWindowHandle, const InputEvent& inputEvent) const {
+    //     for (const auto& renderTarget : getResources()) {
+    //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
+    //             renderTarget->input(inputEvent);
+    //         }
+    //     }
+    // }
 
     void RenderTargetManager::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const {
         for (const auto& renderTarget : getResources()) {

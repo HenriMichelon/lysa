@@ -463,34 +463,6 @@ export namespace lysa {
     };
 
     /**
-     * Mouse visibility & capture mode
-     */
-    enum class MouseMode : uint8 {
-        //! Makes the mouse cursor visible
-        VISIBLE = 0,
-        //! Confines the mouse cursor to the game Window, and make it visible
-        VISIBLE_CAPTURED = 1,
-        //! Makes the mouse cursor hidden
-        HIDDEN = 2,
-        //! Confines the mouse cursor to the game Window, and make it hidden.
-        HIDDEN_CAPTURED = 3,
-    };
-
-    /**
-     * Mouse cursors types
-     */
-    enum class MouseCursor : uint8 {
-        //! "Normal" arrow cursor
-        ARROW = 0,
-        //! Waiting cursor
-        WAIT = 1,
-        //! Horizontal resize cursor
-        RESIZE_H = 2,
-        //! Vertical resize cursor
-        RESIZE_V = 3,
-    };
-
-    /**
      * Keyboard input event
      */
     struct InputEventKey {

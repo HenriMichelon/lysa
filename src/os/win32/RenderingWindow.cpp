@@ -16,6 +16,8 @@ namespace lysa {
 
     bool RenderingWindow::_resettingMousePosition{false};
 
+    std::map<MouseCursor, HCURSOR> RenderingWindow::_mouseCursors;
+
     struct MonitorEnumData {
         int  enumIndex{0};
         int  monitorIndex{0};
@@ -39,6 +41,13 @@ namespace lysa {
     RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config):
         ctx(ctx),
         renderTargetManager(ctx.res.get<RenderTargetManager>()) {
+        if (_mouseCursors.empty()) {
+            _mouseCursors[MouseCursor::ARROW]    = LoadCursor(nullptr, IDC_ARROW);
+            _mouseCursors[MouseCursor::WAIT]     = LoadCursor(nullptr, IDC_WAIT);
+            _mouseCursors[MouseCursor::RESIZE_H] = LoadCursor(nullptr, IDC_SIZEWE);
+            _mouseCursors[MouseCursor::RESIZE_V] = LoadCursor(nullptr, IDC_SIZENS);
+        }
+
         const auto hInstance = GetModuleHandle(nullptr);
 
         const auto windowClass = WNDCLASSEX {
@@ -102,11 +111,10 @@ namespace lysa {
                 config.y;
         }
 
-        RECT rect;
-        rect.left = x;
-        rect.top = y;
-        rect.right = rect.left + w;
-        rect.bottom = rect.top + h;
+        _rect.left = x;
+        _rect.top = y;
+        _rect.right = _rect.left + w;
+        _rect.bottom = _rect.top + h;
         const auto hwnd = CreateWindowEx(
             exStyle,
             windowClass.lpszClassName,
@@ -170,6 +178,67 @@ namespace lysa {
         default:;
         }
         return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+
+    float2 RenderingWindow::getMousePosition() const {
+        POINT point;
+        GetCursorPos(&point);
+        ScreenToClient(static_cast<HWND>(platformHandle), &point);
+        return { point.x, point.y };
+    }
+
+    void RenderingWindow::setMousePosition(const float2& position) const {
+        POINT point{static_cast<int>(position.x), static_cast<int>(position.y)};
+        ClientToScreen(static_cast<HWND>(platformHandle), &point);
+        SetCursorPos(point.x, point.y);
+    }
+
+    void RenderingWindow::setMouseCursor(const MouseCursor cursor) const {
+        SetCursor(_mouseCursors[cursor]);
+        PostMessage(static_cast<HWND>(platformHandle), WM_SETCURSOR, 0, 0);
+    }
+
+    void RenderingWindow::resetMousePosition() const {
+        _resettingMousePosition = true;
+        SetCursorPos(_rect.left + (_rect.right-_rect.left) / 2,
+                         _rect.top + (_rect.bottom-_rect.top) / 2);
+    }
+
+    void RenderingWindow::setMouseMode(const MouseMode mode) const {
+        MSG msg;
+        while (PeekMessageW(&msg, static_cast<HWND>(platformHandle), 0, 0, PM_REMOVE)) {
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
+        }
+        switch (mode) {
+        case MouseMode::VISIBLE:
+            ReleaseCapture();
+            ClipCursor(nullptr);
+            ShowCursor(TRUE);
+            resetMousePosition();
+            break;
+        case MouseMode::HIDDEN:
+            ReleaseCapture();
+            ClipCursor(nullptr);
+            ShowCursor(FALSE);
+            break;
+        case MouseMode::VISIBLE_CAPTURED: {
+            SetCapture(static_cast<HWND>(platformHandle));
+            ClipCursor(&_rect);
+            ShowCursor(TRUE);
+            resetMousePosition();
+            break;
+        }
+        case MouseMode::HIDDEN_CAPTURED: {
+            SetCapture(static_cast<HWND>(platformHandle));
+            ClipCursor(&_rect);
+            ShowCursor(FALSE);
+            resetMousePosition();
+            break;
+        }
+        default:
+            throw Exception("Unknown mouse mode");
+        }
     }
 
 }

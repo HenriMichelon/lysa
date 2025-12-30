@@ -16,7 +16,7 @@ namespace lysa {
 
     void RenderingWindow::_input(const InputEvent& inputEvent) const {
         if (stopped) { return; }
-        renderTargetManager.input(platformHandle, inputEvent);
+        // renderTargetManager.input(platformHandle, inputEvent);
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::INPUT), inputEvent});
     }
 
