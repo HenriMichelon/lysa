@@ -45,6 +45,7 @@ namespace lysa {
 
     Lysa::~Lysa() {
         ctx.graphicQueue->waitIdle();
+        ctx.vireo->waitIdle();
         SceneFrameData::destroyDescriptorLayouts();
         Renderpass::destroyShaderModules();
         FrustumCulling::cleanup();

@@ -100,7 +100,7 @@ export namespace lysa {
 
         unique_id getCapacity() const { return resources.size(); }
 
-        CTX& getContext() const { return ctx; }
+        constexpr CTX& getContext() const { return ctx; }
 
     protected:
         friend class Lysa;
