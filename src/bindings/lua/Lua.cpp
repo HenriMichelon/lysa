@@ -98,6 +98,21 @@ end
         lua_setfield(L, -2, "__index");
         // setmetatable(env, mt)
         lua_setmetatable(L, -2);
+
+        // clear loaded modules
+        lua_getglobal(L, "package");
+        lua_getfield(L, -1, "loaded");
+        lua_pushnil(L);
+        while (lua_next(L, -2) != 0) {
+            lua_pop(L, 1);
+            // key (package name)
+            lua_pushvalue(L, -1);
+            lua_pushnil(L);
+            // loaded[key] = nil
+            lua_settable(L, -4);
+        }
+        // loaded, package
+        lua_pop(L, 2);
     }
 
     void Lua::bind() {
