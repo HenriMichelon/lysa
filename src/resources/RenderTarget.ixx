@@ -13,12 +13,12 @@ import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderer;
-import lysa.resources.resource_manager;
+import lysa.resources.manager;
 import lysa.resources.scene_context;
 
 export namespace lysa {
 
-    struct RenderTargetConfiguration : ResourceConfiguration {
+    struct RenderTargetConfiguration {
         //! Set this field if you want to render in a window
         void* renderingWindowHandle{nullptr};
         //! Postprocessing & swap chain image format
@@ -107,7 +107,7 @@ export namespace lysa {
         void resize() const;
     };
 
-    class RenderTargetManager : public ResourcesManager<RenderTarget> {
+    class RenderTargetManager : public ResourcesManager<Context, RenderTarget> {
     public:
         /**
          * @brief Construct a manager bound to the given runtime context.

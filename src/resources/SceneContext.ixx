@@ -10,7 +10,7 @@ import lysa.context;
 import lysa.math;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_frame_data;
-import lysa.resources.resource_manager;
+import lysa.resources.manager;
 
 export namespace lysa {
 
@@ -79,7 +79,7 @@ export namespace lysa {
         float4 ambientLight;
     };
 
-    class SceneContextManager : public ResourcesManager<SceneContext> {
+    class SceneContextManager : public ResourcesManager<Context, SceneContext> {
     public:
         SceneContextManager(
             Context& ctx,

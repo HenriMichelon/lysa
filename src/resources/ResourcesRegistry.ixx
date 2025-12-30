@@ -4,11 +4,11 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.resources.locator;
+export module lysa.resources.registry;
 
 import std;
 import lysa.exception;
-import lysa.manager;
+import lysa.resources.manager;
 
 export namespace lysa {
 

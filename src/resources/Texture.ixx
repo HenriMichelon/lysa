@@ -11,7 +11,7 @@ import vireo;
 import lysa.context;
 import lysa.math;
 import lysa.resources.image;
-import lysa.resources.resource_manager;
+import lysa.resources.manager;
 
 export namespace lysa {
 
@@ -76,7 +76,7 @@ export namespace lysa {
 
     };
 
-    class ImageTextureManager : public ResourcesManager<ImageTexture> {
+    class ImageTextureManager : public ResourcesManager<Context, ImageTexture> {
     public:
         /**
          * @brief Construct a manager bound to the given runtime context.

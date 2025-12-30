@@ -10,7 +10,7 @@ import vireo;
 import lysa.context;
 import lysa.math;
 import lysa.memory;
-import lysa.resources.resource_manager;
+import lysa.resources.manager;
 import lysa.resources.texture;
 
 export namespace lysa {
@@ -330,7 +330,7 @@ export namespace lysa {
         float4 parameters[SHADER_MATERIAL_MAX_PARAMETERS]{};
     };
 
-    class MaterialManager : public ResourcesManager<Material> {
+    class MaterialManager : public ResourcesManager<Context, Material> {
     public:
         /**
          * @brief Construct a manager bound to the given runtime context.

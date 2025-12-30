@@ -12,7 +12,7 @@ import lysa.math;
 import lysa.memory;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.resources.material;
-import lysa.resources.resource_manager;
+import lysa.resources.manager;
 import lysa.renderers.pipelines.frustum_culling;
 
 export namespace lysa {

@@ -16,7 +16,7 @@ import lysa.context;
 import lysa.event;
 import lysa.input_event;
 import lysa.types;
-import lysa.resources.resource_manager;
+import lysa.resources.manager;
 
 export namespace lysa {
 
@@ -51,7 +51,7 @@ export namespace lysa {
     /**
     * Rendering window configuration
     */
-    struct RenderingWindowConfiguration : ResourceConfiguration {
+    struct RenderingWindowConfiguration {
         //! Window title bar
         std::string title{"Lysa Window"};
         //! State of the display Window
@@ -128,7 +128,7 @@ export namespace lysa {
     /**
      * @brief Manager for creating and controlling @ref RenderingWindow resources.
      */
-    class RenderingWindowManager : public ResourcesManager<RenderingWindow> {
+    class RenderingWindowManager : public ResourcesManager<Context, RenderingWindow> {
     public:
         /**
          * @brief Construct a manager bound to the given runtime context.

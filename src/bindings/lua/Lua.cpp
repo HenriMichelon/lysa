@@ -431,7 +431,7 @@ end
                 luabridge::constOverload<const unique_id>(&RenderTargetManager::operator[])
                 )
             .addFunction("destroy",
-               luabridge::overload<const unique_id>(&Manager<RenderTarget>::destroy),
+               luabridge::overload<const unique_id>(&ResourcesManager<Context, RenderTarget>::destroy),
                luabridge::overload<const void*>(&RenderTargetManager::destroy)
             )
         .endClass()
@@ -492,7 +492,7 @@ end
               luabridge::constOverload<const unique_id>(&ImageTextureManager::operator[])
               )
            .addFunction("destroy",
-             luabridge::overload<const unique_id>(&Manager<ImageTexture>::destroy)
+             luabridge::overload<const unique_id>(&ResourcesManager<Context, ImageTexture>::destroy)
           )
        .endClass()
 

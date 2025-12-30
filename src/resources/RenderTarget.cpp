@@ -177,7 +177,7 @@ namespace lysa {
             if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
                 renderTarget->pause(true);
                 ctx.defer.push([&] {
-                    Manager::destroy(renderTarget->id);
+                    ResourcesManager::destroy(renderTarget->id);
                 });
             }
         }

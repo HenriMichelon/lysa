@@ -15,7 +15,7 @@ import lysa.event;
 import lysa.virtual_fs;
 import lysa.types;
 import lysa.resources.samplers;
-import lysa.resources.locator;
+import lysa.resources.registry;
 import lysa.resources.samplers;
 
 export namespace  lysa {

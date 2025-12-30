@@ -10,7 +10,7 @@ import vireo;
 
 import lysa.context;
 import lysa.math;
-import lysa.resources.resource_manager;
+import lysa.resources.manager;
 
 export namespace lysa {
 
@@ -63,7 +63,7 @@ export namespace lysa {
         friend class ImageManager;
     };
 
-    class ImageManager : public ResourcesManager<Image> {
+    class ImageManager : public ResourcesManager<Context, Image> {
     public:
         /**
          * @brief Construct a manager bound to the given runtime context.

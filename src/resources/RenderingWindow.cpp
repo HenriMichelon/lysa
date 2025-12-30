@@ -43,7 +43,7 @@ namespace lysa {
     void RenderingWindowManager::destroy(const unique_id id) {
         const auto& window = (*this)[id];
         window.close();
-        Manager::destroy(id);
+        ResourcesManager::destroy(id);
     }
 
 }

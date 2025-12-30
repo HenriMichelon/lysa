@@ -4,20 +4,18 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.resources.resource_manager;
+export module lysa.resources.manager;
 
-import lysa.context;
-import lysa.manager;
+import lysa.exception;
 import lysa.types;
 
 export namespace lysa {
-
-    struct ResourceConfiguration {};
 
     class Resource {
     public:
         //! Unique ID
         unique_id id{INVALID_ID};
+        uint32 refCounter{0};
 
         Resource() = default;
         Resource(Resource&) = delete;
@@ -25,8 +23,9 @@ export namespace lysa {
         virtual ~Resource() = default;
     };
 
+
     /**
-     * @brief Generic, fixed-capacity resources manager using ID-based access.
+     * @brief Generic object/resources manager using ID-based access.
      *
      * Manages a contiguous pool (vector) of resources of type T addressed by a small integral
      * unique identifier (unique_id). Instances are created into available slots and retrieved
@@ -39,28 +38,106 @@ export namespace lysa {
      * @tparam T Resource type stored by the manager. T is expected to contain a public field
      *           named 'id' of type unique_id that will be assigned upon creation.
      */
-    template<typename T>
-    class ResourcesManager : public Manager<T> {
+    template<typename CTX, typename T>
+    class ResourcesManager {
     public:
         /**
-         * @brief Create a new unique resource
-         */
+       * @brief Create a new unique resource
+       */
         template<typename... Args>
         T& create(Args&&... args) {
-            return Manager<T>::allocate(std::make_unique<T>(std::forward<Args>(args)...));
+            return allocate(std::make_unique<T>(std::forward<Args>(args)...));
         }
 
-        Context& getContext() const { return ctx; }
+        /**
+         * @brief Bracket operator for mutable access without bounds checking.
+         * @param id The unique identifier of the resource.
+         * @return T& Reference to the resource.
+         */
+        inline T& operator[](const unique_id id) {
+            assert([&]{ return have(id); }, "ResourcesManager : invalid id ");
+            return *resources[id];
+        }
+
+        /**
+         * @brief Bracket operator for const access without bounds checking.
+         * @param id The unique identifier of the resource.
+         * @return const T& Const reference to the resource.
+         */
+        inline const T& operator[](const unique_id id) const {
+            assert([&]{ return have(id); }, "Manager : invalid id ");
+            return *resources[id];
+        }
+
+        virtual ~ResourcesManager() {
+            assert([&]{ return freeList.size() == resources.size(); }, "Manager : cleanup() not called");
+        }
+
+        ResourcesManager(ResourcesManager&) = delete;
+        ResourcesManager& operator=(ResourcesManager&) = delete;
+
+        // Release a resource, returning its slot to the free list.
+        virtual void destroy(const unique_id id) {
+            assert([&]{ return have(id); }, "Manager : invalid id ");
+            if (resources[id]->refCounter == 0) {
+                resources[id].reset();
+                freeList.push_back(id);
+            } else {
+                resources[id]->refCounter -= 1;
+            }
+        }
+
+        bool have(const unique_id id) const { return id < resources.size() && resources.at(id) != nullptr; }
+
+        unique_id getCapacity() const { return resources.size(); }
+
+        CTX& getContext() const { return ctx; }
 
     protected:
+        friend class Lysa;
         // Reference to the owning application context.
-        Context& ctx;
+        CTX& ctx;
 
         // Construct a manager with a fixed number of slots.
-        ResourcesManager(Context& ctx, const size_t capacity) :
-            Manager<T>(capacity),
-            ctx{ctx} {
+        ResourcesManager(CTX& ctx,const size_t capacity) :
+            ctx(ctx),
+            resources(capacity) {
+            for (auto id = capacity; id > 0; --id) {
+                freeList.push_back(id-1);
+            }
         }
+
+        // Destroy all remaining resources
+        void cleanup() {
+            for (auto& resource : getResources()) {
+                destroy(resource->id);
+            }
+        }
+
+        // Allocate a new resource
+        T& allocate(std::unique_ptr<T> instance) {
+            if (isFull()) throw Exception("ResourcesManager : no more free slots");
+            auto id = freeList.back();
+            freeList.pop_back();
+            resources[id] = std::move(instance);
+            resources[id]->id = id;
+            return *(resources[id]);
+        }
+
+        auto getResources() { return resources | std::views::filter([](auto& res) { return res != nullptr; }); }
+
+        auto getResources() const { return resources | std::views::filter([](auto& res) { return res != nullptr; }); }
+
+        // Contiguous storage for all resources managed by this instance.
+        std::vector<std::unique_ptr<T>> resources;
+
+        bool isFull() const {
+            return freeList.empty();
+        }
+
+    private:
+        // Stack-like list of free slot IDs available for future creations.
+        std::vector<unique_id> freeList{};
     };
 
 }

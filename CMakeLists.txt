@@ -273,7 +273,6 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/Input.ixx
         ${ENGINE_SRC_DIR}/InputEvent.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
-        ${ENGINE_SRC_DIR}/Manager.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Memory.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
