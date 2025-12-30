@@ -47,7 +47,7 @@ export namespace lysa {
        */
         template<typename... Args>
         T& create(Args&&... args) {
-            return allocate(std::make_unique<T>(std::forward<Args>(args)...));
+            return allocate(std::make_unique<T>(ctx, std::forward<Args>(args)...));
         }
 
         /**
@@ -72,7 +72,7 @@ export namespace lysa {
 
         virtual ~ResourcesManager() {
             assert([&]{ return freeList.size() == resources.size(); },
-                "ResourcesManager : cleanup() not called or resources still in use (refCounter > 0)");
+                "ResourcesManager : resources still in use");
         }
 
         ResourcesManager(ResourcesManager&) = delete;
@@ -113,13 +113,6 @@ export namespace lysa {
             resources(capacity) {
             for (auto id = capacity; id > 0; --id) {
                 freeList.push_back(id-1);
-            }
-        }
-
-        // Destroy all remaining resources
-        void cleanup() {
-            for (auto& resource : getResources()) {
-                destroy(resource->id);
             }
         }
 

@@ -149,7 +149,7 @@ namespace lysa {
     }
 
     SceneContext& SceneContextManager::create() {
-        return ResourcesManager::create(ctx,
+        return ResourcesManager::create(
             maxAsyncNodesUpdatedPerFrame,
             maxLights,
             maxMeshInstancesPerScene,

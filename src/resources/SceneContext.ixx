@@ -91,10 +91,6 @@ export namespace lysa {
             uint32 maxShadowMaps,
             uint32 framesInFlight);
 
-        ~SceneContextManager() override {
-            cleanup();
-        }
-
         SceneContext& create();
 
         uint32 getFramesInFlight() const { return framesInFlight; }

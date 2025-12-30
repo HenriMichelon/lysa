@@ -7,6 +7,8 @@
 module lysa.resources.material;
 #include <xxhash.h>
 
+import lysa.log;
+
 namespace lysa {
 
     Material::Material(Context& ctx, const Type type):
@@ -70,6 +72,25 @@ namespace lysa {
         Material(ctx, STANDARD) {
     }
 
+    StandardMaterial::~StandardMaterial() {
+        auto& imageTextureManager = ctx.res.get<ImageTextureManager>();
+        if (diffuseTexture.texture) {
+            imageTextureManager.destroy(diffuseTexture.texture->id);
+        }
+        if (metallicTexture.texture) {
+            imageTextureManager.destroy(metallicTexture.texture->id);
+        }
+        if (roughnessTexture.texture) {
+            imageTextureManager.destroy(roughnessTexture.texture->id);
+        }
+        if (emissiveTexture.texture) {
+            imageTextureManager.destroy(emissiveTexture.texture->id);
+        }
+        if (normalTexture.texture) {
+            imageTextureManager.destroy(normalTexture.texture->id);
+        }
+    }
+
     void StandardMaterial::setAlbedoColor(const float4 &color) {
         albedoColor = color;
         upload();
@@ -77,28 +98,33 @@ namespace lysa {
 
     void StandardMaterial::setDiffuseTexture(const TextureInfo &texture) {
         diffuseTexture = texture;
+        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
         upload();
     }
 
     void StandardMaterial::setNormalTexture(const TextureInfo &texture) {
         normalTexture = texture;
+        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
         upload();
     }
 
     void StandardMaterial::setMetallicTexture(const TextureInfo &texture) {
         metallicTexture = texture;
+        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
         if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
         upload();
     }
 
     void StandardMaterial::setRoughnessTexture(const TextureInfo &texture) {
         roughnessTexture = texture;
+        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
         if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
         upload();
     }
 
     void StandardMaterial::setEmissiveTexture(const TextureInfo &texture) {
         emissiveTexture = texture;
+        ctx.res.get<ImageTextureManager>().use(texture.texture->id);
         upload();
     }
 
@@ -190,9 +216,9 @@ namespace lysa {
     StandardMaterial& MaterialManager::create() {
         auto& material = dynamic_cast<StandardMaterial&>(allocate(std::make_unique<StandardMaterial>(ctx)));
         material.upload();
+        Log::info("alloc mat ", material.id);
         return material;
     }
-
 
     ShaderMaterial& MaterialManager::create(const std::shared_ptr<ShaderMaterial> &orig) {
         auto& material = dynamic_cast<ShaderMaterial&>(allocate(std::make_unique<ShaderMaterial>(ctx, orig)));
@@ -235,6 +261,7 @@ namespace lysa {
         const auto& material = (*this)[id];
         if (material.refCounter <= 1 && material.isUploaded()) {
             memoryArray.free(material.memoryBloc);
+            Log::info("destroy mat ", material.id);
         }
         return ResourcesManager::destroy(id);
     }

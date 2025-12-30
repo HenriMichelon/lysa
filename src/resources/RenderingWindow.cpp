@@ -35,7 +35,7 @@ namespace lysa {
     }
 
     RenderingWindow& RenderingWindowManager::create(const RenderingWindowConfiguration& configuration) {
-        auto& instance = ResourcesManager::create(ctx, configuration);
+        auto& instance = ResourcesManager::create(configuration);
         ctx.events.push({instance.id, static_cast<event_type>(RenderingWindowEvent::READY)});
         return instance;
     }

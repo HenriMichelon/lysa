@@ -137,10 +137,6 @@ export namespace lysa {
          */
         RenderingWindowManager(Context& ctx, size_t capacity);
 
-        ~RenderingWindowManager() override {
-            cleanup();
-        }
-
         /**
          * @brief Create a new rendering window resource.
          * @param configuration Window creation parameters (title, size, mode, position, monitor).

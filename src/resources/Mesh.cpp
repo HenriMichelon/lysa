@@ -118,7 +118,7 @@ namespace lysa {
     }
 
     Mesh& MeshManager::create() {
-        auto& mesh = allocate(std::make_unique<Mesh>(ctx));
+        auto& mesh = ResourcesManager::create();
         upload(mesh.id);
         return mesh;
     }

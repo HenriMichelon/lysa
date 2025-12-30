@@ -49,7 +49,7 @@ export namespace lysa {
          */
         const std::string& getName() const { return name; }
 
-        Image(const std::shared_ptr<vireo::Image>& image, const std::string & name);
+        Image(Context&, const std::shared_ptr<vireo::Image>& image, const std::string & name);
         ~Image() override = default;
 
     private:
@@ -96,10 +96,7 @@ export namespace lysa {
 
         /**
          * Creates a bitmap from an array in memory
-         * @param data Pixels array
-         * @param width Width in pixels
-         * @param height Height in pixels
-         * @param imageFormat Pixel format
+         * @param image
          * @param name Optional name
          */
         Image& create(

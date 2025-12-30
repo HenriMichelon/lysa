@@ -117,10 +117,6 @@ export namespace lysa {
          */
         RenderTargetManager(Context& ctx, size_t capacity, uint32 framesInFlight);
 
-        ~RenderTargetManager() override {
-            cleanup();
-        }
-
         RenderTarget& create(const RenderTargetConfiguration& configuration);
 
         void destroy(const void* renderingWindowHandle);

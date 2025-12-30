@@ -169,7 +169,7 @@ namespace lysa {
     }
 
     RenderTarget& RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
-        return ResourcesManager::create(ctx, configuration, framesInFlight);
+        return ResourcesManager::create(configuration, framesInFlight);
     }
 
     void RenderTargetManager::destroy(const void* renderingWindowHandle) {

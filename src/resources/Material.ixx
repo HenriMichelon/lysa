@@ -119,11 +119,11 @@ export namespace lysa {
         void setBypassUpload(const bool bypass) { bypassUpload = bypass; }
 
     protected:
+        Context& ctx;
         Material(Context& ctx, Type type);
 
     private:
         friend class MaterialManager;
-        Context& ctx;
         const Type type;
         vireo::CullMode cullMode{vireo::CullMode::NONE};
         Transparency  transparency{Transparency::DISABLED};
@@ -149,6 +149,8 @@ export namespace lysa {
          * Creates a StandardMaterial with default parameters
          */
         StandardMaterial(Context& ctx);
+
+        ~StandardMaterial() override;
 
         /**
          * Returns the material's base color.
@@ -338,10 +340,6 @@ export namespace lysa {
          * @param capacity Initial capacity
          */
         MaterialManager(Context& ctx, size_t capacity);
-
-        ~MaterialManager() override {
-            cleanup();
-        }
 
         StandardMaterial& create();
 

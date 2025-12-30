@@ -66,11 +66,19 @@ export namespace lysa {
 
         const std::string& getName() const override { return image.getName(); }
 
-        ImageTexture(const Image& image, const uint32 samplerIndex) :
+        ImageTexture(Context& ctx, const Image& image, const uint32 samplerIndex) :
+            ctx(ctx),
             image(image),
-            samplerIndex(samplerIndex) {}
+            samplerIndex(samplerIndex) {
+            ctx.res.get<ImageManager>().use(image.id);
+        }
+
+        ~ImageTexture() override {
+            ctx.res.get<ImageManager>().destroy(image.id);
+        }
 
     protected:
+        Context& ctx;
         const Image& image;
         uint32 samplerIndex{0};
 
@@ -87,7 +95,6 @@ export namespace lysa {
             ctx.res.enroll(*this);
         }
 
-        ~ImageTextureManager() override { cleanup(); }
     };
 
 }

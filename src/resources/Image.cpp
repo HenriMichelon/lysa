@@ -13,7 +13,7 @@ import lysa.exception;
 
 namespace lysa {
 
-    Image::Image(const std::shared_ptr<vireo::Image>& image, const std::string & name):
+    Image::Image(Context&, const std::shared_ptr<vireo::Image>& image, const std::string & name):
         image{image},
         name{name} {
     }
@@ -63,7 +63,6 @@ namespace lysa {
     }
 
     ImageManager::~ImageManager() {
-        cleanup();
         images.clear();
     }
 
