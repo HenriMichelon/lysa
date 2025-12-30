@@ -132,7 +132,7 @@ end
 
         beginNamespace()
         .beginClass<float2>("float2")
-           .addConstructor<void(float), void(float, float)>()
+           .addConstructor<void(), void(float), void(float, float)>()
            .addProperty("x",
                [&](const float2* f) -> float {return f->f32[0];},
                [&](float2* f, const float v) { f->f32[0] = v;}
@@ -151,7 +151,7 @@ end
               )
         .endClass()
        .beginClass<float3>("float3")
-            .addConstructor<void(float), void(float, float, float)>()
+            .addConstructor<void(), void(float), void(float, float, float)>()
             .addProperty("x",
                 [&](const float3* f) -> float {return f->f32[0];},
                 [&](float3* f, const float v) { f->f32[0] = v;}
@@ -178,7 +178,7 @@ end
               )
        .endClass()
        .beginClass<float4>("float4")
-            .addConstructor<void(float), void(float, float, float, float)>()
+            .addConstructor<void(), void(float), void(float, float, float, float)>()
             .addProperty("x",
                 [&](const float4* f) -> float {return f->f32[0];},
                 [&](float4* f, const float v) { f->f32[0] = v;}
@@ -213,7 +213,7 @@ end
             )
        .endClass()
        .beginClass<quaternion>("quaternion")
-           .addConstructor<void(float, float, float, float)>()
+           .addConstructor<void(), void(float, float, float, float)>()
             .addProperty("x",
                 [&](const quaternion* f) -> float {return f->f32[0];},
                 [&](quaternion* f, const float v) { f->f32[0] = v;}
