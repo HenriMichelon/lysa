@@ -101,10 +101,13 @@ export namespace lysa {
             }
             const auto factory = luabridge::LuaRef::fromStack(L, -1);
             const auto result = factory(ctx, std::forward<Args>(args)...);
-            if (result.wasOk() && result[0].isTable()) {
-                return result[0];
+            if (result.wasOk()) {
+                if (result[0].isTable()) {
+                    return result[0];
+                }
+                throw Exception("Error executing the Lua script " + scriptName + " : incorrect return type");
             }
-            throw Exception("Error executing the Lua script " + scriptName + " or incorrect return type");
+            throw Exception("Error executing the Lua script " + scriptName + " : " + result.errorMessage());
         }
 
         void pushSandboxEnv() const;
