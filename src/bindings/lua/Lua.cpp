@@ -133,41 +133,103 @@ end
         beginNamespace()
         .beginClass<float2>("float2")
            .addConstructor<void(float), void(float, float)>()
-           .addProperty("x", &float2::x)
-           .addProperty("r", &float2::r)
-           .addProperty("y", &float2::y)
-           .addProperty("g", &float2::g)
-       .endClass()
+           .addProperty("x",
+               [&](const float2* f) -> float {return f->f32[0];},
+               [&](float2* f, const float v) { f->f32[0] = v;}
+            )
+            .addProperty("r",
+                [&](const float2* f) -> float {return f->f32[0];},
+                [&](float2* f, const float v) { f->f32[0] = v;}
+             )
+            .addProperty("y",
+                [&](const float2* f) -> float {return f->f32[1];},
+                [&](float2* f, const float v) { f->f32[1] = v;}
+             )
+             .addProperty("g",
+                 [&](const float2* f) -> float {return f->f32[1];},
+                 [&](float2* f, const float v) { f->f32[1] = v;}
+              )
+        .endClass()
        .beginClass<float3>("float3")
-           .addConstructor<void(float), void(float, float, float)>()
-           .addProperty("x", &float3::x)
-           .addProperty("r", &float3::r)
-           .addProperty("y", &float3::y)
-           .addProperty("g", &float3::g)
-           .addProperty("z", &float3::z)
-           .addProperty("b", &float3::b)
+            .addConstructor<void(float), void(float, float, float)>()
+            .addProperty("x",
+                [&](const float3* f) -> float {return f->f32[0];},
+                [&](float3* f, const float v) { f->f32[0] = v;}
+             )
+            .addProperty("r",
+                [&](const float3* f) -> float {return f->f32[0];},
+                [&](float3* f, const float v) { f->f32[0] = v;}
+            )
+            .addProperty("y",
+                [&](const float3* f) -> float {return f->f32[1];},
+                [&](float3* f, const float v) { f->f32[1] = v;}
+            )
+            .addProperty("g",
+                [&](const float3* f) -> float {return f->f32[1];},
+                [&](float3* f, const float v) { f->f32[1] = v;}
+             )
+            .addProperty("z",
+                [&](const float3* f) -> float {return f->f32[2];},
+                [&](float3* f, const float v) { f->f32[2] = v;}
+             )
+             .addProperty("b",
+                 [&](const float3* f) -> float {return f->f32[2];},
+                 [&](float3* f, const float v) { f->f32[2] = v;}
+              )
        .endClass()
        .beginClass<float4>("float4")
-           .addConstructor<void(float), void(float, float, float, float)>()
-           .addProperty("x", &float4::x)
-           .addProperty("r", &float4::r)
-           .addProperty("y", &float4::y)
-           .addProperty("g", &float4::g)
-           .addProperty("z", &float4::z)
-           .addProperty("b", &float4::b)
-           .addProperty("w", &float4::w)
-           .addProperty("a", &float4::a)
+            .addConstructor<void(float), void(float, float, float, float)>()
+            .addProperty("x",
+                [&](const float4* f) -> float {return f->f32[0];},
+                [&](float4* f, const float v) { f->f32[0] = v;}
+             )
+            .addProperty("r",
+                [&](const float4* f) -> float {return f->f32[0];},
+                [&](float4* f, const float v) { f->f32[0] = v;}
+            )
+            .addProperty("y",
+                [&](const float4* f) -> float {return f->f32[1];},
+                [&](float4* f, const float v) { f->f32[1] = v;}
+            )
+            .addProperty("g",
+                [&](const float4* f) -> float {return f->f32[1];},
+                [&](float4* f, const float v) { f->f32[1] = v;}
+             )
+            .addProperty("z",
+                [&](const float4* f) -> float {return f->f32[2];},
+                [&](float4* f, const float v) { f->f32[2] = v;}
+             )
+            .addProperty("b",
+                [&](const float4* f) -> float {return f->f32[2];},
+                [&](float4* f, const float v) { f->f32[2] = v;}
+            )
+            .addProperty("w",
+                [&](const float4* f) -> float {return f->f32[3];},
+                [&](float4* f, const float v) { f->f32[3] = v;}
+            )
+            .addProperty("a",
+                [&](const float4* f) -> float {return f->f32[3];},
+                [&](float4* f, const float v) { f->f32[3] = v;}
+            )
        .endClass()
        .beginClass<quaternion>("quaternion")
            .addConstructor<void(float, float, float, float)>()
-           .addProperty("x", &quaternion::x)
-           .addProperty("r", &quaternion::r)
-           .addProperty("y", &quaternion::y)
-           .addProperty("g", &quaternion::g)
-           .addProperty("z", &quaternion::z)
-           .addProperty("b", &quaternion::b)
-           .addProperty("w", &quaternion::w)
-           .addProperty("a", &quaternion::a)
+            .addProperty("x",
+                [&](const quaternion* f) -> float {return f->f32[0];},
+                [&](quaternion* f, const float v) { f->f32[0] = v;}
+             )
+            .addProperty("y",
+                [&](const quaternion* f) -> float {return f->f32[1];},
+                [&](quaternion* f, const float v) { f->f32[1] = v;}
+            )
+            .addProperty("z",
+                [&](const quaternion* f) -> float {return f->f32[2];},
+                [&](quaternion* f, const float v) { f->f32[2] = v;}
+             )
+            .addProperty("w",
+                [&](const quaternion* f) -> float {return f->f32[3];},
+                [&](quaternion* f, const float v) { f->f32[3] = v;}
+            )
         .endClass()
         .addFunction("euler_angles", &euler_angles)
         .addFunction("radians", luabridge::overload<float>(radians))
@@ -202,7 +264,6 @@ end
         .endClass()
         
         .beginNamespace("Key")
-
             .addProperty("KEY_NONE", +[]{ return (uint32)KEY_NONE; })
             .addProperty("KEY_SPACE", +[]{ return (uint32)KEY_SPACE; })
             .addProperty("KEY_DASH", +[]{ return (uint32)KEY_DASH; })

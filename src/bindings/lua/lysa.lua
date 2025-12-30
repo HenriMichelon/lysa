@@ -9,6 +9,10 @@ return {
     -- Math types
     ------------------------------------------------------------------------
 
+    clamp = function (n, low, high)
+        return math.min(math.max(n, low), high)
+    end,
+
     ---@class lysa.float2
     ---@field x number
     ---@field y number
