@@ -12,8 +12,7 @@ import lysa.types;
 
 export namespace lysa {
 
-    class Resource {
-    public:
+    struct Resource {
         //! Unique ID
         unique_id id{INVALID_ID};
         //! References counter

@@ -18,6 +18,7 @@ namespace lysa {
             config.virtualFsConfiguration
             ),
         fixedDeltaTime(config.deltaTime),
+        cameraManager(ctx, config.resourcesCapacity.camera),
         renderTargetManager(ctx, config.resourcesCapacity.renderTarget, config.framesInFlight),
         renderingWindowManager(ctx, config.resourcesCapacity.renderingWindow),
         imageManager(ctx, config.resourcesCapacity.images),
@@ -45,7 +46,6 @@ namespace lysa {
 
     Lysa::~Lysa() {
         ctx.graphicQueue->waitIdle();
-        ctx.vireo->waitIdle();
         SceneFrameData::destroyDescriptorLayouts();
         Renderpass::destroyShaderModules();
         FrustumCulling::cleanup();

@@ -13,6 +13,7 @@ import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderer;
+import lysa.resources.camera;
 import lysa.resources.manager;
 import lysa.resources.scene_context;
 
@@ -44,7 +45,7 @@ export namespace lysa {
         const unique_id id;
         vireo::Viewport viewport;
         vireo::Rect scissors;
-        const CameraDesc camera;
+        const Camera& camera;
         SceneContext& scene;
     };
 

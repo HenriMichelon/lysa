@@ -87,14 +87,14 @@ namespace lysa {
         lightsBuffer->map();
     }
 
-    void SceneFrameData::compute(vireo::CommandList& commandList, const CameraDesc& camera) const {
+    void SceneFrameData::compute(vireo::CommandList& commandList, const Camera& camera) const {
         compute(camera, commandList, opaquePipelinesData);
         compute(camera, commandList, shaderMaterialPipelinesData);
         compute(camera, commandList, transparentPipelinesData);
     }
 
     void SceneFrameData::compute(
-        const CameraDesc& camera,
+        const Camera& camera,
         vireo::CommandList& commandList,
         const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const {
         for (const auto& [pipelineId, pipelineData] : pipelinesData) {
@@ -132,7 +132,7 @@ namespace lysa {
 
     void SceneFrameData::update(
         const vireo::CommandList& commandList,
-        const CameraDesc& camera) {
+        const Camera& camera) {
         if (!drawCommandsStagingBufferRecycleBin.empty()) {
             drawCommandsStagingBufferRecycleBin.clear();
         }

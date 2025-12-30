@@ -11,6 +11,7 @@ import lysa.context;
 import lysa.math;
 import lysa.memory;
 import lysa.renderers.graphic_pipeline_data;
+import lysa.resources.camera;
 import lysa.resources.material;
 import lysa.resources.manager;
 import lysa.renderers.pipelines.frustum_culling;
@@ -71,10 +72,10 @@ export namespace lysa {
             const vireo::Rect& scissors) const;
 
         /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
-        void update(const vireo::CommandList& commandList, const CameraDesc& camera);
+        void update(const vireo::CommandList& commandList, const Camera& camera);
 
         /** Executes compute workloads such as frustum culling. */
-        void compute(vireo::CommandList& commandList, const CameraDesc& camera) const;
+        void compute(vireo::CommandList& commandList, const Camera& camera) const;
 
         /** Adds a mesh instance to the scene. */
         void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
@@ -193,7 +194,7 @@ export namespace lysa {
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData);
 
         void compute(
-            const CameraDesc& camera,
+            const Camera& camera,
             vireo::CommandList& commandList,
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const;
 

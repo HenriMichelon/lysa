@@ -14,6 +14,7 @@ import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderpasses.depth_prepass;
 import lysa.renderers.scene_frame_data;
+import lysa.resources.camera;
 import lysa.resources.mesh;
 
 export namespace lysa {
@@ -72,7 +73,7 @@ export namespace lysa {
         void compute(
             vireo::CommandList& commandList,
             SceneFrameData& scene,
-            const CameraDesc& camera,
+            const Camera& camera,
             uint32 frameIndex) const;
 
         /** Pre-render stage: uploads, layout transitions, depth pre pass and shadow maps. */

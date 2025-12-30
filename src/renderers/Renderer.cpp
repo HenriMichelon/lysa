@@ -60,7 +60,7 @@ namespace lysa {
     void Renderer::compute(
        vireo::CommandList& commandList,
        SceneFrameData& scene,
-       const CameraDesc& camera,
+       const Camera& camera,
        const uint32 frameIndex) const {
         // auto resourcesLock = std::lock_guard{Application::getResources().getMutex()};
         // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {

@@ -45,18 +45,6 @@ export namespace lysa {
         uint32      ssaoEnabled{0};
     };
 
-    /**
-    * Struct to pass camera data from the ECS/POO systems to the rendering system
-    */
-    struct CameraDesc {
-        /** World space position */
-        float3 position;
-        /** World space transform */
-        float4x4 transform;
-        /** View projection */
-        float4x4 projection;
-    };
-
     struct VertexData {
         float4 position; // position + uv.x
         float4 normal;   // normal + uv.y

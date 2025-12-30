@@ -35,6 +35,7 @@ export import lysa.renderers.renderpasses.depth_prepass;
 export import lysa.renderers.renderpasses.forward_color;
 export import lysa.renderers.renderpasses.renderpass;
 
+export import lysa.resources.camera;
 export import lysa.resources.image;
 export import lysa.resources.manager;
 export import lysa.resources.material;
@@ -59,6 +60,8 @@ export namespace  lysa {
         size_t renderTarget{1};
         //! Maximum number of viewports
         size_t viewports{5};
+        //! Maximum number of cameras
+        size_t camera{viewports*2};
         //! Maximum number of scenes
         size_t scenes{10};
         //! Maximum number of images stored in GPU memory
@@ -153,6 +156,7 @@ export namespace  lysa {
         double currentTime{0.0};
         double accumulator{0.0};
 
+        CameraManager cameraManager;
         RenderTargetManager renderTargetManager;
         RenderingWindowManager renderingWindowManager;
         ImageManager imageManager;
