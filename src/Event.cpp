@@ -180,8 +180,10 @@ namespace lysa {
     EventManager::~EventManager() {
         queue.clear();
         handlers.clear();
+        globalHandlers.clear();
 #ifdef LUA_BINDING
         handlersLua.clear();
+        globalHandlersLua.clear();
 #endif
     }
 
