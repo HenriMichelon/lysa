@@ -14,6 +14,7 @@ return {
     end,
 
     ---@class lysa.float2
+    ---@field is_zero boolean
     ---@field x number
     ---@field y number
     ---@field r number
@@ -21,6 +22,7 @@ return {
     float2 = lysa.float2,
 
     ---@class lysa.float3
+    ---@field is_zero boolean
     ---@field x number
     ---@field y number
     ---@field z number
@@ -30,6 +32,7 @@ return {
     float3 = lysa.float3,
 
     ---@class lysa.float4
+    ---@field is_zero boolean
     ---@field x number
     ---@field y number
     ---@field z number
@@ -51,6 +54,45 @@ return {
     ---@field a number
     quaternion = lysa.quaternion,
 
+    ---@class lysa.float1x2
+    float1x2 = lysa.float1x2,
+    ---@class lysa.float2x2
+    float2x2 = lysa.float2x2,
+    ---@class lysa.float3x2
+    float3x2 = lysa.float3x2,
+    ---@class lysa.float3x2
+    float4x2 = lysa.float3x2,
+
+    ---@class lysa.float1x3
+    float1x3 = lysa.float1x3,
+    ---@class lysa.float2x3
+    float2x3 = lysa.float2x3,
+    ---@class lysa.float3x3
+    float3x3 = lysa.float3x3,
+    ---@class lysa.float3x3
+    float4x3 = lysa.float3x3,
+
+    ---@class lysa.float1x4
+    float1x4 = lysa.float1x4,
+    ---@class lysa.float2x4
+    float2x4 = lysa.float2x4,
+    ---@class lysa.float3x4
+    float3x4 = lysa.float3x4,
+    ---@class lysa.float3x4
+    float4x4 = lysa.float3x4,
+
+    AXIS_X = lysa.AXIS_X,
+    AXIS_Y = lysa.AXIS_Y,
+    AXIS_Z = lysa.AXIS_Z,
+    AXIS_UP = lysa.AXIS_UP,
+    AXIS_DOWN = lysa.AXIS_DOWN,
+    AXIS_FRONT = lysa.AXIS_FRONT,
+    AXIS_BACK = lysa.AXIS_BACK,
+    AXIS_RIGHT = lysa.AXIS_RIGHT,
+    QUATERNION_IDENTITY = lysa.QUATERNION_IDENTITY,
+    TRANSFORM_BASIS = lysa.TRANSFORM_BASIS,
+    HALF_PI = lysa.HALF_PI,
+
     ------------------------------------------------------------------------
     -- Free functions
     ------------------------------------------------------------------------
@@ -66,6 +108,25 @@ return {
     ---@overload fun(a:number, b:number):boolean
     ---@overload fun(a:lysa.quaternion, b:lysa.quaternion):boolean
     almost_equals = lysa.almost_equals,
+
+    ---@overload fun(a:lysa.float1x2, b:lysa.float2):number
+    ---@overload fun(a:lysa.float2x2, b:lysa.float2):lysa.float2
+    ---@overload fun(a:lysa.float3x2, b:lysa.float2):lysa.float3
+    ---@overload fun(a:lysa.float4x2, b:lysa.float2):lysa.float4
+    ---@overload fun(a:lysa.float1x3, b:lysa.float3):number
+    ---@overload fun(a:lysa.float2x3, b:lysa.float3):lysa.float2
+    ---@overload fun(a:lysa.float3x3, b:lysa.float3):lysa.float3
+    ---@overload fun(a:lysa.float4x3, b:lysa.float3):lysa.float4
+    ---@overload fun(a:lysa.float1x4, b:lysa.float4):number
+    ---@overload fun(a:lysa.float2x4, b:lysa.float4):lysa.float2
+    ---@overload fun(a:lysa.float3x4, b:lysa.float4):lysa.float3
+    ---@overload fun(a:lysa.float4x4, b:lysa.float4):lysa.float4
+    mul = lysa.mul,
+
+    ---@overload fun(a:lysa.float2, b:lysa.float2):lysa.float2
+    ---@overload fun(a:lysa.float3, b:lysa.float3):lysa.float3
+    ---@overload fun(a:lysa.float4, b:lysa.float4):lysa.float4
+    add = lysa.add,
 
     ---@param eye lysa.float3
     ---@param center lysa.float3
@@ -296,6 +357,82 @@ return {
     ---@field input_event_mouse_motion lysa.InputEventMouseMotion
     ---@field input_event_mouse_button lysa.InputEventMouseButton
     InputEvent = lysa.InputEvent,
+
+    ---@class lysa.GamepadButton
+    ---@field A integer
+    ---@field CROSS integer
+    ---@field B integer
+    ---@field CIRCLE integer
+    ---@field X integer
+    ---@field SQUARE integer
+    ---@field Y integer
+    ---@field TRIANGLE integer
+    ---@field LB integer
+    ---@field L1 integer
+    ---@field RB integer
+    ---@field R1 integer
+    ---@field BACK integer
+    ---@field SHARE integer
+    ---@field START integer
+    ---@field MENU integer
+    ---@field LT integer
+    ---@field L2 integer
+    ---@field RT integer
+    ---@field R2 integer
+    ---@field DPAD_UP integer
+    ---@field DPAD_RIGHT integer
+    ---@field DPAD_DOWN integer
+    ---@field DPAD_LEFT integer
+    GamepadButton = lysa.GamepadButton,
+
+    ---@class lysa.GamepadAxisJoystick
+    ---@field LEFT integer
+    ---@field RIGHT integer
+    GamepadAxisJoystick = lysa.GamepadAxisJoystick,
+
+    ---@class lysa.GamepadAxis
+    ---@field LEFT_X integer
+    ---@field LEFT_Y integer
+    ---@field RIGHT_X integer
+    ---@field RIGHT_Y integer
+    ---@field LEFT_TRIGGER integer
+    ---@field RIGHT_RTIGGER integer
+    GamepadAxis = lysa.GamepadAxis,
+
+    ---@class lysa.InputEventGamepadButton
+    ---@field button integer
+    ---@field pressed boolean
+    InputEventGamepadButton = lysa.InputEventGamepadButton,
+
+    ---@class lysa.InputActionEntry
+    ---@field value integer
+    ---@field type integer
+    ---@field pressed boolean
+    InputActionEntry = lysa.InputActionEntry,
+
+    ---@class lysa.InputAction
+    ---@field name string
+    ---@field entries table
+    InputAction = lysa.InputAction,
+
+    ---@class lysa.Input
+    ---@field is_key_pressed fun(key:integer) : boolean
+    ---@field is_key_just_pressed fun(key:integer) : boolean
+    ---@field is_key_just_released fun(key:integer) : boolean
+    ---@field get_keyboard_vector fun(negX:integer, posX:integer, negY:integer, posY:integer) : lysa.float2
+    ---@field is_mouse_button_pressed fun(button:integer) : boolean
+    ---@field is_mouse_button_just_pressed fun(button:integer) : boolean
+    ---@field is_mouse_button_just_released fun(button:integer) : boolean
+    ---@field get_connected_joypads fun() : integer
+    ---@field is_gamepad fun(index:integer) : boolean
+    ---@field get_joypad_name fun(index:integer) : string
+    ---@field get_gamepad_vector fun(index:integer, axis:integer) : lysa.float2
+    ---@field is_gamepad_button_pressed fun(index:integer,button:integer) : boolean
+    ---@field is_gamepad_button_just_released fun(button:integer) : boolean
+    ---@field is_gamepad_button_just_pressed fun(button:integer) : boolean
+    ---@field add_action fun(action:lysa.InputAction) : boolean
+    ---@field is_action fun(name:string,event:lysa.InputEvent) : boolean
+    Input = lysa.Input,
 
     ---@class lysa.Event
     ---@field id integer

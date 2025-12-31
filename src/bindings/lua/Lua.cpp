@@ -132,8 +132,9 @@ end
 
         beginNamespace()
         .beginClass<float2>("float2")
-           .addConstructor<void(), void(float), void(float, float)>()
-           .addProperty("x",
+            .addConstructor<void(), void(float), void(float, float)>()
+            .addProperty("is_zero", [&](const float2* f) { return all(*f == FLOAT2ZERO); })
+            .addProperty("x",
                [&](const float2* f) -> float {return f->f32[0];},
                [&](float2* f, const float v) { f->f32[0] = v;}
             )
@@ -152,6 +153,7 @@ end
         .endClass()
        .beginClass<float3>("float3")
             .addConstructor<void(), void(float), void(float, float, float)>()
+            .addProperty("is_zero", [&](const float3* f) { return all(*f == FLOAT3ZERO); })
             .addProperty("x",
                 [&](const float3* f) -> float {return f->f32[0];},
                 [&](float3* f, const float v) { f->f32[0] = v;}
@@ -176,9 +178,34 @@ end
                  [&](const float3* f) -> float {return f->f32[2];},
                  [&](float3* f, const float v) { f->f32[2] = v;}
               )
-       .endClass()
-       .beginClass<float4>("float4")
+        .endClass()
+        .beginClass<float1x2>("float1x2")
+        .endClass()
+        .beginClass<float2x2>("float2x2")
+        .endClass()
+        .beginClass<float3x2>("float3x2")
+        .endClass()
+        .beginClass<float4x2>("float4x2")
+        .endClass()
+        .beginClass<float1x3>("float1x3")
+        .endClass()
+        .beginClass<float2x3>("float2x3")
+        .endClass()
+        .beginClass<float3x3>("float3x3")
+        .endClass()
+        .beginClass<float4x3>("float4x3")
+        .endClass()
+        .beginClass<float1x4>("float1x4")
+        .endClass()
+        .beginClass<float2x4>("float2x4")
+        .endClass()
+        .beginClass<float3x4>("float3x4")
+        .endClass()
+        .beginClass<float4x4>("float4x4")
+        .endClass()
+        .beginClass<float4>("float4")
             .addConstructor<void(), void(float), void(float, float, float, float)>()
+            .addProperty("is_zero", [&](const float4* f) { return all(*f == FLOAT4ZERO); })
             .addProperty("x",
                 [&](const float4* f) -> float {return f->f32[0];},
                 [&](float4* f, const float v) { f->f32[0] = v;}
@@ -242,7 +269,31 @@ end
         .addFunction("orthographic", &orthographic)
         .addFunction("randomi", &randomi)
         .addFunction("randomf", &randomf)
-
+        .addFunction("mul",
+            luabridge::overload<const float2&, const float>(mul),
+            luabridge::overload<const float3&, const float>(mul),
+            luabridge::overload<const float4&, const float>(mul),
+            luabridge::overload<const float, const float2&>(mul),
+            luabridge::overload<const float, const float3&>(mul),
+            luabridge::overload<const float, const float4&>(mul),
+            luabridge::overload<const float1x2&, const float2&>(mul),
+            luabridge::overload<const float2x2&, const float2&>(mul),
+            luabridge::overload<const float3x2&, const float2&>(mul),
+            luabridge::overload<const float4x2&, const float2&>(mul),
+            luabridge::overload<const float1x3&, const float3&>(mul),
+            luabridge::overload<const float2x3&, const float3&>(mul),
+            luabridge::overload<const float3x3&, const float3&>(mul),
+            luabridge::overload<const float4x3&, const float3&>(mul),
+            luabridge::overload<const float1x4&, const float4&>(mul),
+            luabridge::overload<const float2x4&, const float4&>(mul),
+            luabridge::overload<const float3x4&, const float4&>(mul),
+            luabridge::overload<const float4x4&, const float4&>(mul)
+        )
+        .addFunction("add",
+            luabridge::overload<const float2&, const float2&>(add),
+            luabridge::overload<const float3&, const float3&>(add),
+            luabridge::overload<const float4&, const float4&>(add)
+        )
         .addFunction("is_windows", +[]{ return is_windows(); })
         .addFunction("get_current_time_milliseconds", get_current_time_milliseconds)
         .addFunction("sanitize_name", sanitize_name)
@@ -250,6 +301,21 @@ end
         .addFunction("to_float3", to_float3)
         .addFunction("to_float4", to_float4)
         .addFunction("to_lower", to_lower)
+
+        .addVariable("AXIS_X", AXIS_X)
+        .addVariable("AXIS_Y", AXIS_Y)
+        .addVariable("AXIS_Z", AXIS_Z)
+        .addVariable("AXIS_UP", AXIS_UP)
+        .addVariable("AXIS_DOWN", AXIS_DOWN)
+        .addVariable("AXIS_FRONT", AXIS_FRONT)
+        .addVariable("AXIS_BACK", AXIS_BACK)
+        .addVariable("AXIS_RIGHT", AXIS_RIGHT)
+        .addVariable("FLOAT2ZERO", FLOAT2ZERO)
+        .addVariable("FLOAT3ZERO", FLOAT3ZERO)
+        .addVariable("FLOAT4ZERO", FLOAT4ZERO)
+        .addVariable("QUATERNION_IDENTITY", QUATERNION_IDENTITY)
+        .addVariable("TRANSFORM_BASIS", TRANSFORM_BASIS)
+        .addVariable("HALF_PI", HALF_PI)
 
         .beginClass<Log>("Log")
            .addStaticFunction("log", +[](const char*msg) { Log::log(msg); })
@@ -422,6 +488,74 @@ end
             .addProperty("input_event_key", +[](const InputEvent*e) { return std::get<InputEventKey>(e->data);})
             .addProperty("input_event_mouse_motion", +[](const InputEvent*e) { return std::get<InputEventMouseMotion>(e->data);})
             .addProperty("input_event_mouse_button", +[](const InputEvent*e) { return std::get<InputEventMouseButton>(e->data);})
+        .endClass()
+        .beginNamespace("GamepadButton")
+            .addVariable("A", GamepadButton::A)
+            .addVariable("CROSS", GamepadButton::CROSS)
+            .addVariable("B", GamepadButton::B)
+            .addVariable("A", GamepadButton::A)
+            .addVariable("CIRCLE", GamepadButton::CIRCLE)
+            .addVariable("X ", GamepadButton::X )
+            .addVariable("SQUARE", GamepadButton::SQUARE)
+            .addVariable("Y", GamepadButton::Y)
+            .addVariable("TRIANGLE", GamepadButton::TRIANGLE)
+            .addVariable("LB", GamepadButton::LB)
+            .addVariable("L1", GamepadButton::L1)
+            .addVariable("RB", GamepadButton::RB)
+            .addVariable("R1", GamepadButton::R1)
+            .addVariable("BACK", GamepadButton::BACK)
+            .addVariable("SHARE", GamepadButton::SHARE)
+            .addVariable("START", GamepadButton::START)
+            .addVariable("MENU", GamepadButton::MENU)
+            .addVariable("RT", GamepadButton::RT)
+            .addVariable("R2", GamepadButton::R2)
+            .addVariable("DPAD_UP", GamepadButton::DPAD_UP)
+            .addVariable("DPAD_RIGHT", GamepadButton::DPAD_RIGHT)
+            .addVariable("DPAD_DOWN", GamepadButton::DPAD_DOWN)
+            .addVariable("DPAD_LEFT", GamepadButton::DPAD_LEFT)
+        .endNamespace()
+        .beginNamespace("GamepadAxisJoystick")
+           .addVariable("LEFT", GamepadAxisJoystick::LEFT)
+           .addVariable("RIGHT", GamepadAxisJoystick::RIGHT)
+        .endNamespace()
+        .beginNamespace("GamepadAxis")
+           .addVariable("LEFT_X", GamepadAxis::LEFT_X)
+           .addVariable("LEFT_Y", GamepadAxis::LEFT_Y)
+           .addVariable("RIGHT_X", GamepadAxis::RIGHT_X)
+           .addVariable("RIGHT_Y", GamepadAxis::RIGHT_Y)
+           .addVariable("LEFT_TRIGGER", GamepadAxis::LEFT_TRIGGER)
+           .addVariable("RIGHT_TRIGGER", GamepadAxis::RIGHT_TRIGGER)
+        .endNamespace()
+        .beginClass<InputEventGamepadButton>("InputEventGamepadButton")
+            .addProperty("button", &InputEventGamepadButton::button)
+            .addProperty("pressed", &InputEventGamepadButton::pressed)
+        .endClass()
+        .beginClass<InputActionEntry>("InputActionEntry")
+            .addProperty("type", &InputActionEntry::type)
+            .addProperty("value", &InputActionEntry::value)
+            .addProperty("pressed", &InputActionEntry::pressed)
+        .endClass()
+        .beginClass<InputAction>("InputAction")
+            .addProperty("name", &InputAction::name)
+            .addProperty("entries", &InputAction::entries)
+        .endClass()
+        .beginClass<Input>("Input")
+            .addStaticFunction("is_key_pressed", &Input::isKeyPressed)
+            .addStaticFunction("is_key_just_pressed", &Input::isKeyJustPressed)
+            .addStaticFunction("is_key_just_released", &Input::isKeyJustReleased)
+            .addStaticFunction("get_keyboard_vector", &Input::getKeyboardVector)
+            .addStaticFunction("is_mouse_button_pressed", &Input::isMouseButtonPressed)
+            .addStaticFunction("is_mouse_button_just_pressed", &Input::isMouseButtonJustPressed)
+            .addStaticFunction("is_mouse_button_just_released", &Input::isMouseButtonJustReleased)
+            .addStaticFunction("get_connected_joypads", &Input::getConnectedJoypads)
+            .addStaticFunction("is_gamepad", &Input::isGamepad)
+            .addStaticFunction("get_joypad_name", &Input::getJoypadName)
+            .addStaticFunction("get_gamepad_vector", &Input::getGamepadVector)
+            .addStaticFunction("is_gamepad_button_pressed", &Input::isGamepadButtonPressed)
+            .addStaticFunction("is_gamepad_button_just_released", &Input::isGamepadButtonJustReleased)
+            .addStaticFunction("is_gamepad_button_just_pressed", &Input::isGamepadButtonJustPressed)
+            .addStaticFunction("add_action", &Input::addAction)
+            .addStaticFunction("is_action", &Input::isAction)
         .endClass()
 
         .beginClass<Event>("Event")

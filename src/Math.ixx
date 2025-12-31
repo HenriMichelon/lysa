@@ -99,6 +99,11 @@ export namespace lysa {
     const float3 FLOAT3ZERO{0.0f};
 
     /**
+    * 4D zero initialized vector
+    */
+    const float4 FLOAT4ZERO{0.0f};
+
+    /**
     * Unit quaternion with no rotation
     */
     const quaternion QUATERNION_IDENTITY{0.0f, 0.0f, 0.0f, 1.0f};
@@ -216,6 +221,16 @@ export namespace lysa {
      * @return Pseudo-random value uniformly distributed in [0.0f, max].
      */
     float randomf(float max);
+
+    float2 mul(const float2&a, const float b) { return a * b; }
+    float3 mul(const float3&a, const float b) { return a * b; }
+    float4 mul(const float4&a, const float b) { return a * b; }
+    float2 mul(const float a, const float2&b) { return a * b; }
+    float3 mul(const float a, const float3&b) { return a * b; }
+    float4 mul(const float a, const float4&b) { return a * b; }
+    float2 add(const float2& a, const float2&b) { return a + b; }
+    float3 add(const float3& a, const float3&b) { return a + b; }
+    float4 add(const float4& a, const float4&b) { return a + b; }
 
 }
 
