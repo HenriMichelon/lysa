@@ -112,6 +112,10 @@ export namespace lysa {
 
         void pushSandboxEnv() const;
 
+        void collectGarbage() const {
+            lua_gc(L, LUA_GCCOLLECT);
+        }
+
         Lua(Context& ctx, const LuaConfiguration& luaConfiguration);
 
         ~Lua();
