@@ -116,22 +116,19 @@ export namespace lysa {
             vireo::ImageFormat imageFormat = vireo::ImageFormat::R8G8B8A8_SRGB,
             const std::string& name = "Image");
 
-
         /** Returns the default 2D blank image used as a safe fallback. */
         auto getBlankImage() const { return blankImage; }
 
         /** Returns the default cubemap blank image used as a safe fallback. */
         auto getBlankCubeMap() const { return blankCubeMap; }
 
-        /** Returns true if the descriptor sets using the images must be updated */
-        bool _isUpdateNeeded() const { return updated; }
-
-        void _resetUpdateFlag() { updated = false; }
-
         /** Return the global GPU image array */
         auto getImages() const { return images; }
 
         bool destroy(unique_id id) override;
+
+        bool _isUpdateNeeded() const { return updated; }
+        void _resetUpdateFlag() { updated = false; }
 
     private:
         /** Flag indicating that one or more textures changed and need syncing. */

@@ -159,7 +159,8 @@ namespace lysa {
 
     bool ImageManager::destroy(const unique_id id) {
         if (ResourcesManager::destroy(id)) {
-            images[id].reset();
+            images[id] = blankImage;
+            updated = true;
             return true;
         }
         return false;
