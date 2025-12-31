@@ -316,55 +316,13 @@ namespace lysa {
         }
         materialManager.flush();
         meshManager.flush();
-
         callback(nodeHeaders, meshes, childrenIndexes);
-
-        //Application::getResources().flush();
-
-
-        // Create the Node objects
-        // std::vector<std::shared_ptr<Node>> nodes{(header.nodesCount)};
-        // for (auto nodeIndex = 0; nodeIndex < header.nodesCount; ++nodeIndex) {
-        //     std::shared_ptr<Node> newNode;
-        //     std::string name{nodeHeaders[nodeIndex].name};
-        //     // find if the node has a mesh, and if it does hook it to the mesh pointer and allocate it with the
-        //     // MeshInstance class
-        //     if (nodeHeaders[nodeIndex].meshIndex != -1) {
-        //         auto mesh = meshes[nodeHeaders[nodeIndex].meshIndex];
-        //         newNode = std::make_shared<MeshInstance>(mesh, name);
-        //     } else {
-        //         newNode = std::make_shared<Node>(name);
-        //     }
-        //     newNode->setTransformLocal(nodeHeaders[nodeIndex].transform);
-        //     nodes[nodeIndex] = newNode;
-        // }
-
-        // for (auto animationIndex = 0; animationIndex < header.animationsCount; animationIndex++) {
-        //     for (auto trackIndex = 0; trackIndex < animationHeaders[animationIndex].tracksCount; trackIndex++) {
-        //         auto nodeIndex = tracksInfos[animationIndex][trackIndex].nodeIndex;
-        //         auto& player = animationPlayers[nodeIndex];
-        //         if (!player->getParent()) {
-        //             auto& node = nodes[nodeIndex];
-        //             // player->setNode(node);
-        //             node->addChild(player);
-        //         }
-        //     }
-        // }
-
-        // Build the scene tree
-        // for (auto nodeIndex = 0; nodeIndex < header.nodesCount; ++nodeIndex) {
-        //     auto& sceneNode = nodes[nodeIndex];
-        //     for (auto i = 0; i < nodeHeaders[nodeIndex].childrenCount; i++) {
-        //         sceneNode->addChild(nodes[childrenIndexes[nodeIndex][i]]);
-        //     }
-        // }
-
-        // find the top nodes, with no parents
-        // for (auto &node : nodes) {
-        //     if (node->getParent() == nullptr) {
-        //         rootNode.addChild(node);
-        //     }
-        // }
+        for (auto& texture : textures) {
+            if (texture->refCounter == 0) {
+                Log::warning("texture #", texture->id, " (", texture->getName(), ") never used in any material");
+                ctx.res.get<ImageTextureManager>().destroy(texture->id);
+            }
+        }
 
         // Update renderers pipelines in current rendering targets
         ctx.res.get<RenderTargetManager>().updatePipelines(pipelineIds);
