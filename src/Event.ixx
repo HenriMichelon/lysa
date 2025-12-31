@@ -46,6 +46,18 @@ export namespace lysa {
         EventHandlerCallback fn;
     };
 
+#ifdef LUA_BINDING
+    /**
+     * @brief Internal structure for a Lua event handler.
+     */
+    struct EventHandlerLua {
+        /** @brief The unique identifier of the handler. */
+        unique_id id;
+        /** @brief The callback function to be executed. */
+        luabridge::LuaRef fn;
+    };
+#endif
+
     /**
      * @brief Simple event manager.
      *
@@ -78,18 +90,10 @@ export namespace lysa {
 
         /**
          * @brief Unsubscribe a C++ handler to a given global event type
-         * @param type The event kind.
          * @param handler Previously registered handler
          */
-        void unsubscribe(const event_type& type, unique_id handler);
+        void unsubscribe(unique_id handler);
 
-        /**
-         * @brief Unsubscribe a C++ handler to a given event type and target id.
-         * @param type The event kind
-         * @param id The specific target id to filter on.
-         * @param handler Previously registered handler
-         */
-        void unsubscribe(const event_type& type, unique_id id, unique_id handler);
 
 #ifdef LUA_BINDING
         /**
@@ -98,29 +102,20 @@ export namespace lysa {
          * @param id The specific target id to filter on.
          * @param handler Lua function to be called with the event.
          */
-        void subscribe(const event_type& type, unique_id id, const luabridge::LuaRef& handler);
+        unique_id subscribe(const event_type& type, unique_id id, const luabridge::LuaRef& handler);
 
         /**
          * @brief Subscribe a Lua handler to a given global event type
          * @param type The event kind to listen to.
          * @param handler Reference to a callable receiving the event.
          */
-        void subscribe(const event_type& type, const luabridge::LuaRef& handler);
+        unique_id subscribe(const event_type& type, const luabridge::LuaRef& handler);
 
         /**
          * @brief Unsubscribe a Lua handler to a given event type and target id.
-         * @param type The event kind.
-         * @param id The specific target id.
          * @param handler Previously registered Lua handler.
          */
-        void unsubscribe(const event_type& type,  unique_id id, const luabridge::LuaRef& handler);
-
-        /**
-         * @brief Unsubscribe a Lua handler to a given global event type.
-         * @param type The event kind.
-         * @param handler Previously registered Lua handler.
-         */
-        void unsubscribe(const event_type& type, const luabridge::LuaRef& handler);
+        void unsubscribe(const luabridge::LuaRef& handler);
 
 #endif
 
@@ -159,9 +154,9 @@ export namespace lysa {
         std::atomic<unique_id> nextId{1};
 #ifdef LUA_BINDING
         /* Lua subscribers to global events. */
-        std::unordered_map<event_type, std::vector<luabridge::LuaRef>> globalHandlersLua{};
+        std::unordered_map<event_type, std::vector<EventHandlerLua>> globalHandlersLua{};
         /* Lua subscribers to targeted events. */
-        std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<luabridge::LuaRef>>> handlersLua{};
+        std::unordered_map<event_type, std::unordered_map<unique_id, std::vector<EventHandlerLua>>> handlersLua{};
 #endif
     };
 

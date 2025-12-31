@@ -78,10 +78,10 @@ namespace lysa {
         descriptorSet->update(BINDING_SCENE, sceneUniformBuffer);
         descriptorSet->update(BINDING_MODELS, meshInstancesDataArray.getBuffer());
         descriptorSet->update(BINDING_LIGHTS, lightsBuffer);
-        descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
+        //descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
 
         descriptorSetOpt1 = ctx.vireo->createDescriptorSet(sceneDescriptorLayoutOptional1, "Scene Opt1");
-        descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
+        //descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
 
         sceneUniformBuffer->map();
         lightsBuffer->map();
