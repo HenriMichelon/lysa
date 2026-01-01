@@ -574,9 +574,7 @@ end
                 luabridge::overload<const event_type&, unique_id, const luabridge::LuaRef&>(&EventManager::subscribe),
                 luabridge::overload<const event_type&, const luabridge::LuaRef&>(&EventManager::subscribe)
             )
-            .addFunction("unsubscribe",
-                luabridge::overload<const luabridge::LuaRef&>(&EventManager::unsubscribe)
-            )
+            .addFunction("unsubscribe", &EventManager::unsubscribe)
         .endClass()
         .beginClass<VirtualFS>("VirtualFS")
             .addFunction("get_path", &VirtualFS::getPath)

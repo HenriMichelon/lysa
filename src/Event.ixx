@@ -90,9 +90,9 @@ export namespace lysa {
 
         /**
          * @brief Unsubscribe a C++ handler to a given global event type
-         * @param handler Previously registered handler
+         * @param id Previously registered handler
          */
-        void unsubscribe(unique_id handler);
+        void unsubscribe(unique_id id);
 
 
 #ifdef LUA_BINDING
@@ -110,12 +110,6 @@ export namespace lysa {
          * @param handler Reference to a callable receiving the event.
          */
         unique_id subscribe(const event_type& type, const luabridge::LuaRef& handler);
-
-        /**
-         * @brief Unsubscribe a Lua handler to a given event type and target id.
-         * @param handler Previously registered Lua handler.
-         */
-        void unsubscribe(const luabridge::LuaRef& handler);
 
 #endif
 

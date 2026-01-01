@@ -32,20 +32,32 @@ namespace lysa {
         return hid;
     }
 
-    void EventManager::unsubscribe(const unique_id handler) {
+    void EventManager::unsubscribe(const unique_id id) {
         {
             auto lock = std::lock_guard(globalHandlersMutex);
             for (auto& handlers : globalHandlers) {
-                std::erase_if(handlers.second,[&](const EventHandler& e) { return e.id == handler; });
+                std::erase_if(handlers.second,[&](const EventHandler& e) { return e.id == id; });
             }
+#ifdef LUA_BINDING
+            for (auto& handlers : globalHandlersLua) {
+                std::erase_if(handlers.second,[&](const EventHandlerLua& e) { return e.id == id; });
+            }
+#endif
         }
         {
             auto lock = std::lock_guard(handlersMutex);
             for (auto& types : handlers) {
                 for (auto& handlers : types.second) {
-                    std::erase_if(handlers.second,[&](const EventHandler& e) { return e.id == handler; });
+                    std::erase_if(handlers.second,[&](const EventHandler& e) { return e.id == id; });
                 }
             }
+#ifdef LUA_BINDING
+            for (auto& types : handlersLua) {
+                for (auto& handlers : types.second) {
+                    std::erase_if(handlers.second,[&](const EventHandlerLua& e) { return e.id == id; });
+                }
+            }
+#endif
         }
     }
 
@@ -62,27 +74,6 @@ namespace lysa {
         const auto hid = nextId++;
         globalHandlersLua[type].push_back({hid, handler});
         return hid;
-    }
-
-    void EventManager::unsubscribe(const luabridge::LuaRef& handler) {
-        {
-            auto lock = std::lock_guard(handlersMutex);
-            for (auto& types : handlersLua) {
-                for (auto& handlers : types.second) {
-                    std::erase_if(handlers.second,[&](const EventHandlerLua& e) {
-                        return e.id == handler;
-                    });
-                }
-            }
-        }
-        {
-            auto lock = std::lock_guard(globalHandlersMutex);
-            for (auto& handlers : globalHandlersLua) {
-                std::erase_if(handlers.second,[&](const EventHandlerLua& e) {
-                    return e.id == handler;
-                });
-            }
-        }
     }
 
 #endif
