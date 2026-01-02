@@ -70,8 +70,8 @@ export namespace lysa {
         /**
          * @brief Execute a Lua script file in the current state.
          *
-         * @param ctx
          * @param scriptName name of the script file to execute, relative to the script directory of the VFS
+         * @param args
          */
         template <typename... Args>
         luabridge::LuaRef execute(const std::string& scriptName, Args&&... args) const {

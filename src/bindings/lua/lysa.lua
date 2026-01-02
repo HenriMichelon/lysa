@@ -1,5 +1,4 @@
 local vireo = require('vireo')
-local ecs = require('ecs')
 
 ---@diagnostic disable: missing-return
 --EmmyLua annotations and documentation for Lysa
