@@ -8,9 +8,10 @@ export module lysa.resources.scene_context;
 
 import lysa.context;
 import lysa.math;
-import lysa.renderers.graphic_pipeline_data;
+ import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_frame_data;
 import lysa.resources.manager;
+import lysa.resources.mesh_instance;
 
 export namespace lysa {
 
@@ -43,13 +44,13 @@ export namespace lysa {
         const float4& getAmbientLight() const { return ambientLight; }
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, bool async);
+        void addInstance(const std::shared_ptr<MeshInstance> &meshInstance, bool async);
 
         /** Updates a mesh instance. */
-        void updateInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
+        void updateInstance(const std::shared_ptr<MeshInstance> &meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, bool async);
+        void removeInstance(const std::shared_ptr<MeshInstance> &meshInstance, bool async);
 
         void processDeferredOperations(uint32 frameIndex);
 
@@ -59,15 +60,15 @@ export namespace lysa {
         /** Per‑frame state and deferred operations processed at frame boundaries. */
         struct FrameData {
             /** Nodes to add on the next frame (synchronous path). */
-            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> addedNodes;
+            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> addedNodes;
             /** Nodes to add on the next frame (async path). */
-            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> addedNodesAsync;
+            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> addedNodesAsync;
             /** Nodes to add on the next frame (synchronous path). */
-            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> updatedNodes;
+            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> updatedNodes;
             /** Nodes to remove on the next frame (synchronous path). */
-            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> removedNodes;
+            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> removedNodes;
             /** Nodes to remove on the next frame (async path). */
-            std::list<std::variant<std::shared_ptr<MeshInstanceDesc>, std::shared_ptr<LightDesc>>> removedNodesAsync;
+            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> removedNodesAsync;
             /** Scene instance associated with this frame. */
             std::unique_ptr<SceneFrameData> scene;
         };

@@ -38,7 +38,7 @@ namespace lysa {
         ctx.graphicQueue->waitIdle();
     }
 
-    void SceneContext::addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, const bool async) {
+    void SceneContext::addInstance(const std::shared_ptr<MeshInstance> &meshInstance, const bool async) {
         assert([&]{return meshInstance != nullptr;}, "meshInstance can't be null");
         meshInstance->pendingUpdates = framesInFlight;
         auto lock = std::lock_guard(frameDataMutex);
@@ -51,7 +51,7 @@ namespace lysa {
         }
     }
 
-    void SceneContext::updateInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance) {
+    void SceneContext::updateInstance(const std::shared_ptr<MeshInstance> &meshInstance) {
         assert([&]{return meshInstance != nullptr;}, "meshInstance can't be null");
         meshInstance->pendingUpdates = framesInFlight;
         auto lock = std::lock_guard(frameDataMutex);
@@ -60,7 +60,7 @@ namespace lysa {
         }
     }
 
-    void SceneContext::removeInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance, const bool async) {
+    void SceneContext::removeInstance(const std::shared_ptr<MeshInstance> &meshInstance, const bool async) {
         assert([&]{return meshInstance != nullptr;}, "meshInstance can't be null");
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
@@ -80,7 +80,7 @@ namespace lysa {
         // Immediate removes
         if (!data.removedNodes.empty()) {
             for (const auto &node : data.removedNodes) {
-                auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(node);
+                auto& mi = std::get<std::shared_ptr<MeshInstance>>(node);
                 data.scene->removeInstance(mi);
                 data.updatedNodes.remove(mi);
             }
@@ -90,7 +90,7 @@ namespace lysa {
         if (!data.removedNodesAsync.empty()) {
             auto count = 0;
             for (auto it = data.removedNodesAsync.begin(); it != data.removedNodesAsync.end();) {
-                auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(*it);
+                auto& mi = std::get<std::shared_ptr<MeshInstance>>(*it);
                 data.scene->removeInstance(mi);
                 it = data.removedNodesAsync.erase(it);
                 data.updatedNodes.remove(mi);
@@ -103,7 +103,7 @@ namespace lysa {
         // Log::info("pDO", frameIndex);
         if (!data.addedNodes.empty()) {
             for (const auto &node : data.addedNodes) {
-                auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(node);
+                auto& mi = std::get<std::shared_ptr<MeshInstance>>(node);
                 data.scene->addInstance(mi);
                 data.updatedNodes.remove(mi);
             }
@@ -113,7 +113,7 @@ namespace lysa {
         if (!data.addedNodesAsync.empty()) {
             auto count = 0;
             for (auto it = data.addedNodesAsync.begin(); it != data.addedNodesAsync.end();) {
-                auto& mi = std::get<std::shared_ptr<MeshInstanceDesc>>(*it);
+                auto& mi = std::get<std::shared_ptr<MeshInstance>>(*it);
                 data.scene->addInstance(mi);
                 it = data.addedNodesAsync.erase(it);
                 data.updatedNodes.remove(mi);
@@ -123,7 +123,7 @@ namespace lysa {
         }
         if (!data.updatedNodes.empty()) {
             for (const auto &node : data.updatedNodes) {
-                data.scene->updateInstance(std::get<std::shared_ptr<MeshInstanceDesc>>(node));
+                data.scene->updateInstance(std::get<std::shared_ptr<MeshInstance>>(node));
             }
             data.updatedNodes.clear();
         }

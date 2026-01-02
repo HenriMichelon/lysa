@@ -10,10 +10,11 @@ import vireo;
 import lysa.context;
 import lysa.math;
 import lysa.memory;
-import lysa.renderers.graphic_pipeline_data;
 import lysa.resources.camera;
 import lysa.resources.material;
 import lysa.resources.manager;
+import lysa.resources.mesh_instance;
+import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.pipelines.frustum_culling;
 
 export namespace lysa {
@@ -78,13 +79,13 @@ export namespace lysa {
         void compute(vireo::CommandList& commandList, const Camera& camera) const;
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
+        void addInstance(const std::shared_ptr<MeshInstance> &meshInstance);
 
         /** Adds a mesh instance to the scene. */
-        void updateInstance(const std::shared_ptr<MeshInstanceDesc> &meshInstance);
+        void updateInstance(const std::shared_ptr<MeshInstance> &meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(const std::shared_ptr<MeshInstanceDesc> &node);
+        void removeInstance(const std::shared_ptr<MeshInstance> &node);
 
         /**
          * Issues draw calls for opaque models using the supplied pipelines map.
@@ -164,9 +165,9 @@ export namespace lysa {
         /** Device array storing per-mesh-instance GPU data. */
         DeviceMemoryArray meshInstancesDataArray;
         /** Memory blocks allocated in meshInstancesDataArray per MeshInstance. */
-        std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock> meshInstancesDataMemoryBlocks{};
+        std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock> meshInstancesDataMemoryBlocks{};
         /** Mesh instances scheduled for removal. */
-        std::list<std::shared_ptr<MeshInstanceDesc>> removedMeshInstances{};
+        std::list<std::shared_ptr<MeshInstance>> removedMeshInstances{};
         /** True if meshInstancesDataArray content changed. */
         bool meshInstancesDataUpdated{false};
 
@@ -200,7 +201,7 @@ export namespace lysa {
 
         void addInstance(
             pipeline_id pipelineId,
-            const std::shared_ptr<MeshInstanceDesc>& meshInstance,
+            const std::shared_ptr<MeshInstance>& meshInstance,
             std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData);
 
         void drawModels(

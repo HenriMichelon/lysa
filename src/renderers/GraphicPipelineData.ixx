@@ -14,6 +14,7 @@ import lysa.math;
 import lysa.memory;
 import lysa.resources.material;
 import lysa.resources.mesh;
+import lysa.resources.mesh_instance;
 import lysa.renderers.configuration;
 import lysa.renderers.pipelines.frustum_culling;
 
@@ -89,53 +90,6 @@ export namespace lysa {
         float4 ambientColorIntensity{1.0f, 1.0f, 1.0f, 0.0f};
     };
 
-    /**
-     * Mesh instance data in GPU memory
-     */
-    struct MeshInstanceData {
-        float4x4 transform;
-        float3   aabbMin;
-        float3   aabbMax;
-        uint     visible;
-        uint     castShadows;
-    };
-
-    /**
-     * Structure to pass data between the ECS/OOP systems to the rendering system
-     */
-    struct MeshInstanceDesc {
-        Mesh& mesh;
-        bool visible{false};
-        bool castShadows{false};
-        AABB worldAABB;
-        float4x4 worldTransform;
-        std::unordered_map<uint32, unique_id> materialsOverride;
-        /** Current number of pending updates to process. */
-        uint32 pendingUpdates{0};
-
-        unique_id getSurfaceMaterial(uint32 surfaceIndex) const;
-
-        MeshInstanceData getData() const;
-
-        MeshInstanceDesc(
-            Mesh& mesh,
-            const bool visible,
-            const bool castShadows,
-            const AABB& worldAABB,
-            const float4x4& worldTransform) :
-            mesh(mesh),
-            visible(visible),
-            castShadows(castShadows),
-            worldAABB(worldAABB),
-            worldTransform(worldTransform) {}
-
-        MeshInstanceDesc(const MeshInstanceDesc& mi) :
-            mesh(mi.mesh),
-            visible(mi.visible),
-            castShadows(mi.castShadows),
-            worldAABB(mi.worldAABB),
-            worldTransform(mi.worldTransform) {}
-    };
 
     /**
      * %A single draw instance.
@@ -197,7 +151,7 @@ export namespace lysa {
         /** Device memory array that stores InstanceData blocks. */
         DeviceMemoryArray instancesArray;
         /** Mapping of mesh instance to its memory block within instancesArray. */
-        std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock> instancesMemoryBlocks;
+        std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock> instancesMemoryBlocks;
 
         /** Number of indirect draw commands before culling. */
         uint32 drawCommandsCount{0};
@@ -226,16 +180,16 @@ export namespace lysa {
 
         /** Registers a mesh instance into this pipeline data object. */
         void addInstance(
-            const std::shared_ptr<MeshInstanceDesc>& meshInstance,
-            const std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock>& meshInstancesDataMemoryBlocks);
+            const std::shared_ptr<MeshInstance>& meshInstance,
+            const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
 
         /** Removes a previously registered mesh instance. */
         void removeInstance(
-            const std::shared_ptr<MeshInstanceDesc>& meshInstance);
+            const std::shared_ptr<MeshInstance>& meshInstance);
 
         /** Adds a single draw instance and wires memory blocks. */
         void addInstance(
-            const std::shared_ptr<MeshInstanceDesc>& meshInstance,
+            const std::shared_ptr<MeshInstance>& meshInstance,
             const MemoryBlock& instanceMemoryBlock,
             const MemoryBlock& meshInstanceMemoryBlock);
 
@@ -243,7 +197,7 @@ export namespace lysa {
         void updateData(
             const vireo::CommandList& commandList,
             std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
-            const std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock>& meshInstancesDataMemoryBlocks);
+            const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
     };
 
 }

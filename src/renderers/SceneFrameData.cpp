@@ -227,7 +227,7 @@ namespace lysa {
         }
     }
 
-    void SceneFrameData::addInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+    void SceneFrameData::addInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
         const auto& mesh = meshInstance->mesh;
         assert([&]{ return !meshInstancesDataMemoryBlocks.contains(meshInstance);}, "Mesh instance already in the scene");
         assert([&]{return !mesh.getMaterials().empty(); }, "Models without materials are not supported");
@@ -264,7 +264,7 @@ namespace lysa {
         }
     }
 
-    void SceneFrameData::updateInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+    void SceneFrameData::updateInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
         if (meshInstance->pendingUpdates > 0) {
             const auto meshInstanceData = meshInstance->getData();
             meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
@@ -275,7 +275,7 @@ namespace lysa {
 
     void SceneFrameData::addInstance(
         pipeline_id pipelineId,
-        const std::shared_ptr<MeshInstanceDesc>& meshInstance,
+        const std::shared_ptr<MeshInstance>& meshInstance,
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
         if (!pipelinesData.contains(pipelineId)) {
             pipelinesData[pipelineId] = std::make_unique<GraphicPipelineData>(
@@ -284,7 +284,7 @@ namespace lysa {
         pipelinesData[pipelineId]->addInstance(meshInstance, meshInstancesDataMemoryBlocks);
     }
 
-    void SceneFrameData::removeInstance(const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+    void SceneFrameData::removeInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
         if (!meshInstancesDataMemoryBlocks.contains(meshInstance)) {
             return;
         }

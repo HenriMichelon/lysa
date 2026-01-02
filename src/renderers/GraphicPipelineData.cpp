@@ -11,23 +11,6 @@ import lysa.log;
 
 namespace lysa {
 
-    unique_id MeshInstanceDesc::getSurfaceMaterial(const uint32 surfaceIndex) const {
-        if (materialsOverride.contains(surfaceIndex)) {
-            return materialsOverride.at(surfaceIndex);
-        }
-        return mesh.getSurfaces()[surfaceIndex].material;
-    }
-
-    MeshInstanceData MeshInstanceDesc::getData() const {
-        return {
-            .transform = worldTransform,
-            .aabbMin = worldAABB.min,
-            .aabbMax = worldAABB.max,
-            .visible = visible ? 1u : 0u,
-            .castShadows = castShadows ? 1u : 0u,
-        };
-    }
-
     LightData LightDesc::getData() const {
         return {
             .type = type,
@@ -84,8 +67,8 @@ namespace lysa {
     }
 
     void GraphicPipelineData::addInstance(
-        const std::shared_ptr<MeshInstanceDesc>& meshInstance,
-        const std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock>& meshInstancesDataMemoryBlocks) {
+        const std::shared_ptr<MeshInstance>& meshInstance,
+        const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks) {
         const auto& mesh = meshInstance->mesh;
         const auto instanceMemoryBlock = instancesArray.alloc(mesh.getSurfaces().size());
         instancesMemoryBlocks[meshInstance] = instanceMemoryBlock;
@@ -93,7 +76,7 @@ namespace lysa {
     }
 
     void GraphicPipelineData::addInstance(
-        const std::shared_ptr<MeshInstanceDesc>& meshInstance,
+        const std::shared_ptr<MeshInstance>& meshInstance,
         const MemoryBlock& instanceMemoryBlock,
         const MemoryBlock& meshInstanceMemoryBlock) {
         const auto& mesh = meshInstance->mesh;
@@ -129,7 +112,7 @@ namespace lysa {
     }
 
     void GraphicPipelineData::removeInstance(
-        const std::shared_ptr<MeshInstanceDesc>& meshInstance) {
+        const std::shared_ptr<MeshInstance>& meshInstance) {
         if (instancesMemoryBlocks.contains(meshInstance)) {
             instancesArray.free(instancesMemoryBlocks.at(meshInstance));
             instancesMemoryBlocks.erase(meshInstance);
@@ -141,7 +124,7 @@ namespace lysa {
     void GraphicPipelineData::updateData(
         const vireo::CommandList& commandList,
         std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
-        const std::unordered_map<std::shared_ptr<MeshInstanceDesc>, MemoryBlock>& meshInstancesDataMemoryBlocks) {
+        const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks) {
         if (instancesRemoved) {
             for (const auto& instance : std::views::keys(instancesMemoryBlocks)) {
                 addInstance(

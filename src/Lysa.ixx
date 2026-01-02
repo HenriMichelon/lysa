@@ -72,12 +72,14 @@ export namespace  lysa {
         size_t material{100};
         //! Maximum number of meshes
         size_t meshes{1000};
-        //! Maximum number of meshes vertices in GPU memory
-        size_t vertices{5000000};
-        //! Maximum number of meshes indices in GPU memory
-        size_t indices{5000000*2};
+        //! Maximum number of meshes
+        size_t meshesInstances{meshes * 10};
         //! Maximum number of meshes surfaces in GPU memory
-        size_t surfaces{200000};
+        size_t surfaces{meshes * 10};
+        //! Maximum number of meshes vertices in GPU memory
+        size_t vertices{surfaces * 10};
+        //! Maximum number of meshes indices in GPU memory
+        size_t indices{vertices * 2};
         //! Maximum number of shadow maps per scene
         uint32 shadowMapsPerScene{20};
         //! Maximum number of lights per scene
