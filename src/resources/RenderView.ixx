@@ -19,6 +19,17 @@ export namespace lysa {
         vireo::Rect scissors{};
         unique_id camera{INVALID_ID};
         unique_id scene{INVALID_ID};
+
+        RenderView(
+            Context&,
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors,
+            const unique_id camera,
+            const unique_id scene) :
+            viewport(viewport),
+            scissors(scissors),
+            camera(camera),
+            scene(scene) {}
     };
 
     class RenderViewManager : public ResourcesManager<Context, RenderView> {
