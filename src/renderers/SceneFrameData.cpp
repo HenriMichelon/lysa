@@ -143,14 +143,6 @@ namespace lysa {
                 //disableLightShadowCasting(light);
             }
         }
-        if (!removedMeshInstances.empty()) {
-            for (const auto& meshInstance : removedMeshInstances) {
-                meshInstancesDataArray.free(meshInstancesDataMemoryBlocks.at(meshInstance));
-                meshInstancesDataMemoryBlocks.erase(meshInstance);
-            }
-            meshInstancesDataUpdated = true;
-            removedMeshInstances.clear();
-        }
 
         if (shadowMapsUpdated) {
             descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
@@ -302,7 +294,9 @@ namespace lysa {
                 opaquePipelinesData[pipelineId]->removeInstance(meshInstance);
             }
         }
-        removedMeshInstances.push_back(meshInstance);
+        meshInstancesDataArray.free(meshInstancesDataMemoryBlocks.at(meshInstance));
+        meshInstancesDataMemoryBlocks.erase(meshInstance);
+        meshInstancesDataUpdated = true;
     }
 
     void SceneFrameData::drawOpaquesModels(

@@ -167,8 +167,6 @@ export namespace lysa {
         DeviceMemoryArray meshInstancesDataArray;
         /** Memory blocks allocated in meshInstancesDataArray per MeshInstance. */
         std::unordered_map<unique_id, MemoryBlock> meshInstancesDataMemoryBlocks{};
-        /** Mesh instances scheduled for removal. */
-        std::list<unique_id> removedMeshInstances{};
         /** True if meshInstancesDataArray content changed. */
         bool meshInstancesDataUpdated{false};
 
