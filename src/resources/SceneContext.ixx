@@ -44,13 +44,13 @@ export namespace lysa {
         const float4& getAmbientLight() const { return ambientLight; }
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(const std::shared_ptr<MeshInstance> &meshInstance, bool async);
+        void addInstance(unique_id meshInstance, bool async);
 
         /** Updates a mesh instance. */
-        void updateInstance(const std::shared_ptr<MeshInstance> &meshInstance);
+        void updateInstance(unique_id meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(const std::shared_ptr<MeshInstance> &meshInstance, bool async);
+        void removeInstance(unique_id meshInstance, bool async);
 
         void processDeferredOperations(uint32 frameIndex);
 
@@ -60,19 +60,20 @@ export namespace lysa {
         /** Per‑frame state and deferred operations processed at frame boundaries. */
         struct FrameData {
             /** Nodes to add on the next frame (synchronous path). */
-            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> addedNodes;
+            std::list<unique_id> addedNodes;
             /** Nodes to add on the next frame (async path). */
-            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> addedNodesAsync;
+            std::list<unique_id> addedNodesAsync;
             /** Nodes to add on the next frame (synchronous path). */
-            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> updatedNodes;
+            std::list<unique_id> updatedNodes;
             /** Nodes to remove on the next frame (synchronous path). */
-            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> removedNodes;
+            std::list<unique_id> removedNodes;
             /** Nodes to remove on the next frame (async path). */
-            std::list<std::variant<std::shared_ptr<MeshInstance>, std::shared_ptr<LightDesc>>> removedNodesAsync;
+            std::list<unique_id> removedNodesAsync;
             /** Scene instance associated with this frame. */
             std::unique_ptr<SceneFrameData> scene;
         };
         const Context& ctx;
+        MeshInstanceManager& meshInstanceManager;
         const uint32 framesInFlight;
         const uint32 maxAsyncNodesUpdatedPerFrame;
         std::vector<FrameData> framesData;

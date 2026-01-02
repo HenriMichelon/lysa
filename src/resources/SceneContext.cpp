@@ -20,6 +20,7 @@ namespace lysa {
         const uint32 framesInFlight,
         uint32 maxShadowMaps) :
         ctx(ctx),
+        meshInstanceManager(ctx.res.get<MeshInstanceManager>()),
         framesInFlight(framesInFlight),
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
         framesData.resize(framesInFlight);
@@ -38,9 +39,9 @@ namespace lysa {
         ctx.graphicQueue->waitIdle();
     }
 
-    void SceneContext::addInstance(const std::shared_ptr<MeshInstance> &meshInstance, const bool async) {
-        assert([&]{return meshInstance != nullptr;}, "meshInstance can't be null");
-        meshInstance->pendingUpdates = framesInFlight;
+    void SceneContext::addInstance(const unique_id meshInstance, const bool async) {
+        assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
+        meshInstanceManager[meshInstance].pendingUpdates = framesInFlight;
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
@@ -51,17 +52,17 @@ namespace lysa {
         }
     }
 
-    void SceneContext::updateInstance(const std::shared_ptr<MeshInstance> &meshInstance) {
-        assert([&]{return meshInstance != nullptr;}, "meshInstance can't be null");
-        meshInstance->pendingUpdates = framesInFlight;
+    void SceneContext::updateInstance(const unique_id meshInstance) {
+        assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
+        meshInstanceManager[meshInstance].pendingUpdates = framesInFlight;
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             frame.updatedNodes.push_back(meshInstance);
         }
     }
 
-    void SceneContext::removeInstance(const std::shared_ptr<MeshInstance> &meshInstance, const bool async) {
-        assert([&]{return meshInstance != nullptr;}, "meshInstance can't be null");
+    void SceneContext::removeInstance(const unique_id meshInstance, const bool async) {
+        assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
@@ -80,9 +81,8 @@ namespace lysa {
         // Immediate removes
         if (!data.removedNodes.empty()) {
             for (const auto &node : data.removedNodes) {
-                auto& mi = std::get<std::shared_ptr<MeshInstance>>(node);
-                data.scene->removeInstance(mi);
-                data.updatedNodes.remove(mi);
+                data.scene->removeInstance(node);
+                data.updatedNodes.remove(node);
             }
             data.removedNodes.clear();
         }
@@ -90,7 +90,7 @@ namespace lysa {
         if (!data.removedNodesAsync.empty()) {
             auto count = 0;
             for (auto it = data.removedNodesAsync.begin(); it != data.removedNodesAsync.end();) {
-                auto& mi = std::get<std::shared_ptr<MeshInstance>>(*it);
+                auto& mi = *it;
                 data.scene->removeInstance(mi);
                 it = data.removedNodesAsync.erase(it);
                 data.updatedNodes.remove(mi);
@@ -103,9 +103,8 @@ namespace lysa {
         // Log::info("pDO", frameIndex);
         if (!data.addedNodes.empty()) {
             for (const auto &node : data.addedNodes) {
-                auto& mi = std::get<std::shared_ptr<MeshInstance>>(node);
-                data.scene->addInstance(mi);
-                data.updatedNodes.remove(mi);
+                data.scene->addInstance(node);
+                data.updatedNodes.remove(node);
             }
             data.addedNodes.clear();
         }
@@ -113,7 +112,7 @@ namespace lysa {
         if (!data.addedNodesAsync.empty()) {
             auto count = 0;
             for (auto it = data.addedNodesAsync.begin(); it != data.addedNodesAsync.end();) {
-                auto& mi = std::get<std::shared_ptr<MeshInstance>>(*it);
+                auto& mi = *it;
                 data.scene->addInstance(mi);
                 it = data.addedNodesAsync.erase(it);
                 data.updatedNodes.remove(mi);
@@ -123,7 +122,7 @@ namespace lysa {
         }
         if (!data.updatedNodes.empty()) {
             for (const auto &node : data.updatedNodes) {
-                data.scene->updateInstance(std::get<std::shared_ptr<MeshInstance>>(node));
+                data.scene->updateInstance(node);
             }
             data.updatedNodes.clear();
         }

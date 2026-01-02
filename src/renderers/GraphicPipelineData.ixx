@@ -140,6 +140,8 @@ export namespace lysa {
         std::shared_ptr<vireo::DescriptorSet> descriptorSet;
         /** Compute pipeline used to cull draw commands against the frustum. */
         FrustumCulling frustumCullingPipeline;
+        /** Reference to the mesh instance manager */
+        MeshInstanceManager& meshInstanceManager;
         /** Reference to the material manager */
         MaterialManager& materialManager;
         /** Reference to Vireo */
@@ -151,7 +153,7 @@ export namespace lysa {
         /** Device memory array that stores InstanceData blocks. */
         DeviceMemoryArray instancesArray;
         /** Mapping of mesh instance to its memory block within instancesArray. */
-        std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock> instancesMemoryBlocks;
+        std::unordered_map<unique_id, MemoryBlock> instancesMemoryBlocks;
 
         /** Number of indirect draw commands before culling. */
         uint32 drawCommandsCount{0};
@@ -180,16 +182,16 @@ export namespace lysa {
 
         /** Registers a mesh instance into this pipeline data object. */
         void addInstance(
-            const std::shared_ptr<MeshInstance>& meshInstance,
-            const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
+            unique_id meshInstance,
+            const std::unordered_map<unique_id, MemoryBlock>& meshInstancesDataMemoryBlocks);
 
         /** Removes a previously registered mesh instance. */
         void removeInstance(
-            const std::shared_ptr<MeshInstance>& meshInstance);
+            unique_id meshInstance);
 
         /** Adds a single draw instance and wires memory blocks. */
         void addInstance(
-            const std::shared_ptr<MeshInstance>& meshInstance,
+            unique_id meshInstance,
             const MemoryBlock& instanceMemoryBlock,
             const MemoryBlock& meshInstanceMemoryBlock);
 
@@ -197,7 +199,7 @@ export namespace lysa {
         void updateData(
             const vireo::CommandList& commandList,
             std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
-            const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
+            const std::unordered_map<unique_id, MemoryBlock>& meshInstancesDataMemoryBlocks);
     };
 
 }
