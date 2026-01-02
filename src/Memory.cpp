@@ -80,6 +80,7 @@ namespace lysa {
     }
 
     void DeviceMemoryArray::write(const MemoryBlock& destination, const void* source) {
+        assert([&]{ return destination.size != 0; }, "Write size must be > 0");
         auto lock = std::lock_guard{mutex};
         stagingBuffer->write(source, destination.size, stagingBufferCurrentOffset);
         pendingWrites.push_back({
