@@ -44,13 +44,13 @@ export namespace lysa {
         const float4& getAmbientLight() const { return ambientLight; }
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(unique_id meshInstance, bool async);
+        void addInstance(unique_id meshInstance, bool async = false);
 
         /** Updates a mesh instance. */
         void updateInstance(unique_id meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(unique_id meshInstance, bool async);
+        void removeInstance(unique_id meshInstance, bool async = false);
 
         void processDeferredOperations(uint32 frameIndex);
 

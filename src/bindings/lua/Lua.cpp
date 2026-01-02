@@ -174,10 +174,10 @@ end
                 [&](const float3* f) -> float {return f->f32[2];},
                 [&](float3* f, const float v) { f->f32[2] = v;}
              )
-             .addProperty("b",
+            .addProperty("b",
                  [&](const float3* f) -> float {return f->f32[2];},
                  [&](float3* f, const float v) { f->f32[2] = v;}
-              )
+            )
         .endClass()
         .beginClass<float1x2>("float1x2")
         .endClass()
@@ -203,9 +203,13 @@ end
         .endClass()
         .beginClass<float4x4>("float4x4")
             .addStaticFunction("identity", &float4x4::identity)
+            .addStaticFunction("translation",
+                luabridge::overload<float, float, float>(&float4x4::translation),
+                luabridge::overload<const float3&>(&float4x4::translation)
+            )
         .endClass()
         .beginClass<float4>("float4")
-            .addConstructor<void(), void(float), void(float, float, float, float)>()
+            .addConstructor<void(), void(float), void(float, float, float, float), void(float3, float)>()
             .addProperty("is_zero", [&](const float4* f) { return all(*f == FLOAT4ZERO); })
             .addProperty("x",
                 [&](const float4* f) -> float {return f->f32[0];},
@@ -838,6 +842,7 @@ end
         .beginClass<AABB>("AABB")
             .addProperty("min", &AABB::min)
             .addProperty("max", &AABB::max)
+            .addFunction("to_global", &AABB::toGlobal)
         .endClass()
 
         .beginClass<Vertex>("Vertex")
@@ -857,7 +862,7 @@ end
             .addProperty("id", &Mesh::id)
             .addFunction("get_surface_material", &Mesh::getSurfaceMaterial)
             .addFunction("set_surface_material", &Mesh::setSurfaceMaterial)
-            .addFunction("aabb", &Mesh::getAABB)
+            .addProperty("aabb", &Mesh::getAABB)
         .endClass()
         .beginClass<MeshManager>("MeshManager")
             .addFunction("create",
@@ -880,9 +885,40 @@ end
             )
         .endClass()
 
+        .beginClass<MeshInstance>("MeshInstance")
+            .addProperty("id", &MeshInstance::id)
+            .addProperty("mesh", &MeshInstance::getMesh)
+            .addProperty("visible", &MeshInstance::isVisible, &MeshInstance::setVisible)
+            .addProperty("cast_shadow", &MeshInstance::isCastShadows, &MeshInstance::setCastShadow)
+            .addProperty("aabb", &MeshInstance::getAABB, &MeshInstance::setAABB)
+            .addProperty("transform", &MeshInstance::getTransform, &MeshInstance::setTransform)
+            .addFunction("get_surface_material", &MeshInstance::getSurfaceMaterial)
+            .addFunction("set_surface_material_override", &MeshInstance::setSurfaceMaterialOverride)
+            .addFunction("remove_surface_material_override", &MeshInstance::removeSurfaceMaterialOverride)
+        .endClass()
+        .beginClass<MeshInstanceManager>("MeshInstanceManager")
+            .addFunction("create",
+                luabridge::overload<MeshInstanceManager*, unique_id, bool, bool, const AABB&, const float4x4&>(
+                    +[](MeshInstanceManager* self, unique_id mesh, bool visible, bool castShadow, const AABB& aabb, const float4x4& transform) -> MeshInstance& {
+                        return self->create(mesh, visible, castShadow, aabb, transform);
+                    }),
+                luabridge::overload<MeshInstanceManager*, unique_id>(
+                    +[](MeshInstanceManager* self, unique_id mesh) -> MeshInstance& {
+                        return self->create(mesh);
+                    })
+             )
+           .addFunction("get",
+             luabridge::nonConstOverload<const unique_id>(&MeshInstanceManager::operator[]),
+             luabridge::constOverload<const unique_id>(&MeshInstanceManager::operator[])
+             )
+            .addFunction("destroy",
+               luabridge::overload<unique_id>(&MeshInstanceManager::destroy),
+               luabridge::overload<const MeshInstance&>(&MeshInstanceManager::destroy)
+            )
+        .endClass()
+
         .beginClass<Camera>("Camera")
             .addProperty("id", &Camera::id)
-            .addProperty("position", &Camera::position)
             .addProperty("transform", &Camera::transform)
             .addProperty("projection", &Camera::projection)
         .endClass()
@@ -891,12 +927,11 @@ end
               luabridge::overload<CameraManager*>(+[](CameraManager* self) -> Camera& {
                    return self->create();
               }),
-              luabridge::overload<CameraManager*, const float3&, const float4x4&, const float4x4&>(+[](
+              luabridge::overload<CameraManager*, const float4x4&, const float4x4&>(+[](
                     CameraManager* self,
-                    const float3& position,
                     const float4x4& transform,
                     const float4x4& projection) -> Camera& {
-                   return self->create(position, transform, projection);
+                   return self->create(transform, projection);
               })
              )
           .addFunction("get",
@@ -942,7 +977,10 @@ end
 
         .beginClass<Scene>("Scene")
             .addProperty("id", &Scene::id)
-            .addProperty("ambientLight", &Scene::getAmbientLight, &Scene::setAmbientLight)
+            .addProperty("ambient_light", &Scene::getAmbientLight, &Scene::setAmbientLight)
+            .addFunction("add_instance", &Scene::addInstance)
+            .addFunction("update_instance", &Scene::updateInstance)
+            .addFunction("remove_instance", &Scene::removeInstance)
         .endClass()
         .beginClass<SceneManager>("SceneManager")
            .addFunction("create", +[](SceneManager* self) -> Scene& {

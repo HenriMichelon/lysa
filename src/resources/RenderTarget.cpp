@@ -54,7 +54,6 @@ namespace lysa {
 
     RenderTarget::~RenderTarget() {
         swapChain->waitIdle();
-        // viewportManager.destroyByRenderTarget(id);
         swapChain.reset();
         framesData.clear();
     }
@@ -92,7 +91,7 @@ namespace lysa {
         }
     }
 
-    void RenderTarget::render() {
+    void RenderTarget::render() const {
         if (paused) return;
         const auto frameIndex = swapChain->getCurrentFrameIndex();
         for (const auto viewId : views) {

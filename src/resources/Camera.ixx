@@ -19,8 +19,6 @@ export namespace lysa {
      * Base class for camera resources.
      */
     struct Camera : Resource {
-        /** World space position */
-        float3 position;
         /** World space transform */
         float4x4 transform;
         /** View projection */
@@ -29,10 +27,8 @@ export namespace lysa {
         Camera(Context&) {}
 
         Camera(Context&,
-            const float3& position,
             const float4x4& transform,
             const float4x4& projection) :
-            position(position),
             transform(transform),
             projection(projection) {}
     };

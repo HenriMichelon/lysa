@@ -79,6 +79,8 @@ return {
     float3x4 = lysa.float3x4,
     ---@class lysa.float4x4
     ---@field identity fun() : lysa.float4x4
+    ---@overload translation fun(x:number,y:number,z:number) : lysa.float4x4
+    ---@overload translation fun(offset:lysa.float3) : lysa.float4x4
     float4x4 = lysa.float4x4,
 
     AXIS_X = lysa.AXIS_X,
@@ -711,6 +713,7 @@ return {
     ---@class lysa.AABB
     ---@field min lysa.float3
     ---@field max lysa.float3
+    ---@field to_global fun(tr:lysa.float4x4):lysa.AABB
     AABB = lysa.AABB,
 
     ---@class lysa.Vertex
@@ -730,7 +733,7 @@ return {
     ---@field id integer
     ---@field get_surface_material fun(self:lysa.Mesh, surfaceIndex:integer):lysa.Material|nil
     ---@field set_surface_material fun(self:lysa.Mesh, surfaceIndex:integer, mat:integer):nil
-    ---@field aabb fun(self:lysa.Mesh):lysa.AABB
+    ---@field aabb lysa.AABB
     Mesh = lysa.Mesh,
 
     ---@class lysa.MeshManager
@@ -738,12 +741,34 @@ return {
     ---@field create fun(self:lysa.MeshManager, vertices:any, indices:any, surfaces:any):lysa.Mesh
     ---@field get fun(self:lysa.MeshManager, id:integer):lysa.Mesh
     ---@overload destroy fun(self:lysa.MeshManager, id:integer):nil
-    ---@overload destroy fun(self:lysa.MeshManager, res:Mesg):nil
+    ---@overload destroy fun(self:lysa.MeshManager, res:Mesh):nil
     MeshManager = lysa.MeshManager,
+
+    ---@class lysa.MeshInstance
+    ---@field id integer
+    ---@field aabb lysa.AABB
+    ---@field visible boolean
+    ---@field cast_shadow boolean
+    ---@field transform lysa.float4x4
+    ---@field get_surface_material fun(self:lysa.Mesh, surfaceIndex:integer):lysa.Material|nil
+    ---@field set_surface_material_override fun(self:lysa.Mesh, surfaceIndex:integer, id:integer):lysa.Material|nil
+    ---@field remove_surface_material_override fun(self:lysa.Mesh, surfaceIndex:integer)
+    MeshInstance = lysa.MeshInstance,
+
+    ---@class lysa.MeshInstanceManager
+    ---@field create fun(self:lysa.MeshInstanceManager, id:integer):lysa.MeshInstance
+    ---@field create fun(self:lysa.MeshInstanceManager, id:integer, visible:boolean, cast_shadows:boolean, aabb:lysa.AABB, transform:lysa.float4x4):lysa.MeshInstance
+    ---@field get fun(self:lysa.MeshInstanceManager, id:integer):lysa.MeshInstance
+    ---@overload destroy fun(self:lysa.MeshInstanceManager, id:integer):nil
+    ---@overload destroy fun(self:lysa.MeshInstanceManager, res:MeshInstance):nil
+    MeshInstanceManager = lysa.MeshInstanceManager,
 
     ---@class lysa.Scene
     ---@field id integer
-    ---@field ambientLight lysa.float3
+    ---@field ambient_light lysa.float3
+    ---@field add_instance fun(self:lysa.Scene, id:integer)
+    ---@field update_instance fun(self:lysa.Scene, id:integer)
+    ---@field remove_instance fun(self:lysa.Scene, id:integer)
     Scene = lysa.Scene,
 
     ---@class lysa.SceneManager
@@ -771,7 +796,6 @@ return {
 
     ---@class lysa.Camera
     ---@field id integer
-    ---@field position lysa.float3
     ---@field transform lysa.float4x4
     ---@field projection lysa.float4x4
     Camera = lysa.Camera,

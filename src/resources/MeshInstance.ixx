@@ -31,6 +31,8 @@ export namespace lysa {
     */
     class MeshInstance : public Resource {
     public:
+        MeshInstance(Context& ctx, unique_id meshId);
+
         MeshInstance(
            Context& ctx,
            unique_id meshId,
@@ -62,7 +64,15 @@ export namespace lysa {
 
         unique_id getSurfaceMaterial(uint32 surfaceIndex) const;
 
-        auto& getMaterialsOverride() { return materialsOverride; }
+        // auto& getMaterialsOverride() { return materialsOverride; }
+
+        void setSurfaceMaterialOverride(const uint32 surfaceIndex, const unique_id materialId) {
+            materialsOverride[surfaceIndex] = materialId;
+        }
+
+        void removeSurfaceMaterialOverride(const uint32 surfaceIndex) {
+            materialsOverride.erase(surfaceIndex);
+        }
 
         uint32 getPendingUpdates() const { return pendingUpdates; }
 
@@ -76,10 +86,10 @@ export namespace lysa {
         MeshManager& meshManager;
         const std::string name;
         Mesh& mesh;
-        bool visible{false};
+        bool visible{true};
         bool castShadows{false};
-        AABB worldAABB;
-        float4x4 worldTransform;
+        AABB worldAABB{};
+        float4x4 worldTransform{float4x4::identity()};
         std::unordered_map<uint32, unique_id> materialsOverride;
         /** Current number of pending updates to process. */
         uint32 pendingUpdates{0};

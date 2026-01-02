@@ -9,6 +9,13 @@ module lysa.resources.mesh_instance;
 
 namespace lysa {
 
+    MeshInstance::MeshInstance(Context& ctx, const unique_id meshId) :
+        meshManager(ctx.res.get<MeshManager>()),
+        name(name),
+        mesh(meshManager[meshId]){
+
+    }
+
     MeshInstance::MeshInstance(
            Context& ctx,
            const unique_id meshId,
@@ -27,7 +34,7 @@ namespace lysa {
         meshManager.use(mesh.id);
     }
 
-    MeshInstance::MeshInstance(const Context& ctx, const MeshInstance& mi, const std::string& name ) :
+    MeshInstance::MeshInstance(const Context&, const MeshInstance& mi, const std::string& name) :
         meshManager(meshManager),
         name(name),
         mesh(mi.mesh),

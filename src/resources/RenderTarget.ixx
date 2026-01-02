@@ -51,7 +51,7 @@ export namespace lysa {
 
         ~RenderTarget() override;
 
-        void render();
+        void render() const;
 
         void pause(bool pause);
 
