@@ -30,7 +30,7 @@ namespace lysa {
             config.resourcesCapacity.indices,
             config.resourcesCapacity.surfaces),
         meshInstanceManager(ctx, config.resourcesCapacity.meshesInstances),
-        sceneContextManager(ctx,
+        sceneManager(ctx,
             config.resourcesCapacity.scenes,
             config.asyncObjectUpdatesPerFrame,
             config.resourcesCapacity.lightsPerScene,
@@ -38,6 +38,7 @@ namespace lysa {
             config.resourcesCapacity.meshSurfacePerPipeline,
             config.resourcesCapacity.shadowMapsPerScene,
             config.framesInFlight),
+        renderViewManager(ctx, config.resourcesCapacity.renderViews),
         globalDescriptors(ctx)
     {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();

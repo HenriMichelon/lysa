@@ -877,17 +877,17 @@ end
             .addFunction("destroy",&MeshManager::destroy)
         .endClass()
 
-        .beginClass<SceneContext>("Scene")
-            .addProperty("id", &SceneContext::id)
-            .addProperty("ambientLight", &SceneContext::getAmbientLight, &SceneContext::setAmbientLight)
+        .beginClass<Scene>("Scene")
+            .addProperty("id", &Scene::id)
+            .addProperty("ambientLight", &Scene::getAmbientLight, &Scene::setAmbientLight)
         .endClass()
-        .beginClass<SceneContextManager>("SceneContextManager")
-           .addFunction("create", +[](SceneContextManager* self) -> SceneContext& {
+        .beginClass<SceneManager>("SceneManager")
+           .addFunction("create", +[](SceneManager* self) -> Scene& {
                     return self->create();
             })
            .addFunction("get",
-             luabridge::nonConstOverload<const unique_id>(&SceneContextManager::operator[]),
-             luabridge::constOverload<const unique_id>(&SceneContextManager::operator[])
+             luabridge::nonConstOverload<const unique_id>(&SceneManager::operator[]),
+             luabridge::constOverload<const unique_id>(&SceneManager::operator[])
              )
         .endClass()
 
@@ -920,9 +920,17 @@ end
                 +[](const ResourcesRegistry* rl) -> RenderTargetManager& {
                     return rl->get<RenderTargetManager>();
             })
+            .addProperty("render_view_manager",
+                +[](const ResourcesRegistry* rl) -> RenderViewManager& {
+                    return rl->get<RenderViewManager>();
+            })
             .addProperty("rendering_window_manager",
                 +[](const ResourcesRegistry* rl) -> RenderingWindowManager& {
                 return rl->get<RenderingWindowManager>();
+            })
+            .addProperty("camera_manager",
+                +[](const ResourcesRegistry* rl) -> CameraManager& {
+                return rl->get<CameraManager>();
             })
             .addProperty("image_manager",
                 +[](const ResourcesRegistry* rl) -> ImageManager& {
@@ -940,9 +948,13 @@ end
                 +[](const ResourcesRegistry* rl) -> MeshManager& {
                 return rl->get<MeshManager>();
             })
-            .addProperty("scene_context_manager",
-                +[](const ResourcesRegistry* rl) -> SceneContextManager& {
-                return rl->get<SceneContextManager>();
+            .addProperty("mesh_instance_manager",
+                +[](const ResourcesRegistry* rl) -> MeshInstanceManager& {
+                return rl->get<MeshInstanceManager>();
+            })
+            .addProperty("scene_manager",
+                +[](const ResourcesRegistry* rl) -> SceneManager& {
+                return rl->get<SceneManager>();
             })
         .endClass()
 

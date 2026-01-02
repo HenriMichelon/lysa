@@ -11,7 +11,7 @@ import lysa.log;
 
 namespace lysa {
 
-    SceneContext::SceneContext(
+    Scene::Scene(
         const Context& ctx,
         const uint32 maxAsyncNodesUpdatedPerFrame,
         const uint32 maxLights,
@@ -35,11 +35,11 @@ namespace lysa {
         }
     }
 
-    SceneContext::~SceneContext() {
+    Scene::~Scene() {
         ctx.graphicQueue->waitIdle();
     }
 
-    void SceneContext::addInstance(const unique_id meshInstance, const bool async) {
+    void Scene::addInstance(const unique_id meshInstance, const bool async) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
         meshInstanceManager[meshInstance].setPendingUpdates(framesInFlight);
         auto lock = std::lock_guard(frameDataMutex);
@@ -52,7 +52,7 @@ namespace lysa {
         }
     }
 
-    void SceneContext::updateInstance(const unique_id meshInstance) {
+    void Scene::updateInstance(const unique_id meshInstance) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
         meshInstanceManager[meshInstance].setPendingUpdates(framesInFlight);
         auto lock = std::lock_guard(frameDataMutex);
@@ -61,7 +61,7 @@ namespace lysa {
         }
     }
 
-    void SceneContext::removeInstance(const unique_id meshInstance, const bool async) {
+    void Scene::removeInstance(const unique_id meshInstance, const bool async) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
@@ -73,7 +73,7 @@ namespace lysa {
         }
     }
 
-    void SceneContext::processDeferredOperations(const uint32 frameIndex) {
+    void Scene::processDeferredOperations(const uint32 frameIndex) {
         auto lock = std::lock_guard(frameDataMutex);
         auto &data = framesData[frameIndex];
         data.scene->setAmbientLight(ambientLight);
@@ -128,7 +128,7 @@ namespace lysa {
         }
     }
 
-    SceneContextManager::SceneContextManager(
+    SceneManager::SceneManager(
         Context& ctx,
         const size_t capacity,
         const uint32 maxAsyncNodesUpdatedPerFrame,
@@ -147,7 +147,7 @@ namespace lysa {
             ctx.res.enroll(*this);
     }
 
-    SceneContext& SceneContextManager::create() {
+    Scene& SceneManager::create() {
         return ResourcesManager::create(
             maxAsyncNodesUpdatedPerFrame,
             maxLights,

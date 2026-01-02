@@ -253,7 +253,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/resources/RenderTarget.cpp
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.cpp
         ${ENGINE_SRC_DIR}/resources/Samplers.cpp
-        ${ENGINE_SRC_DIR}/resources/SceneContext.cpp
+        ${ENGINE_SRC_DIR}/resources/Scene.cpp
 
         ${OS_SRC}
         ${PHYSICS_SRC}
@@ -303,10 +303,11 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/resources/MeshInstance.ixx
         ${ENGINE_SRC_DIR}/resources/RenderingWindow.ixx
         ${ENGINE_SRC_DIR}/resources/RenderTarget.ixx
+        ${ENGINE_SRC_DIR}/resources/RenderView.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesManager.ixx
         ${ENGINE_SRC_DIR}/resources/ResourcesRegistry.ixx
         ${ENGINE_SRC_DIR}/resources/Samplers.ixx
-        ${ENGINE_SRC_DIR}/resources/SceneContext.ixx
+        ${ENGINE_SRC_DIR}/resources/Scene.ixx
         ${ENGINE_SRC_DIR}/resources/Texture.ixx
 
         ${OS_MODULES}

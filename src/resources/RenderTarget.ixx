@@ -16,6 +16,7 @@ import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderer;
 import lysa.resources.camera;
 import lysa.resources.manager;
+import lysa.resources.render_view;
 import lysa.resources.scene_context;
 
 export namespace lysa {
@@ -31,8 +32,8 @@ export namespace lysa {
     };
 
     /**
-   * Viewport events data
-   */
+    * Render target events data
+    */
     struct RenderTargetEvent : Event {
         //! The render target has been paused
         static constexpr auto PAUSED{"RENDERING_TARGET_PAUSED"};
@@ -42,14 +43,6 @@ export namespace lysa {
         static constexpr auto RESIZED{"RENDERING_TARGET_RESIZED"};
         //! Input inside the render target parent window
         //static constexpr auto INPUT{"RENDERING_TARGET_INPUT"};
-    };
-
-    struct RenderView {
-        const unique_id id;
-        vireo::Viewport viewport;
-        vireo::Rect scissors;
-        const Camera& camera;
-        SceneContext& scene;
     };
 
     class RenderTarget : public Resource {
@@ -70,9 +63,11 @@ export namespace lysa {
 
         auto isPaused() const { return paused; }
 
-        auto& getViews() { return views; }
-
         void waitIdle() const { swapChain->waitIdle(); }
+
+        void addView(unique_id viewId);
+
+        void removeView(unique_id viewId);
 
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const;
 
@@ -95,6 +90,9 @@ export namespace lysa {
         };
 
         Context& ctx;
+        RenderViewManager& renderViewManager;
+        SceneManager& sceneManager;
+        CameraManager& cameraManager;
         // Set to true to pause the rendering in this target
         bool paused{false};
         // Array of per‑frame resource bundles (size = frames in flight).
@@ -105,11 +103,11 @@ export namespace lysa {
         std::unique_ptr<Renderer> renderer;
         // associated OS window handler
         void* renderingWindowHandle{nullptr};
-        std::list<RenderView> views;
+        // Views to render in this target
+        std::list<unique_id> views;
 
         friend class RenderTargetManager;
         void resize() const;
-        //void input(const InputEvent& inputEvent) const;
     };
 
     class RenderTargetManager : public ResourcesManager<Context, RenderTarget> {
@@ -127,8 +125,6 @@ export namespace lysa {
         void destroy(const void* renderingWindowHandle);
 
         void resize(const void* renderingWindowHandle) const;
-
-        //void input(const void* renderingWindowHandle, const InputEvent& inputEvent) const;
 
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const;
 

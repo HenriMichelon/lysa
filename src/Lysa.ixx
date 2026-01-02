@@ -43,6 +43,7 @@ export import lysa.resources.mesh;
 export import lysa.resources.mesh_instance;
 export import lysa.resources.registry;
 export import lysa.resources.render_target;
+export import lysa.resources.render_view;
 export import lysa.resources.rendering_window;
 export import lysa.resources.samplers;
 export import lysa.resources.scene_context;
@@ -61,10 +62,12 @@ export namespace  lysa {
         size_t renderTarget{1};
         //! Maximum number of viewports
         size_t viewports{5};
+        //! Maximum number of render views
+        size_t renderViews{viewports};
         //! Maximum number of cameras
         size_t camera{viewports*2};
         //! Maximum number of scenes
-        size_t scenes{10};
+        size_t scenes{viewports};
         //! Maximum number of images stored in GPU memory
         size_t images{500};
         //! Maximum number of GPU image samplers
@@ -73,7 +76,7 @@ export namespace  lysa {
         size_t material{100};
         //! Maximum number of meshes
         size_t meshes{1000};
-        //! Maximum number of meshes
+        //! Maximum number of meshes instances
         size_t meshesInstances{meshes * 10};
         //! Maximum number of meshes surfaces in GPU memory
         size_t surfaces{meshes * 10};
@@ -82,13 +85,13 @@ export namespace  lysa {
         //! Maximum number of meshes indices in GPU memory
         size_t indices{vertices * 2};
         //! Maximum number of shadow maps per scene
-        uint32 shadowMapsPerScene{20};
+        size_t shadowMapsPerScene{20};
         //! Maximum number of lights per scene
-        uint32 lightsPerScene{100};
+        size_t lightsPerScene{100};
         //! Maximum number of mesh instances per frame per scene
-        uint32 meshInstancesPerScene{10000};
+        size_t meshInstancesPerScene{meshesInstances};
         //! Maximum number of mesh surfaces instances per pipeline
-        uint32 meshSurfacePerPipeline{100000};
+        size_t meshSurfacePerPipeline{surfaces};
     };
 
     /**
@@ -167,8 +170,9 @@ export namespace  lysa {
         MaterialManager materialManager;
         MeshManager meshManager;
         MeshInstanceManager meshInstanceManager;
-        SceneContextManager sceneContextManager;
+        SceneManager sceneManager;
         GlobalDescriptorSet globalDescriptors;
+        RenderViewManager renderViewManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();
