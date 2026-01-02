@@ -860,9 +860,16 @@ end
            // .addFunction("create", +[](MeshManager* self) -> Mesh& {
            //          return self->create();
            //  })
-            .addFunction("create", +[](MeshManager* self, const luabridge::LuaRef& v, const luabridge::LuaRef&i, const luabridge::LuaRef&s) -> Mesh& {
-                     return self->create(v, i, s);
-             })
+            .addFunction("create",
+                luabridge::overload<MeshManager*, const luabridge::LuaRef&, const luabridge::LuaRef&, const luabridge::LuaRef&>(
+                    +[](MeshManager* self, const luabridge::LuaRef& v, const luabridge::LuaRef&i, const luabridge::LuaRef&s) -> Mesh& {
+                        return self->create(v, i, s);
+                    }),
+                luabridge::overload<MeshManager*, const luabridge::LuaRef&, const luabridge::LuaRef&, const luabridge::LuaRef&, const std::string&>(
+                    +[](MeshManager* self, const luabridge::LuaRef& v, const luabridge::LuaRef&i, const luabridge::LuaRef&s, const std::string&n) -> Mesh& {
+                        return self->create(v, i, s, n);
+                    })
+             )
            .addFunction("get",
              luabridge::nonConstOverload<const unique_id>(&MeshManager::operator[]),
              luabridge::constOverload<const unique_id>(&MeshManager::operator[])

@@ -233,7 +233,7 @@ namespace lysa {
         std::vector<unique_id> meshes(header.meshesCount);
         for (auto meshIndex = 0; meshIndex < header.meshesCount; ++meshIndex) {
             auto& header   = meshesHeaders[meshIndex];
-            auto& mesh     = meshManager.create();
+            auto& mesh     = meshManager.create(std::string(header.name));
             auto& meshVertices = mesh.getVertices();
             auto& meshIndices  = mesh.getIndices();
             // print(header);

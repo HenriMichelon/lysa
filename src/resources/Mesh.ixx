@@ -81,9 +81,10 @@ export namespace lysa {
         Mesh(Context& ctx,
              const std::vector<Vertex>& vertices,
              const std::vector<uint32>& indices,
-             const std::vector<MeshSurface>&surfaces);
+             const std::vector<MeshSurface>&surfaces,
+             const std::string& name);
 
-        Mesh(Context& ctx) : ctx(ctx) {}
+        Mesh(Context& ctx, const std::string& name) : ctx(ctx), name(name) {}
 
         ~Mesh() override;
 
@@ -159,6 +160,7 @@ export namespace lysa {
 
     protected:
         Context& ctx;
+        const std::string name;
         AABB localAABB;
         std::vector<Vertex> vertices;
         std::vector<uint32> indices;
@@ -190,15 +192,17 @@ export namespace lysa {
 
         Mesh& create(const std::vector<Vertex>& vertices,
              const std::vector<uint32>& indices,
-             const std::vector<MeshSurface>&surfaces);
+             const std::vector<MeshSurface>&surfaces,
+             const std::string& name = "");
 
 #ifdef LUA_BINDING
         Mesh& create( const luabridge::LuaRef& vertices,
               const luabridge::LuaRef& indices,
-              const luabridge::LuaRef&surfaces) ;
+              const luabridge::LuaRef&surfaces,
+              const std::string& name = "") ;
 #endif
 
-        Mesh& create();
+        Mesh& create(const std::string& name = "");
 
         void upload(unique_id id);
 

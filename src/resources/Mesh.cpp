@@ -26,8 +26,10 @@ namespace lysa {
     Mesh::Mesh(Context& ctx,
                const std::vector<Vertex>& vertices,
                const std::vector<uint32>& indices,
-               const std::vector<MeshSurface> &surfaces):
+               const std::vector<MeshSurface> &surfaces,
+               const std::string& name):
         ctx(ctx),
+        name(name),
         vertices{vertices},
         indices{indices},
         surfaces{surfaces} {
@@ -109,16 +111,18 @@ namespace lysa {
         needUpload.insert(id);
     }
 
-    Mesh& MeshManager::create(const std::vector<Vertex>& vertices,
-            const std::vector<uint32>& indices,
-            const std::vector<MeshSurface>&surfaces) {
-        auto& mesh =  allocate(std::make_unique<Mesh>(ctx, vertices, indices, surfaces));
+    Mesh& MeshManager::create(
+        const std::vector<Vertex>& vertices,
+        const std::vector<uint32>& indices,
+        const std::vector<MeshSurface>&surfaces,
+        const std::string& name) {
+        auto& mesh =  allocate(std::make_unique<Mesh>(ctx, vertices, indices, surfaces, name));
         upload(mesh.id);
         return mesh;
     }
 
-    Mesh& MeshManager::create() {
-        auto& mesh = ResourcesManager::create();
+    Mesh& MeshManager::create(const std::string& name) {
+        auto& mesh = ResourcesManager::create(name);
         upload(mesh.id);
         return mesh;
     }
@@ -185,7 +189,8 @@ namespace lysa {
 #ifdef LUA_BINDING
     Mesh& MeshManager::create( const luabridge::LuaRef& vertices,
           const luabridge::LuaRef& indices,
-          const luabridge::LuaRef&surfaces) {
+          const luabridge::LuaRef&surfaces,
+          const std::string& name) {
         if (!vertices.isTable() || !indices.isTable() || !surfaces.isTable()) {
             throw Exception("Expected tables for vertices, indices, surfaces");
         }
@@ -248,7 +253,7 @@ namespace lysa {
             throw Exception("Invalid surface entry at index ", i);
         }
 
-        return create(vVec, iVec, sVec);
+        return create(vVec, iVec, sVec, name);
     }
 #endif
 
