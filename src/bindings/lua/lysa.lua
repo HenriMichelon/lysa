@@ -556,7 +556,9 @@ return {
     ---@field aspect_ratio integer
     ---@field pause fun(self:lysa.RenderTarget, paused:boolean|nil):nil
     ---@field swap_chain fun(self:lysa.RenderTarget):vireo.SwapChain|nil
-    ---@field rendering_window_handle fun(self:lysa.RenderTarget):lightuserdata|lysa.RenderingWindow
+    ---@field rendering_window_handle fun(self:lysa.RenderTarget):lysa.RenderingWindow
+    ---@field add_view fun(self:lysa.RenderTarget, id:integer)
+    ---@field remove_view fun(self:lysa.RenderTarget, id:integer)
     RenderTarget = lysa.RenderTarget,
 
     ---@class lysa.RenderTargetManager
