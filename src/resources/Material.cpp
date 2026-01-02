@@ -70,7 +70,7 @@ namespace lysa {
 
     StandardMaterial::StandardMaterial(Context& ctx):
         Material(ctx, STANDARD),
-        imageTextureManager(ctx.res.get<ImageTextureManager>()){
+        imageTextureManager(ctx.res.get<ImageTextureManager>()) {
     }
 
     StandardMaterial::~StandardMaterial() {

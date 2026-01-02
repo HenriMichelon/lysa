@@ -65,7 +65,8 @@ namespace lysa {
         maxMeshSurfacePerPipeline(maxMeshSurfacePerPipeline),
         maxLights(maxLights),
         meshInstanceManager(ctx.res.get<MeshInstanceManager>()),
-        materialManager(ctx.res.get<MaterialManager>()) {
+        materialManager(ctx.res.get<MaterialManager>()),
+        environmentManager(ctx.res.get<EnvironmentManager>()) {
 
         const auto blankImage = ctx.res.get<ImageManager>().getBlankImage();
         shadowMaps.resize(maxShadowMaps * 6);
@@ -155,7 +156,7 @@ namespace lysa {
             .projection = camera.projection,
             .view = inverse(camera.transform),
             .viewInverse = camera.transform,
-            .ambientLight = environment.ambientColorIntensity,
+            .ambientLight = float4(environmentManager[environment].color, environmentManager[environment].intensity),
             .lightsCount = static_cast<uint32>(lights.size()),
             // .bloomEnabled = renderingConfig.bloomEnabled ? 1u : 0u,
             // .ssaoEnabled = renderingConfig.ssaoEnabled ? 1u : 0u,

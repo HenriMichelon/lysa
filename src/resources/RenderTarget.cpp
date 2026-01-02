@@ -56,14 +56,19 @@ namespace lysa {
         swapChain->waitIdle();
         swapChain.reset();
         framesData.clear();
+        for (const auto viewId : views) {
+            renderViewManager.destroy(viewId);
+        }
     }
 
     void RenderTarget::addView(const unique_id viewId) {
+        renderViewManager.use(viewId);
         views.push_back(viewId);
     }
 
     void RenderTarget::removeView(const unique_id viewId) {
         views.remove(viewId);
+        renderViewManager.destroy(viewId);
     }
 
     void RenderTarget::pause(const bool pause) {

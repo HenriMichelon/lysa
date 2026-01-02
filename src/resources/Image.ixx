@@ -127,7 +127,10 @@ export namespace lysa {
 
         bool destroy(unique_id id) override;
 
+        bool destroy(const Image& image) override { return destroy(image.id); }
+
         bool _isUpdateNeeded() const { return updated; }
+
         void _resetUpdateFlag() { updated = false; }
 
     private:

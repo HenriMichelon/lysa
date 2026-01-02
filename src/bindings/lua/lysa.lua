@@ -765,7 +765,7 @@ return {
 
     ---@class lysa.Scene
     ---@field id integer
-    ---@field ambient_light lysa.float3
+    ---@field environment integer
     ---@field add_instance fun(self:lysa.Scene, id:integer)
     ---@field update_instance fun(self:lysa.Scene, id:integer)
     ---@field remove_instance fun(self:lysa.Scene, id:integer)
@@ -781,9 +781,9 @@ return {
     ---@class lysa.RenderView
     ---@field id integer
     ---@field viewport vireo.Viewport
-    ---@field scissors:vireo.Rect
-    ---@field camera:integer
-    ---@field scene:integer
+    ---@field scissors vireo.Rect
+    ---@field camera integer
+    ---@field scene integer
     RenderView = lysa.RenderView,
 
     ---@class lysa.RenderViewManager

@@ -12,8 +12,8 @@ namespace lysa {
     MeshInstance::MeshInstance(Context& ctx, const unique_id meshId) :
         meshManager(ctx.res.get<MeshManager>()),
         name(name),
-        mesh(meshManager[meshId]){
-
+        mesh(meshManager[meshId]) {
+        meshManager.use(mesh.id);
     }
 
     MeshInstance::MeshInstance(

@@ -717,7 +717,10 @@ end
                luabridge::nonConstOverload<const unique_id>(&ImageManager::operator[]),
                luabridge::constOverload<const unique_id>(&ImageManager::operator[])
                )
-            .addFunction("destroy",&ImageManager::destroy)
+            .addFunction("destroy",
+                luabridge::overload<unique_id>(&ImageManager::destroy),
+                luabridge::overload<const Image&>(&ImageManager::destroy)
+            )
         .endClass()
 
         .beginClass<Texture>("Texture")
@@ -743,10 +746,10 @@ end
               luabridge::nonConstOverload<const unique_id>(&ImageTextureManager::operator[]),
               luabridge::constOverload<const unique_id>(&ImageTextureManager::operator[])
               )
-        .addFunction("destroy",
-              luabridge::overload<unique_id>(&ImageTextureManager::destroy),
-              luabridge::overload<const ImageTexture&>(&ImageTextureManager::destroy)
-        )
+            .addFunction("destroy",
+                  luabridge::overload<unique_id>(&ImageTextureManager::destroy),
+                  luabridge::overload<const ImageTexture&>(&ImageTextureManager::destroy)
+            )
         .endClass()
 
         .beginClass<Environment>("Environment")
@@ -846,17 +849,21 @@ end
             .addFunction("get_parameter", &ShaderMaterial::getParameter)
         .endClass()
         .beginClass<MaterialManager>("MaterialManager")
-               .addFunction("create_standard", +[](MaterialManager* self) -> StandardMaterial& {
-                        return self->create();
+                .addFunction("create_standard", +[](MaterialManager* self) -> StandardMaterial& {
+                    return self->create();
                 })
                 .addFunction("create_shared", +[](MaterialManager* self, const std::string &f, const std::string &v) -> ShaderMaterial& {
-                         return self->create(f, v);
+                        return self->create(f, v);
                  })
-               .addFunction("get",
-                 luabridge::nonConstOverload<const unique_id>(&MaterialManager::operator[]),
-                 luabridge::constOverload<const unique_id>(&MaterialManager::operator[])
+                .addFunction("get",
+                     luabridge::nonConstOverload<const unique_id>(&MaterialManager::operator[]),
+                     luabridge::constOverload<const unique_id>(&MaterialManager::operator[])
                  )
-            .addFunction("destroy",&MaterialManager::destroy)
+                .addFunction("destroy",
+                     luabridge::overload<unique_id>(&MaterialManager::destroy),
+                     luabridge::overload<const StandardMaterial&>(&MaterialManager::destroy),
+                     luabridge::overload<const ShaderMaterial&>(&MaterialManager::destroy)
+                )
         .endClass()
 
         .beginClass<AABB>("AABB")
@@ -997,7 +1004,7 @@ end
 
         .beginClass<Scene>("Scene")
             .addProperty("id", &Scene::id)
-            .addProperty("ambient_light", &Scene::getAmbientLight, &Scene::setAmbientLight)
+            .addProperty("environment", &Scene::getEnvironment, &Scene::setEnvironment)
             .addFunction("add_instance", &Scene::addInstance)
             .addFunction("update_instance", &Scene::updateInstance)
             .addFunction("remove_instance", &Scene::removeInstance)

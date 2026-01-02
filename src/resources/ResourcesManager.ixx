@@ -80,7 +80,7 @@ export namespace lysa {
         // Release a resource, returning its slot to the free list.
         virtual bool destroy(const unique_id id) {
             assert([&]{ return have(id); }, name  + " : invalid id ");
-            if (resources[id]->refCounter <= 1) {
+            if (resources[id]->refCounter == 0) {
                 resources[id].reset();
                 freeList.push_back(id);
                 return true;

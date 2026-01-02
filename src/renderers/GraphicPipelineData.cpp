@@ -112,8 +112,7 @@ namespace lysa {
         }
     }
 
-    void GraphicPipelineData::removeInstance(
-        unique_id meshInstance) {
+    void GraphicPipelineData::removeInstance(const unique_id meshInstance) {
         if (instancesMemoryBlocks.contains(meshInstance)) {
             instancesArray.free(instancesMemoryBlocks.at(meshInstance));
             instancesMemoryBlocks.erase(meshInstance);

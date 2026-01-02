@@ -8,6 +8,7 @@ module lysa.resources.scene;
 
 import lysa.exception;
 import lysa.log;
+import lysa.resources.environment;
 
 namespace lysa {
 
@@ -37,11 +38,24 @@ namespace lysa {
 
     Scene::~Scene() {
         ctx.graphicQueue->waitIdle();
+        if (environment != INVALID_ID) {
+            ctx.res.get<EnvironmentManager>().destroy(environment);
+        }
+        for (const auto meshInstance : meshInstances) {
+            meshInstanceManager.destroy(meshInstance);
+        }
+    }
+
+    void Scene::setEnvironment(const unique_id environmentId) {
+        environment = environmentId;
+        ctx.res.get<EnvironmentManager>().use(environment);
     }
 
     void Scene::addInstance(const unique_id meshInstance, const bool async) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
+        meshInstanceManager.use(meshInstance);
         meshInstanceManager[meshInstance].setPendingUpdates(framesInFlight);
+        meshInstances.push_back(meshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
@@ -63,6 +77,8 @@ namespace lysa {
 
     void Scene::removeInstance(const unique_id meshInstance, const bool async) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
+        meshInstances.remove(meshInstance);
+        meshInstanceManager.destroy(meshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
@@ -74,9 +90,10 @@ namespace lysa {
     }
 
     void Scene::processDeferredOperations(const uint32 frameIndex) {
+        assert([&]{ return environment != INVALID_ID; }, "Scene environment not set");
         auto lock = std::lock_guard(frameDataMutex);
         auto &data = framesData[frameIndex];
-        data.scene->setAmbientLight(ambientLight);
+        data.scene->setEnvironment(environment);
         // Remove from the renderer the nodes previously removed from the scene tree
         // Immediate removes
         if (!data.removedNodes.empty()) {

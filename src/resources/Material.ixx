@@ -357,6 +357,10 @@ export namespace lysa {
 
         bool destroy(unique_id id) override;
 
+        bool destroy(const StandardMaterial& m) { return destroy(m.id); }
+
+        bool destroy(const ShaderMaterial& m) { return destroy(m.id); }
+
     private:
         /** GPU memory array that stores material description blocks for shaders. */
         DeviceMemoryArray memoryArray;

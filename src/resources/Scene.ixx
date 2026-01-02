@@ -39,9 +39,9 @@ export namespace lysa {
 
         ~Scene() override;
 
-        void setAmbientLight(const float4& ambientLight) { this->ambientLight = ambientLight; }
+        void setEnvironment(unique_id environmentId);
 
-        const float4& getAmbientLight() const { return ambientLight; }
+        unique_id getEnvironment() const { return environment; }
 
         /** Adds a mesh instance to the scene. */
         void addInstance(unique_id meshInstance, bool async = false);
@@ -78,7 +78,8 @@ export namespace lysa {
         const uint32 maxAsyncNodesUpdatedPerFrame;
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
-        float4 ambientLight;
+        unique_id environment{INVALID_ID};
+        std::list<unique_id> meshInstances;
     };
 
     class SceneManager : public ResourcesManager<Context, Scene> {
