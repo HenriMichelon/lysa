@@ -202,7 +202,7 @@ end
         .beginClass<float3x4>("float3x4")
         .endClass()
         .beginClass<float4x4>("float4x4")
-            .addProperty("identity", +[](const float4x4*) { return float4x4::identity(); })
+            .addStaticFunction("identity", &float4x4::identity)
         .endClass()
         .beginClass<float4>("float4")
             .addConstructor<void(), void(float), void(float, float, float, float)>()

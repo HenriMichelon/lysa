@@ -78,7 +78,7 @@ return {
     ---@class lysa.float3x4
     float3x4 = lysa.float3x4,
     ---@class lysa.float4x4
-    ---@protected identity lysa.float4x4
+    ---@field identity fun() : lysa.float4x4
     float4x4 = lysa.float4x4,
 
     AXIS_X = lysa.AXIS_X,
@@ -553,6 +553,7 @@ return {
 
     ---@class lysa.RenderTarget
     ---@field id integer
+    ---@field aspect_ratio integer
     ---@field pause fun(self:lysa.RenderTarget, paused:boolean|nil):nil
     ---@field swap_chain fun(self:lysa.RenderTarget):vireo.SwapChain|nil
     ---@field rendering_window_handle fun(self:lysa.RenderTarget):lightuserdata|lysa.RenderingWindow
@@ -761,7 +762,7 @@ return {
     ---@class lysa.RenderViewManager
     ---@overload create fun(self:lysa.RenderViewManager):lysa.RenderView
     ---@overload create fun(self:lysa.RenderViewManager, viewport:vireo.Viewport,scissors:vireo.Rect,camera:integer,scene:integer):lysa.RenderView
-    ---@field get fun(self:lysa.RenderViewManager, id:integer):lysa.Scene
+    ---@field get fun(self:lysa.RenderViewManager, id:integer):lysa.RenderView
     ---@overload destroy fun(self:lysa.RenderViewManager, id:integer)
     ---@overload destroy fun(self:lysa.RenderViewManager, res:lysa.RenderView)
     RenderViewManager = lysa.RenderViewManager,
@@ -793,7 +794,7 @@ return {
     ---@field material_manager lysa.MaterialManager
     ---@field mesh_manager lysa.MeshManager
     ---@field mesh_instance_manager lysa.MeshManager
-    ---@field render_view lysa.MeshManager
+    ---@field render_view_manager lysa.RenderViewManager
     ---@field scene_manager lysa.sceneManager
     ResourcesRegistry = lysa.ResourcesRegistry,
 
