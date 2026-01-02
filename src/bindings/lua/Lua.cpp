@@ -202,6 +202,7 @@ end
         .beginClass<float3x4>("float3x4")
         .endClass()
         .beginClass<float4x4>("float4x4")
+            .addProperty("identity", +[](const float4x4*) { return float4x4::identity(); })
         .endClass()
         .beginClass<float4>("float4")
             .addConstructor<void(), void(float), void(float, float, float, float)>()
@@ -857,9 +858,6 @@ end
             .addFunction("aabb", &Mesh::getAABB)
         .endClass()
         .beginClass<MeshManager>("MeshManager")
-           // .addFunction("create", +[](MeshManager* self) -> Mesh& {
-           //          return self->create();
-           //  })
             .addFunction("create",
                 luabridge::overload<MeshManager*, const luabridge::LuaRef&, const luabridge::LuaRef&, const luabridge::LuaRef&>(
                     +[](MeshManager* self, const luabridge::LuaRef& v, const luabridge::LuaRef&i, const luabridge::LuaRef&s) -> Mesh& {
@@ -874,7 +872,70 @@ end
              luabridge::nonConstOverload<const unique_id>(&MeshManager::operator[]),
              luabridge::constOverload<const unique_id>(&MeshManager::operator[])
              )
-            .addFunction("destroy",&MeshManager::destroy)
+            .addFunction("destroy",
+               luabridge::overload<unique_id>(&MeshManager::destroy),
+               luabridge::overload<const Mesh&>(&MeshManager::destroy)
+            )
+        .endClass()
+
+        .beginClass<Camera>("Camera")
+            .addProperty("id", &Camera::id)
+            .addProperty("position", &Camera::position)
+            .addProperty("transform", &Camera::transform)
+            .addProperty("projection", &Camera::projection)
+        .endClass()
+        .beginClass<CameraManager>("CameraManager")
+          .addFunction("create",
+              luabridge::overload<CameraManager*>(+[](CameraManager* self) -> Camera& {
+                   return self->create();
+              }),
+              luabridge::overload<CameraManager*, const float3&, const float4x4&, const float4x4&>(+[](
+                    CameraManager* self,
+                    const float3& position,
+                    const float4x4& transform,
+                    const float4x4& projection) -> Camera& {
+                   return self->create(position, transform, projection);
+              })
+             )
+          .addFunction("get",
+            luabridge::nonConstOverload<const unique_id>(&CameraManager::operator[]),
+            luabridge::constOverload<const unique_id>(&CameraManager::operator[])
+            )
+            .addFunction("destroy",
+                luabridge::overload<unique_id>(&CameraManager::destroy),
+                luabridge::overload<const Camera&>(&CameraManager::destroy)
+            )
+        .endClass()
+
+        .beginClass<RenderView>("RenderView")
+            .addProperty("id", &RenderView::id)
+            .addProperty("viewport", &RenderView::viewport)
+            .addProperty("scissors", &RenderView::scissors)
+            .addProperty("camera", &RenderView::camera)
+            .addProperty("scene", &RenderView::scene)
+        .endClass()
+        .beginClass<RenderViewManager>("RenderViewManager")
+          .addFunction("create",
+              luabridge::overload<RenderViewManager*>(+[](RenderViewManager* self) -> RenderView& {
+                   return self->create();
+              }),
+              luabridge::overload<RenderViewManager*, const vireo::Viewport&, const vireo::Rect&, const unique_id, const unique_id>(+[](
+                    RenderViewManager* self,
+                    const vireo::Viewport& viewport,
+                    const vireo::Rect& scissors,
+                    const unique_id camera,
+                    const unique_id scene) -> RenderView& {
+                   return self->create(viewport, scissors, camera, scene);
+              })
+             )
+          .addFunction("get",
+            luabridge::nonConstOverload<const unique_id>(&RenderViewManager::operator[]),
+            luabridge::constOverload<const unique_id>(&RenderViewManager::operator[])
+            )
+            .addFunction("destroy",
+                luabridge::overload<unique_id>(&RenderViewManager::destroy),
+                luabridge::overload<const RenderView&>(&RenderViewManager::destroy)
+            )
         .endClass()
 
         .beginClass<Scene>("Scene")
@@ -889,6 +950,10 @@ end
              luabridge::nonConstOverload<const unique_id>(&SceneManager::operator[]),
              luabridge::constOverload<const unique_id>(&SceneManager::operator[])
              )
+            .addFunction("destroy",
+                luabridge::overload<unique_id>(&SceneManager::destroy),
+                luabridge::overload<const Scene&>(&SceneManager::destroy)
+            )
         .endClass()
 
         .beginClass<Renderpass>("Renderpass")

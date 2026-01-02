@@ -89,6 +89,10 @@ export namespace lysa {
             return false;
         }
 
+        virtual bool destroy(const T& res) {
+            return destroy(res.id);
+        }
+
         // Increment the reference counter of the resources
         void use(const unique_id id) {
             assert([&]{ return have(id); }, name  + " : invalid id ");

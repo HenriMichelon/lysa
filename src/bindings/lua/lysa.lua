@@ -77,8 +77,9 @@ return {
     float2x4 = lysa.float2x4,
     ---@class lysa.float3x4
     float3x4 = lysa.float3x4,
-    ---@class lysa.float3x4
-    float4x4 = lysa.float3x4,
+    ---@class lysa.float4x4
+    ---@protected identity lysa.float4x4
+    float4x4 = lysa.float4x4,
 
     AXIS_X = lysa.AXIS_X,
     AXIS_Y = lysa.AXIS_Y,
@@ -733,7 +734,8 @@ return {
     ---@field create fun(self:lysa.MeshManager):lysa.Mesh
     ---@field create fun(self:lysa.MeshManager, vertices:any, indices:any, surfaces:any):lysa.Mesh
     ---@field get fun(self:lysa.MeshManager, id:integer):lysa.Mesh
-    ---@field destroy fun(self:lysa.MeshManager, id:integer):nil
+    ---@overload destroy fun(self:lysa.MeshManager, id:integer):nil
+    ---@overload destroy fun(self:lysa.MeshManager, res:Mesg):nil
     MeshManager = lysa.MeshManager,
 
     ---@class lysa.Scene
@@ -744,18 +746,54 @@ return {
     ---@class lysa.SceneManager
     ---@field create fun(self:lysa.SceneManager):lysa.Scene
     ---@field get fun(self:lysa.SceneManager, id:integer):lysa.Scene
+    ---@overload destroy fun(self:lysa.SceneManager, id:integer)
+    ---@overload destroy fun(self:lysaSceneManager, res:lysa.Scene)
     SceneManager = lysa.SceneManager,
+
+    ---@class lysa.RenderView
+    ---@field id integer
+    ---@field viewport vireo.Viewport
+    ---@field scissors:vireo.Rect
+    ---@field camera:integer
+    ---@field scene:integer
+    RenderView = lysa.RenderView,
+
+    ---@class lysa.RenderViewManager
+    ---@overload create fun(self:lysa.RenderViewManager):lysa.RenderView
+    ---@overload create fun(self:lysa.RenderViewManager, viewport:vireo.Viewport,scissors:vireo.Rect,camera:integer,scene:integer):lysa.RenderView
+    ---@field get fun(self:lysa.RenderViewManager, id:integer):lysa.Scene
+    ---@overload destroy fun(self:lysa.RenderViewManager, id:integer)
+    ---@overload destroy fun(self:lysa.RenderViewManager, res:lysa.RenderView)
+    RenderViewManager = lysa.RenderViewManager,
+
+    ---@class lysa.Camera
+    ---@field id integer
+    ---@field position lysa.float3
+    ---@field transform lysa.float4x4
+    ---@field projection lysa.float4x4
+    Camera = lysa.Camera,
+
+    ---@class lysa.CameraManager
+    ---@overload create fun(self:lysa.CameraManager):lysa.Camera
+    ---@overload create fun(self:lysa.CameraManager, position:lysa.float3, transform:lysa.float4x4,projection:lysa.float4x4)lysa.Camera
+    ---@field get fun(self:lysa.RenderViewManager, id:integer):lysa.Camera
+    ---@overload destroy fun(self:lysa.CameraManager, id:integer)
+    ---@overload destroy fun(self:lysa.CameraManager, res:lysa.Camera)
+    CameraManager = lysa.CameraManager,
 
     ------------------------------------------------------------------------
     ---@class lysa.ResourcesRegistry
     ---@field get fun(self:lysa.ResourcesRegistry, id:integer):any
     ---@field render_target_manager lysa.RenderTargetManager
     ---@field viewport_manager lysa.ViewportManager
+    ---@field camera_manager lysa.ViewportManager
     ---@field rendering_window_manager lysa.RenderingWindowManager
     ---@field image_manager lysa.ImageManager
     ---@field image_texture_manager lysa.ImageTextureManager
     ---@field material_manager lysa.MaterialManager
     ---@field mesh_manager lysa.MeshManager
+    ---@field mesh_instance_manager lysa.MeshManager
+    ---@field render_view lysa.MeshManager
     ---@field scene_manager lysa.sceneManager
     ResourcesRegistry = lysa.ResourcesRegistry,
 

@@ -217,6 +217,7 @@ export namespace lysa {
         auto getIndexBuffer() const { return indexArray.getBuffer(); }
 
         bool destroy(unique_id id) override;
+        bool destroy(const Mesh& m) override { return destroy(m.id); }
 
     private:
         MaterialManager& materialManager;

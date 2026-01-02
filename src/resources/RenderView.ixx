@@ -20,6 +20,8 @@ export namespace lysa {
         unique_id camera{INVALID_ID};
         unique_id scene{INVALID_ID};
 
+        RenderView(Context&) {}
+
         RenderView(
             Context&,
             const vireo::Viewport& viewport,
