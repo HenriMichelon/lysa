@@ -4,7 +4,7 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.resources.scene_context;
+export module lysa.resources.scene;
 
 import lysa.context;
 import lysa.math;

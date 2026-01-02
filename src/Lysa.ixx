@@ -46,7 +46,7 @@ export import lysa.resources.render_target;
 export import lysa.resources.render_view;
 export import lysa.resources.rendering_window;
 export import lysa.resources.samplers;
-export import lysa.resources.scene_context;
+export import lysa.resources.scene;
 export import lysa.resources.texture;
 
 #ifdef LUA_BINDING

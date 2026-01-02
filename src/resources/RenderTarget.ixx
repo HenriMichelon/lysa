@@ -17,7 +17,7 @@ import lysa.renderers.renderer;
 import lysa.resources.camera;
 import lysa.resources.manager;
 import lysa.resources.render_view;
-import lysa.resources.scene_context;
+import lysa.resources.scene;
 
 export namespace lysa {
 

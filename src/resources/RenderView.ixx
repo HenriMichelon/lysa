@@ -15,10 +15,10 @@ import lysa.resources.manager;
 export namespace lysa {
 
     struct RenderView : Resource {
-        vireo::Viewport viewport;
-        vireo::Rect scissors;
-        unique_id camera;
-        unique_id scene;
+        vireo::Viewport viewport{};
+        vireo::Rect scissors{};
+        unique_id camera{INVALID_ID};
+        unique_id scene{INVALID_ID};
     };
 
     class RenderViewManager : public ResourcesManager<Context, RenderView> {
@@ -32,7 +32,6 @@ export namespace lysa {
             ResourcesManager(ctx, capacity, "RenderViewManager") {
             ctx.res.enroll(*this);
         }
-
     };
 
 }
