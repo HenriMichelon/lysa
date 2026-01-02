@@ -230,7 +230,7 @@ namespace lysa {
 
     void SceneFrameData::addInstance(const unique_id meshInstanceId) {
         const auto& meshInstance = meshInstanceManager[meshInstanceId];
-        const auto& mesh = meshInstance.mesh;
+        const auto& mesh = meshInstance.getMesh();
         assert([&]{ return !meshInstancesDataMemoryBlocks.contains(meshInstance.id);}, "Mesh instance already in the scene");
         assert([&]{return !mesh.getMaterials().empty(); }, "Models without materials are not supported");
         assert([&]{return mesh.isUploaded(); }, "Mesh instance is not in VRAM");
@@ -268,11 +268,11 @@ namespace lysa {
 
     void SceneFrameData::updateInstance(const unique_id meshInstanceId) {
         auto& meshInstance = meshInstanceManager[meshInstanceId];
-        if (meshInstance.pendingUpdates > 0) {
+        if (meshInstance.getPendingUpdates() > 0) {
             const auto meshInstanceData = meshInstance.getData();
             meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance.id], &meshInstanceData);
             meshInstancesDataUpdated = true;
-            meshInstance.pendingUpdates -= 1;
+            meshInstance.setPendingUpdates(meshInstance.getPendingUpdates() - 1);
         }
     }
 

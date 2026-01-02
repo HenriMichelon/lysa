@@ -41,7 +41,7 @@ namespace lysa {
 
     void SceneContext::addInstance(const unique_id meshInstance, const bool async) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
-        meshInstanceManager[meshInstance].pendingUpdates = framesInFlight;
+        meshInstanceManager[meshInstance].setPendingUpdates(framesInFlight);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
@@ -54,7 +54,7 @@ namespace lysa {
 
     void SceneContext::updateInstance(const unique_id meshInstance) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
-        meshInstanceManager[meshInstance].pendingUpdates = framesInFlight;
+        meshInstanceManager[meshInstance].setPendingUpdates(framesInFlight);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             frame.updatedNodes.push_back(meshInstance);

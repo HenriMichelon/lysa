@@ -40,6 +40,7 @@ export import lysa.resources.image;
 export import lysa.resources.manager;
 export import lysa.resources.material;
 export import lysa.resources.mesh;
+export import lysa.resources.mesh_instance;
 export import lysa.resources.registry;
 export import lysa.resources.render_target;
 export import lysa.resources.rendering_window;
@@ -165,6 +166,7 @@ export namespace  lysa {
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
         MeshManager meshManager;
+        MeshInstanceManager meshInstanceManager;
         SceneContextManager sceneContextManager;
         GlobalDescriptorSet globalDescriptors;
 

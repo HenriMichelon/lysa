@@ -29,7 +29,51 @@ export namespace lysa {
     /**
     * Scene node that holds a Mesh.
     */
-    struct MeshInstance  : Resource {
+    class MeshInstance : public Resource {
+    public:
+        MeshInstance(
+           Context& ctx,
+           unique_id meshId,
+           bool visible,
+           bool castShadows,
+           const AABB& worldAABB,
+           const float4x4& worldTransform,
+           const std::string& name = "");
+
+        MeshInstance(const Context& ctx, const MeshInstance& mi, const std::string& name = "") ;
+
+        Mesh& getMesh() const { return mesh; }
+
+        bool isVisible() const { return visible; }
+
+        void setVisible(const bool visible) { this->visible = visible; }
+
+        bool isCastShadows() const { return castShadows; }
+
+        void setCastShadow(const bool castShadows) { this->castShadows = castShadows; }
+
+        const AABB& getAABB() const { return worldAABB; }
+
+        void setAABB(const AABB& aabb) { worldAABB = aabb; }
+
+        const float4x4& getTransform() const { return worldTransform; }
+
+        void setTransform(const float4x4& transform) { worldTransform = transform; }
+
+        unique_id getSurfaceMaterial(uint32 surfaceIndex) const;
+
+        auto& getMaterialsOverride() { return materialsOverride; }
+
+        uint32 getPendingUpdates() const { return pendingUpdates; }
+
+        void setPendingUpdates(const uint32 updates) { pendingUpdates = updates; }
+
+        MeshInstanceData getData() const;
+
+        ~MeshInstance() override;
+
+    private:
+        MeshManager& meshManager;
         const std::string name;
         Mesh& mesh;
         bool visible{false};
@@ -39,37 +83,6 @@ export namespace lysa {
         std::unordered_map<uint32, unique_id> materialsOverride;
         /** Current number of pending updates to process. */
         uint32 pendingUpdates{0};
-
-        unique_id getSurfaceMaterial(uint32 surfaceIndex) const;
-
-        MeshInstanceData getData() const;
-
-        MeshInstance(
-            const Context& ctx,
-            const unique_id meshId,
-            const bool visible,
-            const bool castShadows,
-            const AABB& worldAABB,
-            const float4x4& worldTransform,
-            const std::string& name = "") :
-            name(name),
-            mesh(ctx.res.get<MeshManager>()[meshId]),
-            visible(visible),
-            castShadows(castShadows),
-            worldAABB(worldAABB),
-            worldTransform(worldTransform) {
-            ctx.res.get<MeshManager>().use(mesh.id);
-        }
-
-        MeshInstance(const Context& ctx, const MeshInstance& mi, const std::string& name = "") :
-            name(name),
-            mesh(mi.mesh),
-            visible(mi.visible),
-            castShadows(mi.castShadows),
-            worldAABB(mi.worldAABB),
-            worldTransform(mi.worldTransform) {
-            ctx.res.get<MeshManager>().use(mesh.id);
-        }
     };
 
     class MeshInstanceManager : public ResourcesManager<Context, MeshInstance> {

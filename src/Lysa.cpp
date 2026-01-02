@@ -29,6 +29,7 @@ namespace lysa {
             config.resourcesCapacity.vertices,
             config.resourcesCapacity.indices,
             config.resourcesCapacity.surfaces),
+        meshInstanceManager(ctx, config.resourcesCapacity.meshesInstances),
         sceneContextManager(ctx,
             config.resourcesCapacity.scenes,
             config.asyncObjectUpdatesPerFrame,

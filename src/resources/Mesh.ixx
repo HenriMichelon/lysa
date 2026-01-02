@@ -158,6 +158,8 @@ export namespace lysa {
 
         void buildAABB();
 
+        constexpr const std::string& getName() const { return name; }
+
     protected:
         Context& ctx;
         const std::string name;

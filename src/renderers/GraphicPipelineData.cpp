@@ -70,7 +70,7 @@ namespace lysa {
     void GraphicPipelineData::addInstance(
         const unique_id meshInstance,
         const std::unordered_map<unique_id, MemoryBlock>& meshInstancesDataMemoryBlocks) {
-        const auto& mesh = meshInstanceManager[meshInstance].mesh;
+        const auto& mesh = meshInstanceManager[meshInstance].getMesh();
         const auto instanceMemoryBlock = instancesArray.alloc(mesh.getSurfaces().size());
         instancesMemoryBlocks[meshInstance] = instanceMemoryBlock;
         addInstance(meshInstance, instanceMemoryBlock, meshInstancesDataMemoryBlocks.at(meshInstance));
@@ -80,7 +80,7 @@ namespace lysa {
         const unique_id meshInstance,
         const MemoryBlock& instanceMemoryBlock,
         const MemoryBlock& meshInstanceMemoryBlock) {
-        const auto& mesh = meshInstanceManager[meshInstance].mesh;
+        const auto& mesh = meshInstanceManager[meshInstance].getMesh();
         auto instancesData = std::vector<InstanceData>{};
         for (uint32 i = 0; i < mesh.getSurfaces().size(); i++) {
             const auto& surface = mesh.getSurfaces()[i];
