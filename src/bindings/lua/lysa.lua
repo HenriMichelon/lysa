@@ -81,6 +81,12 @@ return {
     ---@field identity fun() : lysa.float4x4
     ---@overload translation fun(x:number,y:number,z:number) : lysa.float4x4
     ---@overload translation fun(offset:lysa.float3) : lysa.float4x4
+    ---@overload scale fun(x:number,y:number,z:number) : lysa.float4x4
+    ---@overload scale fun(offset:lysa.float3) : lysa.float4x4
+    ---@overload scale fun(offset:float) : lysa.float4x4
+    ---@overload rotation_x fun(offset:float) : lysa.float4x4
+    ---@overload rotation_y fun(offset:float) : lysa.float4x4
+    ---@overload rotation_z fun(offset:float) : lysa.float4x4
     float4x4 = lysa.float4x4,
 
     AXIS_X = lysa.AXIS_X,
@@ -118,11 +124,18 @@ return {
     ---@overload fun(a:lysa.float1x3, b:lysa.float3):number
     ---@overload fun(a:lysa.float2x3, b:lysa.float3):lysa.float2
     ---@overload fun(a:lysa.float3x3, b:lysa.float3):lysa.float3
+    ---@overload fun(a:lysa.float3x3, b:lysa.float3x1):lysa.float3x3
+    ---@overload fun(a:lysa.float3x3, b:lysa.float3x2):lysa.float3x3
+    ---@overload fun(a:lysa.float3x3, b:lysa.float3x3):lysa.float3x3
     ---@overload fun(a:lysa.float4x3, b:lysa.float3):lysa.float4
     ---@overload fun(a:lysa.float1x4, b:lysa.float4):number
     ---@overload fun(a:lysa.float2x4, b:lysa.float4):lysa.float2
     ---@overload fun(a:lysa.float3x4, b:lysa.float4):lysa.float3
     ---@overload fun(a:lysa.float4x4, b:lysa.float4):lysa.float4
+    ---@overload fun(a:lysa.float4x4, b:lysa.float4x1):lysa.float4x4
+    ---@overload fun(a:lysa.float4x4, b:lysa.float4x2):lysa.float4x4
+    ---@overload fun(a:lysa.float4x4, b:lysa.float4x3):lysa.float4x4
+    ---@overload fun(a:lysa.float4x4, b:lysa.float4x4):lysa.float4x4
     mul = lysa.mul,
 
     ---@overload fun(a:lysa.float2, b:lysa.float2):lysa.float2
@@ -713,7 +726,7 @@ return {
     ---@class lysa.AABB
     ---@field min lysa.float3
     ---@field max lysa.float3
-    ---@field to_global fun(tr:lysa.float4x4):lysa.AABB
+    ---@field to_global fun(tr:lysa.AABB):lysa.AABB
     AABB = lysa.AABB,
 
     ---@class lysa.Vertex

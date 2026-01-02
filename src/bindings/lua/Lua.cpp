@@ -207,6 +207,14 @@ end
                 luabridge::overload<float, float, float>(&float4x4::translation),
                 luabridge::overload<const float3&>(&float4x4::translation)
             )
+            .addStaticFunction("scale",
+                luabridge::overload<float, float, float>(&float4x4::scale),
+                luabridge::overload<const float3&>(&float4x4::scale),
+                luabridge::overload<float>(&float4x4::scale)
+            )
+                .addStaticFunction("rotation_x", &float4x4::rotation_x)
+            .addStaticFunction("rotation_y", &float4x4::rotation_y)
+            .addStaticFunction("rotation_z", &float4x4::rotation_z)
         .endClass()
         .beginClass<float4>("float4")
             .addConstructor<void(), void(float), void(float, float, float, float), void(float3, float)>()
@@ -288,11 +296,18 @@ end
             luabridge::overload<const float1x3&, const float3&>(mul),
             luabridge::overload<const float2x3&, const float3&>(mul),
             luabridge::overload<const float3x3&, const float3&>(mul),
+            luabridge::overload<const float3x3&, const float3x1&>(mul),
+            luabridge::overload<const float3x3&, const float3x2&>(mul),
+            luabridge::overload<const float3x3&, const float3x3&>(mul),
             luabridge::overload<const float4x3&, const float3&>(mul),
             luabridge::overload<const float1x4&, const float4&>(mul),
             luabridge::overload<const float2x4&, const float4&>(mul),
             luabridge::overload<const float3x4&, const float4&>(mul),
-            luabridge::overload<const float4x4&, const float4&>(mul)
+            luabridge::overload<const float4x4&, const float4&>(mul),
+            luabridge::overload<const float4x4&, const float4x1&>(mul),
+            luabridge::overload<const float4x4&, const float4x2&>(mul),
+            luabridge::overload<const float4x4&, const float4x3&>(mul),
+            luabridge::overload<const float4x4&, const float4x4&>(mul)
         )
         .addFunction("add",
             luabridge::overload<const float2&, const float2&>(add),
