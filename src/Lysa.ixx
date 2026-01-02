@@ -36,6 +36,7 @@ export import lysa.renderers.renderpasses.forward_color;
 export import lysa.renderers.renderpasses.renderpass;
 
 export import lysa.resources.camera;
+export import lysa.resources.environment;
 export import lysa.resources.image;
 export import lysa.resources.manager;
 export import lysa.resources.material;
@@ -68,6 +69,8 @@ export namespace  lysa {
         size_t camera{viewports*2};
         //! Maximum number of scenes
         size_t scenes{viewports};
+        //! Maximum environments
+        size_t environments{scenes};
         //! Maximum number of images stored in GPU memory
         size_t images{500};
         //! Maximum number of GPU image samplers
@@ -173,6 +176,7 @@ export namespace  lysa {
         SceneManager sceneManager;
         GlobalDescriptorSet globalDescriptors;
         RenderViewManager renderViewManager;
+        EnvironmentManager environmentManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();

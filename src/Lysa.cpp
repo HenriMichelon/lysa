@@ -39,6 +39,7 @@ namespace lysa {
             config.resourcesCapacity.shadowMapsPerScene,
             config.framesInFlight),
         renderViewManager(ctx, config.resourcesCapacity.renderViews),
+        environmentManager(ctx, config.resourcesCapacity.environments),
         globalDescriptors(ctx)
     {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();

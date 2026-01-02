@@ -44,7 +44,6 @@ export namespace lysa {
             ResourcesManager(ctx, capacity, "CameraManager") {
             ctx.res.enroll(*this);
         }
-
     };
 
 }

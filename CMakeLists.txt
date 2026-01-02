@@ -297,6 +297,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
 
         ${ENGINE_SRC_DIR}/resources/Camera.ixx
+        ${ENGINE_SRC_DIR}/resources/Environment.ixx
         ${ENGINE_SRC_DIR}/resources/Image.ixx
         ${ENGINE_SRC_DIR}/resources/Material.ixx
         ${ENGINE_SRC_DIR}/resources/Mesh.ixx

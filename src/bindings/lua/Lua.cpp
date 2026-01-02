@@ -743,10 +743,30 @@ end
               luabridge::nonConstOverload<const unique_id>(&ImageTextureManager::operator[]),
               luabridge::constOverload<const unique_id>(&ImageTextureManager::operator[])
               )
-           .addFunction("destroy",
-             luabridge::overload<const unique_id>(&ResourcesManager<Context, ImageTexture>::destroy)
-          )
+        .addFunction("destroy",
+              luabridge::overload<unique_id>(&ImageTextureManager::destroy),
+              luabridge::overload<const ImageTexture&>(&ImageTextureManager::destroy)
+        )
+        .endClass()
+
+        .beginClass<Environment>("Environment")
+           .addProperty("id", &Environment::id)
+           .addProperty("color", &Environment::color)
+           .addProperty("intensity", &Environment::intensity)
        .endClass()
+       .beginClass<EnvironmentManager>("EnvironmentManager")
+            .addFunction("create", +[](EnvironmentManager* self) -> Environment& {
+                   return self->create();
+            })
+            .addFunction("get",
+                luabridge::nonConstOverload<const unique_id>(&EnvironmentManager::operator[]),
+                luabridge::constOverload<const unique_id>(&EnvironmentManager::operator[])
+                )
+            .addFunction("destroy",
+                luabridge::overload<unique_id>(&EnvironmentManager::destroy),
+                luabridge::overload<const Environment&>(&EnvironmentManager::destroy)
+          )
+        .endClass()
 
         .beginNamespace("Transparency")
             .addVariable("DISABLED", Transparency::DISABLED)
@@ -1061,6 +1081,10 @@ end
                 +[](const ResourcesRegistry* rl) -> SceneManager& {
                 return rl->get<SceneManager>();
             })
+            .addProperty("environment_manager",
+                   +[](const ResourcesRegistry* rl) -> EnvironmentManager& {
+                   return rl->get<EnvironmentManager>();
+               })
         .endClass()
 
         .beginClass<Context>("Context")

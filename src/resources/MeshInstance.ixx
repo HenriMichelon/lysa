@@ -64,8 +64,6 @@ export namespace lysa {
 
         unique_id getSurfaceMaterial(uint32 surfaceIndex) const;
 
-        // auto& getMaterialsOverride() { return materialsOverride; }
-
         void setSurfaceMaterialOverride(const uint32 surfaceIndex, const unique_id materialId) {
             materialsOverride[surfaceIndex] = materialId;
         }

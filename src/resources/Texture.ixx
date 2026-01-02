@@ -81,7 +81,6 @@ export namespace lysa {
         Context& ctx;
         const Image& image;
         uint32 samplerIndex{0};
-
     };
 
     class ImageTextureManager : public ResourcesManager<Context, ImageTexture> {
@@ -95,7 +94,6 @@ export namespace lysa {
             ResourcesManager(ctx, capacity, "ImageTextureManager") {
             ctx.res.enroll(*this);
         }
-
     };
 
 }

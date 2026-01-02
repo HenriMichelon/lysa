@@ -808,6 +808,18 @@ return {
     ---@overload destroy fun(self:lysa.CameraManager, res:lysa.Camera)
     CameraManager = lysa.CameraManager,
 
+    ---@class lysa.Environment
+    ---@field id integer
+    ---@field color integer
+    ---@field intensity integer
+    Environment = lysa.Environment,
+
+    ---@class lysa.EnvironmentManager
+    ---@overload create fun(self:lysa.EnvironmentManager):lysa.Environment
+    ---@field get fun(self:lysaEnvironmentManager, id:integer):lysa.Environment
+    ---@overload destroy fun(self:lysa.EnvironmentManager, id:integer)
+    ---@overload destroy fun(self:lysaEnvironmentManager, res:lysa.Environment)
+    EnvironmentManager = lysa.EnvironmentManager,
     ------------------------------------------------------------------------
     ---@class lysa.ResourcesRegistry
     ---@field get fun(self:lysa.ResourcesRegistry, id:integer):any
@@ -821,7 +833,8 @@ return {
     ---@field mesh_manager lysa.MeshManager
     ---@field mesh_instance_manager lysa.MeshManager
     ---@field render_view_manager lysa.RenderViewManager
-    ---@field scene_manager lysa.sceneManager
+    ---@field scene_manager lysa.SceneManager
+    ---@field environment_manager lysa.EnvironmentManager
     ResourcesRegistry = lysa.ResourcesRegistry,
 
     ---@class MainLoopEvent
