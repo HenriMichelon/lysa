@@ -20,7 +20,6 @@ namespace lysa {
             config.maxShadowMapsPerScene),
         fixedDeltaTime(config.deltaTime),
         imageManager(ctx, config.resourcesCapacity.images),
-        imageTextureManager(ctx, config.resourcesCapacity.images),
         materialManager(ctx, config.resourcesCapacity.material),
         meshManager(ctx,
                     config.resourcesCapacity.meshes,

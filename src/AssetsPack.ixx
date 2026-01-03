@@ -276,19 +276,19 @@ export namespace lysa {
         static void print(const DataInfo& header);
 
     private:
-        Header header{};
-        std::vector<ImageTexture*> textures{};
+        Header header{};;
 
         void loadScene(Context& ctx, std::ifstream& stream, const Callback& callback);
 
         std::vector<std::shared_ptr<vireo::Image>> loadImagesAndTextures(
             Context& ctx,
+            std::vector<std::shared_ptr<ImageTexture>>& textures,
             const vireo::Buffer& stagingBuffer,
             const vireo::CommandList& commandList,
             std::ifstream& stream,
             const std::vector<ImageHeader>&,
             const std::vector<std::vector<MipLevelInfo>>&,
-            const std::vector<TextureHeader>&);
+            const std::vector<TextureHeader>&) const;
     };
 
 }

@@ -62,7 +62,6 @@ export namespace lysa {
     protected:
         Context& ctx;
         ImageManager& imageManager;
-        ImageTextureManager& imageTextureManager;
         MaterialManager& materialManager;
         MeshManager& meshManager;
 

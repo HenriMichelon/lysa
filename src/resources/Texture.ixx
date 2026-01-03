@@ -19,7 +19,7 @@ export namespace lysa {
     /**
      * Base class for textures resources.
      */
-    class Texture : public ManagedResource {
+    class Texture : public UniqueResource {
     public:
         /**
          * Returns the width in pixels on the texture
@@ -82,19 +82,6 @@ export namespace lysa {
         Context& ctx;
         const Image& image;
         uint32 samplerIndex{0};
-    };
-
-    class ImageTextureManager : public ResourcesManager<Context, ImageTexture> {
-    public:
-        /**
-         * @brief Construct a manager bound to the given runtime context.
-         * @param ctx Instance wide context
-         * @param capacity Initial capacity
-         */
-        ImageTextureManager(Context& ctx, const unique_id capacity) :
-            ResourcesManager(ctx, capacity, "ImageTextureManager") {
-            ctx.res.enroll(*this);
-        }
     };
 
 }

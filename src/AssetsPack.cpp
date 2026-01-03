@@ -158,6 +158,7 @@ namespace lysa {
         // }
 
         // Read, upload and create the Image and Texture objets (Vireo specific)
+        std::vector<std::shared_ptr<ImageTexture>> textures(header.imagesCount);
         if (header.imagesCount > 0) {
             auto& asyncQueue = ctx.asyncQueue;
             const auto command = asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
@@ -171,6 +172,7 @@ namespace lysa {
             textureStagingBuffer->map();
             const auto images = loadImagesAndTextures(
                 ctx,
+                textures,
                 *textureStagingBuffer,
                 *command.commandList,
                 stream,
@@ -318,9 +320,8 @@ namespace lysa {
         meshManager.flush();
         callback(nodeHeaders, meshes, childrenIndexes);
         for (auto& texture : textures) {
-            if (texture->refCounter == 0) {
+            if (texture.use_count() == 0) {
                 Log::warning("texture #", texture->id, " (", texture->getName(), ") never used in any material");
-                ctx.res.get<ImageTextureManager>().destroy(texture->id);
             }
         }
 
@@ -330,12 +331,13 @@ namespace lysa {
 
     std::vector<std::shared_ptr<vireo::Image>> AssetsPack::loadImagesAndTextures(
         Context& ctx,
+        std::vector<std::shared_ptr<ImageTexture>>& textures,
         const vireo::Buffer& stagingBuffer,
         const vireo::CommandList& commandList,
         std::ifstream &stream,
         const std::vector<ImageHeader>& imageHeaders,
         const std::vector<std::vector<MipLevelInfo>>&levelHeaders,
-        const std::vector<TextureHeader>& textureHeaders) {
+        const std::vector<TextureHeader>& textureHeaders) const {
         const auto& vireo = ctx.vireo;
         std::vector<std::shared_ptr<vireo::Image>> images(header.texturesCount);
 
@@ -392,8 +394,7 @@ namespace lysa {
                     static_cast<vireo::AddressMode>(texture.samplerAddressModeU),
                     static_cast<vireo::AddressMode>(texture.samplerAddressModeV));
                 auto& lImage = ctx.res.get<ImageManager>().create(image, name);
-                auto& lTexture = ctx.res.get<ImageTextureManager>().create(lImage, samplerIndex);
-                textures.push_back(&lTexture);
+                textures.push_back(std::make_shared<ImageTexture>(ctx, lImage, samplerIndex));
             }
         }
         return images;

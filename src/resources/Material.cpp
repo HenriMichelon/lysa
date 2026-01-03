@@ -69,26 +69,7 @@ namespace lysa {
     }
 
     StandardMaterial::StandardMaterial(Context& ctx):
-        Material(ctx, STANDARD),
-        imageTextureManager(ctx.res.get<ImageTextureManager>()) {
-    }
-
-    StandardMaterial::~StandardMaterial() {
-        if (diffuseTexture.texture) {
-            imageTextureManager.destroy(diffuseTexture.texture->id);
-        }
-        if (metallicTexture.texture) {
-            imageTextureManager.destroy(metallicTexture.texture->id);
-        }
-        if (roughnessTexture.texture) {
-            imageTextureManager.destroy(roughnessTexture.texture->id);
-        }
-        if (emissiveTexture.texture) {
-            imageTextureManager.destroy(emissiveTexture.texture->id);
-        }
-        if (normalTexture.texture) {
-            imageTextureManager.destroy(normalTexture.texture->id);
-        }
+        Material(ctx, STANDARD) {
     }
 
     void StandardMaterial::setAlbedoColor(const float4 &color) {
@@ -98,43 +79,28 @@ namespace lysa {
 
     void StandardMaterial::setDiffuseTexture(const TextureInfo &texture) {
         diffuseTexture = texture;
-        if (texture.texture) {
-            imageTextureManager.use(texture.texture->id);
-        }
         upload();
     }
 
     void StandardMaterial::setNormalTexture(const TextureInfo &texture) {
         normalTexture = texture;
-        if (texture.texture) {
-            imageTextureManager.use(texture.texture->id);
-        }
         upload();
     }
 
     void StandardMaterial::setMetallicTexture(const TextureInfo &texture) {
         metallicTexture = texture;
-        if (texture.texture) {
-            imageTextureManager.use(texture.texture->id);
-        }
         if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
         upload();
     }
 
     void StandardMaterial::setRoughnessTexture(const TextureInfo &texture) {
         roughnessTexture = texture;
-        if (texture.texture) {
-            imageTextureManager.use(texture.texture->id);
-        }
         if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
         upload();
     }
 
     void StandardMaterial::setEmissiveTexture(const TextureInfo &texture) {
         emissiveTexture = texture;
-        if (texture.texture) {
-            imageTextureManager.use(texture.texture->id);
-        }
         upload();
     }
 

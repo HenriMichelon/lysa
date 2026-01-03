@@ -142,7 +142,7 @@ export namespace lysa {
          * References and properties of a texture
          */
         struct TextureInfo {
-            const ImageTexture* texture{nullptr};
+            std::shared_ptr<ImageTexture> texture{nullptr};
             float3x3 transform{float3x3::identity()};
         };
 
@@ -150,8 +150,6 @@ export namespace lysa {
          * Creates a StandardMaterial with default parameters
          */
         StandardMaterial(Context& ctx);
-
-        ~StandardMaterial() override;
 
         /**
          * Returns the material's base color.
@@ -270,17 +268,16 @@ export namespace lysa {
         pipeline_id getPipelineId() const override;
 
     private:
-        ImageTextureManager& imageTextureManager;
         float4       albedoColor{1.0f, 0.0f, 0.5f, 1.0f};
-        TextureInfo  diffuseTexture{};
+        TextureInfo  diffuseTexture;
         float        metallicFactor{0.0f};
-        TextureInfo  metallicTexture{};
+        TextureInfo  metallicTexture;
         float        roughnessFactor{1.0f};
-        TextureInfo  roughnessTexture{};
+        TextureInfo  roughnessTexture;
         float3       emissiveFactor{0.0f};
         float        emissiveStrength{1.0f};
         TextureInfo  emissiveTexture;
-        TextureInfo  normalTexture{};
+        TextureInfo  normalTexture;
         float        normalScale{1.0f};
     };
 

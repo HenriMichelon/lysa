@@ -137,7 +137,6 @@ export namespace  lysa {
         double accumulator{0.0};
 
         ImageManager imageManager;
-        ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
         MeshManager meshManager;
         GlobalDescriptorSet globalDescriptors;

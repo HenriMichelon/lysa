@@ -17,7 +17,6 @@ namespace lysa {
         const SceneConfiguration& config) :
         ctx(ctx),
         imageManager(ctx.res.get<ImageManager>()),
-        imageTextureManager(ctx.res.get<ImageTextureManager>()),
         materialManager(ctx.res.get<MaterialManager>()),
         meshManager(ctx.res.get<MeshManager>()),
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
