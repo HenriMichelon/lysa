@@ -134,6 +134,9 @@ export namespace  lysa {
      */
     class Lysa final {
     public:
+        //! Global runtime context (events, resources, etc.).
+        Context ctx;
+
         /**
          * @brief Construct the runtime and initialize subsystems.
          * @param config Configuration values used during startup.
@@ -147,15 +150,7 @@ export namespace  lysa {
          */
         void run();
 
-        /**
-         * @brief Get the mutable application context.
-         * @return Reference to the owned @ref Context.
-         */
-        Context& getContext() { return ctx; }
-
     private:
-        // Global runtime context (events, resources, etc.).
-        Context ctx;
         // Fixed delta time bookkeeping for the physics update loop
         const double fixedDeltaTime;
         double currentTime{0.0};
