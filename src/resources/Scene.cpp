@@ -44,34 +44,34 @@ namespace lysa {
     }
 
     void Scene::addInstance(const std::shared_ptr<MeshInstance>& meshInstance, const bool async) {
-        assert([&]{return meshInstance != nullptr;}, "Invalid meshInstance");
+        assert([&]{return meshInstance != nullptr && !meshInstances.contains(meshInstance);}, "Invalid meshInstance");
         meshInstance->setPendingUpdates(ctx.framesInFlight);
-        meshInstances.push_back(meshInstance);
+        meshInstances.insert(meshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
-                frame.addedNodesAsync.push_back(meshInstance);
+                frame.addedNodesAsync.insert(meshInstance);
             } else {
-                frame.addedNodes.push_back(meshInstance);
+                frame.addedNodes.insert(meshInstance);
             }
         }
     }
 
     void Scene::updateInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
-        assert([&]{return meshInstance != nullptr;}, "Invalid meshInstance");
+        assert([&]{return meshInstance != nullptr && meshInstances.contains(meshInstance);}, "Invalid meshInstance");
         meshInstance->setPendingUpdates(ctx.framesInFlight);
-        updatedNodes.push_back(meshInstance);
+        updatedNodes.insert(meshInstance);
     }
 
     void Scene::removeInstance(const std::shared_ptr<MeshInstance>& meshInstance, const bool async) {
-        assert([&]{return meshInstance != nullptr;}, "Invalid meshInstance");
-        meshInstances.remove(meshInstance);
+        assert([&]{return meshInstance != nullptr && meshInstances.contains(meshInstance);}, "Invalid meshInstance");
+        meshInstances.erase(meshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
-                frame.removedNodesAsync.push_back(meshInstance);
+                frame.removedNodesAsync.insert(meshInstance);
             } else {
-                frame.removedNodes.push_back(meshInstance);
+                frame.removedNodes.insert(meshInstance);
             }
         }
     }
@@ -85,6 +85,7 @@ namespace lysa {
         if (!data.removedNodes.empty()) {
             for (const auto &node : data.removedNodes) {
                 data.scene->removeInstance(node);
+                updatedNodes.erase(node);
             }
             data.removedNodes.clear();
         }
@@ -94,6 +95,7 @@ namespace lysa {
             for (auto it = data.removedNodesAsync.begin(); it != data.removedNodesAsync.end();) {
                 auto& mi = *it;
                 data.scene->removeInstance(mi);
+                updatedNodes.erase(mi);
                 it = data.removedNodesAsync.erase(it);
                 count += 1;
                 if (count > maxAsyncNodesUpdatedPerFrame) { break; }
@@ -105,6 +107,7 @@ namespace lysa {
         if (!data.addedNodes.empty()) {
             for (const auto &node : data.addedNodes) {
                 data.scene->addInstance(node);
+                updatedNodes.erase(node);
             }
             data.addedNodes.clear();
         }
@@ -114,6 +117,7 @@ namespace lysa {
             for (auto it = data.addedNodesAsync.begin(); it != data.addedNodesAsync.end();) {
                 auto& mi = *it;
                 data.scene->addInstance(mi);
+                updatedNodes.erase(mi);
                 it = data.addedNodesAsync.erase(it);
                 count += 1;
                 if (count > maxAsyncNodesUpdatedPerFrame) { break; }

@@ -129,11 +129,12 @@ namespace lysa {
 
     bool MeshManager::destroy(const unique_id id) {
         const auto& mesh = (*this)[id];
-        if (mesh.refCounter == 0 && mesh.isUploaded()) {
+        if (mesh.refCounter <= 1 && mesh.isUploaded()) {
             vertexArray.free(mesh.verticesMemoryBlock);
             indexArray.free(mesh.indicesMemoryBlock);
             meshSurfaceArray.free(mesh.surfacesMemoryBlock);
         }
+        needUpload.erase(id);
         return ResourcesManager::destroy(id);
     }
 

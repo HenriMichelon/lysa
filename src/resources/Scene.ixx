@@ -69,13 +69,13 @@ export namespace lysa {
         /** Per‑frame state and deferred operations processed at frame boundaries. */
         struct FrameData {
             /** Nodes to add on the next frame (synchronous path). */
-            std::list<std::shared_ptr<MeshInstance>> addedNodes;
+            std::unordered_set<std::shared_ptr<MeshInstance>> addedNodes;
             /** Nodes to add on the next frame (async path). */
-            std::list<std::shared_ptr<MeshInstance>> addedNodesAsync;
+            std::unordered_set<std::shared_ptr<MeshInstance>> addedNodesAsync;
             /** Nodes to remove on the next frame (synchronous path). */
-            std::list<std::shared_ptr<MeshInstance>> removedNodes;
+            std::unordered_set<std::shared_ptr<MeshInstance>> removedNodes;
             /** Nodes to remove on the next frame (async path). */
-            std::list<std::shared_ptr<MeshInstance>> removedNodesAsync;
+            std::unordered_set<std::shared_ptr<MeshInstance>> removedNodesAsync;
             /** Scene instance associated with this frame. */
             std::unique_ptr<SceneFrameData> scene;
         };
@@ -83,8 +83,8 @@ export namespace lysa {
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
         Environment environment;
-        std::list<std::shared_ptr<MeshInstance>> meshInstances;
-        std::list<std::shared_ptr<MeshInstance>> updatedNodes;
+        std::unordered_set<std::shared_ptr<MeshInstance>> meshInstances;
+        std::unordered_set<std::shared_ptr<MeshInstance>> updatedNodes;
     };
 
 }

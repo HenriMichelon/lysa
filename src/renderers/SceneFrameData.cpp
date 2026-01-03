@@ -257,6 +257,8 @@ namespace lysa {
     }
 
     void SceneFrameData::updateInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
+        assert([&]{ return meshInstancesDataMemoryBlocks.contains(meshInstance); },
+"MeshInstance does not belong to the scene");
         if (meshInstance->getPendingUpdates() > 0) {
             const auto meshInstanceData = meshInstance->getData();
             meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
@@ -277,9 +279,8 @@ namespace lysa {
     }
 
     void SceneFrameData::removeInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
-        if (!meshInstancesDataMemoryBlocks.contains(meshInstance)) {
-            return;
-        }
+        assert([&]{ return meshInstancesDataMemoryBlocks.contains(meshInstance); },
+            "MeshInstance does not belong to the scene");
         for (const auto& pipelineId : std::views::keys(pipelineIds)) {
             if (shaderMaterialPipelinesData.contains(pipelineId)) {
                 shaderMaterialPipelinesData[pipelineId]->removeInstance(meshInstance);

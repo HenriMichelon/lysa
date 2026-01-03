@@ -86,7 +86,7 @@ export namespace lysa {
         void updateInstance(const std::shared_ptr<MeshInstance>& meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(const std::shared_ptr<MeshInstance>& node);
+        void removeInstance(const std::shared_ptr<MeshInstance>& meshInstance);
 
         /**
          * Issues draw calls for opaque models using the supplied pipelines map.

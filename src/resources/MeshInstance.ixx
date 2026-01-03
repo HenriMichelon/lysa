@@ -33,16 +33,9 @@ export namespace lysa {
     */
     class MeshInstance : public UniqueResource {
     public:
-        MeshInstance(
-           const Context& ctx,
-           unique_id meshId,
-           bool visible = true,
-           bool castShadows = false,
-           const AABB& worldAABB = {},
-           const float4x4& worldTransform = {},
-           const std::string& name = "");
+        MeshInstance(const Context& ctx, Mesh& mesh, const std::string& name = "");
 
-        MeshInstance(const Context& ctx, const MeshInstance& mi, const std::string& name = "") ;
+        MeshInstance(const Context& ctx, const MeshInstance& mi, const std::string& name = "");
 
         Mesh& getMesh() const { return mesh; }
 

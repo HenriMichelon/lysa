@@ -237,6 +237,7 @@ namespace lysa {
         if (material.refCounter <= 1 && material.isUploaded()) {
             memoryArray.free(material.memoryBloc);
         }
+        needUpload.erase(id);
         return ResourcesManager::destroy(id);
     }
 
