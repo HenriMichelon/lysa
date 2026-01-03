@@ -103,8 +103,6 @@ export namespace  lysa {
         vireo::Backend backend{vireo::Backend::VULKAN};
         //! Fixed delta time for the main loop
         double deltaTime{1.0/60.0};
-        //! Number of simultaneous frames during rendering
-        uint32 framesInFlight{2};
         //! Number of nodes updates per frame for asynchronous scene updates
         uint32 asyncObjectUpdatesPerFrame{50};
         //! Resource capacity configuration
@@ -164,7 +162,6 @@ export namespace  lysa {
         double accumulator{0.0};
 
         CameraManager cameraManager;
-        RenderTargetManager renderTargetManager;
         ImageManager imageManager;
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;

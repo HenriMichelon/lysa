@@ -8,37 +8,35 @@ module lysa.resources.rendering_window;
 
 namespace lysa {
 
-    RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config):
-        ctx(ctx),
-        renderTargetManager(ctx.res.get<RenderTargetManager>()) {
-        openPlatformWindow(config);
+    RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config) :
+        handle(openPlatformWindow(config)),
+        renderTarget(ctx, config.renderTargetConfiguration, handle) {
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::READY)});
     }
 
     RenderingWindow::~RenderingWindow() {
         if (!closed) {
-            paused = false;
+            renderTarget.setPause(false);
             _closing();
             close();
         }
     }
 
     void RenderingWindow::_input(const InputEvent& inputEvent) const {
-        if (closed || paused) { return; }
-        ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::INPUT), inputEvent});
+        if (closed || renderTarget.isPaused()) { return; }
+        renderTarget.getContext().events.push({id, static_cast<event_type>(RenderingWindowEvent::INPUT), inputEvent});
     }
 
     void RenderingWindow::_closing() {
-        if (closed || paused) { return; }
+        if (closed || renderTarget.isPaused()) { return; }
+        renderTarget.setPause(true);
         closed = true;
-        renderTargetManager.destroy(platformHandle);
-        ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
+        renderTarget.getContext().events.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
     }
 
-    void RenderingWindow::_resized() const {
-        if (closed || paused) { return; }
-        renderTargetManager.resize(platformHandle);
-        ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
+    void RenderingWindow::_resized() {
+        if (closed || renderTarget.isPaused()) { return; }
+        renderTarget.resize();
     }
 
 }

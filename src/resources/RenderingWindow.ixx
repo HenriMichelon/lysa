@@ -71,8 +71,6 @@ export namespace lysa {
         static inline const event_type READY{"RENDERING_WINDOW_READY"};
         //! The window is about to close
         static inline const event_type CLOSING{"RENDERING_WINDOW_CLOSING"};
-        //! The window has been resized
-        static inline const event_type RESIZED{"RENDERING_WINDOW_RESIZED"};
         //! User input
         static inline const event_type INPUT{"RENDERING_WINDOW_INPUT"};
     };
@@ -95,6 +93,8 @@ export namespace lysa {
         uint32 height{720};
         //! Monitor index to display the Window
         int32 monitor{0};
+        //! Configuration of the window render target
+        RenderTargetConfiguration renderTargetConfiguration;
     };
 
     /**
@@ -121,7 +121,7 @@ export namespace lysa {
 
         int32 getHeight() const { return height; }
 
-        void* getPlatformHandle() const { return platformHandle; }
+        RenderingWindowHandle getHandle() const { return handle; }
 
         /**
           * Sets the mouse visibility and capture mode
@@ -156,18 +156,22 @@ export namespace lysa {
          */
         void setMousePosition(const float2& position) const;
 
-        bool isPaused() const { return paused; }
+        RenderTarget& getRenderTarget() { return renderTarget; }
+
+        const RenderTarget& getRenderTarget() const { return renderTarget; }
+
+        void setPause(const bool pause) { renderTarget.setPause(pause); }
+
+        bool isPaused() const { return renderTarget.isPaused(); }
 
         void _closing();
 
-        void _resized() const;
+        void _resized();
 
         void _input(const InputEvent& inputEvent) const;
 
-        void _pause(const bool pause) { paused = pause; }
-
 #ifdef _WIN32
-        RECT _rect;
+        RECT _rect{};
         /** Internal flag used to suppress synthetic mouse‑move feedback. */
         static bool _resettingMousePosition;
         /** Cached OS cursors per MouseCursor enum value. */
@@ -175,9 +179,10 @@ export namespace lysa {
 #endif
 
     private:
-        Context& ctx;
-        RenderTargetManager& renderTargetManager;
-
+        // Platform specific handle/ID
+        RenderingWindowHandle handle{nullptr};
+        //! Associated render target
+        RenderTarget renderTarget;
         //! Top-Left corner x position in pixels
         int32 x{0};
         //! Top-Left corner Y position in pixels
@@ -188,13 +193,8 @@ export namespace lysa {
         uint32 height{0};
         //! True once the platform window has been requested to close
         bool closed{false};
-        //! True once the platform window has been requested to pause/minimize
-        bool paused{false};
-        //! Opaque OS window handle used for presentation.
-        void* platformHandle{nullptr};
 
-        void openPlatformWindow(const RenderingWindowConfiguration& config);
-
+        RenderingWindowHandle openPlatformWindow(const RenderingWindowConfiguration& config);
     };
 
 

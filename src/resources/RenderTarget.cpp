@@ -12,26 +12,29 @@ import lysa.log;
 import lysa.renderers.renderer;
 
 namespace lysa {
-    RenderTarget::RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, const uint32 framesInFlight) :
+
+    RenderTarget::RenderTarget(
+        Context& ctx,
+        const RenderTargetConfiguration& configuration,
+        const RenderingWindowHandle renderingWindowHandle) :
         ctx(ctx),
         renderViewManager(ctx.res.get<RenderViewManager>()),
         sceneManager(ctx.res.get<SceneManager>()),
         cameraManager(ctx.res.get<CameraManager>()) {
-        if (configuration.renderingWindowHandle == nullptr) {
+        if (renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
-        if (framesInFlight <= 0) {
+        if (configuration.framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
-        this->renderingWindowHandle = configuration.renderingWindowHandle;
         swapChain = ctx.vireo->createSwapChain(
             configuration.swapChainFormat,
             ctx.graphicQueue,
-            configuration.renderingWindowHandle,
+            renderingWindowHandle,
             configuration.presentMode,
-            framesInFlight);
-        renderer = Renderer::create(ctx, configuration.rendererConfiguration, framesInFlight);
-        framesData.resize(framesInFlight);
+            configuration.framesInFlight);
+        renderer = Renderer::create(ctx, configuration.rendererConfiguration, configuration.framesInFlight);
+        framesData.resize(configuration.framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
@@ -71,15 +74,14 @@ namespace lysa {
         renderViewManager.destroy(viewId);
     }
 
-    void RenderTarget::pause(const bool pause) {
-        if (paused != pause) {
-            paused = pause;
-            ctx.events.push({id, static_cast<event_type>(
-                    paused ? RenderTargetEvent::PAUSED : RenderTargetEvent::RESUMED)});
-        }
+    void RenderTarget::setPause(const bool pause) {
+        paused = pause;
+        ctx.events.push({id, static_cast<event_type>(
+                paused ? RenderTargetEvent::PAUSED : RenderTargetEvent::RESUMED)});
     }
 
-    void RenderTarget::resize() const {
+    void RenderTarget::resize() {
+        setPause(true);
         const auto previousExtent = swapChain->getExtent();
         swapChain->recreate();
         const auto newExtent = swapChain->getExtent();
@@ -94,10 +96,11 @@ namespace lysa {
             ctx.graphicQueue->waitIdle();
             ctx.events.push({id, static_cast<event_type>(RenderTargetEvent::RESIZED), newExtent});
         }
+        setPause(false);
     }
 
     void RenderTarget::render() const {
-        if (paused) return;
+        if (isPaused()) return;
         const auto frameIndex = swapChain->getCurrentFrameIndex();
         for (const auto viewId : views) {
             auto& view = renderViewManager[viewId];
@@ -188,56 +191,56 @@ namespace lysa {
     void RenderTarget::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const {
         renderer->updatePipelines(pipelineIds);
     }
-
-    RenderTargetManager::RenderTargetManager(Context& ctx, const size_t capacity, const uint32 framesInFlight) :
-        ResourcesManager(ctx, capacity, "RenderTargetManager"),
-        framesInFlight(framesInFlight) {
-        ctx.res.enroll(*this);
-    }
-
-    RenderTarget& RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
-        return ResourcesManager::create(configuration, framesInFlight);
-    }
-
-    void RenderTargetManager::destroy(const void* renderingWindowHandle) {
-        for (const auto& renderTarget : getResources()) {
-            if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-                renderTarget->pause(true);
-                ctx.defer.push([&] {
-                    ResourcesManager::destroy(renderTarget->id);
-                });
-            }
-        }
-    }
-
-    void RenderTargetManager::pause(const void* renderingWindowHandle, const bool pause) {
-        for (const auto& renderTarget : getResources()) {
-            if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-                renderTarget->pause(pause);
-            }
-        }
-    }
-
-    void RenderTargetManager::resize(const void* renderingWindowHandle) const {
-        for (const auto& renderTarget : getResources()) {
-            if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-                renderTarget->resize();
-            }
-        }
-    }
-
-    // void RenderTargetManager::input(const void* renderingWindowHandle, const InputEvent& inputEvent) const {
+    //
+    // RenderTargetManager::RenderTargetManager(Context& ctx, const size_t capacity, const uint32 framesInFlight) :
+    //     ResourcesManager(ctx, capacity, "RenderTargetManager"),
+    //     framesInFlight(framesInFlight) {
+    //     ctx.res.enroll(*this);
+    // }
+    //
+    // RenderTarget& RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
+    //     return ResourcesManager::create(configuration, framesInFlight);
+    // }
+    //
+    // void RenderTargetManager::destroy(const void* renderingWindowHandle) {
     //     for (const auto& renderTarget : getResources()) {
     //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-    //             renderTarget->input(inputEvent);
+    //             renderTarget->pause(true);
+    //             ctx.defer.push([&] {
+    //                 ResourcesManager::destroy(renderTarget->id);
+    //             });
     //         }
     //     }
     // }
-
-    void RenderTargetManager::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const {
-        for (const auto& renderTarget : getResources()) {
-            renderTarget->updatePipelines(pipelineIds);
-        }
-    }
+    //
+    // void RenderTargetManager::pause(const void* renderingWindowHandle, const bool pause) {
+    //     for (const auto& renderTarget : getResources()) {
+    //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
+    //             renderTarget->pause(pause);
+    //         }
+    //     }
+    // }
+    //
+    // void RenderTargetManager::resize(const void* renderingWindowHandle) const {
+    //     for (const auto& renderTarget : getResources()) {
+    //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
+    //             renderTarget->resize();
+    //         }
+    //     }
+    // }
+    //
+    // // void RenderTargetManager::input(const void* renderingWindowHandle, const InputEvent& inputEvent) const {
+    // //     for (const auto& renderTarget : getResources()) {
+    // //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
+    // //             renderTarget->input(inputEvent);
+    // //         }
+    // //     }
+    // // }
+    //
+    // void RenderTargetManager::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const {
+    //     for (const auto& renderTarget : getResources()) {
+    //         renderTarget->updatePipelines(pipelineIds);
+    //     }
+    // }
 
 }

@@ -22,46 +22,48 @@ import lysa.resources.scene;
 export namespace lysa {
 
     struct RenderTargetConfiguration {
-        //! Set this field if you want to render in a window
-        void* renderingWindowHandle{nullptr};
         //! Postprocessing & swap chain image format
         vireo::ImageFormat swapChainFormat{vireo::ImageFormat::R8G8B8A8_UNORM};
         //! Presentation mode
         vireo::PresentMode presentMode{vireo::PresentMode::IMMEDIATE};
+        //! Number of simultaneous frames during rendering
+        uint32 framesInFlight{2};
+        //! Configuration for the rendering path of the target
         RendererConfiguration rendererConfiguration;
     };
 
     /**
     * Render target events data
     */
-    struct RenderTargetEvent : Event {
+    struct RenderTargetEvent {
         //! The render target has been paused
         static constexpr auto PAUSED{"RENDERING_TARGET_PAUSED"};
         //! The render target has been resumed
         static constexpr auto RESUMED{"RENDERING_TARGET_RESUMED"};
         //! The render target has been resized
         static constexpr auto RESIZED{"RENDERING_TARGET_RESIZED"};
-        //! Input inside the render target parent window
-        //static constexpr auto INPUT{"RENDERING_TARGET_INPUT"};
     };
 
-    class RenderTarget : public ManagedResource {
+    //! Platform specific handle/ID
+    using RenderingWindowHandle = void*;
+
+    class RenderTarget : public UniqueResource {
     public:
-        RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, uint32 framesInFlight);
+        RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, RenderingWindowHandle renderingWindowHandle);
 
         ~RenderTarget() override;
 
         void render() const;
 
-        void pause(bool pause);
+        auto isPaused() const { return paused; }
+
+        void setPause(bool pause);
 
         float getAspectRatio() const { return swapChain->getAspectRatio(); }
 
+        uint32 getFramesInFlight() const { return swapChain->getFramesInFlight(); }
+
         auto getSwapChain() const { return swapChain; }
-
-        auto getRenderingWindowHandle() const { return renderingWindowHandle; }
-
-        auto isPaused() const { return paused; }
 
         void waitIdle() const { swapChain->waitIdle(); }
 
@@ -70,6 +72,10 @@ export namespace lysa {
         void removeView(unique_id viewId);
 
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const;
+
+        void resize();
+
+        Context& getContext() const { return ctx; }
 
     private:
         struct FrameData {
@@ -101,41 +107,8 @@ export namespace lysa {
         std::shared_ptr<vireo::SwapChain> swapChain{nullptr};
         // Scene renderer used to draw attached viewports.
         std::unique_ptr<Renderer> renderer;
-        // associated OS window handler
-        void* renderingWindowHandle{nullptr};
         // Views to render in this target
         std::list<unique_id> views;
-
-        friend class RenderTargetManager;
-        void resize() const;
-    };
-
-    class RenderTargetManager : public ResourcesManager<Context, RenderTarget> {
-    public:
-        /**
-         * @brief Construct a manager bound to the given runtime context.
-         * @param ctx Instance wide context
-         * @param capacity Initial capacity
-         * @param framesInFlight
-         */
-        RenderTargetManager(Context& ctx, size_t capacity, uint32 framesInFlight);
-
-        RenderTarget& create(const RenderTargetConfiguration& configuration);
-
-        void destroy(const void* renderingWindowHandle);
-
-        void resize(const void* renderingWindowHandle) const;
-
-        void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const;
-
-        void pause(const void* renderingWindowHandle, bool pause);
-
-    private:
-        uint32 framesInFlight;
-
-        friend class Lysa;
-
-        friend class ResourcesRegistry;
     };
 
 }

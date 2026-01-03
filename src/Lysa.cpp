@@ -19,7 +19,6 @@ namespace lysa {
         ),
         fixedDeltaTime(config.deltaTime),
         cameraManager(ctx, config.resourcesCapacity.camera),
-        renderTargetManager(ctx, config.resourcesCapacity.renderTarget, config.framesInFlight),
         imageManager(ctx, config.resourcesCapacity.images),
         imageTextureManager(ctx, config.resourcesCapacity.images),
         materialManager(ctx, config.resourcesCapacity.material),
@@ -36,7 +35,7 @@ namespace lysa {
                      config.resourcesCapacity.meshInstancesPerScene,
                      config.resourcesCapacity.meshSurfacePerPipeline,
                      config.resourcesCapacity.shadowMapsPerScene,
-                     config.framesInFlight),
+                     2),
         globalDescriptors(ctx),
         renderViewManager(ctx, config.resourcesCapacity.renderViews),
         environmentManager(ctx, config.resourcesCapacity.environments)

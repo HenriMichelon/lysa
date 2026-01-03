@@ -31,14 +31,14 @@ namespace lysa {
     static LRESULT CALLBACK windowProcedure(HWND, UINT, WPARAM, LPARAM);
 
     void RenderingWindow::show() const {
-        ShowWindow(static_cast<HWND>(platformHandle), SW_SHOW);
+        ShowWindow(static_cast<HWND>(handle), SW_SHOW);
     }
 
     void RenderingWindow::close() const {
-        PostMessage(static_cast<HWND>(platformHandle), WM_CLOSE, 0, 0);
+        PostMessage(static_cast<HWND>(handle), WM_CLOSE, 0, 0);
     }
 
-    void RenderingWindow::openPlatformWindow(const RenderingWindowConfiguration& config) {
+    RenderingWindowHandle RenderingWindow::openPlatformWindow(const RenderingWindowConfiguration& config) {
         if (_mouseCursors.empty()) {
             _mouseCursors[MouseCursor::ARROW]    = LoadCursor(nullptr, IDC_ARROW);
             _mouseCursors[MouseCursor::WAIT]     = LoadCursor(nullptr, IDC_WAIT);
@@ -131,7 +131,7 @@ namespace lysa {
         this->y = y;
         width = w;
         height = h;
-        platformHandle = hwnd;
+        return hwnd;
     }
 
     BOOL CALLBACK monitorEnumProc(HMONITOR, HDC , const LPRECT lprcMonitor, const LPARAM dwData) {
@@ -152,9 +152,9 @@ namespace lysa {
         switch (message) {
         case WM_SIZE:
             if (IsIconic(hWnd)) {
-                window->_pause(true);
+                window->setPause(true);
             } else {
-                window->_pause(false);
+                window->setPause(false);
                 window->_resized();
             }
             return 0;
@@ -181,19 +181,19 @@ namespace lysa {
     float2 RenderingWindow::getMousePosition() const {
         POINT point;
         GetCursorPos(&point);
-        ScreenToClient(static_cast<HWND>(platformHandle), &point);
+        ScreenToClient(static_cast<HWND>(handle), &point);
         return { point.x, point.y };
     }
 
     void RenderingWindow::setMousePosition(const float2& position) const {
         POINT point{static_cast<int>(position.x), static_cast<int>(position.y)};
-        ClientToScreen(static_cast<HWND>(platformHandle), &point);
+        ClientToScreen(static_cast<HWND>(handle), &point);
         SetCursorPos(point.x, point.y);
     }
 
     void RenderingWindow::setMouseCursor(const MouseCursor cursor) const {
         SetCursor(_mouseCursors[cursor]);
-        PostMessage(static_cast<HWND>(platformHandle), WM_SETCURSOR, 0, 0);
+        PostMessage(static_cast<HWND>(handle), WM_SETCURSOR, 0, 0);
     }
 
     void RenderingWindow::resetMousePosition() const {
@@ -204,7 +204,7 @@ namespace lysa {
 
     void RenderingWindow::setMouseMode(const MouseMode mode) const {
         MSG msg;
-        while (PeekMessageW(&msg, static_cast<HWND>(platformHandle), 0, 0, PM_REMOVE)) {
+        while (PeekMessageW(&msg, static_cast<HWND>(handle), 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
         }
@@ -221,14 +221,14 @@ namespace lysa {
             ShowCursor(FALSE);
             break;
         case MouseMode::VISIBLE_CAPTURED: {
-            SetCapture(static_cast<HWND>(platformHandle));
+            SetCapture(static_cast<HWND>(handle));
             ClipCursor(&_rect);
             ShowCursor(TRUE);
             resetMousePosition();
             break;
         }
         case MouseMode::HIDDEN_CAPTURED: {
-            SetCapture(static_cast<HWND>(platformHandle));
+            SetCapture(static_cast<HWND>(handle));
             ClipCursor(&_rect);
             ShowCursor(FALSE);
             resetMousePosition();

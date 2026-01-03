@@ -325,7 +325,7 @@ namespace lysa {
         }
 
         // Update renderers pipelines in current rendering targets
-        ctx.res.get<RenderTargetManager>().updatePipelines(pipelineIds);
+        //ctx.res.get<RenderTargetManager>().updatePipelines(pipelineIds);  XXX
     }
 
     std::vector<std::shared_ptr<vireo::Image>> AssetsPack::loadImagesAndTextures(
