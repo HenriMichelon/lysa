@@ -9,24 +9,18 @@ module lysa.resources.mesh_instance;
 
 namespace lysa {
 
-    MeshInstance::MeshInstance(Context& ctx, const unique_id meshId) :
-        meshManager(ctx.res.get<MeshManager>()),
-        name(name),
-        mesh(meshManager[meshId]) {
-        meshManager.use(mesh.id);
-    }
-
     MeshInstance::MeshInstance(
-           Context& ctx,
+           const Context& ctx,
            const unique_id meshId,
            const bool visible,
            const bool castShadows,
            const AABB& worldAABB,
            const float4x4& worldTransform,
            const std::string& name) :
+           materialManager(ctx.res.get<MaterialManager>()),
            meshManager(ctx.res.get<MeshManager>()),
-           name(name),
            mesh(meshManager[meshId]),
+           name(name),
            visible(visible),
            castShadows(castShadows),
            worldAABB(worldAABB),
@@ -35,9 +29,10 @@ namespace lysa {
     }
 
     MeshInstance::MeshInstance(const Context&, const MeshInstance& mi, const std::string& name) :
+        materialManager(materialManager),
         meshManager(meshManager),
-        name(name),
         mesh(mi.mesh),
+        name(name),
         visible(mi.visible),
         castShadows(mi.castShadows),
         worldAABB(mi.worldAABB),

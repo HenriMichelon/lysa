@@ -12,6 +12,7 @@ import lysa.context;
 import lysa.math;
 import lysa.resources;
 import lysa.resources.manager;
+import lysa.resources.material;
 import lysa.resources.mesh;
 
 export namespace lysa {
@@ -30,17 +31,15 @@ export namespace lysa {
     /**
     * Scene node that holds a Mesh.
     */
-    class MeshInstance : public ManagedResource {
+    class MeshInstance : public UniqueResource {
     public:
-        MeshInstance(Context& ctx, unique_id meshId);
-
         MeshInstance(
-           Context& ctx,
+           const Context& ctx,
            unique_id meshId,
-           bool visible,
-           bool castShadows,
-           const AABB& worldAABB,
-           const float4x4& worldTransform,
+           bool visible = true,
+           bool castShadows = false,
+           const AABB& worldAABB = {},
+           const float4x4& worldTransform = {},
            const std::string& name = "");
 
         MeshInstance(const Context& ctx, const MeshInstance& mi, const std::string& name = "") ;
@@ -82,9 +81,10 @@ export namespace lysa {
         ~MeshInstance() override;
 
     private:
+        MaterialManager& materialManager;
         MeshManager& meshManager;
-        const std::string name;
         Mesh& mesh;
+        const std::string name;
         bool visible{true};
         bool castShadows{false};
         AABB worldAABB{};
@@ -94,17 +94,5 @@ export namespace lysa {
         uint32 pendingUpdates{0};
     };
 
-    class MeshInstanceManager : public ResourcesManager<Context, MeshInstance> {
-    public:
-        /**
-         * @brief Construct a manager bound to the given runtime context.
-         * @param ctx Instance wide context
-         * @param capacity Initial capacity
-         */
-        MeshInstanceManager(Context& ctx, const unique_id capacity) :
-            ResourcesManager(ctx, capacity, "MeshInstanceManager") {
-            ctx.res.enroll(*this);
-        }
-    };
 }
 

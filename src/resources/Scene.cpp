@@ -20,7 +20,6 @@ namespace lysa {
         imageTextureManager(ctx.res.get<ImageTextureManager>()),
         materialManager(ctx.res.get<MaterialManager>()),
         meshManager(ctx.res.get<MeshManager>()),
-        meshInstanceManager(ctx.res.get<MeshInstanceManager>()),
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
         framesData.resize(ctx.framesInFlight);
         for (auto& data : framesData) {
@@ -36,9 +35,6 @@ namespace lysa {
 
     Scene::~Scene() {
         ctx.graphicQueue->waitIdle();
-        for (const auto meshInstance : meshInstances) {
-            meshInstanceManager.destroy(meshInstance);
-        }
     }
 
     void Scene::setEnvironment(const Environment& environmentId) {
@@ -48,10 +44,9 @@ namespace lysa {
         }
     }
 
-    void Scene::addInstance(const unique_id meshInstance, const bool async) {
-        assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
-        meshInstanceManager.use(meshInstance);
-        meshInstanceManager[meshInstance].setPendingUpdates(ctx.framesInFlight);
+    void Scene::addInstance(const std::shared_ptr<MeshInstance>& meshInstance, const bool async) {
+        assert([&]{return meshInstance != nullptr;}, "Invalid meshInstance");
+        meshInstance->setPendingUpdates(ctx.framesInFlight);
         meshInstances.push_back(meshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
@@ -63,19 +58,15 @@ namespace lysa {
         }
     }
 
-    void Scene::updateInstance(const unique_id meshInstance) {
-        assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
-        meshInstanceManager[meshInstance].setPendingUpdates(ctx.framesInFlight);
-        auto lock = std::lock_guard(frameDataMutex);
-        for (auto& frame : framesData) {
-            frame.updatedNodes.push_back(meshInstance);
-        }
+    void Scene::updateInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
+        assert([&]{return meshInstance != nullptr;}, "Invalid meshInstance");
+        meshInstance->setPendingUpdates(ctx.framesInFlight);
+        updatedNodes.push_back(meshInstance);
     }
 
-    void Scene::removeInstance(const unique_id meshInstance, const bool async) {
-        assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
+    void Scene::removeInstance(const std::shared_ptr<MeshInstance>& meshInstance, const bool async) {
+        assert([&]{return meshInstance != nullptr;}, "Invalid meshInstance");
         meshInstances.remove(meshInstance);
-        meshInstanceManager.destroy(meshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
@@ -95,7 +86,6 @@ namespace lysa {
         if (!data.removedNodes.empty()) {
             for (const auto &node : data.removedNodes) {
                 data.scene->removeInstance(node);
-                data.updatedNodes.remove(node);
             }
             data.removedNodes.clear();
         }
@@ -106,7 +96,6 @@ namespace lysa {
                 auto& mi = *it;
                 data.scene->removeInstance(mi);
                 it = data.removedNodesAsync.erase(it);
-                data.updatedNodes.remove(mi);
                 count += 1;
                 if (count > maxAsyncNodesUpdatedPerFrame) { break; }
             }
@@ -117,7 +106,6 @@ namespace lysa {
         if (!data.addedNodes.empty()) {
             for (const auto &node : data.addedNodes) {
                 data.scene->addInstance(node);
-                data.updatedNodes.remove(node);
             }
             data.addedNodes.clear();
         }
@@ -128,17 +116,16 @@ namespace lysa {
                 auto& mi = *it;
                 data.scene->addInstance(mi);
                 it = data.addedNodesAsync.erase(it);
-                data.updatedNodes.remove(mi);
                 count += 1;
                 if (count > maxAsyncNodesUpdatedPerFrame) { break; }
             }
         }
-        if (!data.updatedNodes.empty()) {
-            for (const auto &node : data.updatedNodes) {
-                data.scene->updateInstance(node);
+        for (const auto& frame : framesData) {
+            for (const auto& mi : updatedNodes) {
+                frame.scene->updateInstance(mi);
             }
-            data.updatedNodes.clear();
         }
+        updatedNodes.clear();
     }
 
 }

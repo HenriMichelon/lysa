@@ -57,16 +57,14 @@ export import lysa.lua;
 export namespace  lysa {
 
     struct ResourcesCapacity {
-        //! Maximum number of images stored in GPU memory
+        //! Maximum number of images stored in CPU & GPU memory
         size_t images{500};
         //! Maximum number of GPU image samplers
         size_t samplers{20};
-        //! Maximum number of standard & shader materials
+        //! Maximum number of standard & shader materials in CPU & GPU memory
         size_t material{100};
-        //! Maximum number of meshes
+        //! Maximum number of meshes in CPU & GPU memory
         size_t meshes{1000};
-        //! Maximum number of meshes instances
-        size_t meshesInstances{meshes * 10};
         //! Maximum number of meshes surfaces in GPU memory
         size_t surfaces{meshes * 10};
         //! Maximum number of meshes vertices in GPU memory
@@ -142,7 +140,6 @@ export namespace  lysa {
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
         MeshManager meshManager;
-        MeshInstanceManager meshInstanceManager;
         GlobalDescriptorSet globalDescriptors;
 
         // Consume platform-specific events.

@@ -27,7 +27,6 @@ namespace lysa {
                     config.resourcesCapacity.vertices,
                     config.resourcesCapacity.indices,
                     config.resourcesCapacity.surfaces),
-        meshInstanceManager(ctx, config.resourcesCapacity.meshesInstances),
         globalDescriptors(ctx)
     {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();

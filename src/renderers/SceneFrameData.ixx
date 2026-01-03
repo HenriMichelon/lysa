@@ -80,13 +80,13 @@ export namespace lysa {
         void compute(vireo::CommandList& commandList, const Camera& camera) const;
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(unique_id meshInstance);
+        void addInstance(const std::shared_ptr<MeshInstance>& meshInstance);
 
         /** Adds a mesh instance to the scene. */
-        void updateInstance(unique_id meshInstance);
+        void updateInstance(const std::shared_ptr<MeshInstance>& meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(unique_id node);
+        void removeInstance(const std::shared_ptr<MeshInstance>& node);
 
         /**
          * Issues draw calls for opaque models using the supplied pipelines map.
@@ -138,7 +138,6 @@ export namespace lysa {
     private:
         const Context& ctx;
         MaterialManager& materialManager;
-        MeshInstanceManager& meshInstanceManager;
         const uint32 maxLights;
         const uint32 maxMeshSurfacePerPipeline;
         /** Number of frames processed in-flight. */
@@ -167,7 +166,7 @@ export namespace lysa {
         /** Device array storing per-mesh-instance GPU data. */
         DeviceMemoryArray meshInstancesDataArray;
         /** Memory blocks allocated in meshInstancesDataArray per MeshInstance. */
-        std::unordered_map<unique_id, MemoryBlock> meshInstancesDataMemoryBlocks{};
+        std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock> meshInstancesDataMemoryBlocks{};
         /** True if meshInstancesDataArray content changed. */
         bool meshInstancesDataUpdated{false};
 
@@ -201,7 +200,7 @@ export namespace lysa {
 
         void addInstance(
             pipeline_id pipelineId,
-            unique_id meshInstance,
+            const std::shared_ptr<MeshInstance>& meshInstance,
             std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData);
 
         void drawModels(

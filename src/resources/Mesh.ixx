@@ -185,7 +185,10 @@ export namespace lysa {
         /**
          * @brief Construct a manager bound to the given runtime context.
          * @param ctx Instance wide context
-         * @param capacity Initial capacity
+         * @param capacity maximum capacity
+         * @param vertexCapacity
+         * @param indexCapacity
+         * @param surfaceCapacity
          */
         MeshManager(
             Context& ctx,

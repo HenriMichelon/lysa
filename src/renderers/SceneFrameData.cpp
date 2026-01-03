@@ -64,7 +64,6 @@ namespace lysa {
         framesInFlight{framesInFlight},
         maxMeshSurfacePerPipeline(maxMeshSurfacePerPipeline),
         maxLights(maxLights),
-        meshInstanceManager(ctx.res.get<MeshInstanceManager>()),
         materialManager(ctx.res.get<MaterialManager>()) {
 
         const auto blankImage = ctx.res.get<ImageManager>().getBlankImage();
@@ -220,23 +219,22 @@ namespace lysa {
         }
     }
 
-    void SceneFrameData::addInstance(const unique_id meshInstanceId) {
-        const auto& meshInstance = meshInstanceManager[meshInstanceId];
-        const auto& mesh = meshInstance.getMesh();
-        assert([&]{ return !meshInstancesDataMemoryBlocks.contains(meshInstance.id);}, "Mesh instance already in the scene");
+    void SceneFrameData::addInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
+        const auto& mesh = meshInstance->getMesh();
+        assert([&]{ return !meshInstancesDataMemoryBlocks.contains(meshInstance);}, "Mesh instance already in the scene");
         assert([&]{return !mesh.getMaterials().empty(); }, "Models without materials are not supported");
         assert([&]{return mesh.isUploaded(); }, "Mesh instance is not in VRAM");
 
-        const auto meshInstanceData = meshInstance.getData();
-        meshInstancesDataMemoryBlocks[meshInstance.id] = meshInstancesDataArray.alloc(1);
-        meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance.id], &meshInstanceData);
+        const auto meshInstanceData = meshInstance->getData();
+        meshInstancesDataMemoryBlocks[meshInstance] = meshInstancesDataArray.alloc(1);
+        meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
         meshInstancesDataUpdated = true;
 
         auto haveTransparentMaterial{false};
         auto haveShaderMaterial{false};
         auto nodePipelineIds = std::set<uint32>{};
         for (int i = 0; i < mesh.getSurfaces().size(); i++) {
-            const auto& material = materialManager[meshInstance.getSurfaceMaterial(i)];
+            const auto& material = materialManager[meshInstance->getSurfaceMaterial(i)];
             haveTransparentMaterial = material.getTransparency() != Transparency::DISABLED;
             haveShaderMaterial = material.getType() == Material::SHADER;
             const auto id = material.getPipelineId();
@@ -249,28 +247,27 @@ namespace lysa {
 
         for (const auto& pipelineId : nodePipelineIds) {
             if (haveShaderMaterial) {
-                addInstance(pipelineId, meshInstance.id, shaderMaterialPipelinesData);
+                addInstance(pipelineId, meshInstance, shaderMaterialPipelinesData);
             } else if (haveTransparentMaterial) {
-                addInstance(pipelineId, meshInstance.id, transparentPipelinesData);
+                addInstance(pipelineId, meshInstance, transparentPipelinesData);
             } else {
-                addInstance(pipelineId, meshInstance.id, opaquePipelinesData);
+                addInstance(pipelineId, meshInstance, opaquePipelinesData);
             }
         }
     }
 
-    void SceneFrameData::updateInstance(const unique_id meshInstanceId) {
-        auto& meshInstance = meshInstanceManager[meshInstanceId];
-        if (meshInstance.getPendingUpdates() > 0) {
-            const auto meshInstanceData = meshInstance.getData();
-            meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance.id], &meshInstanceData);
+    void SceneFrameData::updateInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
+        if (meshInstance->getPendingUpdates() > 0) {
+            const auto meshInstanceData = meshInstance->getData();
+            meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
             meshInstancesDataUpdated = true;
-            meshInstance.setPendingUpdates(meshInstance.getPendingUpdates() - 1);
+            meshInstance->setPendingUpdates(meshInstance->getPendingUpdates() - 1);
         }
     }
 
     void SceneFrameData::addInstance(
         pipeline_id pipelineId,
-        const unique_id meshInstance,
+        const std::shared_ptr<MeshInstance>& meshInstance,
         std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) {
         if (!pipelinesData.contains(pipelineId)) {
             pipelinesData[pipelineId] = std::make_unique<GraphicPipelineData>(
@@ -279,7 +276,7 @@ namespace lysa {
         pipelinesData[pipelineId]->addInstance(meshInstance, meshInstancesDataMemoryBlocks);
     }
 
-    void SceneFrameData::removeInstance(const unique_id meshInstance) {
+    void SceneFrameData::removeInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
         if (!meshInstancesDataMemoryBlocks.contains(meshInstance)) {
             return;
         }

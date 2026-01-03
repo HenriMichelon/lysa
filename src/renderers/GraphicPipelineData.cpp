@@ -36,7 +36,6 @@ namespace lysa {
         const uint32 maxMeshSurfacePerPipeline) :
         pipelineId{pipelineId},
         frustumCullingPipeline{ctx, true, meshInstancesDataArray, pipelineId},
-        meshInstanceManager(ctx.res.get<MeshInstanceManager>()),
         materialManager(ctx.res.get<MaterialManager>()),
         vireo(ctx.vireo),
         instancesArray{
@@ -68,23 +67,23 @@ namespace lysa {
     }
 
     void GraphicPipelineData::addInstance(
-        const unique_id meshInstance,
-        const std::unordered_map<unique_id, MemoryBlock>& meshInstancesDataMemoryBlocks) {
-        const auto& mesh = meshInstanceManager[meshInstance].getMesh();
+        const std::shared_ptr<MeshInstance>& meshInstance,
+        const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks) {
+        const auto& mesh =meshInstance->getMesh();
         const auto instanceMemoryBlock = instancesArray.alloc(mesh.getSurfaces().size());
         instancesMemoryBlocks[meshInstance] = instanceMemoryBlock;
         addInstance(meshInstance, instanceMemoryBlock, meshInstancesDataMemoryBlocks.at(meshInstance));
     }
 
     void GraphicPipelineData::addInstance(
-        const unique_id meshInstance,
+        const std::shared_ptr<MeshInstance>& meshInstance,
         const MemoryBlock& instanceMemoryBlock,
         const MemoryBlock& meshInstanceMemoryBlock) {
-        const auto& mesh = meshInstanceManager[meshInstance].getMesh();
+        const auto& mesh = meshInstance->getMesh();
         auto instancesData = std::vector<InstanceData>{};
         for (uint32 i = 0; i < mesh.getSurfaces().size(); i++) {
             const auto& surface = mesh.getSurfaces()[i];
-            const auto& material = materialManager[meshInstanceManager[meshInstance].getSurfaceMaterial(i)];
+            const auto& material = materialManager[meshInstance->getSurfaceMaterial(i)];
             if (material.getPipelineId() == pipelineId) {
                 const uint32 id = instanceMemoryBlock.instanceIndex + instancesData.size();
                 drawCommands[drawCommandsCount] = {
@@ -112,7 +111,7 @@ namespace lysa {
         }
     }
 
-    void GraphicPipelineData::removeInstance(const unique_id meshInstance) {
+    void GraphicPipelineData::removeInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
         if (instancesMemoryBlocks.contains(meshInstance)) {
             instancesArray.free(instancesMemoryBlocks.at(meshInstance));
             instancesMemoryBlocks.erase(meshInstance);
@@ -124,7 +123,7 @@ namespace lysa {
     void GraphicPipelineData::updateData(
         const vireo::CommandList& commandList,
         std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
-        const std::unordered_map<unique_id, MemoryBlock>& meshInstancesDataMemoryBlocks) {
+        const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks) {
         if (instancesRemoved) {
             for (const auto& instance : std::views::keys(instancesMemoryBlocks)) {
                 addInstance(

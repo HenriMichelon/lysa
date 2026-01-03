@@ -47,13 +47,13 @@ export namespace lysa {
         const Environment& getEnvironment() const { return environment; }
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(unique_id meshInstance, bool async = false);
+        void addInstance(const std::shared_ptr<MeshInstance>& meshInstance, bool async = false);
 
         /** Updates a mesh instance. */
-        void updateInstance(unique_id meshInstance);
+        void updateInstance(const std::shared_ptr<MeshInstance>& meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(unique_id meshInstance, bool async = false);
+        void removeInstance(const std::shared_ptr<MeshInstance>& meshInstance, bool async = false);
 
         void processDeferredOperations(uint32 frameIndex);
 
@@ -65,21 +65,18 @@ export namespace lysa {
         ImageTextureManager& imageTextureManager;
         MaterialManager& materialManager;
         MeshManager& meshManager;
-        MeshInstanceManager& meshInstanceManager;
 
     private:
         /** Per‑frame state and deferred operations processed at frame boundaries. */
         struct FrameData {
             /** Nodes to add on the next frame (synchronous path). */
-            std::list<unique_id> addedNodes;
+            std::list<std::shared_ptr<MeshInstance>> addedNodes;
             /** Nodes to add on the next frame (async path). */
-            std::list<unique_id> addedNodesAsync;
-            /** Nodes to add on the next frame (synchronous path). */
-            std::list<unique_id> updatedNodes;
+            std::list<std::shared_ptr<MeshInstance>> addedNodesAsync;
             /** Nodes to remove on the next frame (synchronous path). */
-            std::list<unique_id> removedNodes;
+            std::list<std::shared_ptr<MeshInstance>> removedNodes;
             /** Nodes to remove on the next frame (async path). */
-            std::list<unique_id> removedNodesAsync;
+            std::list<std::shared_ptr<MeshInstance>> removedNodesAsync;
             /** Scene instance associated with this frame. */
             std::unique_ptr<SceneFrameData> scene;
         };
@@ -87,7 +84,8 @@ export namespace lysa {
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
         Environment environment;
-        std::list<unique_id> meshInstances;
+        std::list<std::shared_ptr<MeshInstance>> meshInstances;
+        std::list<std::shared_ptr<MeshInstance>> updatedNodes;
     };
 
 }
