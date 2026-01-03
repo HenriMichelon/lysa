@@ -31,10 +31,8 @@ export namespace lysa {
         T& get() const {
             using t = std::remove_cv_t<std::remove_reference_t<T>>;
             const auto key = std::type_index(typeid(t));
-            if (managers.contains(key)) {
-                return *(static_cast<T*>(managers.at(key)));
-            }
-            throw Exception("ResourcesLocator could not find manager");
+            assert([&]{ return managers.contains(key); }, "Unknown resource manager");
+            return *(static_cast<T*>(managers.at(key)));
         }
 
         /**

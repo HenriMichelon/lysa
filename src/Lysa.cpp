@@ -16,7 +16,8 @@ namespace lysa {
             config.commandsReserveCapacity,
             config.resourcesCapacity.samplers,
             config.virtualFsConfiguration,
-            config.framesInFlight),
+            config.framesInFlight,
+            config.maxShadowMapsPerScene),
         fixedDeltaTime(config.deltaTime),
         imageManager(ctx, config.resourcesCapacity.images),
         imageTextureManager(ctx, config.resourcesCapacity.images),
@@ -31,7 +32,7 @@ namespace lysa {
     {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.globalDescriptorSet = globalDescriptors.getDescriptorSet();
-        SceneFrameData::createDescriptorLayouts(ctx.vireo, config.resourcesCapacity.shadowMapsPerScene);
+        SceneFrameData::createDescriptorLayouts(ctx.vireo, config.maxShadowMapsPerScene);
     }
 
     Lysa::~Lysa() {

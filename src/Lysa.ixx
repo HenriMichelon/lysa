@@ -73,14 +73,6 @@ export namespace  lysa {
         size_t vertices{surfaces * 10};
         //! Maximum number of meshes indices in GPU memory
         size_t indices{vertices * 2};
-        //! Maximum number of shadow maps per scene
-        size_t shadowMapsPerScene{20};
-        //! Maximum number of lights per scene
-        size_t lightsPerScene{100};
-        //! Maximum number of mesh instances per frame per scene
-        size_t meshInstancesPerScene{meshesInstances};
-        //! Maximum number of mesh surfaces instances per pipeline
-        size_t meshSurfacePerPipeline{surfaces};
     };
 
     /**
@@ -93,6 +85,8 @@ export namespace  lysa {
         double deltaTime{1.0/60.0};
         //! Number of simultaneous frames during rendering for ALL render targets and scenes
         uint32 framesInFlight{2};
+        //! Maximum number of shadow maps per scene
+        uint32 maxShadowMapsPerScene{20};
         //! Resource capacity configuration
         ResourcesCapacity resourcesCapacity;
         size_t eventsReserveCapacity{100};

@@ -13,9 +13,13 @@ import lysa.resources.environment;
 namespace lysa {
 
     Scene::Scene(
-        const Context& ctx,
+        Context& ctx,
         const SceneConfiguration& config) :
         ctx(ctx),
+        imageManager(ctx.res.get<ImageManager>()),
+        imageTextureManager(ctx.res.get<ImageTextureManager>()),
+        materialManager(ctx.res.get<MaterialManager>()),
+        meshManager(ctx.res.get<MeshManager>()),
         meshInstanceManager(ctx.res.get<MeshInstanceManager>()),
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
         framesData.resize(ctx.framesInFlight);
@@ -26,7 +30,7 @@ namespace lysa {
                 config.maxMeshInstances,
                 config.maxMeshSurfacePerPipeline,
                 ctx.framesInFlight,
-                config.maxShadowMaps);
+                ctx.maxShadowMapsPerScene);
         }
     }
 

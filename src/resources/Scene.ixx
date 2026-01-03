@@ -13,15 +13,17 @@ import lysa.renderers.scene_frame_data;
 import lysa.resources;
 import lysa.resources.manager;
 import lysa.resources.environment;
+import lysa.resources.image;
+import lysa.resources.material;
+import lysa.resources.mesh;
 import lysa.resources.mesh_instance;
+import lysa.resources.texture;
 
 export namespace lysa {
 
     struct SceneConfiguration {
         //! Number of nodes updates per frame for asynchronous scene updates
         uint32 asyncObjectUpdatesPerFrame{50};
-        //! Maximum number of shadow maps per scene
-        size_t maxShadowMaps{20};
         //! Maximum number of lights per scene
         size_t maxLights{10};
         //! Maximum number of mesh instances per frame per scene
@@ -35,7 +37,7 @@ export namespace lysa {
         /**
          * Constructs a Scene for a given configuration
          */
-        Scene(const Context& ctx,
+        Scene(Context& ctx,
               const SceneConfiguration& config = {});
 
         ~Scene() override;
@@ -57,6 +59,14 @@ export namespace lysa {
 
         SceneFrameData& get(const uint32 frameIndex) const { return *framesData[frameIndex].scene; }
 
+    protected:
+        Context& ctx;
+        ImageManager& imageManager;
+        ImageTextureManager& imageTextureManager;
+        MaterialManager& materialManager;
+        MeshManager& meshManager;
+        MeshInstanceManager& meshInstanceManager;
+
     private:
         /** Per‑frame state and deferred operations processed at frame boundaries. */
         struct FrameData {
@@ -73,8 +83,6 @@ export namespace lysa {
             /** Scene instance associated with this frame. */
             std::unique_ptr<SceneFrameData> scene;
         };
-        const Context& ctx;
-        MeshInstanceManager& meshInstanceManager;
         const uint32 maxAsyncNodesUpdatedPerFrame;
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
