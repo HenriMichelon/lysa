@@ -103,7 +103,6 @@ namespace lysa {
         }
         // Add to the scene the nodes previously added to the scene tree
         // Immediate additions
-        // Log::info("pDO", frameIndex);
         if (!data.addedNodes.empty()) {
             for (const auto &node : data.addedNodes) {
                 data.scene->addInstance(node);
