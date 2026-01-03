@@ -121,6 +121,8 @@ export namespace lysa {
 
         int32 getHeight() const { return height; }
 
+        void setTitle(const std::string& title) const;
+
         RenderingWindowHandle getHandle() const { return handle; }
 
         /**

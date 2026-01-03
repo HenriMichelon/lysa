@@ -11,6 +11,7 @@ module lysa.resources.rendering_window;
 import lysa.exception;
 import lysa.input;
 import lysa.log;
+import lysa.utils;
 
 namespace lysa {
 
@@ -176,6 +177,10 @@ namespace lysa {
         default:;
         }
         return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+
+    void RenderingWindow::setTitle(const std::string& title) const {
+        SetWindowText(static_cast<HWND>(handle), to_wstring(title).c_str());
     }
 
     float2 RenderingWindow::getMousePosition() const {
