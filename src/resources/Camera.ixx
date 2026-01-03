@@ -12,7 +12,7 @@ import lysa.resources;
 export namespace lysa {
 
     /**
-     * Camera resource
+     * %A Camera
      */
     struct Camera : UnmanagedResource {
         /** World space transform */
