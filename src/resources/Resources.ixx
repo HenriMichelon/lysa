@@ -39,7 +39,6 @@ export namespace lysa {
     };
 
     struct ManagedResource : Resource {
-        //! References counter
         uint32 refCounter{0};
 
         ManagedResource() = default;
