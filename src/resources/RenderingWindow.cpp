@@ -6,46 +6,39 @@
 */
 module lysa.resources.rendering_window;
 
-
 namespace lysa {
 
-    RenderingWindowManager::RenderingWindowManager(Context& ctx,const size_t capacity) :
-        ResourcesManager(ctx, capacity, "RenderingWindowManager") {
-        ctx.res.enroll(*this);
+    RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config):
+        ctx(ctx),
+        renderTargetManager(ctx.res.get<RenderTargetManager>()) {
+        openPlatformWindow(config);
+        ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::READY)});
+    }
+
+    RenderingWindow::~RenderingWindow() {
+        if (!closed) {
+            paused = false;
+            _closing();
+            close();
+        }
     }
 
     void RenderingWindow::_input(const InputEvent& inputEvent) const {
-        if (stopped) { return; }
-        // renderTargetManager.input(platformHandle, inputEvent);
+        if (closed || paused) { return; }
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::INPUT), inputEvent});
     }
 
     void RenderingWindow::_closing() {
-        if (stopped) { return; }
-        stopped = true;
+        if (closed || paused) { return; }
+        closed = true;
         renderTargetManager.destroy(platformHandle);
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
-        ctx.res.get<RenderingWindowManager>().destroy(id);
     }
 
     void RenderingWindow::_resized() const {
-        if (stopped) { return; }
+        if (closed || paused) { return; }
         renderTargetManager.resize(platformHandle);
         ctx.events.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
-    }
-
-    RenderingWindow& RenderingWindowManager::create(const RenderingWindowConfiguration& configuration) {
-        auto& instance = ResourcesManager::create(configuration);
-        ctx.events.push({instance.id, static_cast<event_type>(RenderingWindowEvent::READY)});
-        return instance;
-    }
-
-    bool RenderingWindowManager::destroy(const unique_id id) {
-        const auto& window = (*this)[id];
-        if (window.refCounter == 0) {
-            window.close();
-        }
-        return ResourcesManager::destroy(id);
     }
 
 }

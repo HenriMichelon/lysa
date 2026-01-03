@@ -69,7 +69,7 @@ export namespace lysa {
     /**
      * %A mesh composed by multiple Surface and an indexes collection of Vertex
      */
-    class Mesh : public Resource {
+    class Mesh : public ManagedResource {
     public:
         /**
          * Creates a Mesh from vertices

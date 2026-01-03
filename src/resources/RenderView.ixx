@@ -14,7 +14,7 @@ import lysa.resources.manager;
 
 export namespace lysa {
 
-    struct RenderView : Resource {
+    struct RenderView : ManagedResource {
         vireo::Viewport viewport{};
         vireo::Rect scissors{};
         unique_id camera{INVALID_ID};

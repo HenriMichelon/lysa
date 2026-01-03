@@ -9,20 +9,9 @@ export module lysa.resources.manager;
 import lysa.exception;
 import lysa.log;
 import lysa.types;
+export import lysa.resources;
 
 export namespace lysa {
-
-    struct Resource {
-        //! Unique ID
-        unique_id id{INVALID_ID};
-        //! References counter
-        uint32 refCounter{0};
-
-        Resource() = default;
-        Resource(Resource&) = delete;
-        Resource& operator = (Resource&) = delete;
-        virtual ~Resource() = default;
-    };
 
     /**
      * @brief Generic object/resources manager using ID-based access.

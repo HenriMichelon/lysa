@@ -12,7 +12,7 @@ import lysa.log;
 namespace lysa {
 
     Material::Material(Context& ctx, const Type type):
-        Resource{}, ctx(ctx), type{type} {
+        ManagedResource{}, ctx(ctx), type{type} {
     }
 
     void Material::upload() const {

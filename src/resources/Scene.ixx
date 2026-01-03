@@ -15,7 +15,7 @@ import lysa.resources.mesh_instance;
 
 export namespace lysa {
 
-    class Scene : public Resource {
+    class Scene : public ManagedResource {
     public:
         /**
          * Constructs a Scene for a given configuration

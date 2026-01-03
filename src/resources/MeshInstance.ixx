@@ -29,7 +29,7 @@ export namespace lysa {
     /**
     * Scene node that holds a Mesh.
     */
-    class MeshInstance : public Resource {
+    class MeshInstance : public ManagedResource {
     public:
         MeshInstance(Context& ctx, unique_id meshId);
 

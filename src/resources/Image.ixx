@@ -17,7 +17,7 @@ export namespace lysa {
     /**
      * A bitmap resource, stored in GPU memory.
      */
-    class Image : public Resource {
+    class Image : public ManagedResource {
     public:
         /**
          * Returns the width in pixels

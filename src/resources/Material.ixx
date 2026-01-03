@@ -63,7 +63,7 @@ export namespace lysa {
     /**
      * Base class for all materials of models surfaces
      */
-    class Material : public Resource {
+    class Material : public ManagedResource {
     public:
         enum Type {
             STANDARD,

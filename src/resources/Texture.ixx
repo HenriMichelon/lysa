@@ -18,7 +18,7 @@ export namespace lysa {
     /**
      * Base class for textures resources.
      */
-    class Texture : public Resource {
+    class Texture : public ManagedResource {
     public:
         /**
          * Returns the width in pixels on the texture

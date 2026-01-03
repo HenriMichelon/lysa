@@ -14,7 +14,7 @@ import lysa.resources.manager;
 
 export namespace lysa {
 
-    struct Environment : Resource {
+    struct Environment : ManagedResource {
         float3 color{1.0f, 1.0f, 1.0f};
         float intensity{1.0f};
 

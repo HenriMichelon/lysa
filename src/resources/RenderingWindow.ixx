@@ -16,11 +16,10 @@ import lysa.context;
 import lysa.event;
 import lysa.input_event;
 import lysa.math;
-import lysa.resources.manager;
+import lysa.resources;
 import lysa.resources.render_target;
 
 export namespace lysa {
-
 
     /**
      * Mouse visibility & capture mode
@@ -67,7 +66,7 @@ export namespace lysa {
     /**
     * Rendering window events data
     */
-    struct RenderingWindowEvent : Event {
+    struct RenderingWindowEvent {
         //! The window is ready to be shown
         static inline const event_type READY{"RENDERING_WINDOW_READY"};
         //! The window is about to close
@@ -101,9 +100,11 @@ export namespace lysa {
     /**
     * Operating system window that serve as rendering surface.
     */
-    class RenderingWindow : public Resource {
+    class RenderingWindow : public UniqueResource {
     public:
         RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config);
+
+        ~RenderingWindow() override;
 
         /**
         * @brief Make a previously created window visible on screen.
@@ -119,8 +120,6 @@ export namespace lysa {
         int32 getWidth() const { return width; }
 
         int32 getHeight() const { return height; }
-
-        bool isStopped() const { return stopped; }
 
         void* getPlatformHandle() const { return platformHandle; }
 
@@ -157,15 +156,15 @@ export namespace lysa {
          */
         void setMousePosition(const float2& position) const;
 
+        bool isPaused() const { return paused; }
 
         void _closing();
 
         void _resized() const;
 
-        void _setStopped(const bool state) { stopped = state; }
-
         void _input(const InputEvent& inputEvent) const;
 
+        void _pause(const bool pause) { paused = pause; }
 
 #ifdef _WIN32
         RECT _rect;
@@ -187,34 +186,16 @@ export namespace lysa {
         uint32 width{0};
         //! Height in pixels
         uint32 height{0};
-        //! True once the window has been requested to pause rendering or close.
-        bool stopped{false};
+        //! True once the platform window has been requested to close
+        bool closed{false};
+        //! True once the platform window has been requested to pause/minimize
+        bool paused{false};
         //! Opaque OS window handle used for presentation.
         void* platformHandle{nullptr};
 
-    };
-
-    /**
-     * @brief Manager for creating and controlling @ref RenderingWindow resources.
-     */
-    class RenderingWindowManager : public ResourcesManager<Context, RenderingWindow> {
-    public:
-        /**
-         * @brief Construct a manager bound to the given runtime context.
-         * @param ctx Reference to the application @ref Context (used for events and access to the @ref ResourcesLocator).
-         * @param capacity Optional initial capacity for window resources.
-         */
-        RenderingWindowManager(Context& ctx, size_t capacity);
-
-        /**
-         * @brief Create a new rendering window resource.
-         * @param configuration Window creation parameters (title, size, mode, position, monitor).
-         * @return The unique @ref unique_id of the newly created window.
-         */
-        RenderingWindow& create(const RenderingWindowConfiguration& configuration);
-
-        bool destroy(unique_id id) override;
+        void openPlatformWindow(const RenderingWindowConfiguration& config);
 
     };
+
 
 }

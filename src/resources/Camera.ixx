@@ -18,7 +18,7 @@ export namespace lysa {
     /**
      * Base class for camera resources.
      */
-    struct Camera : Resource {
+    struct Camera : ManagedResource {
         /** World space transform */
         float4x4 transform;
         /** View projection */

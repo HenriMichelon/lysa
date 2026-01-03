@@ -45,7 +45,7 @@ export namespace lysa {
         //static constexpr auto INPUT{"RENDERING_TARGET_INPUT"};
     };
 
-    class RenderTarget : public Resource {
+    class RenderTarget : public ManagedResource {
     public:
         RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, uint32 framesInFlight);
 

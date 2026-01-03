@@ -38,9 +38,7 @@ namespace lysa {
         PostMessage(static_cast<HWND>(platformHandle), WM_CLOSE, 0, 0);
     }
 
-    RenderingWindow::RenderingWindow(Context& ctx, const RenderingWindowConfiguration& config):
-        ctx(ctx),
-        renderTargetManager(ctx.res.get<RenderTargetManager>()) {
+    void RenderingWindow::openPlatformWindow(const RenderingWindowConfiguration& config) {
         if (_mouseCursors.empty()) {
             _mouseCursors[MouseCursor::ARROW]    = LoadCursor(nullptr, IDC_ARROW);
             _mouseCursors[MouseCursor::WAIT]     = LoadCursor(nullptr, IDC_WAIT);
@@ -154,9 +152,9 @@ namespace lysa {
         switch (message) {
         case WM_SIZE:
             if (IsIconic(hWnd)) {
-                window->_setStopped(true);
+                window->_pause(true);
             } else {
-                window->_setStopped(false);
+                window->_pause(false);
                 window->_resized();
             }
             return 0;

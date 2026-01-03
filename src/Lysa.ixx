@@ -57,8 +57,6 @@ export import lysa.lua;
 export namespace  lysa {
 
     struct ResourcesCapacity {
-        //! Maximum number of rendering windows
-        size_t renderingWindow{1};
         //! Maximum number of render targets
         size_t renderTarget{1};
         //! Maximum number of viewports
@@ -167,7 +165,6 @@ export namespace  lysa {
 
         CameraManager cameraManager;
         RenderTargetManager renderTargetManager;
-        RenderingWindowManager renderingWindowManager;
         ImageManager imageManager;
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
