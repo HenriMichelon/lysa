@@ -44,6 +44,7 @@ export import lysa.resources.mesh;
 export import lysa.resources.mesh_instance;
 export import lysa.resources.registry;
 export import lysa.resources.render_target;
+export import lysa.resources.render_view;
 export import lysa.resources.rendering_window;
 export import lysa.resources.samplers;
 export import lysa.resources.scene;
@@ -128,7 +129,7 @@ export namespace  lysa {
          * @brief Construct the runtime and initialize subsystems.
          * @param config Configuration values used during startup.
          */
-        Lysa(const LysaConfiguration& config);
+        Lysa(const LysaConfiguration& config = {});
 
         ~Lysa();
 

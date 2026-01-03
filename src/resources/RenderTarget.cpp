@@ -106,8 +106,8 @@ namespace lysa {
                 view.scissors.width = static_cast<int32>(view.viewport.width);
                 view.scissors.height = static_cast<int32>(view.viewport.height);
             }
-            view.scene->processDeferredOperations(frameIndex);
-            auto& data = view.scene->get(frameIndex);
+            view.scene.processDeferredOperations(frameIndex);
+            auto& data = view.scene.get(frameIndex);
             if (data.isMaterialsUpdated()) {
                 renderer->updatePipelines(data);
                 data.resetMaterialsUpdated();
@@ -124,7 +124,7 @@ namespace lysa {
         for (auto& view : views) {
             renderer->compute(
                 *frame.computeCommandList,
-                view.scene->get(frameIndex),
+                view.scene.get(frameIndex),
                 view.camera,
                 frameIndex);
         }
@@ -136,7 +136,7 @@ namespace lysa {
 
         frame.prepareCommandList->begin();
         for (auto& view : views) {
-            auto& data = view.scene->get(frameIndex);
+            auto& data = view.scene.get(frameIndex);
             data.prepare(*frame.prepareCommandList, view.viewport, view.scissors);
             renderer->prepare(*frame.prepareCommandList, data, frameIndex);
         }
@@ -152,7 +152,7 @@ namespace lysa {
         commandList->begin();
         auto clearAttachment{true};
         for (auto& view : views) {
-            auto& data = view.scene->get(frameIndex);
+            auto& data = view.scene.get(frameIndex);
             data.prepare(*commandList, view.viewport, view.scissors);
             renderer->render(*commandList, data, clearAttachment, frameIndex);
             clearAttachment = false;

@@ -7,7 +7,6 @@
 export module lysa.resources.render_view;
 
 import vireo;
-import lysa.types;
 import lysa.resources;
 import lysa.resources.camera;
 import lysa.resources.scene;
@@ -17,8 +16,18 @@ export namespace lysa {
     struct RenderView : UnmanagedResource {
         vireo::Viewport viewport{};
         vireo::Rect scissors{};
-        Camera camera{};
-        std::shared_ptr<Scene> scene;
+        const Camera& camera;
+        Scene& scene;
+
+        RenderView(
+            const Camera& camera,
+            Scene& scene,
+            const vireo::Viewport& viewport = {},
+            const vireo::Rect& scissors = {}) :
+            viewport(viewport),
+            scissors(scissors),
+            camera(camera),
+            scene(scene) {}
     };
 
 }

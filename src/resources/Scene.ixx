@@ -34,18 +34,9 @@ export namespace lysa {
     public:
         /**
          * Constructs a Scene for a given configuration
-         *
-         * @param ctx
-         * @param maxAsyncNodesUpdatedPerFrame
-         * @param maxLights
-         * @param maxMeshInstancesPerScene
-         * @param maxMeshSurfacePerPipeline
-         * @param framesInFlight Number of buffered frames.
-         * @param maxShadowMaps
          */
-        Scene(
-            const Context& ctx,
-            const SceneConfiguration& config);
+        Scene(const Context& ctx,
+              const SceneConfiguration& config = {});
 
         ~Scene() override;
 
