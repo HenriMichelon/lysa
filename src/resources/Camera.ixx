@@ -6,44 +6,19 @@
 */
 export module lysa.resources.camera;
 
-import vireo;
-
-import lysa.context;
 import lysa.math;
-import lysa.resources.image;
-import lysa.resources.manager;
+import lysa.resources;
 
 export namespace lysa {
 
     /**
-     * Base class for camera resources.
+     * Camera resource
      */
-    struct Camera : ManagedResource {
+    struct Camera : UnmanagedResource {
         /** World space transform */
         float4x4 transform;
         /** View projection */
         float4x4 projection;
-
-        Camera(Context&) {}
-
-        Camera(Context&,
-            const float4x4& transform,
-            const float4x4& projection) :
-            transform(transform),
-            projection(projection) {}
-    };
-
-    class CameraManager : public ResourcesManager<Context, Camera> {
-    public:
-        /**
-         * @brief Construct a manager bound to the given runtime context.
-         * @param ctx Instance wide context
-         * @param capacity Initial capacity
-         */
-        CameraManager(Context& ctx, const unique_id capacity) :
-            ResourcesManager(ctx, capacity, "CameraManager") {
-            ctx.res.enroll(*this);
-        }
     };
 
 }

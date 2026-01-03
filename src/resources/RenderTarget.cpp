@@ -18,9 +18,7 @@ namespace lysa {
         const RenderTargetConfiguration& configuration,
         const RenderingWindowHandle renderingWindowHandle) :
         ctx(ctx),
-        renderViewManager(ctx.res.get<RenderViewManager>()),
-        sceneManager(ctx.res.get<SceneManager>()),
-        cameraManager(ctx.res.get<CameraManager>()) {
+        sceneManager(ctx.res.get<SceneManager>()) {
         if (renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
@@ -59,19 +57,15 @@ namespace lysa {
         swapChain->waitIdle();
         swapChain.reset();
         framesData.clear();
-        for (const auto viewId : views) {
-            renderViewManager.destroy(viewId);
-        }
+        views.clear();
     }
 
-    void RenderTarget::addView(const unique_id viewId) {
-        renderViewManager.use(viewId);
-        views.push_back(viewId);
+    void RenderTarget::addView(const RenderView& view) {
+        views.push_back(view);
     }
 
-    void RenderTarget::removeView(const unique_id viewId) {
-        views.remove(viewId);
-        renderViewManager.destroy(viewId);
+    void RenderTarget::removeView(const RenderView& view) {
+        views.remove(view);
     }
 
     void RenderTarget::setPause(const bool pause) {
@@ -99,11 +93,10 @@ namespace lysa {
         setPause(false);
     }
 
-    void RenderTarget::render() const {
+    void RenderTarget::render() {
         if (isPaused()) return;
         const auto frameIndex = swapChain->getCurrentFrameIndex();
-        for (const auto viewId : views) {
-            auto& view = renderViewManager[viewId];
+        for (auto& view : views) {
             if (view.viewport.width == 0.0f || view.viewport.height == 0.0f) {
                 view.viewport.width = static_cast<float>(swapChain->getExtent().width);
                 view.viewport.height = static_cast<float>(swapChain->getExtent().height);
@@ -129,12 +122,11 @@ namespace lysa {
         frame.commandAllocator->reset();
 
         frame.computeCommandList->begin();
-        for (const auto viewId : views) {
-            const auto& view = renderViewManager[viewId];
+        for (auto& view : views) {
             renderer->compute(
                 *frame.computeCommandList,
                 sceneManager[view.scene][frameIndex],
-                cameraManager[view.camera],
+                view.camera,
                 frameIndex);
         }
         frame.computeCommandList->end();
@@ -144,8 +136,7 @@ namespace lysa {
             {frame.computeCommandList});
 
         frame.prepareCommandList->begin();
-        for (const auto viewId : views) {
-            auto& view = renderViewManager[viewId];
+        for (auto& view : views) {
             auto& scene = sceneManager[view.scene];
             scene[frameIndex].prepare(*frame.prepareCommandList, view.viewport, view.scissors);
             renderer->prepare(*frame.prepareCommandList, scene[frameIndex], frameIndex);
@@ -161,8 +152,7 @@ namespace lysa {
         auto& commandList = frame.renderCommandList;
         commandList->begin();
         auto clearAttachment{true};
-        for (const auto viewId : views) {
-            auto& view = renderViewManager[viewId];
+        for (auto& view : views) {
             auto& scene = sceneManager[view.scene];
             scene[frameIndex].prepare(*commandList, view.viewport, view.scissors);
             renderer->render(*commandList, scene[frameIndex], clearAttachment, frameIndex);

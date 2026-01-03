@@ -10,6 +10,7 @@ import vireo;
 
 import lysa.context;
 import lysa.math;
+import lysa.resources;
 import lysa.resources.manager;
 
 export namespace lysa {

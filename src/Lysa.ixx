@@ -44,7 +44,6 @@ export import lysa.resources.mesh;
 export import lysa.resources.mesh_instance;
 export import lysa.resources.registry;
 export import lysa.resources.render_target;
-export import lysa.resources.render_view;
 export import lysa.resources.rendering_window;
 export import lysa.resources.samplers;
 export import lysa.resources.scene;
@@ -57,16 +56,8 @@ export import lysa.lua;
 export namespace  lysa {
 
     struct ResourcesCapacity {
-        //! Maximum number of render targets
-        size_t renderTarget{1};
-        //! Maximum number of viewports
-        size_t viewports{5};
-        //! Maximum number of render views
-        size_t renderViews{viewports};
-        //! Maximum number of cameras
-        size_t camera{viewports*2};
         //! Maximum number of scenes
-        size_t scenes{viewports};
+        size_t scenes{2};
         //! Maximum environments
         size_t environments{scenes};
         //! Maximum number of images stored in GPU memory
@@ -156,7 +147,6 @@ export namespace  lysa {
         double currentTime{0.0};
         double accumulator{0.0};
 
-        CameraManager cameraManager;
         ImageManager imageManager;
         ImageTextureManager imageTextureManager;
         MaterialManager materialManager;
@@ -164,8 +154,6 @@ export namespace  lysa {
         MeshInstanceManager meshInstanceManager;
         SceneManager sceneManager;
         GlobalDescriptorSet globalDescriptors;
-        RenderViewManager renderViewManager;
-        EnvironmentManager environmentManager;
 
         // Consume platform-specific events.
         void processPlatformEvents();

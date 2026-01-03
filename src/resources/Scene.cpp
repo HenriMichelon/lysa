@@ -38,17 +38,16 @@ namespace lysa {
 
     Scene::~Scene() {
         ctx.graphicQueue->waitIdle();
-        if (environment != INVALID_ID) {
-            ctx.res.get<EnvironmentManager>().destroy(environment);
-        }
         for (const auto meshInstance : meshInstances) {
             meshInstanceManager.destroy(meshInstance);
         }
     }
 
-    void Scene::setEnvironment(const unique_id environmentId) {
+    void Scene::setEnvironment(const Environment& environmentId) {
         environment = environmentId;
-        ctx.res.get<EnvironmentManager>().use(environment);
+        for (const auto& data : framesData) {
+            data.scene->setEnvironment(environment);
+        }
     }
 
     void Scene::addInstance(const unique_id meshInstance, const bool async) {
@@ -90,10 +89,9 @@ namespace lysa {
     }
 
     void Scene::processDeferredOperations(const uint32 frameIndex) {
-        assert([&]{ return environment != INVALID_ID; }, "Scene environment not set");
+        assert([&]{ return environment.id != INVALID_ID; }, "Scene environment not set");
         auto lock = std::lock_guard(frameDataMutex);
         auto &data = framesData[frameIndex];
-        data.scene->setEnvironment(environment);
         // Remove from the renderer the nodes previously removed from the scene tree
         // Immediate removes
         if (!data.removedNodes.empty()) {

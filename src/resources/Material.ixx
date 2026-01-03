@@ -10,6 +10,7 @@ import vireo;
 import lysa.context;
 import lysa.math;
 import lysa.memory;
+import lysa.resources;
 import lysa.resources.manager;
 import lysa.resources.texture;
 

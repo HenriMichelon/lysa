@@ -18,7 +18,6 @@ namespace lysa {
             config.virtualFsConfiguration
         ),
         fixedDeltaTime(config.deltaTime),
-        cameraManager(ctx, config.resourcesCapacity.camera),
         imageManager(ctx, config.resourcesCapacity.images),
         imageTextureManager(ctx, config.resourcesCapacity.images),
         materialManager(ctx, config.resourcesCapacity.material),
@@ -36,9 +35,7 @@ namespace lysa {
                      config.resourcesCapacity.meshSurfacePerPipeline,
                      config.resourcesCapacity.shadowMapsPerScene,
                      2),
-        globalDescriptors(ctx),
-        renderViewManager(ctx, config.resourcesCapacity.renderViews),
-        environmentManager(ctx, config.resourcesCapacity.environments)
+        globalDescriptors(ctx)
     {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.globalDescriptorSet = globalDescriptors.getDescriptorSet();

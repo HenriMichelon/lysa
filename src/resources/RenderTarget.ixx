@@ -14,9 +14,9 @@ import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderer;
-import lysa.resources.camera;
-import lysa.resources.manager;
+import lysa.resources;
 import lysa.resources.render_view;
+import lysa.resources.camera;
 import lysa.resources.scene;
 
 export namespace lysa {
@@ -53,7 +53,7 @@ export namespace lysa {
 
         ~RenderTarget() override;
 
-        void render() const;
+        void render();
 
         auto isPaused() const { return paused; }
 
@@ -67,9 +67,9 @@ export namespace lysa {
 
         void waitIdle() const { swapChain->waitIdle(); }
 
-        void addView(unique_id viewId);
+        void addView(const RenderView& view);
 
-        void removeView(unique_id viewId);
+        void removeView(const RenderView& view);
 
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const;
 
@@ -96,9 +96,7 @@ export namespace lysa {
         };
 
         Context& ctx;
-        RenderViewManager& renderViewManager;
         SceneManager& sceneManager;
-        CameraManager& cameraManager;
         // Set to true to pause the rendering in this target
         bool paused{false};
         // Array of per‑frame resource bundles (size = frames in flight).
@@ -108,7 +106,7 @@ export namespace lysa {
         // Scene renderer used to draw attached viewports.
         std::unique_ptr<Renderer> renderer;
         // Views to render in this target
-        std::list<unique_id> views;
+        std::list<RenderView> views;
     };
 
 }

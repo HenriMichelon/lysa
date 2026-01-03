@@ -63,8 +63,8 @@ export namespace lysa {
             uint32 framesInFlight,
             uint32 maxShadowMaps);
 
-        void setEnvironment(const unique_id id) {
-            environment = id;
+        void setEnvironment(const Environment& environment) {
+            this->environment = environment;
         }
 
         /** Set initial dynamic states */
@@ -139,7 +139,6 @@ export namespace lysa {
         const Context& ctx;
         MaterialManager& materialManager;
         MeshInstanceManager& meshInstanceManager;
-        EnvironmentManager& environmentManager;
         const uint32 maxLights;
         const uint32 maxMeshSurfacePerPipeline;
         /** Number of frames processed in-flight. */
@@ -151,7 +150,7 @@ export namespace lysa {
         /** Uniform buffer containing SceneData. */
         std::shared_ptr<vireo::Buffer> sceneUniformBuffer;
         /** Current environment settings (skybox, etc.). */
-        unique_id environment{INVALID_ID};
+        Environment environment;
         /** Map of lights to their shadow-map renderpasses. */
         // std::map<std::shared_ptr<Light>, std::shared_ptr<Renderpass>> shadowMapRenderers;
         /** Array of shadow map images. */

@@ -8,9 +8,11 @@ export module lysa.resources.scene;
 
 import lysa.context;
 import lysa.math;
- import lysa.renderers.graphic_pipeline_data;
+import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_frame_data;
+import lysa.resources;
 import lysa.resources.manager;
+import lysa.resources.environment;
 import lysa.resources.mesh_instance;
 
 export namespace lysa {
@@ -39,9 +41,9 @@ export namespace lysa {
 
         ~Scene() override;
 
-        void setEnvironment(unique_id environmentId);
+        void setEnvironment(const Environment& environmentId);
 
-        unique_id getEnvironment() const { return environment; }
+        const Environment& getEnvironment() const { return environment; }
 
         /** Adds a mesh instance to the scene. */
         void addInstance(unique_id meshInstance, bool async = false);
@@ -78,7 +80,7 @@ export namespace lysa {
         const uint32 maxAsyncNodesUpdatedPerFrame;
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
-        unique_id environment{INVALID_ID};
+        Environment environment;
         std::list<unique_id> meshInstances;
     };
 

@@ -14,24 +14,37 @@ export namespace lysa {
         //! Unique ID
         unique_id id{INVALID_ID};
 
-        Resource(const unique_id id) : id(id) {}
+        bool operator==(const Resource&other) const {
+            return id == other.id;
+        }
+
         Resource() = default;
-        Resource(Resource&) = delete;
-        Resource& operator = (Resource&) = delete;
+        Resource(const unique_id id) : id(id) {}
         virtual ~Resource() = default;
     };
 
-    class UniqueResource : public Resource {
+    class UnmanagedResource : public Resource {
     public:
-        UniqueResource() : Resource(nextId++) {}
+        UnmanagedResource() : Resource(nextId++) {}
 
     private:
         static inline std::atomic<unique_id> nextId{1};
     };
 
+    class UniqueResource : public UnmanagedResource {
+    public:
+        UniqueResource() = default;
+        UniqueResource(UniqueResource&) = delete;
+        UniqueResource& operator = (UniqueResource&) = delete;
+    };
+
     struct ManagedResource : Resource {
         //! References counter
         uint32 refCounter{0};
+
+        ManagedResource() = default;
+        ManagedResource(UniqueResource&) = delete;
+        ManagedResource& operator = (ManagedResource&) = delete;
     };
 
 }

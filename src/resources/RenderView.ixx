@@ -7,44 +7,17 @@
 export module lysa.resources.render_view;
 
 import vireo;
-
-import lysa.context;
 import lysa.types;
-import lysa.resources.manager;
+import lysa.resources;
+import lysa.resources.camera;
 
 export namespace lysa {
 
-    struct RenderView : ManagedResource {
+    struct RenderView : UnmanagedResource {
         vireo::Viewport viewport{};
         vireo::Rect scissors{};
-        unique_id camera{INVALID_ID};
+        Camera camera;
         unique_id scene{INVALID_ID};
-
-        RenderView(Context&) {}
-
-        RenderView(
-            Context&,
-            const vireo::Viewport& viewport,
-            const vireo::Rect& scissors,
-            const unique_id camera,
-            const unique_id scene) :
-            viewport(viewport),
-            scissors(scissors),
-            camera(camera),
-            scene(scene) {}
-    };
-
-    class RenderViewManager : public ResourcesManager<Context, RenderView> {
-    public:
-        /**
-         * @brief Construct a manager bound to the given runtime context.
-         * @param ctx Instance wide context
-         * @param capacity Initial capacity
-         */
-        RenderViewManager(Context& ctx, const unique_id capacity) :
-            ResourcesManager(ctx, capacity, "RenderViewManager") {
-            ctx.res.enroll(*this);
-        }
     };
 
 }

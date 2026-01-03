@@ -9,7 +9,7 @@ export module lysa.resources.manager;
 import lysa.exception;
 import lysa.log;
 import lysa.types;
-export import lysa.resources;
+import lysa.resources;
 
 export namespace lysa {
 
