@@ -10,14 +10,15 @@ import vireo;
 import lysa.types;
 import lysa.resources;
 import lysa.resources.camera;
+import lysa.resources.scene;
 
 export namespace lysa {
 
     struct RenderView : UnmanagedResource {
         vireo::Viewport viewport{};
         vireo::Rect scissors{};
-        Camera camera;
-        unique_id scene{INVALID_ID};
+        Camera camera{};
+        std::shared_ptr<Scene> scene;
     };
 
 }

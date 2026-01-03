@@ -54,7 +54,9 @@ namespace  lysa {
         const size_t eventsCapacity,
         const size_t commandsCapacity,
         const size_t samplersCapacity,
-        const VirtualFSConfiguration& virtualFsConfiguration) :
+        const VirtualFSConfiguration& virtualFsConfiguration,
+        const uint32 framesInFlight) :
+        framesInFlight(framesInFlight),
         vireo(vireo::Vireo::create(backend, vireoDebugCallback)),
         fs(virtualFsConfiguration, vireo),
         events(eventsCapacity),

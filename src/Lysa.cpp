@@ -15,8 +15,8 @@ namespace lysa {
             config.eventsReserveCapacity,
             config.commandsReserveCapacity,
             config.resourcesCapacity.samplers,
-            config.virtualFsConfiguration
-        ),
+            config.virtualFsConfiguration,
+            config.framesInFlight),
         fixedDeltaTime(config.deltaTime),
         imageManager(ctx, config.resourcesCapacity.images),
         imageTextureManager(ctx, config.resourcesCapacity.images),
@@ -27,14 +27,6 @@ namespace lysa {
                     config.resourcesCapacity.indices,
                     config.resourcesCapacity.surfaces),
         meshInstanceManager(ctx, config.resourcesCapacity.meshesInstances),
-        sceneManager(ctx,
-                     config.resourcesCapacity.scenes,
-                     config.asyncObjectUpdatesPerFrame,
-                     config.resourcesCapacity.lightsPerScene,
-                     config.resourcesCapacity.meshInstancesPerScene,
-                     config.resourcesCapacity.meshSurfacePerPipeline,
-                     config.resourcesCapacity.shadowMapsPerScene,
-                     2),
         globalDescriptors(ctx)
     {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();

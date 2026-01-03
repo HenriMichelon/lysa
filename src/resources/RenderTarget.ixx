@@ -26,8 +26,6 @@ export namespace lysa {
         vireo::ImageFormat swapChainFormat{vireo::ImageFormat::R8G8B8A8_UNORM};
         //! Presentation mode
         vireo::PresentMode presentMode{vireo::PresentMode::IMMEDIATE};
-        //! Number of simultaneous frames during rendering
-        uint32 framesInFlight{2};
         //! Configuration for the rendering path of the target
         RendererConfiguration rendererConfiguration;
     };
@@ -49,7 +47,10 @@ export namespace lysa {
 
     class RenderTarget : public UniqueResource {
     public:
-        RenderTarget(Context& ctx, const RenderTargetConfiguration& configuration, RenderingWindowHandle renderingWindowHandle);
+        RenderTarget(
+            Context& ctx,
+            const RenderTargetConfiguration& configuration,
+            RenderingWindowHandle renderingWindowHandle);
 
         ~RenderTarget() override;
 
@@ -96,7 +97,6 @@ export namespace lysa {
         };
 
         Context& ctx;
-        SceneManager& sceneManager;
         // Set to true to pause the rendering in this target
         bool paused{false};
         // Array of per‑frame resource bundles (size = frames in flight).

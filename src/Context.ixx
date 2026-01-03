@@ -32,6 +32,8 @@ export namespace  lysa {
          */
         bool exit{false};
 
+        const uint32 framesInFlight;
+
         /**
          * Backend object owning the device/instance and factory for GPU resources.
          */
@@ -90,8 +92,8 @@ export namespace  lysa {
             size_t eventsCapacity,
             size_t commandsCapacity,
             size_t samplersCapacity,
-            const VirtualFSConfiguration& virtualFsConfiguration
-            );
+            const VirtualFSConfiguration& virtualFsConfiguration,
+            uint32 framesInFlight);
     };
 
 }

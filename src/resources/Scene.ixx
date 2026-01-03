@@ -17,7 +17,20 @@ import lysa.resources.mesh_instance;
 
 export namespace lysa {
 
-    class Scene : public ManagedResource {
+    struct SceneConfiguration {
+        //! Number of nodes updates per frame for asynchronous scene updates
+        uint32 asyncObjectUpdatesPerFrame{50};
+        //! Maximum number of shadow maps per scene
+        size_t maxShadowMaps{20};
+        //! Maximum number of lights per scene
+        size_t maxLights{10};
+        //! Maximum number of mesh instances per frame per scene
+        size_t maxMeshInstances{10000};
+        //! Maximum number of mesh surfaces instances per pipeline
+        size_t maxMeshSurfacePerPipeline{100000};
+    };
+
+    class Scene : public UniqueResource {
     public:
         /**
          * Constructs a Scene for a given configuration
@@ -27,17 +40,12 @@ export namespace lysa {
          * @param maxLights
          * @param maxMeshInstancesPerScene
          * @param maxMeshSurfacePerPipeline
-         * @param framesInFlight     Number of buffered frames.
+         * @param framesInFlight Number of buffered frames.
          * @param maxShadowMaps
          */
         Scene(
             const Context& ctx,
-            uint32 maxAsyncNodesUpdatedPerFrame,
-            uint32 maxLights,
-            uint32 maxMeshInstancesPerScene,
-            uint32 maxMeshSurfacePerPipeline,
-            uint32 framesInFlight,
-            uint32 maxShadowMaps);
+            const SceneConfiguration& config);
 
         ~Scene() override;
 
@@ -56,7 +64,7 @@ export namespace lysa {
 
         void processDeferredOperations(uint32 frameIndex);
 
-        SceneFrameData& operator [](const uint32 frameIndex) const { return *framesData[frameIndex].scene; }
+        SceneFrameData& get(const uint32 frameIndex) const { return *framesData[frameIndex].scene; }
 
     private:
         /** Per‑frame state and deferred operations processed at frame boundaries. */
@@ -76,37 +84,11 @@ export namespace lysa {
         };
         const Context& ctx;
         MeshInstanceManager& meshInstanceManager;
-        const uint32 framesInFlight;
         const uint32 maxAsyncNodesUpdatedPerFrame;
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
         Environment environment;
         std::list<unique_id> meshInstances;
-    };
-
-    class SceneManager : public ResourcesManager<Context, Scene> {
-    public:
-        SceneManager(
-            Context& ctx,
-            size_t capacity,
-            uint32 maxAsyncNodesUpdatedPerFrame,
-            uint32 maxLights,
-            uint32 maxMeshInstancesPerScene,
-            uint32 maxMeshSurfacePerPipeline,
-            uint32 maxShadowMaps,
-            uint32 framesInFlight);
-
-        Scene& create();
-
-        uint32 getFramesInFlight() const { return framesInFlight; }
-
-    private:
-        const uint32 maxAsyncNodesUpdatedPerFrame;
-        const uint32 maxLights;
-        const uint32 maxMeshInstancesPerScene;
-        const uint32 maxMeshSurfacePerPipeline;
-        const uint32 maxShadowMaps;
-        const uint32 framesInFlight;
     };
 
 }

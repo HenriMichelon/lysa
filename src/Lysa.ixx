@@ -56,10 +56,6 @@ export import lysa.lua;
 export namespace  lysa {
 
     struct ResourcesCapacity {
-        //! Maximum number of scenes
-        size_t scenes{2};
-        //! Maximum environments
-        size_t environments{scenes};
         //! Maximum number of images stored in GPU memory
         size_t images{500};
         //! Maximum number of GPU image samplers
@@ -94,8 +90,8 @@ export namespace  lysa {
         vireo::Backend backend{vireo::Backend::VULKAN};
         //! Fixed delta time for the main loop
         double deltaTime{1.0/60.0};
-        //! Number of nodes updates per frame for asynchronous scene updates
-        uint32 asyncObjectUpdatesPerFrame{50};
+        //! Number of simultaneous frames during rendering for ALL render targets and scenes
+        uint32 framesInFlight{2};
         //! Resource capacity configuration
         ResourcesCapacity resourcesCapacity;
         size_t eventsReserveCapacity{100};
@@ -152,7 +148,6 @@ export namespace  lysa {
         MaterialManager materialManager;
         MeshManager meshManager;
         MeshInstanceManager meshInstanceManager;
-        SceneManager sceneManager;
         GlobalDescriptorSet globalDescriptors;
 
         // Consume platform-specific events.

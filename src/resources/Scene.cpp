@@ -14,25 +14,19 @@ namespace lysa {
 
     Scene::Scene(
         const Context& ctx,
-        const uint32 maxAsyncNodesUpdatedPerFrame,
-        const uint32 maxLights,
-        const uint32 maxMeshInstancesPerScene,
-        const uint32 maxMeshSurfacePerPipeline,
-        const uint32 framesInFlight,
-        uint32 maxShadowMaps) :
+        const SceneConfiguration& config) :
         ctx(ctx),
         meshInstanceManager(ctx.res.get<MeshInstanceManager>()),
-        framesInFlight(framesInFlight),
         maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
-        framesData.resize(framesInFlight);
+        framesData.resize(ctx.framesInFlight);
         for (auto& data : framesData) {
             data.scene =std::make_unique<SceneFrameData>(
                 ctx,
-                maxLights,
-                maxMeshInstancesPerScene,
-                maxMeshSurfacePerPipeline,
-                framesInFlight,
-                maxShadowMaps);
+                config.maxLights,
+                config.maxMeshInstances,
+                config.maxMeshSurfacePerPipeline,
+                ctx.framesInFlight,
+                config.maxShadowMaps);
         }
     }
 
@@ -53,7 +47,7 @@ namespace lysa {
     void Scene::addInstance(const unique_id meshInstance, const bool async) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
         meshInstanceManager.use(meshInstance);
-        meshInstanceManager[meshInstance].setPendingUpdates(framesInFlight);
+        meshInstanceManager[meshInstance].setPendingUpdates(ctx.framesInFlight);
         meshInstances.push_back(meshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
@@ -67,7 +61,7 @@ namespace lysa {
 
     void Scene::updateInstance(const unique_id meshInstance) {
         assert([&]{return meshInstance != INVALID_ID;}, "Invalid meshInstance");
-        meshInstanceManager[meshInstance].setPendingUpdates(framesInFlight);
+        meshInstanceManager[meshInstance].setPendingUpdates(ctx.framesInFlight);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             frame.updatedNodes.push_back(meshInstance);
@@ -141,35 +135,6 @@ namespace lysa {
             }
             data.updatedNodes.clear();
         }
-    }
-
-    SceneManager::SceneManager(
-        Context& ctx,
-        const size_t capacity,
-        const uint32 maxAsyncNodesUpdatedPerFrame,
-        const uint32 maxLights,
-        const uint32 maxMeshInstancesPerScene,
-        const uint32 maxMeshSurfacePerPipeline,
-        const uint32 maxShadowMaps,
-        const uint32 framesInFlight) :
-        ResourcesManager(ctx, capacity, "SceneManager"),
-        maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame),
-        maxLights(maxLights),
-        maxMeshInstancesPerScene(maxMeshInstancesPerScene),
-        maxMeshSurfacePerPipeline(maxMeshSurfacePerPipeline),
-        maxShadowMaps(maxShadowMaps),
-        framesInFlight(framesInFlight){
-            ctx.res.enroll(*this);
-    }
-
-    Scene& SceneManager::create() {
-        return ResourcesManager::create(
-            maxAsyncNodesUpdatedPerFrame,
-            maxLights,
-            maxMeshInstancesPerScene,
-            maxMeshSurfacePerPipeline,
-            framesInFlight,
-            maxShadowMaps);
     }
 
 }

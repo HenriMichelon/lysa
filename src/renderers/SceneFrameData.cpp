@@ -43,8 +43,8 @@ namespace lysa {
         const uint32 maxLights,
         const uint32 maxMeshInstancesPerScene,
         const uint32 maxMeshSurfacePerPipeline,
-        const uint32 framesInFlight,
-        const uint32 maxShadowMaps) :
+        const uint32 maxShadowMaps,
+        const uint32 framesInFlight) :
         ctx(ctx),
         lightsBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::UNIFORM,

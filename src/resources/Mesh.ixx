@@ -78,6 +78,7 @@ export namespace lysa {
          * @param vertices Vertices
          * @param indices Indexes of vertices
          * @param surfaces Surfaces
+         * @param name
          */
         Mesh(Context& ctx,
              const std::vector<Vertex>& vertices,

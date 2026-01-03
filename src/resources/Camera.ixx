@@ -16,9 +16,9 @@ export namespace lysa {
      */
     struct Camera : UnmanagedResource {
         /** World space transform */
-        float4x4 transform;
+        float4x4 transform{float4x4::identity()};
         /** View projection */
-        float4x4 projection;
+        float4x4 projection{float4x4::identity()};
     };
 
 }

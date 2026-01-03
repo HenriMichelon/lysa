@@ -60,8 +60,8 @@ export namespace lysa {
             uint32 maxLights,
             uint32 maxMeshInstancesPerScene,
             uint32 maxMeshSurfacePerPipeline,
-            uint32 framesInFlight,
-            uint32 maxShadowMaps);
+            uint32 maxShadowMaps,
+            uint32 framesInFlight);
 
         void setEnvironment(const Environment& environment) {
             this->environment = environment;

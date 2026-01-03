@@ -17,12 +17,11 @@ namespace lysa {
         Context& ctx,
         const RenderTargetConfiguration& configuration,
         const RenderingWindowHandle renderingWindowHandle) :
-        ctx(ctx),
-        sceneManager(ctx.res.get<SceneManager>()) {
+        ctx(ctx)  {
         if (renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
-        if (configuration.framesInFlight <= 0) {
+        if (ctx.framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
         swapChain = ctx.vireo->createSwapChain(
@@ -30,9 +29,9 @@ namespace lysa {
             ctx.graphicQueue,
             renderingWindowHandle,
             configuration.presentMode,
-            configuration.framesInFlight);
-        renderer = Renderer::create(ctx, configuration.rendererConfiguration, configuration.framesInFlight);
-        framesData.resize(configuration.framesInFlight);
+            ctx.framesInFlight);
+        renderer = Renderer::create(ctx, configuration.rendererConfiguration, ctx.framesInFlight);
+        framesData.resize(ctx.framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
@@ -107,11 +106,11 @@ namespace lysa {
                 view.scissors.width = static_cast<int32>(view.viewport.width);
                 view.scissors.height = static_cast<int32>(view.viewport.height);
             }
-            auto& scene = sceneManager[view.scene];
-            scene.processDeferredOperations(frameIndex);
-            if (scene[frameIndex].isMaterialsUpdated()) {
-                renderer->updatePipelines(scene[frameIndex]);
-                scene[frameIndex].resetMaterialsUpdated();
+            view.scene->processDeferredOperations(frameIndex);
+            auto& data = view.scene->get(frameIndex);
+            if (data.isMaterialsUpdated()) {
+                renderer->updatePipelines(data);
+                data.resetMaterialsUpdated();
             }
         }
 
@@ -125,7 +124,7 @@ namespace lysa {
         for (auto& view : views) {
             renderer->compute(
                 *frame.computeCommandList,
-                sceneManager[view.scene][frameIndex],
+                view.scene->get(frameIndex),
                 view.camera,
                 frameIndex);
         }
@@ -137,9 +136,9 @@ namespace lysa {
 
         frame.prepareCommandList->begin();
         for (auto& view : views) {
-            auto& scene = sceneManager[view.scene];
-            scene[frameIndex].prepare(*frame.prepareCommandList, view.viewport, view.scissors);
-            renderer->prepare(*frame.prepareCommandList, scene[frameIndex], frameIndex);
+            auto& data = view.scene->get(frameIndex);
+            data.prepare(*frame.prepareCommandList, view.viewport, view.scissors);
+            renderer->prepare(*frame.prepareCommandList, data, frameIndex);
         }
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
@@ -153,9 +152,9 @@ namespace lysa {
         commandList->begin();
         auto clearAttachment{true};
         for (auto& view : views) {
-            auto& scene = sceneManager[view.scene];
-            scene[frameIndex].prepare(*commandList, view.viewport, view.scissors);
-            renderer->render(*commandList, scene[frameIndex], clearAttachment, frameIndex);
+            auto& data = view.scene->get(frameIndex);
+            data.prepare(*commandList, view.viewport, view.scissors);
+            renderer->render(*commandList, data, clearAttachment, frameIndex);
             clearAttachment = false;
         }
 
