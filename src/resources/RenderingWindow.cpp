@@ -37,6 +37,7 @@ namespace lysa {
     void RenderingWindow::_resized() {
         if (closed || renderTarget.isPaused()) { return; }
         renderTarget.resize();
+        renderTarget.getContext().events.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
     }
 
 }

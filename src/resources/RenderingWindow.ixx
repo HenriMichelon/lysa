@@ -71,6 +71,8 @@ export namespace lysa {
         static inline const event_type READY{"RENDERING_WINDOW_READY"};
         //! The window is about to close
         static inline const event_type CLOSING{"RENDERING_WINDOW_CLOSING"};
+        //! The window has been resized
+        static inline const event_type RESIZED{"RENDERING_WINDOW_RESIZED"};
         //! User input
         static inline const event_type INPUT{"RENDERING_WINDOW_INPUT"};
     };
