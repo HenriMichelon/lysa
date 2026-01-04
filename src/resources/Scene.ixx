@@ -42,9 +42,7 @@ export namespace lysa {
 
         ~Scene() override;
 
-        void setEnvironment(const Environment& environmentId);
-
-        const Environment& getEnvironment() const { return environment; }
+        void setEnvironment(const Environment& environment);
 
         bool haveInstance(const MeshInstance& meshInstance) const;
 
@@ -84,7 +82,6 @@ export namespace lysa {
         const uint32 maxAsyncNodesUpdatedPerFrame;
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
-        Environment environment;
         std::unordered_set<const MeshInstance*> meshInstances;
         std::unordered_set<const MeshInstance*> updatedNodes;
     };

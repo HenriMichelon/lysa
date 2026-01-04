@@ -19,7 +19,7 @@ namespace lysa {
         imageManager(ctx.res.get<ImageManager>()),
         materialManager(ctx.res.get<MaterialManager>()),
         meshManager(ctx.res.get<MeshManager>()),
-        maxAsyncNodesUpdatedPerFrame(maxAsyncNodesUpdatedPerFrame) {
+        maxAsyncNodesUpdatedPerFrame(config.asyncObjectUpdatesPerFrame) {
         framesData.resize(ctx.framesInFlight);
         for (auto& data : framesData) {
             data.scene =std::make_unique<SceneFrameData>(
@@ -36,8 +36,8 @@ namespace lysa {
         ctx.graphicQueue->waitIdle();
     }
 
-    void Scene::setEnvironment(const Environment& environmentId) {
-        environment = environmentId;
+    void Scene::setEnvironment(const Environment& environment) {
+        auto lock = std::lock_guard(frameDataMutex);
         for (const auto& data : framesData) {
             data.scene->setEnvironment(environment);
         }
@@ -82,7 +82,6 @@ namespace lysa {
     }
 
     void Scene::processDeferredOperations(const uint32 frameIndex) {
-        assert([&]{ return environment.id != INVALID_ID; }, "Scene environment not set");
         auto lock = std::lock_guard(frameDataMutex);
         auto &data = framesData[frameIndex];
         // Remove from the renderer the nodes previously removed from the scene tree
