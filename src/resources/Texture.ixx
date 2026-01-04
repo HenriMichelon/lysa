@@ -20,12 +20,12 @@ export namespace lysa {
      * Image-based texture
      */
     struct ImageTexture : UnmanagedResource {
-        const Image* image{nullptr};
+        unique_id image{INVALID_ID};
         uint32 samplerIndex{0};
         float3x3 transform{float3x3::identity()};
 
         ImageTexture() = default;
-        ImageTexture(const Image& image, const uint32 samplerIndex): image(&image), samplerIndex(samplerIndex) {}
+        ImageTexture(const unique_id image, const uint32 samplerIndex): image(image), samplerIndex(samplerIndex) {}
     };
 
 }

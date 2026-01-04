@@ -30,37 +30,37 @@ namespace lysa {
             .roughnessFactor = roughnessFactor,
             .emissiveFactor = float4{emissiveFactor, emissiveStrength}
         };
-        if (diffuseTexture.texture.image) {
+        if (diffuseTexture.texture.image != INVALID_ID) {
             data.diffuseTexture = {
-                .index = static_cast<int32>(diffuseTexture.texture.image->getIndex()),
+                .index = static_cast<int32>(imageManager[diffuseTexture.texture.image].getIndex()),
                 .samplerIndex = diffuseTexture.texture.samplerIndex,
                 .transform = float4x4{diffuseTexture.transform},
             };
         }
-        if (normalTexture.texture.image) {
+        if (normalTexture.texture.image != INVALID_ID) {
             data.normalTexture = {
-                .index = static_cast<int32>(normalTexture.texture.image->getIndex()),
+                .index = static_cast<int32>(imageManager[normalTexture.texture.image].getIndex()),
                 .samplerIndex = normalTexture.texture.samplerIndex,
                 .transform = float4x4{normalTexture.transform},
             };
         }
-        if (metallicTexture.texture.image) {
+        if (metallicTexture.texture.image != INVALID_ID) {
             data.metallicTexture = {
-                .index = static_cast<int32>(metallicTexture.texture.image->getIndex()),
+                .index = static_cast<int32>(imageManager[metallicTexture.texture.image].getIndex()),
                 .samplerIndex = metallicTexture.texture.samplerIndex,
                 .transform = float4x4{metallicTexture.transform},
             };
         }
-        if (roughnessTexture.texture.image) {
+        if (roughnessTexture.texture.image != INVALID_ID) {
             data.roughnessTexture = {
-                .index = static_cast<int32>(roughnessTexture.texture.image->getIndex()),
+                .index = static_cast<int32>(imageManager[roughnessTexture.texture.image].getIndex()),
                 .samplerIndex = roughnessTexture.texture.samplerIndex,
                 .transform = float4x4{roughnessTexture.transform},
             };
         }
-        if (emissiveTexture.texture.image) {
+        if (emissiveTexture.texture.image != INVALID_ID) {
             data.emissiveTexture = {
-                .index = static_cast<int32>(emissiveTexture.texture.image->getIndex()),
+                .index = static_cast<int32>(imageManager[emissiveTexture.texture.image].getIndex()),
                 .samplerIndex = emissiveTexture.texture.samplerIndex,
                 .transform = float4x4{emissiveTexture.transform},
             };
@@ -79,43 +79,43 @@ namespace lysa {
     }
 
     StandardMaterial::~StandardMaterial() {
-        if (diffuseTexture.texture.image) {
-            imageManager.destroy(diffuseTexture.texture.image->id);
+        if (diffuseTexture.texture.image != INVALID_ID) {
+            imageManager.destroy(diffuseTexture.texture.image);
         }
-        if (normalTexture.texture.image) {
-            imageManager.destroy(normalTexture.texture.image->id);
+        if (normalTexture.texture.image != INVALID_ID) {
+            imageManager.destroy(normalTexture.texture.image);
         }
-        if (metallicTexture.texture.image) {
-            imageManager.destroy(metallicTexture.texture.image->id);
+        if (metallicTexture.texture.image != INVALID_ID) {
+            imageManager.destroy(metallicTexture.texture.image);
         }
-        if (roughnessTexture.texture.image) {
-            imageManager.destroy(roughnessTexture.texture.image->id);
+        if (roughnessTexture.texture.image != INVALID_ID) {
+            imageManager.destroy(roughnessTexture.texture.image);
         }
-        if (emissiveTexture.texture.image) {
-            imageManager.destroy(emissiveTexture.texture.image->id);
+        if (emissiveTexture.texture.image != INVALID_ID) {
+            imageManager.destroy(emissiveTexture.texture.image);
         }
     }
 
     void StandardMaterial::setDiffuseTexture(const TextureInfo &texture) {
         diffuseTexture = texture;
-        if (texture.texture.image) {
-            imageManager.use(texture.texture.image->id);
+        if (texture.texture.image != INVALID_ID) {
+            imageManager.use(texture.texture.image);
         }
         upload();
     }
 
     void StandardMaterial::setNormalTexture(const TextureInfo &texture) {
         normalTexture = texture;
-        if (texture.texture.image) {
-            imageManager.use(texture.texture.image->id);
+        if (texture.texture.image != INVALID_ID) {
+            imageManager.use(texture.texture.image);
         }
         upload();
     }
 
     void StandardMaterial::setMetallicTexture(const TextureInfo &texture) {
         metallicTexture = texture;
-        if (texture.texture.image) {
-            imageManager.use(texture.texture.image->id);
+        if (texture.texture.image != INVALID_ID) {
+            imageManager.use(texture.texture.image);
         }
         if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
         upload();
@@ -123,8 +123,8 @@ namespace lysa {
 
     void StandardMaterial::setRoughnessTexture(const TextureInfo &texture) {
         roughnessTexture = texture;
-        if (texture.texture.image) {
-            imageManager.use(texture.texture.image->id);
+        if (texture.texture.image != INVALID_ID) {
+            imageManager.use(texture.texture.image);
         }
         if (roughnessFactor == -1.0f) { roughnessFactor = 0.0f; }
         upload();
@@ -132,8 +132,8 @@ namespace lysa {
 
     void StandardMaterial::setEmissiveTexture(const TextureInfo &texture) {
         emissiveTexture = texture;
-        if (texture.texture.image) {
-            imageManager.use(texture.texture.image->id);
+        if (texture.texture.image != INVALID_ID) {
+            imageManager.use(texture.texture.image);
         }
         upload();
     }
