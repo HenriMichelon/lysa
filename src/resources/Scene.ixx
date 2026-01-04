@@ -46,6 +46,8 @@ export namespace lysa {
 
         const Environment& getEnvironment() const { return environment; }
 
+        bool haveInstance(const MeshInstance& meshInstance) const;
+
         /** Adds a mesh instance to the scene. */
         void addInstance(const MeshInstance& meshInstance, bool async = false);
 

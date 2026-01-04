@@ -43,6 +43,10 @@ namespace lysa {
         }
     }
 
+    bool Scene::haveInstance(const MeshInstance& meshInstance) const {
+        return meshInstances.contains(&meshInstance);
+    }
+
     void Scene::addInstance(const MeshInstance& meshInstance, const bool async) {
         const auto* pMeshInstance = &meshInstance;
         assert([&]{return !meshInstances.contains(pMeshInstance);}, "Invalid meshInstance");
