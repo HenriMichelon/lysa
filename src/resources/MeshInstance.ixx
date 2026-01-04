@@ -33,11 +33,11 @@ export namespace lysa {
     */
     class MeshInstance : public UniqueResource {
     public:
-        MeshInstance(const Context& ctx, Mesh& mesh, const std::string& name = "");
+        MeshInstance(const Context& ctx, const Mesh& mesh, const std::string& name = "");
 
         MeshInstance(const Context& ctx, const MeshInstance& mi, const std::string& name = "");
 
-        Mesh& getMesh() const { return mesh; }
+        const Mesh& getMesh() const { return mesh; }
 
         bool isVisible() const { return visible; }
 
@@ -72,7 +72,7 @@ export namespace lysa {
     private:
         MaterialManager& materialManager;
         MeshManager& meshManager;
-        Mesh& mesh;
+        const Mesh& mesh;
         const std::string name;
         bool visible{true};
         bool castShadows{false};

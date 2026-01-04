@@ -11,7 +11,7 @@ namespace lysa {
 
     MeshInstance::MeshInstance(
           const Context& ctx,
-          Mesh& mesh,
+          const Mesh& mesh,
           const std::string& name) :
           materialManager(ctx.res.get<MaterialManager>()),
           meshManager(ctx.res.get<MeshManager>()),
