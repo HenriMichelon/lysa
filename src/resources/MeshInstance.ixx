@@ -65,10 +65,6 @@ export namespace lysa {
             materialsOverride.erase(surfaceIndex);
         }
 
-        uint32 getPendingUpdates() const { return pendingUpdates; }
-
-        void setPendingUpdates(const uint32 updates) { pendingUpdates = updates; }
-
         MeshInstanceData getData() const;
 
         ~MeshInstance() override;
@@ -83,8 +79,6 @@ export namespace lysa {
         AABB worldAABB{};
         float4x4 worldTransform{float4x4::identity()};
         std::unordered_map<uint32, unique_id> materialsOverride;
-        /** Current number of pending updates to process. */
-        uint32 pendingUpdates{0};
     };
 
 }

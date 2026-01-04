@@ -259,12 +259,9 @@ namespace lysa {
     void SceneFrameData::updateInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
         assert([&]{ return meshInstancesDataMemoryBlocks.contains(meshInstance); },
 "MeshInstance does not belong to the scene");
-        if (meshInstance->getPendingUpdates() > 0) {
-            const auto meshInstanceData = meshInstance->getData();
-            meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
-            meshInstancesDataUpdated = true;
-            meshInstance->setPendingUpdates(meshInstance->getPendingUpdates() - 1);
-        }
+        const auto meshInstanceData = meshInstance->getData();
+        meshInstancesDataArray.write(meshInstancesDataMemoryBlocks[meshInstance], &meshInstanceData);
+        meshInstancesDataUpdated = true;
     }
 
     void SceneFrameData::addInstance(

@@ -45,7 +45,6 @@ namespace lysa {
 
     void Scene::addInstance(const std::shared_ptr<MeshInstance>& meshInstance, const bool async) {
         assert([&]{return meshInstance != nullptr && !meshInstances.contains(meshInstance);}, "Invalid meshInstance");
-        meshInstance->setPendingUpdates(ctx.framesInFlight);
         meshInstances.insert(meshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
@@ -59,7 +58,6 @@ namespace lysa {
 
     void Scene::updateInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
         assert([&]{return meshInstance != nullptr && meshInstances.contains(meshInstance);}, "Invalid meshInstance");
-        meshInstance->setPendingUpdates(ctx.framesInFlight);
         updatedNodes.insert(meshInstance);
     }
 
@@ -122,12 +120,9 @@ namespace lysa {
                 if (count > maxAsyncNodesUpdatedPerFrame) { break; }
             }
         }
-        for (const auto& frame : framesData) {
-            for (const auto& mi : updatedNodes) {
-                frame.scene->updateInstance(mi);
-            }
+        for (const auto& mi : updatedNodes) {
+            data.scene->updateInstance(mi);
         }
-        updatedNodes.clear();
     }
 
 }
