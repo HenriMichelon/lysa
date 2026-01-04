@@ -54,6 +54,7 @@ namespace lysa {
                 pipelineConfig.cullMode = material.getCullMode();
                 pipelineConfig.vertexShader = loadShader(vertShaderName);
                 pipelineConfig.fragmentShader = loadShader(fragShaderName);
+                pipelineConfig.msaa = config.msaa;
                 pipelines[pipelineId] = ctx.vireo->createGraphicPipeline(pipelineConfig, vertShaderName + "+" + fragShaderName + ":" + std::to_string(pipelineId));
             }
         }

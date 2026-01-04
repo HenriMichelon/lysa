@@ -37,6 +37,7 @@ namespace lysa {
                 pipelineConfig.cullMode = materialManager[material].getCullMode();
                 pipelineConfig.vertexShader = loadShader(VERTEX_SHADER);
                 pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
+                pipelineConfig.msaa = config.msaa;
                 pipelines[pipelineId] = ctx.vireo->createGraphicPipeline(pipelineConfig, name + ":" + std::to_string(pipelineId));
             }
         }
