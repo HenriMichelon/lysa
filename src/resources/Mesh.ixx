@@ -179,7 +179,6 @@ export namespace lysa {
         MemoryBlock surfacesMemoryBlock;
     };
 
-
     class MeshManager : public ResourcesManager<Context, Mesh> {
     public:
         /**

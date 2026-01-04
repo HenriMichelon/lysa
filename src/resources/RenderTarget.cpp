@@ -121,7 +121,6 @@ namespace lysa {
         if (isPaused()) return;
         auto lock = std::unique_lock{viewsMutex};
         const auto frameIndex = swapChain->getCurrentFrameIndex();
-
         const auto& frame = framesData[frameIndex];
         if (!swapChain->acquire(frame.inFlightFence)) { return; }
         frame.commandAllocator->reset();
@@ -133,15 +132,15 @@ namespace lysa {
                 data.resetMaterialsUpdated();
             }
         }
-
         renderer->update(frameIndex);
+
         frame.updateCommandList->begin();
         for (auto& view : views) {
             view.scene.get(frameIndex).update(*frame.updateCommandList, view.camera);
         }
         frame.updateCommandList->end();
         ctx.graphicQueue->submit(
-            vireo::WaitStage::ALL_COMMANDS,
+            vireo::WaitStage::TRANSFER,
             frame.updateSemaphore,
             {frame.updateCommandList});
 
@@ -186,7 +185,6 @@ namespace lysa {
         }
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
-
         commandList->barrier(colorAttachment, vireo::ResourceState::UNDEFINED,vireo::ResourceState::COPY_SRC);
         commandList->barrier(swapChain, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);
         commandList->copy(colorAttachment->getImage(), swapChain);

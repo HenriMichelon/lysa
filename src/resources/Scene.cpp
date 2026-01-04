@@ -49,7 +49,7 @@ namespace lysa {
 
     void Scene::addInstance(const MeshInstance& meshInstance, const bool async) {
         const auto* pMeshInstance = &meshInstance;
-        assert([&]{return !meshInstances.contains(pMeshInstance);}, "Invalid meshInstance");
+        assert([&]{return !meshInstances.contains(pMeshInstance);}, "MeshInstance already in scene");
         meshInstances.insert(pMeshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
@@ -63,13 +63,13 @@ namespace lysa {
 
     void Scene::updateInstance(const MeshInstance& meshInstance) {
         const auto* pMeshInstance = &meshInstance;
-        assert([&]{return meshInstances.contains(pMeshInstance);}, "Invalid meshInstance");
+        assert([&]{return meshInstances.contains(pMeshInstance);}, "MeshInstance not in scene");
         updatedNodes.insert(pMeshInstance);
     }
 
     void Scene::removeInstance(const MeshInstance& meshInstance, const bool async) {
         const auto* pMeshInstance = &meshInstance;
-        assert([&]{return meshInstances.contains(pMeshInstance);}, "Invalid meshInstance");
+        assert([&]{return meshInstances.contains(pMeshInstance);}, "MeshInstance not in scene");
         meshInstances.erase(pMeshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
