@@ -69,7 +69,7 @@ namespace lysa {
     void GraphicPipelineData::addInstance(
         const MeshInstance* meshInstance,
         const std::unordered_map<const MeshInstance*, MemoryBlock>& meshInstancesDataMemoryBlocks) {
-        const auto& mesh =meshInstance->getMesh();
+        const auto& mesh = meshInstance->getMesh();
         const auto instanceMemoryBlock = instancesArray.alloc(mesh.getSurfaces().size());
         instancesMemoryBlocks[meshInstance] = instanceMemoryBlock;
         addInstance(meshInstance, instanceMemoryBlock, meshInstancesDataMemoryBlocks.at(meshInstance));
@@ -113,10 +113,7 @@ namespace lysa {
 
     void GraphicPipelineData::removeInstance(const MeshInstance* meshInstance) {
         if (instancesMemoryBlocks.contains(meshInstance)) {
-            instancesArray.free(instancesMemoryBlocks.at(meshInstance));
-            instancesMemoryBlocks.erase(meshInstance);
-            drawCommandsCount = 0;
-            instancesRemoved = true;
+            instancesToRemove.insert(meshInstance);
         }
     }
 
@@ -124,14 +121,20 @@ namespace lysa {
         const vireo::CommandList& commandList,
         std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
         const std::unordered_map<const MeshInstance*, MemoryBlock>& meshInstancesDataMemoryBlocks) {
-        if (instancesRemoved) {
+        if (!instancesToRemove.empty()) {
+            for (const auto* meshInstance : instancesToRemove) {
+                instancesToRemove.insert(meshInstance);
+                instancesArray.free(instancesMemoryBlocks.at(meshInstance));
+                instancesMemoryBlocks.erase(meshInstance);
+                drawCommandsCount = 0;
+            }
+            instancesToRemove.clear();
             for (const auto& instance : std::views::keys(instancesMemoryBlocks)) {
                 addInstance(
                     instance,
                     instancesMemoryBlocks.at(instance),
                     meshInstancesDataMemoryBlocks.at(instance));
             }
-            instancesRemoved = false;
         }
         if (instancesUpdated) {
             instancesArray.flush(commandList);

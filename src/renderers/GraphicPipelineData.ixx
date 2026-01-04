@@ -140,7 +140,7 @@ export namespace lysa {
 
         /** Flags tracking mutations in the instances set. */
         bool instancesUpdated{false};
-        bool instancesRemoved{false};
+        std::unordered_set<const MeshInstance*> instancesToRemove;
         /** Device memory array that stores InstanceData blocks. */
         DeviceMemoryArray instancesArray;
         /** Mapping of mesh instance to its memory block within instancesArray. */

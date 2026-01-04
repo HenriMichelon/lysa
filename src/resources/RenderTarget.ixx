@@ -86,10 +86,14 @@ export namespace lysa {
             std::shared_ptr<vireo::Fence> inFlightFence;
             /** Command allocator for this frame (resets between frames). */
             std::shared_ptr<vireo::CommandAllocator> commandAllocator;
+            /** Semaphore signaled when data update stage is finished. */
+            std::shared_ptr<vireo::Semaphore> updateSemaphore;
             /** Semaphore signaled when compute stage is finished. */
             std::shared_ptr<vireo::Semaphore> computeSemaphore;
             /** Semaphore signaled when pre‑render stage is finished. */
             std::shared_ptr<vireo::Semaphore> prepareSemaphore;
+            /** Command list used for data update workloads. */
+            std::shared_ptr<vireo::CommandList> updateCommandList;
             /** Command list used for compute workloads. */
             std::shared_ptr<vireo::CommandList> computeCommandList;
             /** Command list used for rendering into the swap chain. */

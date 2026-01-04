@@ -35,8 +35,10 @@ namespace lysa {
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);
+            frame.updateSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY, "Update");
             frame.computeSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY, "Compute");
             frame.prepareSemaphore = ctx.vireo->createSemaphore(vireo::SemaphoreType::BINARY, "Prepare");
+            frame.updateCommandList = frame.commandAllocator->createCommandList();
             frame.computeCommandList = frame.commandAllocator->createCommandList();
             frame.prepareCommandList = frame.commandAllocator->createCommandList();
             frame.renderCommandList = frame.commandAllocator->createCommandList();
@@ -119,6 +121,10 @@ namespace lysa {
         if (isPaused()) return;
         auto lock = std::unique_lock{viewsMutex};
         const auto frameIndex = swapChain->getCurrentFrameIndex();
+
+        const auto& frame = framesData[frameIndex];
+        if (!swapChain->acquire(frame.inFlightFence)) { return; }
+        frame.commandAllocator->reset();
         for (auto& view : views) {
             view.scene.processDeferredOperations(frameIndex);
             auto& data = view.scene.get(frameIndex);
@@ -128,11 +134,16 @@ namespace lysa {
             }
         }
 
-        const auto& frame = framesData[frameIndex];
         renderer->update(frameIndex);
-
-        if (!swapChain->acquire(frame.inFlightFence)) { return; }
-        frame.commandAllocator->reset();
+        frame.updateCommandList->begin();
+        for (auto& view : views) {
+            view.scene.get(frameIndex).update(*frame.updateCommandList, view.camera);
+        }
+        frame.updateCommandList->end();
+        ctx.graphicQueue->submit(
+            vireo::WaitStage::ALL_COMMANDS,
+            frame.updateSemaphore,
+            {frame.updateCommandList});
 
         frame.computeCommandList->begin();
         for (auto& view : views) {
@@ -144,6 +155,8 @@ namespace lysa {
         }
         frame.computeCommandList->end();
         ctx.graphicQueue->submit(
+        frame.updateSemaphore,
+            vireo::WaitStage::COMPUTE_SHADER,
             vireo::WaitStage::COMPUTE_SHADER,
             frame.computeSemaphore,
             {frame.computeCommandList});
@@ -194,56 +207,5 @@ namespace lysa {
     void RenderTarget::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const {
         renderer->updatePipelines(pipelineIds);
     }
-    //
-    // RenderTargetManager::RenderTargetManager(Context& ctx, const size_t capacity, const uint32 framesInFlight) :
-    //     ResourcesManager(ctx, capacity, "RenderTargetManager"),
-    //     framesInFlight(framesInFlight) {
-    //     ctx.res.enroll(*this);
-    // }
-    //
-    // RenderTarget& RenderTargetManager::create(const RenderTargetConfiguration& configuration) {
-    //     return ResourcesManager::create(configuration, framesInFlight);
-    // }
-    //
-    // void RenderTargetManager::destroy(const void* renderingWindowHandle) {
-    //     for (const auto& renderTarget : getResources()) {
-    //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-    //             renderTarget->pause(true);
-    //             ctx.defer.push([&] {
-    //                 ResourcesManager::destroy(renderTarget->id);
-    //             });
-    //         }
-    //     }
-    // }
-    //
-    // void RenderTargetManager::pause(const void* renderingWindowHandle, const bool pause) {
-    //     for (const auto& renderTarget : getResources()) {
-    //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-    //             renderTarget->pause(pause);
-    //         }
-    //     }
-    // }
-    //
-    // void RenderTargetManager::resize(const void* renderingWindowHandle) const {
-    //     for (const auto& renderTarget : getResources()) {
-    //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-    //             renderTarget->resize();
-    //         }
-    //     }
-    // }
-    //
-    // // void RenderTargetManager::input(const void* renderingWindowHandle, const InputEvent& inputEvent) const {
-    // //     for (const auto& renderTarget : getResources()) {
-    // //         if (renderTarget->getRenderingWindowHandle() == renderingWindowHandle) {
-    // //             renderTarget->input(inputEvent);
-    // //         }
-    // //     }
-    // // }
-    //
-    // void RenderTargetManager::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) const {
-    //     for (const auto& renderTarget : getResources()) {
-    //         renderTarget->updatePipelines(pipelineIds);
-    //     }
-    // }
 
 }
