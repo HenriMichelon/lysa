@@ -47,13 +47,13 @@ export namespace lysa {
         const Environment& getEnvironment() const { return environment; }
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(const std::shared_ptr<MeshInstance>& meshInstance, bool async = false);
+        void addInstance(const MeshInstance& meshInstance, bool async = false);
 
         /** Updates a mesh instance. */
-        void updateInstance(const std::shared_ptr<MeshInstance>& meshInstance);
+        void updateInstance(const MeshInstance& meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(const std::shared_ptr<MeshInstance>& meshInstance, bool async = false);
+        void removeInstance(const MeshInstance& meshInstance, bool async = false);
 
         void processDeferredOperations(uint32 frameIndex);
 
@@ -69,13 +69,13 @@ export namespace lysa {
         /** Per‑frame state and deferred operations processed at frame boundaries. */
         struct FrameData {
             /** Nodes to add on the next frame (synchronous path). */
-            std::unordered_set<std::shared_ptr<MeshInstance>> addedNodes;
+            std::unordered_set<const MeshInstance*> addedNodes;
             /** Nodes to add on the next frame (async path). */
-            std::unordered_set<std::shared_ptr<MeshInstance>> addedNodesAsync;
+            std::unordered_set<const MeshInstance*> addedNodesAsync;
             /** Nodes to remove on the next frame (synchronous path). */
-            std::unordered_set<std::shared_ptr<MeshInstance>> removedNodes;
+            std::unordered_set<const MeshInstance*> removedNodes;
             /** Nodes to remove on the next frame (async path). */
-            std::unordered_set<std::shared_ptr<MeshInstance>> removedNodesAsync;
+            std::unordered_set<const MeshInstance*> removedNodesAsync;
             /** Scene instance associated with this frame. */
             std::unique_ptr<SceneFrameData> scene;
         };
@@ -83,8 +83,8 @@ export namespace lysa {
         std::vector<FrameData> framesData;
         std::mutex frameDataMutex;
         Environment environment;
-        std::unordered_set<std::shared_ptr<MeshInstance>> meshInstances;
-        std::unordered_set<std::shared_ptr<MeshInstance>> updatedNodes;
+        std::unordered_set<const MeshInstance*> meshInstances;
+        std::unordered_set<const MeshInstance*> updatedNodes;
     };
 
 }

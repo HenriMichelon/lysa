@@ -43,33 +43,36 @@ namespace lysa {
         }
     }
 
-    void Scene::addInstance(const std::shared_ptr<MeshInstance>& meshInstance, const bool async) {
-        assert([&]{return meshInstance != nullptr && !meshInstances.contains(meshInstance);}, "Invalid meshInstance");
-        meshInstances.insert(meshInstance);
+    void Scene::addInstance(const MeshInstance& meshInstance, const bool async) {
+        const auto* pMeshInstance = &meshInstance;
+        assert([&]{return !meshInstances.contains(pMeshInstance);}, "Invalid meshInstance");
+        meshInstances.insert(pMeshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
-                frame.addedNodesAsync.insert(meshInstance);
+                frame.addedNodesAsync.insert(pMeshInstance);
             } else {
-                frame.addedNodes.insert(meshInstance);
+                frame.addedNodes.insert(pMeshInstance);
             }
         }
     }
 
-    void Scene::updateInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
-        assert([&]{return meshInstance != nullptr && meshInstances.contains(meshInstance);}, "Invalid meshInstance");
-        updatedNodes.insert(meshInstance);
+    void Scene::updateInstance(const MeshInstance& meshInstance) {
+        const auto* pMeshInstance = &meshInstance;
+        assert([&]{return meshInstances.contains(pMeshInstance);}, "Invalid meshInstance");
+        updatedNodes.insert(pMeshInstance);
     }
 
-    void Scene::removeInstance(const std::shared_ptr<MeshInstance>& meshInstance, const bool async) {
-        assert([&]{return meshInstance != nullptr && meshInstances.contains(meshInstance);}, "Invalid meshInstance");
-        meshInstances.erase(meshInstance);
+    void Scene::removeInstance(const MeshInstance& meshInstance, const bool async) {
+        const auto* pMeshInstance = &meshInstance;
+        assert([&]{return meshInstances.contains(pMeshInstance);}, "Invalid meshInstance");
+        meshInstances.erase(pMeshInstance);
         auto lock = std::lock_guard(frameDataMutex);
         for (auto& frame : framesData) {
             if (async) {
-                frame.removedNodesAsync.insert(meshInstance);
+                frame.removedNodesAsync.insert(pMeshInstance);
             } else {
-                frame.removedNodes.insert(meshInstance);
+                frame.removedNodes.insert(pMeshInstance);
             }
         }
     }
@@ -81,9 +84,9 @@ namespace lysa {
         // Remove from the renderer the nodes previously removed from the scene tree
         // Immediate removes
         if (!data.removedNodes.empty()) {
-            for (const auto &node : data.removedNodes) {
-                data.scene->removeInstance(node);
-                updatedNodes.erase(node);
+            for (const auto *mi : data.removedNodes) {
+                data.scene->removeInstance(mi);
+                updatedNodes.erase(mi);
             }
             data.removedNodes.clear();
         }
@@ -91,7 +94,7 @@ namespace lysa {
         if (!data.removedNodesAsync.empty()) {
             auto count = 0;
             for (auto it = data.removedNodesAsync.begin(); it != data.removedNodesAsync.end();) {
-                auto& mi = *it;
+                const auto* mi = *it;
                 data.scene->removeInstance(mi);
                 updatedNodes.erase(mi);
                 it = data.removedNodesAsync.erase(it);
@@ -102,9 +105,9 @@ namespace lysa {
         // Add to the scene the nodes previously added to the scene tree
         // Immediate additions
         if (!data.addedNodes.empty()) {
-            for (const auto &node : data.addedNodes) {
-                data.scene->addInstance(node);
-                updatedNodes.erase(node);
+            for (const auto* mi : data.addedNodes) {
+                data.scene->addInstance(mi);
+                updatedNodes.erase(mi);
             }
             data.addedNodes.clear();
         }
@@ -112,7 +115,7 @@ namespace lysa {
         if (!data.addedNodesAsync.empty()) {
             auto count = 0;
             for (auto it = data.addedNodesAsync.begin(); it != data.addedNodesAsync.end();) {
-                auto& mi = *it;
+                const auto* mi = *it;
                 data.scene->addInstance(mi);
                 updatedNodes.erase(mi);
                 it = data.addedNodesAsync.erase(it);
@@ -120,7 +123,7 @@ namespace lysa {
                 if (count > maxAsyncNodesUpdatedPerFrame) { break; }
             }
         }
-        for (const auto& mi : updatedNodes) {
+        for (const auto* mi : updatedNodes) {
             data.scene->updateInstance(mi);
         }
     }

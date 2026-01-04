@@ -144,7 +144,7 @@ export namespace lysa {
         /** Device memory array that stores InstanceData blocks. */
         DeviceMemoryArray instancesArray;
         /** Mapping of mesh instance to its memory block within instancesArray. */
-        std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock> instancesMemoryBlocks;
+        std::unordered_map<const MeshInstance*, MemoryBlock> instancesMemoryBlocks;
 
         /** Number of indirect draw commands before culling. */
         uint32 drawCommandsCount{0};
@@ -173,16 +173,16 @@ export namespace lysa {
 
         /** Registers a mesh instance into this pipeline data object. */
         void addInstance(
-            const std::shared_ptr<MeshInstance>& meshInstance,
-            const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
+            const MeshInstance* meshInstance,
+            const std::unordered_map<const MeshInstance*, MemoryBlock>& meshInstancesDataMemoryBlocks);
 
         /** Removes a previously registered mesh instance. */
         void removeInstance(
-            const std::shared_ptr<MeshInstance>& meshInstance);
+            const MeshInstance* meshInstance);
 
         /** Adds a single draw instance and wires memory blocks. */
         void addInstance(
-            const std::shared_ptr<MeshInstance>& meshInstance,
+            const MeshInstance* meshInstance,
             const MemoryBlock& instanceMemoryBlock,
             const MemoryBlock& meshInstanceMemoryBlock);
 
@@ -190,7 +190,7 @@ export namespace lysa {
         void updateData(
             const vireo::CommandList& commandList,
             std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
-            const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks);
+            const std::unordered_map<const MeshInstance*, MemoryBlock>& meshInstancesDataMemoryBlocks);
     };
 
 }

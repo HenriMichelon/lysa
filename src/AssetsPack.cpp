@@ -158,7 +158,7 @@ namespace lysa {
         // }
 
         // Read, upload and create the Image and Texture objets (Vireo specific)
-        std::vector<std::shared_ptr<ImageTexture>> textures(header.imagesCount);
+        std::vector<ImageTexture> textures(header.imagesCount);
         if (header.imagesCount > 0) {
             auto& asyncQueue = ctx.asyncQueue;
             const auto command = asyncQueue.beginCommand(vireo::CommandType::TRANSFER);
@@ -206,9 +206,11 @@ namespace lysa {
             material.setBypassUpload(true);
             auto textureInfo = [&](const TextureInfo& info) {
                 auto texInfo = StandardMaterial::TextureInfo {
-                    .texture = info.textureIndex == -1 ? nullptr : textures[info.textureIndex],
                     .transform = info.transform,
                 };
+                if (info.textureIndex != -1) {
+                    texInfo.texture = textures[info.textureIndex];
+                }
                 materialsTexCoords[material.id] = info.uvsIndex;
                 return texInfo;
             };
@@ -319,11 +321,6 @@ namespace lysa {
         materialManager.flush();
         meshManager.flush();
         callback(nodeHeaders, meshes, childrenIndexes);
-        for (auto& texture : textures) {
-            if (texture.use_count() == 0) {
-                Log::warning("texture #", texture->id, " (", texture->getName(), ") never used in any material");
-            }
-        }
 
         // Update renderers pipelines in current rendering targets
         //ctx.res.get<RenderTargetManager>().updatePipelines(pipelineIds);  XXX
@@ -331,7 +328,7 @@ namespace lysa {
 
     std::vector<std::shared_ptr<vireo::Image>> AssetsPack::loadImagesAndTextures(
         Context& ctx,
-        std::vector<std::shared_ptr<ImageTexture>>& textures,
+        std::vector<ImageTexture>& textures,
         const vireo::Buffer& stagingBuffer,
         const vireo::CommandList& commandList,
         std::ifstream &stream,
@@ -394,7 +391,7 @@ namespace lysa {
                     static_cast<vireo::AddressMode>(texture.samplerAddressModeU),
                     static_cast<vireo::AddressMode>(texture.samplerAddressModeV));
                 auto& lImage = ctx.res.get<ImageManager>().create(image, name);
-                textures.push_back(std::make_shared<ImageTexture>(ctx, lImage, samplerIndex));
+                textures.push_back({lImage, samplerIndex});
             }
         }
         return images;

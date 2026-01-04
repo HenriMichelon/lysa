@@ -13,6 +13,7 @@ import lysa.memory;
 import lysa.resources;
 import lysa.resources.manager;
 import lysa.resources.texture;
+import lysa.resources.image;
 
 export namespace lysa {
 
@@ -142,7 +143,7 @@ export namespace lysa {
          * References and properties of a texture
          */
         struct TextureInfo {
-            std::shared_ptr<ImageTexture> texture{nullptr};
+            ImageTexture texture;
             float3x3 transform{float3x3::identity()};
         };
 
@@ -150,6 +151,8 @@ export namespace lysa {
          * Creates a StandardMaterial with default parameters
          */
         StandardMaterial(Context& ctx);
+
+        ~StandardMaterial() override;
 
         /**
          * Returns the material's base color.
@@ -268,6 +271,7 @@ export namespace lysa {
         pipeline_id getPipelineId() const override;
 
     private:
+        ImageManager& imageManager;
         float4       albedoColor{1.0f, 0.0f, 0.5f, 1.0f};
         TextureInfo  diffuseTexture;
         float        metallicFactor{0.0f};

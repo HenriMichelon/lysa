@@ -282,7 +282,7 @@ export namespace lysa {
 
         std::vector<std::shared_ptr<vireo::Image>> loadImagesAndTextures(
             Context& ctx,
-            std::vector<std::shared_ptr<ImageTexture>>& textures,
+            std::vector<ImageTexture>& textures,
             const vireo::Buffer& stagingBuffer,
             const vireo::CommandList& commandList,
             std::ifstream& stream,

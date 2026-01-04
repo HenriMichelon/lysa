@@ -30,38 +30,38 @@ namespace lysa {
             .roughnessFactor = roughnessFactor,
             .emissiveFactor = float4{emissiveFactor, emissiveStrength}
         };
-        if (diffuseTexture.texture) {
+        if (diffuseTexture.texture.image) {
             data.diffuseTexture = {
-                .index = static_cast<int32>(diffuseTexture.texture->getImage().getIndex()),
-                .samplerIndex = diffuseTexture.texture->getSamplerIndex(),
+                .index = static_cast<int32>(diffuseTexture.texture.image->getIndex()),
+                .samplerIndex = diffuseTexture.texture.samplerIndex,
                 .transform = float4x4{diffuseTexture.transform},
             };
         }
-        if (normalTexture.texture) {
+        if (normalTexture.texture.image) {
             data.normalTexture = {
-                .index = static_cast<int32>(normalTexture.texture->getImage().getIndex()),
-                .samplerIndex = normalTexture.texture->getSamplerIndex(),
+                .index = static_cast<int32>(normalTexture.texture.image->getIndex()),
+                .samplerIndex = normalTexture.texture.samplerIndex,
                 .transform = float4x4{normalTexture.transform},
             };
         }
-        if (metallicTexture.texture) {
+        if (metallicTexture.texture.image) {
             data.metallicTexture = {
-                .index = static_cast<int32>(metallicTexture.texture->getImage().getIndex()),
-                .samplerIndex = metallicTexture.texture->getSamplerIndex(),
+                .index = static_cast<int32>(metallicTexture.texture.image->getIndex()),
+                .samplerIndex = metallicTexture.texture.samplerIndex,
                 .transform = float4x4{metallicTexture.transform},
             };
         }
-        if (roughnessTexture.texture) {
+        if (roughnessTexture.texture.image) {
             data.roughnessTexture = {
-                .index = static_cast<int32>(roughnessTexture.texture->getImage().getIndex()),
-                .samplerIndex = roughnessTexture.texture->getSamplerIndex(),
+                .index = static_cast<int32>(roughnessTexture.texture.image->getIndex()),
+                .samplerIndex = roughnessTexture.texture.samplerIndex,
                 .transform = float4x4{roughnessTexture.transform},
             };
         }
-        if (emissiveTexture.texture) {
+        if (emissiveTexture.texture.image) {
             data.emissiveTexture = {
-                .index = static_cast<int32>(emissiveTexture.texture->getImage().getIndex()),
-                .samplerIndex = emissiveTexture.texture->getSamplerIndex(),
+                .index = static_cast<int32>(emissiveTexture.texture.image->getIndex()),
+                .samplerIndex = emissiveTexture.texture.samplerIndex,
                 .transform = float4x4{emissiveTexture.transform},
             };
         }
@@ -69,7 +69,8 @@ namespace lysa {
     }
 
     StandardMaterial::StandardMaterial(Context& ctx):
-        Material(ctx, STANDARD) {
+        Material(ctx, STANDARD),
+        imageManager(ctx.res.get<ImageManager>()) {
     }
 
     void StandardMaterial::setAlbedoColor(const float4 &color) {
@@ -77,30 +78,63 @@ namespace lysa {
         upload();
     }
 
+    StandardMaterial::~StandardMaterial() {
+        if (diffuseTexture.texture.image) {
+            imageManager.destroy(diffuseTexture.texture.image->id);
+        }
+        if (normalTexture.texture.image) {
+            imageManager.destroy(normalTexture.texture.image->id);
+        }
+        if (metallicTexture.texture.image) {
+            imageManager.destroy(metallicTexture.texture.image->id);
+        }
+        if (roughnessTexture.texture.image) {
+            imageManager.destroy(roughnessTexture.texture.image->id);
+        }
+        if (emissiveTexture.texture.image) {
+            imageManager.destroy(emissiveTexture.texture.image->id);
+        }
+    }
+
     void StandardMaterial::setDiffuseTexture(const TextureInfo &texture) {
         diffuseTexture = texture;
+        if (texture.texture.image) {
+            imageManager.use(texture.texture.image->id);
+        }
         upload();
     }
 
     void StandardMaterial::setNormalTexture(const TextureInfo &texture) {
         normalTexture = texture;
+        if (texture.texture.image) {
+            imageManager.use(texture.texture.image->id);
+        }
         upload();
     }
 
     void StandardMaterial::setMetallicTexture(const TextureInfo &texture) {
         metallicTexture = texture;
+        if (texture.texture.image) {
+            imageManager.use(texture.texture.image->id);
+        }
         if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
         upload();
     }
 
     void StandardMaterial::setRoughnessTexture(const TextureInfo &texture) {
         roughnessTexture = texture;
-        if (metallicFactor == -1.0f) { metallicFactor = 0.0f; }
+        if (texture.texture.image) {
+            imageManager.use(texture.texture.image->id);
+        }
+        if (roughnessFactor == -1.0f) { roughnessFactor = 0.0f; }
         upload();
     }
 
     void StandardMaterial::setEmissiveTexture(const TextureInfo &texture) {
         emissiveTexture = texture;
+        if (texture.texture.image) {
+            imageManager.use(texture.texture.image->id);
+        }
         upload();
     }
 

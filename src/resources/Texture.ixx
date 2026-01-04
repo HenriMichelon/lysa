@@ -17,71 +17,15 @@ import lysa.resources.manager;
 export namespace lysa {
 
     /**
-     * Base class for textures resources.
+     * Image-based texture
      */
-    class Texture : public UniqueResource {
-    public:
-        /**
-         * Returns the width in pixels on the texture
-         */
-        virtual uint32 getWidth() const = 0;
-
-        /**
-         * Returns the height in pixels on the texture
-         */
-        virtual uint32 getHeight() const = 0;
-
-        /**
-         * Returns the size in pixels on the texture
-         */
-        virtual float2 getSize() const { return float2{getWidth(), getHeight()}; }
-
-        /**
-         * Returns the texture name
-         */
-        virtual const std::string& getName() const = 0;
-
-    protected:
-        Texture() = default;
-    };
-
-    /**
-     * Image-based texture stored in GPU memory
-     */
-    class ImageTexture : public Texture {
-    public:
-
-        /**
-         * Returns the attached Image
-         */
-        const auto& getImage() const { return image; }
-
-        /**
-         * Returns the index of the attached sampler in the global sampler GPU array
-         */
-        uint32 getSamplerIndex() const { return samplerIndex; }
-
-        uint32 getWidth() const override { return image.getWidth(); }
-
-        uint32 getHeight() const override { return image.getHeight(); }
-
-        const std::string& getName() const override { return image.getName(); }
-
-        ImageTexture(Context& ctx, const Image& image, const uint32 samplerIndex) :
-            ctx(ctx),
-            image(image),
-            samplerIndex(samplerIndex) {
-            ctx.res.get<ImageManager>().use(image.id);
-        }
-
-        ~ImageTexture() override {
-            ctx.res.get<ImageManager>().destroy(image.id);
-        }
-
-    protected:
-        Context& ctx;
-        const Image& image;
+    struct ImageTexture : UnmanagedResource {
+        const Image* image{nullptr};
         uint32 samplerIndex{0};
+        float3x3 transform{float3x3::identity()};
+
+        ImageTexture() = default;
+        ImageTexture(const Image& image, const uint32 samplerIndex): image(&image), samplerIndex(samplerIndex) {}
     };
 
 }

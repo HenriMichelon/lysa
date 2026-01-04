@@ -67,8 +67,8 @@ namespace lysa {
     }
 
     void GraphicPipelineData::addInstance(
-        const std::shared_ptr<MeshInstance>& meshInstance,
-        const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks) {
+        const MeshInstance* meshInstance,
+        const std::unordered_map<const MeshInstance*, MemoryBlock>& meshInstancesDataMemoryBlocks) {
         const auto& mesh =meshInstance->getMesh();
         const auto instanceMemoryBlock = instancesArray.alloc(mesh.getSurfaces().size());
         instancesMemoryBlocks[meshInstance] = instanceMemoryBlock;
@@ -76,7 +76,7 @@ namespace lysa {
     }
 
     void GraphicPipelineData::addInstance(
-        const std::shared_ptr<MeshInstance>& meshInstance,
+        const MeshInstance* meshInstance,
         const MemoryBlock& instanceMemoryBlock,
         const MemoryBlock& meshInstanceMemoryBlock) {
         const auto& mesh = meshInstance->getMesh();
@@ -111,7 +111,7 @@ namespace lysa {
         }
     }
 
-    void GraphicPipelineData::removeInstance(const std::shared_ptr<MeshInstance>& meshInstance) {
+    void GraphicPipelineData::removeInstance(const MeshInstance* meshInstance) {
         if (instancesMemoryBlocks.contains(meshInstance)) {
             instancesArray.free(instancesMemoryBlocks.at(meshInstance));
             instancesMemoryBlocks.erase(meshInstance);
@@ -123,7 +123,7 @@ namespace lysa {
     void GraphicPipelineData::updateData(
         const vireo::CommandList& commandList,
         std::unordered_set<std::shared_ptr<vireo::Buffer>>& drawCommandsStagingBufferRecycleBin,
-        const std::unordered_map<std::shared_ptr<MeshInstance>, MemoryBlock>& meshInstancesDataMemoryBlocks) {
+        const std::unordered_map<const MeshInstance*, MemoryBlock>& meshInstancesDataMemoryBlocks) {
         if (instancesRemoved) {
             for (const auto& instance : std::views::keys(instancesMemoryBlocks)) {
                 addInstance(

@@ -81,6 +81,7 @@ namespace lysa {
         ctx.events.fire({
             .type = MainLoopEvent::QUIT,
         });
+        ctx.graphicQueue->waitIdle();
     }
 
 }
