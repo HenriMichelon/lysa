@@ -188,13 +188,13 @@ export namespace lysa {
         //! Associated render target
         RenderTarget renderTarget;
         //! Top-Left corner x position in pixels
-        int32 x{0};
+        int32 x;
         //! Top-Left corner Y position in pixels
-        int32 y{0};
+        int32 y;
         //! Width in pixels
-        uint32 width{0};
+        uint32 width;
         //! Height in pixels
-        uint32 height{0};
+        uint32 height;
         //! True once the platform window has been requested to close
         bool closed{false};
 

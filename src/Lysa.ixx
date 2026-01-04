@@ -68,7 +68,7 @@ export namespace  lysa {
         //! Maximum number of meshes surfaces in GPU memory
         size_t surfaces{meshes * 10};
         //! Maximum number of meshes vertices in GPU memory
-        size_t vertices{surfaces * 100};
+        size_t vertices{surfaces * 1000};
         //! Maximum number of meshes indices in GPU memory
         size_t indices{vertices * 10};
     };

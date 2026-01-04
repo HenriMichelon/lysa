@@ -130,8 +130,8 @@ namespace lysa {
         SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
         this->x = x;
         this->y = y;
-        width = w;
-        height = h;
+        this->width = w;
+        this->height = h;
         return hwnd;
     }
 

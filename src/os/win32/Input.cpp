@@ -15,6 +15,7 @@ module;
 module lysa.input;
 
 import lysa.exception;
+import lysa.log;
 import lysa.utils;
 
 namespace lysa {
