@@ -59,12 +59,35 @@ namespace lysa {
         views.clear();
     }
 
-    void RenderTarget::addView(const RenderView& view) {
+    void RenderTarget::addView(RenderView& view) {
+        assert([&]{ return std::ranges::find(views, view) == views.end(); },
+            "RenderView already attached to the RenderTarget");
+        if (view.viewport.width == 0.0f || view.viewport.height == 0.0f) {
+            view.viewport.width = static_cast<float>(swapChain->getExtent().width);
+            view.viewport.height = static_cast<float>(swapChain->getExtent().height);
+        }
+        if (view.scissors.width   == 0.0f || view.scissors.height == 0.0f) {
+            view.scissors.x = static_cast<int32>(view.viewport.x);
+            view.scissors.y = static_cast<int32>(view.viewport.y);
+            view.scissors.width = static_cast<int32>(view.viewport.width);
+            view.scissors.height = static_cast<int32>(view.viewport.height);
+        }
+        auto lock = std::unique_lock{viewsMutex};
+        swapChain->waitIdle();
         views.push_back(view);
     }
 
     void RenderTarget::removeView(const RenderView& view) {
+        assert([&]{ return std::ranges::find(views, view) != views.end(); },
+            "RenderView not attached to the RenderTarget");
+        auto lock = std::unique_lock{viewsMutex};
+        swapChain->waitIdle();
         views.remove(view);
+    }
+
+    void RenderTarget::updateView(RenderView& view) {
+        removeView(view);
+        addView(view);
     }
 
     void RenderTarget::setPause(const bool pause) {
@@ -94,18 +117,9 @@ namespace lysa {
 
     void RenderTarget::render() {
         if (isPaused()) return;
+        auto lock = std::unique_lock{viewsMutex};
         const auto frameIndex = swapChain->getCurrentFrameIndex();
         for (auto& view : views) {
-            if (view.viewport.width == 0.0f || view.viewport.height == 0.0f) {
-                view.viewport.width = static_cast<float>(swapChain->getExtent().width);
-                view.viewport.height = static_cast<float>(swapChain->getExtent().height);
-            }
-            if (view.scissors.width   == 0.0f || view.scissors.height == 0.0f) {
-                view.scissors.x = static_cast<int32>(view.viewport.x);
-                view.scissors.y = static_cast<int32>(view.viewport.y);
-                view.scissors.width = static_cast<int32>(view.viewport.width);
-                view.scissors.height = static_cast<int32>(view.viewport.height);
-            }
             view.scene.processDeferredOperations(frameIndex);
             auto& data = view.scene.get(frameIndex);
             if (data.isMaterialsUpdated()) {

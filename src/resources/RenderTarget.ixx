@@ -68,7 +68,9 @@ export namespace lysa {
 
         void waitIdle() const { swapChain->waitIdle(); }
 
-        void addView(const RenderView& view);
+        void addView(RenderView& view);
+
+        void updateView(RenderView& view);
 
         void removeView(const RenderView& view);
 
@@ -107,6 +109,8 @@ export namespace lysa {
         std::unique_ptr<Renderer> renderer;
         // Views to render in this target
         std::list<RenderView> views;
+        // Protect views to be modifies when render() is called
+        std::mutex viewsMutex;
     };
 
 }
