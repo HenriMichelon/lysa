@@ -64,13 +64,16 @@ namespace lysa {
         const SceneFrameData& scene,
         const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+        const std::shared_ptr<vireo::RenderTarget>& multisampledDepthAttachment,
         const bool clearAttachment,
         const uint32 frameIndex) {
-        // const auto& frame = framesData[frameIndex];
+        const auto& frame = framesData[frameIndex];
 
         renderingConfig.colorRenderTargets[0].clear = clearAttachment;
         renderingConfig.colorRenderTargets[0].renderTarget = colorAttachment;
+        renderingConfig.colorRenderTargets[0].multisampledRenderTarget = frame.multisampledColorAttachment;
         renderingConfig.depthStencilRenderTarget = depthAttachment;
+        renderingConfig.multisampledDepthStencilRenderTarget = multisampledDepthAttachment;
 
         commandList.barrier(
             colorAttachment,
@@ -94,7 +97,17 @@ namespace lysa {
     }
 
     void ForwardColor::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
-        for (auto& frame : framesData) {
+        if (config.msaa != vireo::MSAA::NONE) {
+            for (auto& frame : framesData) {
+                frame.multisampledColorAttachment = ctx.vireo->createRenderTarget(
+                  config.colorRenderingFormat,
+                  extent.width, extent.height,
+                  vireo::RenderTargetType::COLOR,
+                  {config.clearColor.r, config.clearColor.g, config.clearColor.b, 1.0f},
+                  1,
+                  config.msaa,
+                  "MSAA color attachment");
+            }
         }
     }
 }

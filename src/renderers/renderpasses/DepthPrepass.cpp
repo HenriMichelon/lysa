@@ -12,7 +12,8 @@ namespace lysa {
     DepthPrepass::DepthPrepass(
         const Context& ctx,
         const RendererConfiguration& config,
-        const bool withStencil):
+        const bool withStencil,
+        const uint32 framesInFlight):
         Renderpass{ctx, config, "Depth pre-pass"},
         materialManager(ctx.res.get<MaterialManager>()) {
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
@@ -26,6 +27,7 @@ namespace lysa {
             SceneFrameData::sceneDescriptorLayoutOptional1},
             SceneFrameData::instanceIndexConstantDesc, name);
         renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
+        framesData.resize(framesInFlight);
     }
 
     void DepthPrepass::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
@@ -43,13 +45,31 @@ namespace lysa {
     void DepthPrepass::render(
         vireo::CommandList& commandList,
         const SceneFrameData& scene,
-        const std::shared_ptr<vireo::RenderTarget>& depthAttachment) {
+        const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+        const uint32 frameIndex) {
+        const auto& frame = framesData[frameIndex];
         renderingConfig.depthStencilRenderTarget = depthAttachment;
+        renderingConfig.multisampledDepthStencilRenderTarget = frame.multisampledDepthAttachment;
         commandList.beginRendering(renderingConfig);
         if (pipelineConfig.stencilTestEnable) {
             commandList.setStencilReference(1);
         }
         scene.drawOpaquesModels(commandList, pipelines);
         commandList.endRendering();
+    }
+
+    void DepthPrepass::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
+        if (config.msaa != vireo::MSAA::NONE) {
+            for (auto& frame : framesData) {
+                frame.multisampledDepthAttachment = ctx.vireo->createRenderTarget(
+                    config.depthStencilFormat,
+                    extent.width, extent.height,
+                    vireo::RenderTargetType::DEPTH,
+                    { .depthStencil = { .depth = 1.0f, .stencil = 0 } },
+                    1,
+                    config.msaa,
+                    "MSAA depth stencil attachment");
+            }
+        }
     }
 }

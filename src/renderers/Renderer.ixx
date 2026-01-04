@@ -116,6 +116,12 @@ export namespace lysa {
         const RendererConfiguration config;
         // Depth-only pre-pass used by both forward and deferred renderers
         DepthPrepass depthPrePass;
+        /** Per-frame attachments owned by the renderer. */
+        struct FrameData {
+            std::shared_ptr<vireo::RenderTarget> colorAttachment;
+            std::shared_ptr<vireo::RenderTarget> depthAttachment;
+        };
+        std::vector<FrameData> framesData;
 
         Renderer(
             const Context& ctx,
@@ -130,21 +136,12 @@ export namespace lysa {
         virtual void colorPass(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
-            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
-            const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             bool clearAttachment,
             uint32 frameIndex) = 0;
 
     private:
-        /** Per-frame attachments owned by the renderer. */
-        struct FrameData {
-            std::shared_ptr<vireo::RenderTarget> colorAttachment;
-            std::shared_ptr<vireo::RenderTarget> depthAttachment;
-        };
-
         const MeshManager& meshManager;
         vireo::Extent currentExtent{};
-        std::vector<FrameData> framesData;
 
     };
 }
