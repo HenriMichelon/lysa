@@ -10,6 +10,7 @@ module;
 module lysa.resources.image;
 
 import lysa.exception;
+import lysa.log;
 
 namespace lysa {
 

@@ -27,6 +27,7 @@ namespace lysa {
     }
 
     void AssetsPack::loadScene(Context& ctx, std::ifstream& stream, const Callback& callback) {
+        auto& imageManager = ctx.res.get<ImageManager>();
         auto& materialManager = ctx.res.get<MaterialManager>();
         auto& meshManager = ctx.res.get<MeshManager>();
         // Read the file global header
@@ -322,6 +323,14 @@ namespace lysa {
         materialManager.flush();
         meshManager.flush();
         callback(nodeHeaders, meshes, childrenIndexes);
+
+        for (auto& texture : textures) {
+            auto& image = imageManager[texture.image];
+            if (image.refCounter == 0) {
+                Log::warning("Image ", image.getName(), " not used in the assets pack");
+                imageManager.destroy(texture.image);
+            }
+        }
 
         // Update renderers pipelines in current rendering targets
         //ctx.res.get<RenderTargetManager>().updatePipelines(pipelineIds);  XXX
