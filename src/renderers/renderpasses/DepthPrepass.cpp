@@ -70,6 +70,15 @@ namespace lysa {
                     1,
                     config.msaa,
                     "MSAA depth stencil attachment");
+                const auto depthStage =
+                    config.depthStencilFormat == vireo::ImageFormat::D32_SFLOAT_S8_UINT ||
+                    config.depthStencilFormat == vireo::ImageFormat::D24_UNORM_S8_UINT   ?
+                    vireo::ResourceState::RENDER_TARGET_DEPTH_STENCIL :
+                    vireo::ResourceState::RENDER_TARGET_DEPTH;
+                commandList->barrier(
+                    frame.multisampledDepthAttachment,
+                    vireo::ResourceState::UNDEFINED,
+                    depthStage);
             }
         }
     }
