@@ -11,14 +11,6 @@ import lysa.log;
 
 namespace lysa {
 
-    LightData LightDesc::getData() const {
-        return {
-            .type = type,
-            .position = float4{position, 0.0f},
-            .color = colorAndIntensity
-        };
-    }
-
     void GraphicPipelineData::createDescriptorLayouts(const std::shared_ptr<vireo::Vireo>& vireo) {
         pipelineDescriptorLayout = vireo->createDescriptorLayout("Pipeline data");
         pipelineDescriptorLayout->add(BINDING_INSTANCES, vireo::DescriptorType::DEVICE_STORAGE);

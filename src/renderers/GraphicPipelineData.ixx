@@ -53,36 +53,6 @@ export namespace lysa {
 
         static const std::vector<vireo::VertexAttributeDesc> vertexAttributes;
     };
-    /**
-     * Light data in GPU memory
-     */
-    struct LightData {
-        // light params
-        int32 type{0}; // Light::LightType
-        float range{0.0f};
-        float cutOff{0.0f};
-        float outerCutOff{0.0f};
-        float4 position{0.0f};
-        float4 direction{0.0f};
-        float4 color{1.0f, 1.0f, 1.0f, 1.0f}; // RGB + Intensity;
-        // shadow map params
-        int32 mapIndex{-1};
-        uint32 cascadesCount{0};
-        float4 cascadeSplitDepth{0.0f};
-        float4x4 lightSpace[6];
-    };
-
-    /**
-    * Struct to pass light data from the ECS/POO systems to the rendering system
-    */
-    struct LightDesc {
-        int32 type; // Light::LightType
-        bool visible;
-        float3 position;
-        float4 colorAndIntensity;
-        LightData getData() const;
-    };
-
 
     /**
      * %A single draw instance.

@@ -12,6 +12,7 @@ import lysa.math;
 import lysa.memory;
 import lysa.resources.camera;
 import lysa.resources.environment;
+import lysa.resources.light;
 import lysa.resources.material;
 import lysa.resources.manager;
 import lysa.resources.mesh_instance;
@@ -159,7 +160,7 @@ export namespace lysa {
         /** Associates each light with a shadow map index. */
         // std::map<std::shared_ptr<LightData>, uint32> shadowMapIndex;
         /** Lights scheduled for removal (deferred to safe points). */
-        std::list<std::shared_ptr<LightDesc>> removedLights;
+        std::list<std::shared_ptr<Light>> removedLights;
         /** True if the set of shadow maps has changed and descriptors must be updated. */
         bool shadowMapsUpdated{false};
 
@@ -176,7 +177,7 @@ export namespace lysa {
         bool materialsUpdated{false};
 
         /** Active lights list. */
-        std::list<std::shared_ptr<LightDesc>> lights;
+        std::list<std::shared_ptr<Light>> lights;
         /** GPU buffer with packed light parameters. */
         std::shared_ptr<vireo::Buffer> lightsBuffer;
         /** Number of allocated light slots in lightsBuffer. */
