@@ -81,13 +81,17 @@ export namespace lysa {
         void compute(vireo::CommandList& commandList, const Camera& camera) const;
 
         /** Adds a mesh instance to the scene. */
-        void addInstance(const MeshInstance*& meshInstance);
+        void addInstance(const MeshInstance* meshInstance);
 
-        /** Adds a mesh instance to the scene. */
-        void updateInstance(const MeshInstance*& meshInstance);
+        /** Update a mesh instance to the scene. */
+        void updateInstance(const MeshInstance* meshInstance);
 
         /** Removes a node previously added to the scene. */
-        void removeInstance(const MeshInstance*& meshInstance);
+        void removeInstance(const MeshInstance* meshInstance);
+
+        void addLight(const Light* light);
+
+        void removeLight(const Light* light);
 
         /**
          * Issues draw calls for opaque models using the supplied pipelines map.
@@ -152,15 +156,15 @@ export namespace lysa {
         /** Current environment settings (skybox, etc.). */
         Environment environment;
         /** Map of lights to their shadow-map renderpasses. */
-        // std::map<std::shared_ptr<Light>, std::shared_ptr<Renderpass>> shadowMapRenderers;
+        // std::map<const Light*, std::shared_ptr<Renderpass>> shadowMapRenderers;
         /** Array of shadow map images. */
         std::vector<std::shared_ptr<vireo::Image>> shadowMaps;
         /** Array of transparency-color shadow maps (optional). */
         std::vector<std::shared_ptr<vireo::Image>> shadowTransparencyColorMaps;
         /** Associates each light with a shadow map index. */
-        // std::map<std::shared_ptr<LightData>, uint32> shadowMapIndex;
+        // std::map<const Light*>, uint32> shadowMapIndex;
         /** Lights scheduled for removal (deferred to safe points). */
-        std::list<std::shared_ptr<Light>> removedLights;
+        std::unordered_set<const Light*> removedLights;
         /** True if the set of shadow maps has changed and descriptors must be updated. */
         bool shadowMapsUpdated{false};
 
@@ -177,7 +181,7 @@ export namespace lysa {
         bool materialsUpdated{false};
 
         /** Active lights list. */
-        std::list<std::shared_ptr<Light>> lights;
+        std::unordered_set<const Light*> lights;
         /** GPU buffer with packed light parameters. */
         std::shared_ptr<vireo::Buffer> lightsBuffer;
         /** Number of allocated light slots in lightsBuffer. */
@@ -209,9 +213,9 @@ export namespace lysa {
             const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines,
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const;
 
-        // void enableLightShadowCasting(const std::shared_ptr<Node>&node);
+        // void enableLightShadowCasting(const unique_id lightId);
 
-        // void disableLightShadowCasting(const std::shared_ptr<Light>&light);
+        // void disableLightShadowCasting(const unique_id lightId);
     };
 
 }

@@ -47,6 +47,20 @@ namespace lysa {
         return meshInstances.contains(&meshInstance);
     }
 
+    void Scene::addLight(const Light& light) {
+        auto lock = std::lock_guard(frameDataMutex);
+        for (const auto& frame : framesData) {
+            frame.scene->addLight(&light);
+        }
+    }
+
+    void Scene::removeLight(const Light& light) {
+        auto lock = std::lock_guard(frameDataMutex);
+        for (const auto& frame : framesData) {
+            frame.scene->addLight(&light);
+        }
+    }
+
     void Scene::addInstance(const MeshInstance& meshInstance, const bool async) {
         const auto* pMeshInstance = &meshInstance;
         assert([&]{return !meshInstances.contains(pMeshInstance);}, "MeshInstance already in scene");

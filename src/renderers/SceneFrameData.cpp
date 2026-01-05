@@ -138,9 +138,10 @@ namespace lysa {
         }
         if (!removedLights.empty()) {
             for (const auto& light : removedLights) {
-                lights.remove(light);
+                lights.erase(light);
                 //disableLightShadowCasting(light);
             }
+            removedLights.clear();
         }
 
         if (shadowMapsUpdated) {
@@ -219,7 +220,17 @@ namespace lysa {
         }
     }
 
-    void SceneFrameData::addInstance(const MeshInstance*& meshInstance) {
+    void SceneFrameData::addLight(const Light* light) {
+        lights.insert(light);
+    }
+
+    void SceneFrameData::removeLight(const Light* light) {
+        if (lights.contains(light)) {
+            removedLights.insert(light);
+        }
+    }
+
+    void SceneFrameData::addInstance(const MeshInstance* meshInstance) {
         const auto& mesh = meshInstance->getMesh();
         assert([&]{ return !meshInstancesDataMemoryBlocks.contains(meshInstance);}, "Mesh instance already in the scene");
         assert([&]{return !mesh.getMaterials().empty(); }, "Models without materials are not supported");
@@ -256,7 +267,7 @@ namespace lysa {
         }
     }
 
-    void SceneFrameData::updateInstance(const MeshInstance*& meshInstance) {
+    void SceneFrameData::updateInstance(const MeshInstance* meshInstance) {
         assert([&]{ return meshInstancesDataMemoryBlocks.contains(meshInstance); },
 "MeshInstance does not belong to the scene");
         const auto meshInstanceData = meshInstance->getData();
@@ -275,7 +286,7 @@ namespace lysa {
         pipelinesData[pipelineId]->addInstance(meshInstance, meshInstancesDataMemoryBlocks);
     }
 
-    void SceneFrameData::removeInstance(const MeshInstance*& meshInstance) {
+    void SceneFrameData::removeInstance(const MeshInstance* meshInstance) {
         assert([&]{ return meshInstancesDataMemoryBlocks.contains(meshInstance); },
             "MeshInstance does not belong to the scene");
         for (const auto& pipelineId : std::views::keys(pipelineIds)) {

@@ -38,6 +38,7 @@ export import lysa.renderers.renderpasses.renderpass;
 export import lysa.resources.camera;
 export import lysa.resources.environment;
 export import lysa.resources.image;
+export import lysa.resources.light;
 export import lysa.resources.manager;
 export import lysa.resources.material;
 export import lysa.resources.mesh;

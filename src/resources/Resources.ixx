@@ -42,6 +42,8 @@ export namespace lysa {
          */
         UnmanagedResource() : Resource(nextId++) {}
 
+        UnmanagedResource(const Resource& other) : Resource(other.id) {}
+
     private:
         /** @brief Static counter for generating unique IDs */
         static inline std::atomic<unique_id> nextId{1};

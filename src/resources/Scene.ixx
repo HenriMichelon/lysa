@@ -14,6 +14,7 @@ import lysa.resources;
 import lysa.resources.manager;
 import lysa.resources.environment;
 import lysa.resources.image;
+import lysa.resources.light;
 import lysa.resources.material;
 import lysa.resources.mesh;
 import lysa.resources.mesh_instance;
@@ -54,6 +55,10 @@ export namespace lysa {
 
         /** Removes a node previously added to the scene. */
         void removeInstance(const MeshInstance& meshInstance, bool async = false);
+
+        void addLight(const Light& light);
+
+        void removeLight(const Light& light);
 
         void processDeferredOperations(uint32 frameIndex);
 
