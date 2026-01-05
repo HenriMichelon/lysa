@@ -46,9 +46,6 @@ namespace lysa {
 
     void Renderer::updatePipelines(const SceneFrameData& scene) {
         const auto& pipelineIds = scene.getPipelineIds();
-        for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
-            static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->updatePipelines(pipelineIds);
-        }
         updatePipelines(pipelineIds);
     }
 

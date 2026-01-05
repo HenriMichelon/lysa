@@ -136,22 +136,6 @@ namespace lysa {
         const vireo::CommandList& commandList,
         const Camera& camera,
         const uint32 frameIndex) {
-        for (const auto* light : lights) {
-            if (light->castShadows && !shadowMapRenderers.contains(light)) {
-                enableLightShadowCasting(light);
-            }
-        }
-        for (const auto [light, renderpass] : shadowMapRenderers) {
-            if (light->visible && light->castShadows) {
-                const auto shadowMapRenderer = std::dynamic_pointer_cast<ShadowMapPass>(renderpass);
-                shadowMapRenderer->setCurrentCamera(camera);
-                shadowMapRenderer->update(frameIndex);
-            }
-        }
-
-        if (!drawCommandsStagingBufferRecycleBin.empty()) {
-            drawCommandsStagingBufferRecycleBin.clear();
-        }
         if (!removedLights.empty()) {
             for (const auto& light : removedLights) {
                 disableLightShadowCasting(light);
@@ -159,11 +143,29 @@ namespace lysa {
             }
             removedLights.clear();
         }
-
+        for (const auto* light : lights) {
+            if (light->castShadows) {
+                enableLightShadowCasting(light);
+            } else {
+                disableLightShadowCasting(light);
+            }
+        }
         if (shadowMapsUpdated) {
             descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
             descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
             shadowMapsUpdated = false;
+        }
+        for (const auto [light, renderpass] : shadowMapRenderers) {
+            if (light->visible && light->castShadows) {
+                const auto shadowMapRenderer = std::dynamic_pointer_cast<ShadowMapPass>(renderpass);
+                shadowMapRenderer->setCurrentCamera(camera);
+                shadowMapRenderer->updatePipelines(pipelineIds);
+                shadowMapRenderer->update(frameIndex);
+            }
+        }
+
+        if (!drawCommandsStagingBufferRecycleBin.empty()) {
+            drawCommandsStagingBufferRecycleBin.clear();
         }
 
         const auto sceneUniform = SceneData {
@@ -434,7 +436,7 @@ namespace lysa {
                 light,
                 meshInstancesDataArray,
                 maxMeshSurfacePerPipeline);
-            Log::info("enableLightShadowCasting for #", std::to_string(light->id));
+            // Log::info("enableLightShadowCasting for #", std::to_string(light->id));
             materialsUpdated = true; // force update pipelines
             shadowMapRenderers[light] = shadowMapRenderer;
             const auto blankImage = ctx.res.get<ImageManager>().getBlankImage();
@@ -455,7 +457,7 @@ namespace lysa {
 
     void SceneFrameData::disableLightShadowCasting(const Light* light) {
         if (shadowMapRenderers.contains(light)) {
-            Log::info("disableLightShadowCasting for #", std::to_string(light->id));
+            // Log::info("disableLightShadowCasting for #", std::to_string(light->id));
             const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers.at(light));
             const auto index = shadowMapIndex[light];
             const auto& blankImage = ctx.res.get<ImageManager>().getBlankImage();

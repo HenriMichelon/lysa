@@ -28,14 +28,13 @@ namespace lysa {
         descriptorLayout->build();
 
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
-                                                                          ctx.globalDescriptorLayout,
-                                                                          SceneFrameData::sceneDescriptorLayout,
-                                                                          GraphicPipelineData::pipelineDescriptorLayout,
-                                                                          descriptorLayout,
-                                                                          ctx.samplers.getDescriptorLayout()
-                                                                      },
-                                                                      SceneFrameData::instanceIndexConstantDesc,
-                                                                      name);
+              ctx.globalDescriptorLayout,
+              SceneFrameData::sceneDescriptorLayout,
+              GraphicPipelineData::pipelineDescriptorLayout,
+              descriptorLayout,
+              ctx.samplers.getDescriptorLayout()
+          },
+          SceneFrameData::instanceIndexConstantDesc,name);
 
         pipelineConfig.vertexInputLayout = vireo.createVertexLayout(sizeof(VertexData), vertexAttributes);
         pipelineConfig.vertexShader = loadShader(VERTEX_SHADER);
@@ -291,7 +290,9 @@ namespace lysa {
                     light->nearShadowClipDistance,
                     light->range);
                 const auto viewMatrix = look_at(lightPosition, target, AXIS_UP);
+                subpassData[0].inverseViewMatrix = inverse(viewMatrix);
                 subpassData[0].globalUniform.lightSpace = mul(viewMatrix,  subpassData[0].projection);
+                subpassData[0].globalUniform.lightPosition = float4(lightPosition, light->range);
                 subpassData[0].globalUniform.transparencyScissor = light->shadowTransparencyScissors;
                 subpassData[0].globalUniform.transparencyColorScissor = light->shadowTransparencyColorScissors;
                 subpassData[0].globalUniformBuffer->write(&subpassData[0].globalUniform);
