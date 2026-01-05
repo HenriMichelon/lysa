@@ -69,13 +69,6 @@ export namespace lysa {
         void setEnvironment(const Environment& environment) {
             this->environment = environment;
         }
-
-        /** Set initial dynamic states */
-        void prepare(
-            const vireo::CommandList& commandList,
-            const vireo::Viewport& viewport,
-            const vireo::Rect& scissors) const;
-
         /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
         void update(const vireo::CommandList& commandList, const Camera& camera, uint32 frameIndex);
 

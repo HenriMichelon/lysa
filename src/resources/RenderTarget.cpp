@@ -159,8 +159,7 @@ namespace lysa {
         frame.prepareCommandList->begin();
         for (auto& view : views) {
             auto& data = view.scene.get(frameIndex);
-            data.prepare(*frame.prepareCommandList, view.viewport, view.scissors);
-            renderer->prepare(*frame.prepareCommandList, data, frameIndex);
+            renderer->prepare(*frame.prepareCommandList, data, view.viewport, view.scissors, frameIndex);
         }
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit(
@@ -175,8 +174,7 @@ namespace lysa {
         auto clearAttachment{true};
         for (auto& view : views) {
             auto& data = view.scene.get(frameIndex);
-            data.prepare(*commandList, view.viewport, view.scissors);
-            renderer->render(*commandList, data, clearAttachment, frameIndex);
+            renderer->render(*commandList, data,  view.viewport, view.scissors, clearAttachment, frameIndex);
             clearAttachment = false;
         }
 

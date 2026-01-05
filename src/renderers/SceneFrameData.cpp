@@ -124,14 +124,6 @@ namespace lysa {
         }
     }
 
-    void SceneFrameData::prepare(
-        const vireo::CommandList& commandList,
-        const vireo::Viewport& viewport,
-        const vireo::Rect& scissors) const {
-        commandList.setViewport(viewport);
-        commandList.setScissors(scissors);
-    }
-
     void SceneFrameData::update(
         const vireo::CommandList& commandList,
         const Camera& camera,
@@ -209,7 +201,7 @@ namespace lysa {
                 if (light->visible) {
                     lightsArray[lightIndex] = light->getData();
                     if (shadowMapRenderers.contains(light)) {
-                        const auto&shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers[light]);
+                        const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers[light]);
                         lightsArray[lightIndex].mapIndex = shadowMapIndex[light];
                         switch (light->type) {
                             case LightType::LIGHT_DIRECTIONAL: {

@@ -58,22 +58,30 @@ namespace lysa {
     void Renderer::prepare(
         vireo::CommandList& commandList,
         const SceneFrameData& scene,
+        const vireo::Viewport& viewport,
+        const vireo::Rect& scissors,
         const uint32 frameIndex) {
         commandList.bindVertexBuffer(meshManager.getVertexBuffer());
         commandList.bindIndexBuffer(meshManager.getIndexBuffer());
         for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
             static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->render(commandList, scene);
         }
+        commandList.setViewport(viewport);
+        commandList.setScissors(scissors);
         depthPrePass.render(commandList, scene, framesData[frameIndex].depthAttachment, frameIndex);
     }
 
     void Renderer::render(
         vireo::CommandList& commandList,
         const SceneFrameData& scene,
+        const vireo::Viewport& viewport,
+        const vireo::Rect& scissors,
         const bool clearAttachment,
         const uint32 frameIndex) {
         commandList.bindVertexBuffer(meshManager.getVertexBuffer());
         commandList.bindIndexBuffer(meshManager.getIndexBuffer());
+        commandList.setViewport(viewport);
+        commandList.setScissors(scissors);
         colorPass(commandList, scene, clearAttachment, frameIndex);
     }
 

@@ -7,6 +7,7 @@
 module lysa.renderers.renderpasses.shadow_map_pass;
 
 import lysa.exception;
+import lysa.log;
 
 namespace lysa {
 
@@ -320,15 +321,6 @@ namespace lysa {
                   vireo::ResourceState::UNDEFINED,
                   vireo::ResourceState::SHADER_READ);
             }
-
-            auto count{0};
-            for (const auto& frustumCulling : std::views::values(data.frustumCullingPipelines)) {
-                count += frustumCulling->getDrawCommandsCount();
-            }
-            if (count == 0) {
-                continue;
-            }
-
             commandList.barrier(
                 data.shadowMap,
                 vireo::ResourceState::SHADER_READ,

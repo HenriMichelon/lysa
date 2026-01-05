@@ -55,7 +55,7 @@ export namespace lysa {
         bool castShadows;
         uint32 shadowMapSize;
         bool visible{true};
-        float nearShadowClipDistance{0.1f};
+        float nearShadowClipDistance{0.01f};
         uint32 shadowMapCascadesCount{3};
         float cascadeSplitLambda{.98f};
         float shadowTransparencyScissors{0.5f};

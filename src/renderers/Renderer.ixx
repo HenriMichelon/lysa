@@ -73,12 +73,16 @@ export namespace lysa {
         void prepare(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors,
             uint32 frameIndex);
 
         /** Main render stage: records opaque/transparent draw calls. */
         void render(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors,
             bool clearAttachment,
             uint32 frameIndex);
 
