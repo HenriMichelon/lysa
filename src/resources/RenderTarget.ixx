@@ -60,6 +60,10 @@ export namespace lysa {
 
         void setPause(bool pause);
 
+        float getWidth() const { return static_cast<float>(swapChain->getExtent().width); }
+
+        float getHeight() const { return static_cast<float>(swapChain->getExtent().height); }
+
         float getAspectRatio() const { return swapChain->getAspectRatio(); }
 
         uint32 getFramesInFlight() const { return swapChain->getFramesInFlight(); }
