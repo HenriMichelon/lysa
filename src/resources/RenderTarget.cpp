@@ -136,7 +136,7 @@ namespace lysa {
 
         frame.updateCommandList->begin();
         for (auto& view : views) {
-            view.scene.get(frameIndex).update(*frame.updateCommandList, view.camera);
+            view.scene.get(frameIndex).update(*frame.updateCommandList, view.camera, frameIndex);
         }
         frame.updateCommandList->end();
         ctx.graphicQueue->submit(
@@ -146,11 +146,7 @@ namespace lysa {
 
         frame.computeCommandList->begin();
         for (auto& view : views) {
-            renderer->compute(
-                *frame.computeCommandList,
-                view.scene.get(frameIndex),
-                view.camera,
-                frameIndex);
+            view.scene.get(frameIndex).compute(*frame.computeCommandList, view.camera);
         }
         frame.computeCommandList->end();
         ctx.graphicQueue->submit(

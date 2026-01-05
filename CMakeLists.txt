@@ -116,7 +116,7 @@ set(SHADERS_SOURCE_FILES
         "${SHADERS_SRC_DIR}/default.vert.slang"
         "${SHADERS_SRC_DIR}/depth_prepass.vert.slang"
         "${SHADERS_SRC_DIR}/frustum_culling.comp.slang"
-#        "${SHADERS_SRC_DIR}/frustum_culling_shadowmap.comp.slang"
+        "${SHADERS_SRC_DIR}/frustum_culling_shadowmap.comp.slang"
 #        "${SHADERS_SRC_DIR}/quad.vert.slang"
 #        "${SHADERS_SRC_DIR}/vector.slang"
 #        "${SHADERS_SRC_DIR}/vector_ui.slang"
@@ -140,9 +140,9 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/postprocess/gamma_correction.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/reinhard.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/aces.frag.slang"
-#        "${SHADERS_SRC_DIR}/shadows/shadowmap.vert.slang"
-#        "${SHADERS_SRC_DIR}/shadows/shadowmap.frag.slang"
-#        "${SHADERS_SRC_DIR}/shadows/shadowmap_cubemap.frag.slang"
+        "${SHADERS_SRC_DIR}/shadows/shadowmap.vert.slang"
+        "${SHADERS_SRC_DIR}/shadows/shadowmap.frag.slang"
+        "${SHADERS_SRC_DIR}/shadows/shadowmap_cubemap.frag.slang"
 )
 add_shaders(${LYSA_TARGET}_shaders ${SHADERS_BUILD_DIR} ${SHADERS_INCLUDE_DIR} ${SHADERS_SOURCE_FILES})
 
@@ -252,6 +252,7 @@ add_library(${LYSA_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.cpp
 
         ${ENGINE_SRC_DIR}/resources/Image.cpp
         ${ENGINE_SRC_DIR}/resources/Material.cpp
@@ -302,6 +303,7 @@ target_sources(${LYSA_TARGET}
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.ixx
 
         ${ENGINE_SRC_DIR}/resources/Camera.ixx
         ${ENGINE_SRC_DIR}/resources/Environment.ixx

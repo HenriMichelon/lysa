@@ -16,8 +16,10 @@ import lysa.resources.light;
 import lysa.resources.material;
 import lysa.resources.manager;
 import lysa.resources.mesh_instance;
+import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.pipelines.frustum_culling;
+import lysa.renderers.renderpasses.renderpass;
 
 export namespace lysa {
 
@@ -75,7 +77,7 @@ export namespace lysa {
             const vireo::Rect& scissors) const;
 
         /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
-        void update(const vireo::CommandList& commandList, const Camera& camera);
+        void update(const vireo::CommandList& commandList, const Camera& camera, uint32 frameIndex);
 
         /** Executes compute workloads such as frustum culling. */
         void compute(vireo::CommandList& commandList, const Camera& camera) const;
@@ -135,15 +137,17 @@ export namespace lysa {
         auto getDescriptorSetOptional1() const { return descriptorSetOpt1; }
 
         /** Returns a view over the shadow map renderers values. */
-        // auto getShadowMapRenderers() const { return std::views::values(shadowMapRenderers); }
+        auto getShadowMapRenderers() const { return std::views::values(shadowMapRenderers); }
 
         SceneFrameData(SceneFrameData&) = delete;
+
         SceneFrameData& operator=(SceneFrameData&) = delete;
 
     private:
         const Context& ctx;
         MaterialManager& materialManager;
         const uint32 maxLights;
+        const uint32 maxShadowMaps;
         const uint32 maxMeshSurfacePerPipeline;
         /** Number of frames processed in-flight. */
         const uint32 framesInFlight;
@@ -155,14 +159,14 @@ export namespace lysa {
         std::shared_ptr<vireo::Buffer> sceneUniformBuffer;
         /** Current environment settings (skybox, etc.). */
         Environment environment;
-        /** Map of lights to their shadow-map renderpasses. */
-        // std::map<const Light*, std::shared_ptr<Renderpass>> shadowMapRenderers;
+        /** Map of lights to their shadow-map render passes. */
+        std::map<const Light*, std::shared_ptr<Renderpass>> shadowMapRenderers;
         /** Array of shadow map images. */
         std::vector<std::shared_ptr<vireo::Image>> shadowMaps;
         /** Array of transparency-color shadow maps (optional). */
         std::vector<std::shared_ptr<vireo::Image>> shadowTransparencyColorMaps;
         /** Associates each light with a shadow map index. */
-        // std::map<const Light*>, uint32> shadowMapIndex;
+        std::map<const Light*, uint32> shadowMapIndex;
         /** Lights scheduled for removal (deferred to safe points). */
         std::unordered_set<const Light*> removedLights;
         /** True if the set of shadow maps has changed and descriptors must be updated. */
@@ -213,9 +217,9 @@ export namespace lysa {
             const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines,
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const;
 
-        // void enableLightShadowCasting(const unique_id lightId);
+        void enableLightShadowCasting(const Light* light);
 
-        // void disableLightShadowCasting(const unique_id lightId);
+        void disableLightShadowCasting(const Light* light);
     };
 
 }

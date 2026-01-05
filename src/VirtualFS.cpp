@@ -127,7 +127,7 @@ namespace lysa {
         std::ifstream file(
             getPath(APP_URI + config.shadersDir + "/" + shaderName + vireo->getShaderFileExtension()),
             std::ios::ate | std::ios::binary);
-        if (!file.is_open()) { throw Exception("failed to open compiled shader'", shaderName, "'"); }
+        if (!file.is_open()) { throw Exception("failed to open compiled shader '", shaderName, "'"); }
         loadBinaryData(file, out);
     }
 

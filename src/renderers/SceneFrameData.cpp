@@ -10,6 +10,7 @@ import lysa.exception;
 import lysa.log;
 import lysa.math;
 import lysa.resources.image;
+import lysa.renderers.renderpasses.shadow_map_pass;
 
 namespace lysa {
 
@@ -63,6 +64,7 @@ namespace lysa {
             "sceneUniform")},
         framesInFlight{framesInFlight},
         maxMeshSurfacePerPipeline(maxMeshSurfacePerPipeline),
+        maxShadowMaps(maxShadowMaps),
         maxLights(maxLights),
         materialManager(ctx.res.get<MaterialManager>()) {
 
@@ -108,10 +110,10 @@ namespace lysa {
                 *pipelineData->culledDrawCommandsBuffer,
                 *pipelineData->culledDrawCommandsCountBuffer);
         }
-        // for (const auto& renderer : std::views::values(shadowMapRenderers)) {
-        //     const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(renderer);
-        //     shadowMapRenderer->compute(commandList, pipelinesData);
-        // }
+        for (const auto& renderer : std::views::values(shadowMapRenderers)) {
+            const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(renderer);
+            shadowMapRenderer->compute(commandList, pipelinesData);
+        }
     }
 
     void SceneFrameData::updatePipelinesData(
@@ -132,14 +134,28 @@ namespace lysa {
 
     void SceneFrameData::update(
         const vireo::CommandList& commandList,
-        const Camera& camera) {
+        const Camera& camera,
+        const uint32 frameIndex) {
+        for (const auto* light : lights) {
+            if (light->castShadows && !shadowMapRenderers.contains(light)) {
+                enableLightShadowCasting(light);
+            }
+        }
+        for (const auto [light, renderpass] : shadowMapRenderers) {
+            if (light->visible && light->castShadows) {
+                const auto shadowMapRenderer = std::dynamic_pointer_cast<ShadowMapPass>(renderpass);
+                shadowMapRenderer->setCurrentCamera(camera);
+                shadowMapRenderer->update(frameIndex);
+            }
+        }
+
         if (!drawCommandsStagingBufferRecycleBin.empty()) {
             drawCommandsStagingBufferRecycleBin.clear();
         }
         if (!removedLights.empty()) {
             for (const auto& light : removedLights) {
+                disableLightShadowCasting(light);
                 lights.erase(light);
-                //disableLightShadowCasting(light);
             }
             removedLights.clear();
         }
@@ -190,29 +206,29 @@ namespace lysa {
             for (const auto& light : lights) {
                 if (light->visible) {
                     lightsArray[lightIndex] = light->getData();
-                    // if (shadowMapRenderers.contains(light)) {
-                    //     const auto&shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers[light]);
-                    //     lightsArray[lightIndex].mapIndex = shadowMapIndex[light];
-                    //     switch (light->getLightType()) {
-                    //         case Light::LIGHT_DIRECTIONAL: {
-                    //             for (int cascadeIndex = 0; cascadeIndex < lightsArray[lightIndex].cascadesCount ; cascadeIndex++) {
-                    //                 lightsArray[lightIndex].lightSpace[cascadeIndex] =
-                    //                     shadowMapRenderer->getLightSpace(cascadeIndex);
-                    //                 lightsArray[lightIndex].cascadeSplitDepth[cascadeIndex] =
-                    //                     shadowMapRenderer->getCascadeSplitDepth(cascadeIndex);
-                    //             }
-                    //             break;
-                    //         }
-                    //         case Light::LIGHT_SPOT: {
-                    //             lightsArray[lightIndex].lightSpace[0] = shadowMapRenderer->getLightSpace(0);
-                    //             break;
-                    //         }
-                    //         case Light::LIGHT_OMNI: {
-                    //             break;
-                    //         }
-                    //         default:;
-                    //     }
-                    // }
+                    if (shadowMapRenderers.contains(light)) {
+                        const auto&shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers[light]);
+                        lightsArray[lightIndex].mapIndex = shadowMapIndex[light];
+                        switch (light->type) {
+                            case LightType::LIGHT_DIRECTIONAL: {
+                                for (int cascadeIndex = 0; cascadeIndex < lightsArray[lightIndex].cascadesCount ; cascadeIndex++) {
+                                    lightsArray[lightIndex].lightSpace[cascadeIndex] =
+                                        shadowMapRenderer->getLightSpace(cascadeIndex);
+                                    lightsArray[lightIndex].cascadeSplitDepth[cascadeIndex] =
+                                        shadowMapRenderer->getCascadeSplitDepth(cascadeIndex);
+                                }
+                                break;
+                            }
+                            case LightType::LIGHT_SPOT: {
+                                lightsArray[lightIndex].lightSpace[0] = shadowMapRenderer->getLightSpace(0);
+                                break;
+                            }
+                            case LightType::LIGHT_OMNI: {
+                                break;
+                            }
+                            default:;
+                        }
+                    }
                     lightIndex++;
                 }
             }
@@ -222,6 +238,9 @@ namespace lysa {
 
     void SceneFrameData::addLight(const Light* light) {
         lights.insert(light);
+        if (light->castShadows) {
+            enableLightShadowCasting(light);
+        }
     }
 
     void SceneFrameData::removeLight(const Light* light) {
@@ -408,50 +427,47 @@ namespace lysa {
         }
     }
 
-    // void SceneRenderContext::enableLightShadowCasting(const std::shared_ptr<Node>&node) {
-    //     if (const auto& light = std::dynamic_pointer_cast<Light>(node)) {
-    //         if (light->getCastShadows() && !shadowMapRenderers.contains(light) && (shadowMapRenderers.size() < MAX_SHADOW_MAPS)) {
-    //             const auto shadowMapRenderer = make_shared<ShadowMapPass>(
-    //                 config,
-    //                 renderingConfig,
-    //                 light,
-    //                 meshInstancesDataArray);
-    //             // INFO("enableLightShadowCasting for ", std::to_string(light->getName()));
-    //             materialsUpdated = true; // force update pipelines
-    //             shadowMapRenderers[light] = shadowMapRenderer;
-    //             shadowMapRenderer->setCurrentCamera(currentCamera);
-    //             const auto& blankImage = Application::getResources().getBlankImage();
-    //             for (uint32 index = 0; index < shadowMaps.size(); index += 6) {
-    //                 if (shadowMaps[index] == blankImage) {
-    //                     shadowMapIndex[light] = index;
-    //                     for (int i = 0; i < shadowMapRenderer->getShadowMapCount(); i++) {
-    //                         shadowMaps[index + i] = shadowMapRenderer->getShadowMap(i)->getImage();
-    //                         shadowTransparencyColorMaps[index + i] = shadowMapRenderer->getTransparencyColorMap(i)->getImage();
-    //                     }
-    //                     shadowMapsUpdated = true;
-    //                     return;
-    //                 }
-    //             }
-    //             throw Exception("Out of memory for shadow map");
-    //         }
-    //     }
-    // }
+    void SceneFrameData::enableLightShadowCasting(const Light* light) {
+        if (light->castShadows && !shadowMapRenderers.contains(light) && (shadowMapRenderers.size() < maxShadowMaps)) {
+            const auto shadowMapRenderer = std::make_shared<ShadowMapPass>(
+                ctx,
+                light,
+                meshInstancesDataArray,
+                maxMeshSurfacePerPipeline);
+            Log::info("enableLightShadowCasting for #", std::to_string(light->id));
+            materialsUpdated = true; // force update pipelines
+            shadowMapRenderers[light] = shadowMapRenderer;
+            const auto blankImage = ctx.res.get<ImageManager>().getBlankImage();
+            for (uint32 index = 0; index < shadowMaps.size(); index += 6) {
+                if (shadowMaps[index] == blankImage) {
+                    shadowMapIndex[light] = index;
+                    for (int i = 0; i < shadowMapRenderer->getShadowMapCount(); i++) {
+                        shadowMaps[index + i] = shadowMapRenderer->getShadowMap(i)->getImage();
+                        shadowTransparencyColorMaps[index + i] = shadowMapRenderer->getTransparencyColorMap(i)->getImage();
+                    }
+                    shadowMapsUpdated = true;
+                    return;
+                }
+            }
+            throw Exception("Out of memory for shadow map");
+        }
+    }
 
-    // void SceneRenderContext::disableLightShadowCasting(const std::shared_ptr<Light>&light) {
-    //     if (shadowMapRenderers.contains(light)) {
-    //         // INFO("disableLightShadowCasting for ", std::to_string(light->getName()));
-    //         const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers.at(light));
-    //         const auto index = shadowMapIndex[light];
-    //         const auto& blankImage = Application::getResources().getBlankImage();
-    //         for (int i = 0; i < shadowMapRenderer->getShadowMapCount(); i++) {
-    //             shadowMaps[index + i] = blankImage;
-    //             shadowTransparencyColorMaps[index + i] = blankImage;
-    //         }
-    //         shadowMapsUpdated = true;
-    //         shadowMapIndex.erase(light);
-    //         shadowMapRenderers.erase(light);
-    //     }
-    // }
+    void SceneFrameData::disableLightShadowCasting(const Light* light) {
+        if (shadowMapRenderers.contains(light)) {
+            Log::info("disableLightShadowCasting for #", std::to_string(light->id));
+            const auto& shadowMapRenderer = std::static_pointer_cast<ShadowMapPass>(shadowMapRenderers.at(light));
+            const auto index = shadowMapIndex[light];
+            const auto& blankImage = ctx.res.get<ImageManager>().getBlankImage();
+            for (int i = 0; i < shadowMapRenderer->getShadowMapCount(); i++) {
+                shadowMaps[index + i] = blankImage;
+                shadowTransparencyColorMaps[index + i] = blankImage;
+            }
+            shadowMapsUpdated = true;
+            shadowMapIndex.erase(light);
+            shadowMapRenderers.erase(light);
+        }
+    }
 
 
 }

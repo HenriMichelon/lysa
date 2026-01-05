@@ -41,54 +41,58 @@ export namespace lysa {
     };
 
     /**
-    * %A Ligth
+    * %A Light
     */
     struct Light : UnmanagedResource {
         LightType type;
         float3 color;
         float intensity;
-        float3 position;
-        float3 direction;
+        /** World space transform */
+        float4x4 transform;
         float range;
-        float cutOff{0.0f};
-        float outerCutOff{0.0f};
+        float cutOff;  // radians
+        float outerCutOff;  // radians
+        bool castShadows;
+        uint32 shadowMapSize;
         bool visible{true};
+        float nearShadowClipDistance{0.1f};
+        uint32 shadowMapCascadesCount{3};
+        float cascadeSplitLambda{.98f};
+        float shadowTransparencyScissors{0.5f};
+        float shadowTransparencyColorScissors{0.75f};
 
-        Light(const Light& other):
-            type(other.type),
-            color(other.color),
-            intensity(other.intensity),
-            position(other.position),
-            direction(other.direction),
-            visible(other.visible) {
-        }
+        float3 getPosition() const { return transform[3].xyz; }
+
+        float3 getFrontVector() const {  return -normalize(transform[2].xyz); }
 
         Light(
             const LightType type,
             const float3& color = {1.0f},
             const float intensity = 1.0f,
-            const float3& position = {},
-            const float3& direction = {},
+            const float4x4& transform = float4x4::identity(),
             const float range = 10.0f,
-            float cutOff = 0.1,
-            float outerCutOff = 0.2) :
+            const float cutOff = 1.3, // 75
+            const float outerCutOff= 1.4, // 80
+            const bool castShadows = false,
+            const uint32 shadowMapSize = 512) :
             type(type),
             color(color),
             intensity(intensity),
-            position(position),
-            direction(direction),
+            transform(transform),
             range(range),
             cutOff(cutOff),
-            outerCutOff(outerCutOff) {}
+            outerCutOff(outerCutOff),
+            castShadows(castShadows),
+            shadowMapSize(shadowMapSize) {}
 
         LightData getData() const {
             return {
                 .type = static_cast<int32>(type),
                 .range = range,
-                .cutOff = cutOff,
-                .outerCutOff = outerCutOff,
-                .position = float4{position, 0.0f},
-                .direction = float4(direction, 0.0f),
+                .cutOff = std::cos(cutOff),
+                .outerCutOff = std::cos(outerCutOff),
+                .position = float4{getPosition(), 0.0f},
+                .direction = float4(getFrontVector(), 0.0f),
                 .color = float4(color, intensity)
             };
         }

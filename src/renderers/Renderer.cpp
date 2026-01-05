@@ -8,6 +8,7 @@ module lysa.renderers.renderer;
 
 import lysa.exception;
 import lysa.renderers.renderpasses.renderpass;
+import lysa.renderers.renderpasses.shadow_map_pass;
 #ifdef FORWARD_RENDERER
 import lysa.renderers.forward_renderer;
 #endif
@@ -45,9 +46,9 @@ namespace lysa {
 
     void Renderer::updatePipelines(const SceneFrameData& scene) {
         const auto& pipelineIds = scene.getPipelineIds();
-        // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
-            // static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->updatePipelines(pipelineIds);
-        // }
+        for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
+            static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->updatePipelines(pipelineIds);
+        }
         updatePipelines(pipelineIds);
     }
 
@@ -57,28 +58,15 @@ namespace lysa {
         // transparencyPass.updatePipelines(pipelineIds);
     }
 
-    void Renderer::compute(
-       vireo::CommandList& commandList,
-       SceneFrameData& scene,
-       const Camera& camera,
-       const uint32 frameIndex) const {
-        // auto resourcesLock = std::lock_guard{Application::getResources().getMutex()};
-        // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
-            // shadowMapRenderer->update(frameIndex);
-        // }
-        scene.update(commandList, camera);
-        scene.compute(commandList, camera);
-    }
-
     void Renderer::prepare(
         vireo::CommandList& commandList,
         const SceneFrameData& scene,
         const uint32 frameIndex) {
         commandList.bindVertexBuffer(meshManager.getVertexBuffer());
         commandList.bindIndexBuffer(meshManager.getIndexBuffer());
-        // for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
-            // static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->render(commandList, scene);
-        // }
+        for (const auto& shadowMapRenderer : scene.getShadowMapRenderers()) {
+            static_pointer_cast<ShadowMapPass>(shadowMapRenderer)->render(commandList, scene);
+        }
         depthPrePass.render(commandList, scene, framesData[frameIndex].depthAttachment, frameIndex);
     }
 

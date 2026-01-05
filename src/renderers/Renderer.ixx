@@ -69,13 +69,6 @@ export namespace lysa {
         /** Performs per-frame housekeeping (e.g., pass-local data updates). */
         virtual void update(uint32 frameIndex);
 
-        /** Executes compute workloads such as frustum culling. */
-        void compute(
-            vireo::CommandList& commandList,
-            SceneFrameData& scene,
-            const Camera& camera,
-            uint32 frameIndex) const;
-
         /** Pre-render stage: uploads, layout transitions, depth pre pass and shadow maps. */
         void prepare(
             vireo::CommandList& commandList,

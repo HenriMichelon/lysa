@@ -19,9 +19,11 @@ export namespace lysa {
         float4x4 transform;
         /** View projection */
         float4x4 projection;
+        float near;
+        float far;
 
-        Camera(const float4x4& transform, const float4x4& projection) :
-            transform(transform), projection(projection) {}
+        Camera(const float4x4& transform, const float4x4& projection, const float near, const float far) :
+            transform(transform), projection(projection), near(near), far(far) {}
     };
 
 }

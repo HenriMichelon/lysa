@@ -19,12 +19,12 @@ namespace lysa {
 
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
-                   ctx.globalDescriptorLayout,
-                   ctx.samplers.getDescriptorLayout(),
-                   SceneFrameData::sceneDescriptorLayout,
-                   GraphicPipelineData::pipelineDescriptorLayout,
-                   SceneFrameData::sceneDescriptorLayoutOptional1},
-                   SceneFrameData::instanceIndexConstantDesc, name);
+           ctx.globalDescriptorLayout,
+           ctx.samplers.getDescriptorLayout(),
+           SceneFrameData::sceneDescriptorLayout,
+           GraphicPipelineData::pipelineDescriptorLayout,
+           SceneFrameData::sceneDescriptorLayoutOptional1},
+           SceneFrameData::instanceIndexConstantDesc, name);
         pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
         renderingConfig.colorRenderTargets[0].clearValue = {
             config.clearColor.r,
