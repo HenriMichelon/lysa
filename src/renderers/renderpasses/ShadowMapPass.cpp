@@ -76,12 +76,14 @@ namespace lysa {
                 size,
                 vireo::RenderTargetType::DEPTH,
                 renderingConfig.depthStencilClearValue);
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
             data.transparencyColorMap = vireo.createRenderTarget(
                 pipelineConfig.colorRenderFormats[0],
                 size,
                 size,
                 vireo::RenderTargetType::COLOR,
                 renderingConfig.colorRenderTargets[0].clearValue);
+#endif
         }
     }
 
@@ -316,21 +318,25 @@ namespace lysa {
                   data.shadowMap,
                   vireo::ResourceState::UNDEFINED,
                   vireo::ResourceState::SHADER_READ);
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
                 commandList.barrier(
                   data.transparencyColorMap,
                   vireo::ResourceState::UNDEFINED,
                   vireo::ResourceState::SHADER_READ);
+#endif
             }
             commandList.barrier(
                 data.shadowMap,
                 vireo::ResourceState::SHADER_READ,
                 vireo::ResourceState::RENDER_TARGET_DEPTH);
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
             commandList.barrier(
                 data.transparencyColorMap,
                 vireo::ResourceState::SHADER_READ,
                 vireo::ResourceState::RENDER_TARGET_COLOR);
-            renderingConfig.depthStencilRenderTarget = data.shadowMap;
             renderingConfig.colorRenderTargets[0].renderTarget = data.transparencyColorMap;
+#endif
+            renderingConfig.depthStencilRenderTarget = data.shadowMap;
             commandList.beginRendering(renderingConfig);
             commandList.bindPipeline(pipeline);
             commandList.bindDescriptor(ctx.globalDescriptorSet, SET_RESOURCES);
@@ -348,10 +354,12 @@ namespace lysa {
                 data.shadowMap,
                 vireo::ResourceState::RENDER_TARGET_DEPTH,
                 vireo::ResourceState::SHADER_READ);
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
             commandList.barrier(
                 data.transparencyColorMap,
                 vireo::ResourceState::RENDER_TARGET_COLOR,
                 vireo::ResourceState::SHADER_READ);
+#endif
         }
         firstPass = false;
     }

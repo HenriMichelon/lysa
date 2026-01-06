@@ -4,7 +4,7 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.renderers.renderpasses.forward_color;
+export module lysa.renderers.renderpasses.forward_color_pass;
 
 import vireo;
 import lysa.context;
@@ -16,9 +16,9 @@ import lysa.resources.material;
 
 export namespace lysa {
 
-    class ForwardColor : public Renderpass {
+    class ForwardColorPass : public Renderpass {
     public:
-        ForwardColor(
+        ForwardColorPass(
             const Context& ctx,
             const RendererConfiguration& config,
             uint32 framesInFlight);

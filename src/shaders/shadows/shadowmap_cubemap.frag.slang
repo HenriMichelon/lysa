@@ -10,6 +10,7 @@ FragmentOutput fragmentMain(VertexOutput input) {
     Material mat = materials[input.materialIndex];
     float4 color = fetchColor(input, mat);
     FragmentOutput output;
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
     if (mat.transparency != Transparency.DISABLED && color.a < global.transparencyColorScissor) {
         if (color.a < global.transparencyScissor) {
             discard;
@@ -18,6 +19,11 @@ FragmentOutput fragmentMain(VertexOutput input) {
     } else {
         output.transparencyColor = float4(0.0, 0.0, 0.0, 1.0);
     }
+#else
+    if (mat.transparency != Transparency.DISABLED && color.a < global.transparencyScissor) {
+        discard;
+    }
+#endif
     output.depth = length(input.worldPos.xyz - global.lightPosition.xyz) / global.lightPosition.w;
     return output;
 }

@@ -24,7 +24,10 @@ namespace lysa {
             ctx.samplers.getDescriptorLayout(),
             SceneFrameData::sceneDescriptorLayout,
             GraphicPipelineData::pipelineDescriptorLayout,
-            SceneFrameData::sceneDescriptorLayoutOptional1},
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+            SceneFrameData::sceneDescriptorLayoutOptional1
+#endif
+        },
             SceneFrameData::instanceIndexConstantDesc, name);
         renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
         framesData.resize(framesInFlight);

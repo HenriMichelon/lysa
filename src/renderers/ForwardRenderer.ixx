@@ -12,7 +12,7 @@ import lysa.context;
 import lysa.types;
 import lysa.renderers.configuration;
 import lysa.renderers.renderer;
-import lysa.renderers.renderpasses.forward_color;
+import lysa.renderers.renderpasses.forward_color_pass;
 import lysa.renderers.scene_frame_data;
 
 export namespace lysa {
@@ -53,6 +53,6 @@ export namespace lysa {
 
     private:
         /** Opaque/alpha-tested color pass used by forward rendering. */
-        ForwardColor forwardColorPass;
+        ForwardColorPass forwardColorPass;
     };
 }

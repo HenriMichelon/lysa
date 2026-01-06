@@ -20,15 +20,13 @@ namespace lysa {
         materialManager(ctx.res.get<MaterialManager>()),
         meshManager(ctx.res.get<MeshManager>()),
         maxAsyncNodesUpdatedPerFrame(config.asyncObjectUpdatesPerFrame) {
-        framesData.resize(ctx.framesInFlight);
+        framesData.resize(ctx.config.framesInFlight);
         for (auto& data : framesData) {
             data.scene =std::make_unique<SceneFrameData>(
                 ctx,
                 config.maxLights,
                 config.maxMeshInstances,
-                config.maxMeshSurfacePerPipeline,
-                ctx.framesInFlight,
-                ctx.maxShadowMapsPerScene);
+                config.maxMeshSurfacePerPipeline);
         }
     }
 

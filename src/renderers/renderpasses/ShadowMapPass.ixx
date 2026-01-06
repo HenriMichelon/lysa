@@ -110,8 +110,10 @@ export namespace lysa {
         };
 
         vireo::GraphicPipelineConfiguration pipelineConfig {
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
             .colorRenderFormats = { vireo::ImageFormat::R8G8B8A8_SNORM }, // Packed RGB + alpha
             .colorBlendDesc = {{}},
+#endif
             .depthStencilImageFormat = vireo::ImageFormat::D32_SFLOAT,
             .depthTestEnable = true,
             .depthWriteEnable = true,
@@ -121,11 +123,13 @@ export namespace lysa {
         };
 
         vireo::RenderingConfiguration renderingConfig {
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
             .colorRenderTargets = {
                 {
                     .clear = true,
                     .clearValue{ .color = {0.0f, 0.0f, 0.0f, 1.0f} }
                 }},
+#endif
             .depthTestEnable = pipelineConfig.depthTestEnable,
             .clearDepthStencil = true,
             .discardDepthStencilAfterRender = false,

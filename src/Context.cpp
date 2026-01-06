@@ -49,21 +49,13 @@ namespace  lysa {
         }
     }
 
-    Context::Context(
-        const vireo::Backend backend,
-        const size_t eventsCapacity,
-        const size_t commandsCapacity,
-        const size_t samplersCapacity,
-        const VirtualFSConfiguration& virtualFsConfiguration,
-        const uint32 framesInFlight,
-        const uint32 maxShadowMapsPerScene) :
-        framesInFlight(framesInFlight),
-        maxShadowMapsPerScene(maxShadowMapsPerScene),
-        vireo(vireo::Vireo::create(backend, vireoDebugCallback)),
-        fs(virtualFsConfiguration, vireo),
-        events(eventsCapacity),
-        defer(commandsCapacity),
-        samplers(vireo, samplersCapacity),
+    Context::Context(const ContextConfiguration& config):
+        config(config),
+        vireo(vireo::Vireo::create(config.backend, vireoDebugCallback)),
+        fs(config.virtualFsConfiguration, vireo),
+        events(config.eventsReserveCapacity),
+        defer(config.commandsReserveCapacity),
+        samplers(vireo, config.resourcesCapacity.samplers),
         graphicQueue(vireo->createSubmitQueue(vireo::CommandType::GRAPHIC, "Main graphic queue")),
         transferQueue(vireo->createSubmitQueue(vireo::CommandType::TRANSFER, "Main transfer queue")),
         asyncQueue(vireo, transferQueue, graphicQueue) {

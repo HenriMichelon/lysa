@@ -32,8 +32,9 @@ export import lysa.renderers.renderer;
 export import lysa.renderers.scene_frame_data;
 export import lysa.renderers.pipelines.frustum_culling;
 export import lysa.renderers.renderpasses.depth_prepass;
-export import lysa.renderers.renderpasses.forward_color;
+export import lysa.renderers.renderpasses.forward_color_pass;
 export import lysa.renderers.renderpasses.renderpass;
+export import lysa.renderers.renderpasses.shadow_map_pass;
 
 export import lysa.resources.camera;
 export import lysa.resources.environment;
@@ -57,42 +58,6 @@ export import lysa.lua;
 
 export namespace  lysa {
 
-    struct ResourcesCapacity {
-        //! Maximum number of images stored in CPU & GPU memory
-        size_t images{500};
-        //! Maximum number of GPU image samplers
-        size_t samplers{20};
-        //! Maximum number of standard & shader materials in CPU & GPU memory
-        size_t material{100};
-        //! Maximum number of meshes in CPU & GPU memory
-        size_t meshes{1000};
-        //! Maximum number of meshes surfaces in GPU memory
-        size_t surfaces{meshes * 10};
-        //! Maximum number of meshes vertices in GPU memory
-        size_t vertices{surfaces * 1000};
-        //! Maximum number of meshes indices in GPU memory
-        size_t indices{vertices * 10};
-    };
-
-    /**
-     * @brief Configuration object used to initialize a Lysa instance.
-     */
-    struct LysaConfiguration {
-        //! Graphic API used by the graphic backend
-        vireo::Backend backend{vireo::Backend::VULKAN};
-        //! Fixed delta time for the main loop
-        double deltaTime{1.0/60.0};
-        //! Number of simultaneous frames during rendering for ALL render targets and scenes
-        uint32 framesInFlight{2};
-        //! Maximum number of shadow maps per scene
-        uint32 maxShadowMapsPerScene{20};
-        //! Resource capacity configuration
-        ResourcesCapacity resourcesCapacity;
-        size_t eventsReserveCapacity{100};
-        size_t commandsReserveCapacity{1000};
-        //! Virtual file system configuration
-        VirtualFSConfiguration virtualFsConfiguration;
-    };
 
     /**
     * Global events fired during the main loop
@@ -122,7 +87,7 @@ export namespace  lysa {
          * @brief Construct the runtime and initialize subsystems.
          * @param config Configuration values used during startup.
          */
-        Lysa(const LysaConfiguration& config = {});
+        Lysa(const ContextConfiguration& config = {});
 
         ~Lysa();
 

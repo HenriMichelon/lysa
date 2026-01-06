@@ -37,6 +37,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
+#add_compile_definitions(SHADOW_TRANSPARENCY_COLOR_ENABLED ON)
 
 #######################################################
 if (LUA_BINDING)
@@ -210,11 +211,11 @@ endif ()
 if(FORWARD_RENDERER)
     set(FORWARD_RENDERER_SRC
             ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.cpp
-            ${ENGINE_SRC_DIR}/renderers/renderpasses/ForwardColor.cpp
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/ForwardColorPass.cpp
     )
     set(FORWARD_RENDERER_MODULES
             ${ENGINE_SRC_DIR}/renderers/ForwardRenderer.ixx
-            ${ENGINE_SRC_DIR}/renderers/renderpasses/ForwardColor.ixx
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/ForwardColorPass.ixx
     )
 endif ()
 if(DEFERRED_RENDERER)

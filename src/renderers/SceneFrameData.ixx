@@ -38,13 +38,13 @@ export namespace lysa {
 
         /** Optional descriptor binding: transparency color for shadow maps. */
         static constexpr vireo::DescriptorIndex BINDING_SHADOW_MAP_TRANSPARENCY_COLOR{0};
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
         /** Optional descriptor layout (set used when transparency color is needed). */
         inline static std::shared_ptr<vireo::DescriptorLayout> sceneDescriptorLayoutOptional1{nullptr};
+#endif
 
         /** Creates all static descriptor layouts used by scenes and pipelines. */
-        static void createDescriptorLayouts(
-            const std::shared_ptr<vireo::Vireo>& vireo,
-            uint32 maxShadowMaps);
+        static void createDescriptorLayouts(const Context& ctx);
         /** Destroys static descriptor layouts created by createDescriptorLayouts(). */
         static void destroyDescriptorLayouts();
 
@@ -62,9 +62,7 @@ export namespace lysa {
             const Context& ctx,
             uint32 maxLights,
             uint32 maxMeshInstancesPerScene,
-            uint32 maxMeshSurfacePerPipeline,
-            uint32 maxShadowMaps,
-            uint32 framesInFlight);
+            uint32 maxMeshSurfacePerPipeline);
 
         void setEnvironment(const Environment& environment) {
             this->environment = environment;
@@ -126,8 +124,10 @@ export namespace lysa {
         /** Returns the main descriptor set containing scene resources. */
         auto getDescriptorSet() const { return descriptorSet; }
 
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
         /** Returns the optional descriptor set (transparency color for shadows). */
         auto getDescriptorSetOptional1() const { return descriptorSetOpt1; }
+#endif
 
         /** Returns a view over the shadow map renderers values. */
         auto getShadowMapRenderers() const { return std::views::values(shadowMapRenderers); }
@@ -140,14 +140,13 @@ export namespace lysa {
         const Context& ctx;
         MaterialManager& materialManager;
         const uint32 maxLights;
-        const uint32 maxShadowMaps;
         const uint32 maxMeshSurfacePerPipeline;
-        /** Number of frames processed in-flight. */
-        const uint32 framesInFlight;
         /** Main descriptor set for scene bindings (scene, models, lights, textures). */
         std::shared_ptr<vireo::DescriptorSet> descriptorSet;
-        /** Optional descriptor set for special passes (e.g., transparency). */
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+        /** Optional descriptor set for special passes (e.g., shadow map color transparency). */
         std::shared_ptr<vireo::DescriptorSet> descriptorSetOpt1;
+#endif
         /** Uniform buffer containing SceneData. */
         std::shared_ptr<vireo::Buffer> sceneUniformBuffer;
         /** Current environment settings (skybox, etc.). */
@@ -156,8 +155,10 @@ export namespace lysa {
         std::map<const Light*, std::shared_ptr<Renderpass>> shadowMapRenderers;
         /** Array of shadow map images. */
         std::vector<std::shared_ptr<vireo::Image>> shadowMaps;
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
         /** Array of transparency-color shadow maps (optional). */
         std::vector<std::shared_ptr<vireo::Image>> shadowTransparencyColorMaps;
+#endif
         /** Associates each light with a shadow map index. */
         std::map<const Light*, uint32> shadowMapIndex;
         /** Lights scheduled for removal (deferred to safe points). */

@@ -49,7 +49,9 @@ struct VertexOutput {
 
 struct FragmentOutput {
     float depth : SV_Depth;
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
     float4 transparencyColor : SV_Target; // packed RGB + alpha
+#endif
 }
 
 // Apply texture UV transforms

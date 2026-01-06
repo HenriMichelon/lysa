@@ -21,7 +21,7 @@ namespace lysa {
         if (renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
-        if (ctx.framesInFlight <= 0) {
+        if (ctx.config.framesInFlight <= 0) {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
         swapChain = ctx.vireo->createSwapChain(
@@ -29,9 +29,9 @@ namespace lysa {
             ctx.graphicQueue,
             renderingWindowHandle,
             configuration.presentMode,
-            ctx.framesInFlight);
-        renderer = Renderer::create(ctx, configuration.rendererConfiguration, ctx.framesInFlight);
-        framesData.resize(ctx.framesInFlight);
+            ctx.config.framesInFlight);
+        renderer = Renderer::create(ctx, configuration.rendererConfiguration, ctx.config.framesInFlight);
+        framesData.resize(ctx.config.framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
             frame.commandAllocator = ctx.vireo->createCommandAllocator(vireo::CommandType::GRAPHIC);

@@ -7,7 +7,9 @@
 static const float SHADOW_FACTOR = 0.0;
 
 [[vk::binding(3, 2)]] Texture2D shadowMaps[] : register(t3, space2);
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
 [[vk::binding(0, 4)]] Texture2D shadowTransparencyColorMaps[] : register(t0, space4);
+#endif
 
 float3 shadowFactor(Light light, int cascadeIndex, float3 worldPos) {
     const float4 shadowCoord = mul(light.lightSpace[cascadeIndex], float4(worldPos, 1.0));
@@ -42,13 +44,15 @@ float3 shadowFactor(Light light, int cascadeIndex, float3 worldPos) {
         }
     }
     float3 factor = float3(shadow / 9.0);
-    if (shadow > 0) {
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+    if (shadowTransparencyColorEnabled && (shadow > 0)) {
         const float4 transparencyColor = shadowTransparencyColorMaps[light.mapIndex + cascadeIndex]
             .Sample(samplers[SAMPLER_NEAREST_NEAREST_BORDER_LINEAR], projCoords.xy);
         if (transparencyColor.a != 1.0) {
             return lerp(transparencyColor.rgb, float3(1.0), factor);
         }
     }
+#endif
     return factor;
 }
 
@@ -110,11 +114,15 @@ float3 shadowFactorCubemap(Light light, float3 worldPos) {
     }
 
     float3 factor = float3(shadow / samples);
-    SampledCube sc = sampleCube(dir);
-    const float4 transparencyColor = shadowTransparencyColorMaps[light.mapIndex + sc.faceIndex]
-            .Sample(samplers[SAMPLER_LINEAR_LINEAR_EDGE_LINEAR_NOANI], sc.uv);
-    if (transparencyColor.a != 1.0) {
-        return lerp(transparencyColor.rgb, float3(1.0), factor);
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+    if (shadowTransparencyColorEnabled && (shadow > 0)) {
+        SampledCube sc = sampleCube(dir);
+        const float4 transparencyColor = shadowTransparencyColorMaps[light.mapIndex + sc.faceIndex]
+                .Sample(samplers[SAMPLER_NEAREST_NEAREST_BORDER_LINEAR], sc.uv);
+        if (transparencyColor.a != 1.0) {
+            return lerp(transparencyColor.rgb, float3(1.0), factor);
+        }
     }
+#endif
     return factor;
 }

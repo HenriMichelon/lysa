@@ -10,14 +10,8 @@ import lysa.renderers.scene_frame_data;
 
 namespace lysa {
 
-    Lysa::Lysa(const LysaConfiguration& config) :
-        ctx(config.backend,
-            config.eventsReserveCapacity,
-            config.commandsReserveCapacity,
-            config.resourcesCapacity.samplers,
-            config.virtualFsConfiguration,
-            config.framesInFlight,
-            config.maxShadowMapsPerScene),
+    Lysa::Lysa(const ContextConfiguration& config) :
+        ctx(config),
         fixedDeltaTime(config.deltaTime),
         imageManager(ctx, config.resourcesCapacity.images),
         materialManager(ctx, config.resourcesCapacity.material),
@@ -30,7 +24,7 @@ namespace lysa {
     {
         ctx.globalDescriptorLayout = globalDescriptors.getDescriptorLayout();
         ctx.globalDescriptorSet = globalDescriptors.getDescriptorSet();
-        SceneFrameData::createDescriptorLayouts(ctx.vireo, config.maxShadowMapsPerScene);
+        SceneFrameData::createDescriptorLayouts(ctx);
     }
 
     Lysa::~Lysa() {

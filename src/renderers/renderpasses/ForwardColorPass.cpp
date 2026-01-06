@@ -4,12 +4,12 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-module lysa.renderers.renderpasses.forward_color;
+module lysa.renderers.renderpasses.forward_color_pass;
 
 import lysa.renderers.graphic_pipeline_data;
 
 namespace lysa {
-    ForwardColor::ForwardColor(
+    ForwardColorPass::ForwardColorPass(
         const Context& ctx,
         const RendererConfiguration& config,
         const uint32 framesInFlight):
@@ -23,7 +23,10 @@ namespace lysa {
            ctx.samplers.getDescriptorLayout(),
            SceneFrameData::sceneDescriptorLayout,
            GraphicPipelineData::pipelineDescriptorLayout,
-           SceneFrameData::sceneDescriptorLayoutOptional1},
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+           SceneFrameData::sceneDescriptorLayoutOptional1
+#endif
+        },
            SceneFrameData::instanceIndexConstantDesc, name);
         pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
         renderingConfig.colorRenderTargets[0].clearValue = {
@@ -36,7 +39,7 @@ namespace lysa {
         framesData.resize(framesInFlight);
     }
 
-    void ForwardColor::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
+    void ForwardColorPass::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
         for (const auto& [pipelineId, materials] : pipelineIds) {
             if (!pipelines.contains(pipelineId)) {
                 const auto& material = materialManager[materials.at(0)];
@@ -60,7 +63,7 @@ namespace lysa {
         }
     }
 
-    void ForwardColor::render(
+    void ForwardColorPass::render(
         vireo::CommandList& commandList,
         const SceneFrameData& scene,
         const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
@@ -108,7 +111,7 @@ namespace lysa {
         }
     }
 
-    void ForwardColor::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
+    void ForwardColorPass::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
         if (config.msaa != vireo::MSAA::NONE) {
             for (auto& frame : framesData) {
                 frame.multisampledColorAttachment = ctx.vireo->createRenderTarget(

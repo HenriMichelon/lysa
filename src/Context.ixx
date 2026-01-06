@@ -20,6 +20,45 @@ import lysa.resources.samplers;
 
 export namespace  lysa {
 
+    struct ResourcesCapacity {
+        //! Maximum number of images stored in CPU & GPU memory
+        size_t images{500};
+        //! Maximum number of GPU image samplers
+        size_t samplers{20};
+        //! Maximum number of standard & shader materials in CPU & GPU memory
+        size_t material{100};
+        //! Maximum number of meshes in CPU & GPU memory
+        size_t meshes{1000};
+        //! Maximum number of meshes surfaces in GPU memory
+        size_t surfaces{meshes * 10};
+        //! Maximum number of meshes vertices in GPU memory
+        size_t vertices{surfaces * 1000};
+        //! Maximum number of meshes indices in GPU memory
+        size_t indices{vertices * 10};
+    };
+
+    /**
+     * @brief Configuration object used to initialize a Lysa instance.
+     */
+    struct ContextConfiguration {
+        //! Graphic API used by the graphic backend
+        vireo::Backend backend{vireo::Backend::VULKAN};
+        //! Fixed delta time for the main loop
+        double deltaTime{1.0/60.0};
+        //! Number of simultaneous frames during rendering for ALL render targets and scenes
+        uint32 framesInFlight{2};
+        //! Maximum number of shadow maps per scene
+        uint32 maxShadowMapsPerScene{20};
+        //! Enable shadowed colors for transparency objects
+        // bool shadowTransparencyColorEnabled{true};
+        //! Resource capacity configuration
+        ResourcesCapacity resourcesCapacity;
+        size_t eventsReserveCapacity{100};
+        size_t commandsReserveCapacity{1000};
+        //! Virtual file system configuration
+        VirtualFSConfiguration virtualFsConfiguration;
+    };
+
     /**
      * @brief Lysa instance-wide runtime context.
      */
@@ -32,8 +71,7 @@ export namespace  lysa {
          */
         bool exit{false};
 
-        const uint32 framesInFlight;
-        const uint32 maxShadowMapsPerScene;
+        const ContextConfiguration config;
 
         /**
          * Backend object owning the device/instance and factory for GPU resources.
@@ -88,14 +126,7 @@ export namespace  lysa {
         std::shared_ptr<vireo::DescriptorLayout> globalDescriptorLayout;
         std::shared_ptr<vireo::DescriptorSet> globalDescriptorSet;
 
-        Context(
-            vireo::Backend backend,
-            size_t eventsCapacity,
-            size_t commandsCapacity,
-            size_t samplersCapacity,
-            const VirtualFSConfiguration& virtualFsConfiguration,
-            uint32 framesInFlight,
-            uint32 maxShadowMapsPerScene);
+        Context(const ContextConfiguration& config);
     };
 
 }

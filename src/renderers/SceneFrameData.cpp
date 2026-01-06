@@ -14,28 +14,30 @@ import lysa.renderers.renderpasses.shadow_map_pass;
 
 namespace lysa {
 
-    void SceneFrameData::createDescriptorLayouts(
-        const std::shared_ptr<vireo::Vireo>& vireo,
-        const uint32 maxShadowMaps) {
-        sceneDescriptorLayout = vireo->createDescriptorLayout("Scene");
+    void SceneFrameData::createDescriptorLayouts(const Context& ctx) {
+        sceneDescriptorLayout = ctx.vireo->createDescriptorLayout("Scene");
         sceneDescriptorLayout->add(BINDING_SCENE, vireo::DescriptorType::UNIFORM);
         sceneDescriptorLayout->add(BINDING_MODELS, vireo::DescriptorType::DEVICE_STORAGE);
         sceneDescriptorLayout->add(BINDING_LIGHTS, vireo::DescriptorType::UNIFORM);
         sceneDescriptorLayout->add(BINDING_SHADOW_MAPS, vireo::DescriptorType::SAMPLED_IMAGE,
-            maxShadowMaps * 6);
+            ctx.config.maxShadowMapsPerScene * 6);
         sceneDescriptorLayout->build();
 
-        sceneDescriptorLayoutOptional1 = vireo->createDescriptorLayout("Scene opt1");
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+        sceneDescriptorLayoutOptional1 = ctx.vireo->createDescriptorLayout("Scene opt1");
         sceneDescriptorLayoutOptional1->add(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR,
-            vireo::DescriptorType::SAMPLED_IMAGE, maxShadowMaps * 6);
+            vireo::DescriptorType::SAMPLED_IMAGE, ctx.config.maxShadowMapsPerScene * 6);
         sceneDescriptorLayoutOptional1->build();
+#endif
 
-        GraphicPipelineData::createDescriptorLayouts(vireo);
+        GraphicPipelineData::createDescriptorLayouts(ctx.vireo);
     }
 
     void SceneFrameData::destroyDescriptorLayouts() {
         sceneDescriptorLayout.reset();
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
         sceneDescriptorLayoutOptional1.reset();
+#endif
         GraphicPipelineData::destroyDescriptorLayouts();
     }
 
@@ -43,9 +45,7 @@ namespace lysa {
         const Context& ctx,
         const uint32 maxLights,
         const uint32 maxMeshInstancesPerScene,
-        const uint32 maxMeshSurfacePerPipeline,
-        const uint32 maxShadowMaps,
-        const uint32 framesInFlight) :
+        const uint32 maxMeshSurfacePerPipeline) :
         ctx(ctx),
         lightsBuffer{ctx.vireo->createBuffer(
             vireo::BufferType::UNIFORM,
@@ -62,28 +62,30 @@ namespace lysa {
             vireo::BufferType::UNIFORM,
             sizeof(SceneData), 1,
             "sceneUniform")},
-        framesInFlight{framesInFlight},
         maxMeshSurfacePerPipeline(maxMeshSurfacePerPipeline),
-        maxShadowMaps(maxShadowMaps),
         maxLights(maxLights),
         materialManager(ctx.res.get<MaterialManager>()) {
-
         const auto blankImage = ctx.res.get<ImageManager>().getBlankImage();
-        shadowMaps.resize(maxShadowMaps * 6);
-        shadowTransparencyColorMaps.resize(maxShadowMaps * 6);
+
+        shadowMaps.resize(ctx.config.maxShadowMapsPerScene * 6);
         for (int i = 0; i < shadowMaps.size(); i++) {
             shadowMaps[i] = blankImage;
-            shadowTransparencyColorMaps[i] = blankImage;
         }
-
         descriptorSet = ctx.vireo->createDescriptorSet(sceneDescriptorLayout, "Scene");
         descriptorSet->update(BINDING_SCENE, sceneUniformBuffer);
         descriptorSet->update(BINDING_MODELS, meshInstancesDataArray.getBuffer());
         descriptorSet->update(BINDING_LIGHTS, lightsBuffer);
         descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
 
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+        shadowTransparencyColorMaps.resize(ctx.config.maxShadowMapsPerScene * 6);
+        for (int i = 0; i < shadowMaps.size(); i++) {
+            shadowMaps[i] = blankImage;
+            shadowTransparencyColorMaps[i] = blankImage;
+        }
         descriptorSetOpt1 = ctx.vireo->createDescriptorSet(sceneDescriptorLayoutOptional1, "Scene Opt1");
         descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
+#endif
 
         sceneUniformBuffer->map();
         lightsBuffer->map();
@@ -144,7 +146,9 @@ namespace lysa {
         }
         if (shadowMapsUpdated) {
             descriptorSet->update(BINDING_SHADOW_MAPS, shadowMaps);
-            descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+                descriptorSetOpt1->update(BINDING_SHADOW_MAP_TRANSPARENCY_COLOR, shadowTransparencyColorMaps);
+#endif
             shadowMapsUpdated = false;
         }
         for (const auto [light, renderpass] : shadowMapRenderers) {
@@ -167,6 +171,9 @@ namespace lysa {
             .viewInverse = camera.transform,
             .ambientLight = float4(environment.color, environment.intensity),
             .lightsCount = static_cast<uint32>(lights.size()),
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+            .shadowTransparencyColorEnabled = ctx.config.shadowTransparencyColorEnabled,
+#endif
             // .bloomEnabled = renderingConfig.bloomEnabled ? 1u : 0u,
             // .ssaoEnabled = renderingConfig.ssaoEnabled ? 1u : 0u,
         };
@@ -407,7 +414,9 @@ namespace lysa {
                 ctx.samplers.getDescriptorSet(),
                 descriptorSet,
                 pipelineData->descriptorSet,
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
                 descriptorSetOpt1,
+#endif
             });
 
             commandList.drawIndexedIndirectCount(
@@ -422,7 +431,7 @@ namespace lysa {
     }
 
     void SceneFrameData::enableLightShadowCasting(const Light* light) {
-        if (light->castShadows && !shadowMapRenderers.contains(light) && (shadowMapRenderers.size() < maxShadowMaps)) {
+        if (light->castShadows && !shadowMapRenderers.contains(light) && (shadowMapRenderers.size() < ctx.config.maxShadowMapsPerScene)) {
             const auto shadowMapRenderer = std::make_shared<ShadowMapPass>(
                 ctx,
                 light,
@@ -437,7 +446,9 @@ namespace lysa {
                     shadowMapIndex[light] = index;
                     for (int i = 0; i < shadowMapRenderer->getShadowMapCount(); i++) {
                         shadowMaps[index + i] = shadowMapRenderer->getShadowMap(i)->getImage();
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
                         shadowTransparencyColorMaps[index + i] = shadowMapRenderer->getTransparencyColorMap(i)->getImage();
+#endif
                     }
                     shadowMapsUpdated = true;
                     return;
@@ -455,7 +466,9 @@ namespace lysa {
             const auto& blankImage = ctx.res.get<ImageManager>().getBlankImage();
             for (int i = 0; i < shadowMapRenderer->getShadowMapCount(); i++) {
                 shadowMaps[index + i] = blankImage;
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
                 shadowTransparencyColorMaps[index + i] = blankImage;
+#endif
             }
             shadowMapsUpdated = true;
             shadowMapIndex.erase(light);

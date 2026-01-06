@@ -42,8 +42,8 @@ struct Scene {
     float4x4 viewInverse;
     float4   ambientLight;
     uint     lightsCount;
-    uint     bloomEnabled;
-    uint     ssaoEnabled;
+    bool     bloomEnabled;
+    bool     ssaoEnabled;
 }
 
 struct Lights {
