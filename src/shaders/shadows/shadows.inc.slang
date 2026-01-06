@@ -42,11 +42,12 @@ float3 shadowFactor(Light light, int cascadeIndex, float3 worldPos) {
         }
     }
     float3 factor = float3(shadow / 9.0);
-
-    const float4 transparencyColor = shadowTransparencyColorMaps[light.mapIndex + cascadeIndex]
-        .Sample(samplers[SAMPLER_NEAREST_NEAREST_BORDER_LINEAR], projCoords.xy);
-    if (transparencyColor.a != 1.0) {
-        return lerp(transparencyColor.rgb, float3(1.0), factor);
+    if (shadow > 0) {
+        const float4 transparencyColor = shadowTransparencyColorMaps[light.mapIndex + cascadeIndex]
+            .Sample(samplers[SAMPLER_NEAREST_NEAREST_BORDER_LINEAR], projCoords.xy);
+        if (transparencyColor.a != 1.0) {
+            return lerp(transparencyColor.rgb, float3(1.0), factor);
+        }
     }
     return factor;
 }

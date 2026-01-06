@@ -58,8 +58,8 @@ export namespace lysa {
         float nearShadowClipDistance{0.01f};
         uint32 shadowMapCascadesCount{3};
         float cascadeSplitLambda{.98f};
-        float shadowTransparencyScissors{0.5f};
-        float shadowTransparencyColorScissors{0.75f};
+        float shadowTransparencyScissors{0.25f};
+        float shadowTransparencyColorScissors{0.50f};
 
         float3 getPosition() const { return transform[3].xyz; }
 
