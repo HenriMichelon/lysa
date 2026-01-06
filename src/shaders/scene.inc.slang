@@ -18,7 +18,13 @@ struct VertexInput {
 };
 
 #ifndef __SPIRV__
-cbuffer IndirectRootConstant : register(b0, space5) {
+cbuffer IndirectRootConstant : register(b0,
+#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
+space5
+#else
+space4
+#endif
+) {
     uint instanceIndex;
 };
 #endif

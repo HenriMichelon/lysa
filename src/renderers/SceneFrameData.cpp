@@ -171,9 +171,6 @@ namespace lysa {
             .viewInverse = camera.transform,
             .ambientLight = float4(environment.color, environment.intensity),
             .lightsCount = static_cast<uint32>(lights.size()),
-#ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
-            .shadowTransparencyColorEnabled = ctx.config.shadowTransparencyColorEnabled,
-#endif
             // .bloomEnabled = renderingConfig.bloomEnabled ? 1u : 0u,
             // .ssaoEnabled = renderingConfig.ssaoEnabled ? 1u : 0u,
         };
