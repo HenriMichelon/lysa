@@ -213,6 +213,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/ShaderMaterialPass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.cpp
 
@@ -265,6 +266,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/ShaderMaterialPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.ixx
 

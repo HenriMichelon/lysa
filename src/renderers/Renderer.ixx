@@ -14,6 +14,7 @@ import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_frame_data;
 import lysa.renderers.renderpasses.depth_prepass;
+import lysa.renderers.renderpasses.shader_material_pass;
 import lysa.renderers.renderpasses.transparency_pass;
 import lysa.resources.camera;
 import lysa.resources.mesh;
@@ -113,9 +114,10 @@ export namespace lysa {
         const RendererConfiguration config;
         // Depth-only pre-pass used by both forward and deferred renderers
         DepthPrepass depthPrePass;
+        // Renders objects using custom shader materials.
+        ShaderMaterialPass shaderMaterialPass;
         // Transparent objects pass (sorted/blended).
         TransparencyPass transparencyPass;
-
         // Per-frame attachments owned by the renderer.
         struct FrameData {
             std::shared_ptr<vireo::RenderTarget> colorAttachment;

@@ -35,6 +35,7 @@ namespace lysa {
         config(config),
         depthPrePass(ctx, config, withStencil),
         transparencyPass(ctx, config),
+        shaderMaterialPass(ctx, config),
         meshManager(ctx.res.get<MeshManager>()) {
         framesData.resize(ctx.config.framesInFlight);
     }
@@ -50,7 +51,7 @@ namespace lysa {
 
     void Renderer::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
         depthPrePass.updatePipelines(pipelineIds);
-        // shaderMaterialPass.updatePipelines(pipelineIds);
+        shaderMaterialPass.updatePipelines(pipelineIds);
         transparencyPass.updatePipelines(pipelineIds);
     }
 
@@ -87,6 +88,13 @@ namespace lysa {
             clearAttachment,
             frameIndex);
         const auto& frame = framesData[frameIndex];
+        shaderMaterialPass.render(
+            commandList,
+            scene,
+            frame.colorAttachment,
+            frame.depthAttachment,
+            false,
+            frameIndex);
         transparencyPass.render(
             commandList,
             scene,
@@ -126,6 +134,7 @@ namespace lysa {
                 depthStage);
         }
         depthPrePass.resize(extent, commandList);
+        shaderMaterialPass.resize(extent, commandList);
         transparencyPass.resize(extent, commandList);
     }
 
