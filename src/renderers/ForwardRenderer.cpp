@@ -10,10 +10,9 @@ namespace lysa {
 
     ForwardRenderer::ForwardRenderer(
         const Context& ctx,
-        const RendererConfiguration& config,
-        const uint32 framesInFlight) :
-        Renderer(ctx, config, framesInFlight, false),
-        forwardColorPass(ctx, config, framesInFlight) {
+        const RendererConfiguration& config) :
+        Renderer(ctx, config, false),
+        forwardColorPass(ctx, config) {
     }
 
     void ForwardRenderer::update(const uint32 frameIndex) {

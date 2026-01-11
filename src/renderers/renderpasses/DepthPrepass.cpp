@@ -12,8 +12,7 @@ namespace lysa {
     DepthPrepass::DepthPrepass(
         const Context& ctx,
         const RendererConfiguration& config,
-        const bool withStencil,
-        const uint32 framesInFlight):
+        const bool withStencil):
         Renderpass{ctx, config, "Depth pre-pass"},
         materialManager(ctx.res.get<MaterialManager>()) {
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
@@ -30,7 +29,7 @@ namespace lysa {
         },
             SceneFrameData::instanceIndexConstantDesc, name);
         renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
-        framesData.resize(framesInFlight);
+        framesData.resize(ctx.config.framesInFlight);
     }
 
     void DepthPrepass::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {

@@ -17,11 +17,10 @@ namespace lysa {
 
     std::unique_ptr<Renderer> Renderer::create(
         Context& ctx,
-        const RendererConfiguration& config,
-        const uint32 framesInFlight) {
+        const RendererConfiguration& config) {
 #ifdef FORWARD_RENDERER
         if (config.rendererType == RendererType::FORWARD) {
-            return std::make_unique<ForwardRenderer>(ctx, config, framesInFlight);
+            return std::make_unique<ForwardRenderer>(ctx, config);
         }
 #endif
         throw Exception("Unknown renderer type");
@@ -30,14 +29,13 @@ namespace lysa {
     Renderer::Renderer(
         const Context& ctx,
         const RendererConfiguration& config,
-        const uint32 framesInFlight,
         const bool withStencil):
         ctx(ctx),
         withStencil(withStencil),
         config(config),
-        depthPrePass(ctx, config, withStencil, framesInFlight),
+        depthPrePass(ctx, config, withStencil),
         meshManager(ctx.res.get<MeshManager>()) {
-        framesData.resize(framesInFlight);
+        framesData.resize(ctx.config.framesInFlight);
     }
 
     void Renderer::update(const uint32 frameIndex) {

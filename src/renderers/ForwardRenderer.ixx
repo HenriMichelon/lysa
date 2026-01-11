@@ -29,8 +29,7 @@ export namespace lysa {
     public:
         ForwardRenderer(
             const Context& ctx,
-            const RendererConfiguration& config,
-            uint32 framesInFlight);
+            const RendererConfiguration& config);
 
         /** Updates/creates pipelines following the materials mapping. */
         void updatePipelines(

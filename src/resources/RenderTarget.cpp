@@ -30,7 +30,7 @@ namespace lysa {
             renderingWindowHandle,
             configuration.presentMode,
             ctx.config.framesInFlight);
-        renderer = Renderer::create(ctx, configuration.rendererConfiguration, ctx.config.framesInFlight);
+        renderer = Renderer::create(ctx, configuration.rendererConfiguration);
         framesData.resize(ctx.config.framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");

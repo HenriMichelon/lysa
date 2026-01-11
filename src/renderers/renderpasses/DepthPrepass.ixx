@@ -19,8 +19,7 @@ export namespace lysa {
         DepthPrepass(
             const Context& ctx,
             const RendererConfiguration& config,
-            bool withStencil,
-            uint32 framesInFlight);
+            bool withStencil);
 
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 

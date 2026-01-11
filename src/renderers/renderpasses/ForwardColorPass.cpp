@@ -11,8 +11,7 @@ import lysa.renderers.graphic_pipeline_data;
 namespace lysa {
     ForwardColorPass::ForwardColorPass(
         const Context& ctx,
-        const RendererConfiguration& config,
-        const uint32 framesInFlight):
+        const RendererConfiguration& config):
         Renderpass{ctx, config, "Forward Color"},
         materialManager(ctx.res.get<MaterialManager>()) {
         pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat); // Color
@@ -36,7 +35,7 @@ namespace lysa {
             1.0f};
         renderingConfig.clearDepthStencil = false;
 
-        framesData.resize(framesInFlight);
+        framesData.resize(ctx.config.framesInFlight);
     }
 
     void ForwardColorPass::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {

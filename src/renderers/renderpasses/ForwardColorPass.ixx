@@ -20,8 +20,7 @@ export namespace lysa {
     public:
         ForwardColorPass(
             const Context& ctx,
-            const RendererConfiguration& config,
-            uint32 framesInFlight);
+            const RendererConfiguration& config);
 
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
