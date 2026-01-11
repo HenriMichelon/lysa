@@ -22,10 +22,11 @@ export namespace lysa {
         static constexpr uint32 SET{1};
 
         static constexpr unique_id NEAREST_NEAREST_CLAMP_TO_BORDER = 0;
-        static constexpr unique_id LINEAR_LINEAR_CLAMP_TO_EDGE = 1;
-        static constexpr unique_id LINEAR_LINEAR_CLAMP_TO_EDGE_LOD_CLAMP_NONE = 2;
-        static constexpr unique_id LINEAR_LINEAR_REPEAT = 3;
-        static constexpr unique_id NEAREST_NEAREST_REPEAT = 4;
+        static constexpr unique_id NEAREST_NEAREST_CLAMP_TO_EDGE = 1;
+        static constexpr unique_id LINEAR_LINEAR_CLAMP_TO_EDGE = 2;
+        static constexpr unique_id LINEAR_LINEAR_CLAMP_TO_EDGE_LOD_CLAMP_NONE = 3;
+        static constexpr unique_id LINEAR_LINEAR_REPEAT = 4;
+        static constexpr unique_id NEAREST_NEAREST_REPEAT = 5;
 
         /**
          * Human-readable description of sampler creation parameters.

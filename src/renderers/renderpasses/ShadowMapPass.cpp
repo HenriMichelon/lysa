@@ -46,11 +46,6 @@ namespace lysa {
         }
         pipeline = vireo.createGraphicPipeline(pipelineConfig, name);
 
-        viewport.width = static_cast<float>(light->shadowMapSize);
-        viewport.height = viewport.width;
-        scissors.width = light->shadowMapSize;
-        scissors.height = scissors.width;
-
         if (isCascaded) {
             subpassesCount = light->shadowMapCascadesCount;
             if (subpassesCount < 1 || subpassesCount > 4) {
@@ -67,9 +62,9 @@ namespace lysa {
             data.descriptorSet = vireo.createDescriptorSet(descriptorLayout);
             data.descriptorSet->update(BINDING_GLOBAL, data.globalUniformBuffer);
             int size = light->shadowMapSize;
-            // if (isCascaded) {
-            //     size = std::max(512, size >> i);
-            // }
+            if (isCascaded) {
+                size = std::max(512, size >> i);
+            }
             data.shadowMap = vireo.createRenderTarget(
                 pipelineConfig.depthStencilImageFormat,
                 size,
@@ -296,10 +291,16 @@ namespace lysa {
         vireo::CommandList& commandList,
         const SceneFrameData& scene) {
         if (!light->visible || !light->castShadows) { return; }
-        commandList.setViewport(viewport);
-        commandList.setScissors(scissors);
 
         for (const auto& data : subpassData) {
+            commandList.setViewport({
+                static_cast<float>(data.shadowMap->getImage()->getWidth()),
+                static_cast<float>(data.shadowMap->getImage()->getHeight())
+            });
+            commandList.setScissors({
+                data.shadowMap->getImage()->getWidth(),
+                data.shadowMap->getImage()->getHeight()
+            });
             if (firstPass) {
                 commandList.barrier(
                   data.shadowMap,

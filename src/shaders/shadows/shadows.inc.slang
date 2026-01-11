@@ -18,7 +18,7 @@ float3 shadowFactor(Light light, int cascadeIndex, float3 worldPos) {
        return 1.0;
     }
     projCoords.xy = projCoords.xy * 0.5 + 0.5;
-    const bool outOfView = (projCoords.x < 0.01 || projCoords.x > 0.99 || projCoords.y < 0.01|| projCoords.y > 0.99);
+    const bool outOfView = (projCoords.x < 0.005 || projCoords.x > 0.995 || projCoords.y < 0.005|| projCoords.y > 0.995);
     if (outOfView) {
        return 1.0;
     }
@@ -31,7 +31,7 @@ float3 shadowFactor(Light light, int cascadeIndex, float3 worldPos) {
     uint width, height;
     shadowMaps[light.mapIndex + cascadeIndex].GetDimensions(width, height);
     const float2 texelSize = 1.0 / float2(width, height);
-    const float bias = 0.0005;
+    const float bias = 0.001;
     float shadow = 0.0;
 
     [unroll]

@@ -140,8 +140,6 @@ export namespace lysa {
         const size_t maxMeshSurfacePerPipeline;
         const DeviceMemoryArray& meshInstancesDataArray;
 
-        vireo::Rect scissors;
-        vireo::Viewport viewport;
         const Light* light;
         std::shared_ptr<vireo::GraphicPipeline> pipeline;
         std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;

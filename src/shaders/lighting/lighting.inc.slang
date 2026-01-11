@@ -122,22 +122,29 @@ float3 calcLight(
                     // We have a cascaded shadow map,
                     // get cascade index maps for the current fragment's view Z position
                     int cascadeIndex = 0;
-                    for (int index = 0; index < light.cascadesCount; index++) {
-                        if (-viewPosZ > light.cascadeSplitDepth[index]) {
-                            cascadeIndex = index + 1;
-                        }
+                    for (int i = 0; i < light.cascadesCount - 1; i++) {     // N-1 splits
+                       cascadeIndex += (-viewPosZ > light.cascadeSplitDepth[i]) ? 1 : 0;
                     }
                     factor = shadowFactor(light, cascadeIndex, worldPos);
                     // Transitioning between cascades
-                    if (factor.x >= 0.2 && (cascadeIndex > 0) && cascadeIndex < light.cascadesCount) {
-                        float maxDepth = light.cascadeSplitDepth[cascadeIndex];
-                        float fade = smoothstep(maxDepth - 0.5, maxDepth, -viewPosZ);
-                        factor = lerp(shadowFactor(light, cascadeIndex-1, worldPos), factor, fade);
+                    if ((cascadeIndex > 0) && cascadeIndex < light.cascadesCount) {
+                        float maxDepth = light.cascadeSplitDepth[cascadeIndex - 1];
+                        float fade = smoothstep(maxDepth - 1.0, maxDepth, -viewPosZ);
+                        factor = lerp(shadowFactor(light, cascadeIndex - 1, worldPos), factor, fade);
                     }
-                    if ((factor.x >= 0.2) && (cascadeIndex < light.cascadesCount)) {
+                    if ((cascadeIndex < (light.cascadesCount - 1)) && (-viewPosZ > (light.cascadeSplitDepth[cascadeIndex] - 1.0))) {
+                        float maxDepth = light.cascadeSplitDepth[cascadeIndex];
+                        float fade = smoothstep(maxDepth - 1.0, maxDepth, -viewPosZ);
+                        factor = lerp(factor, shadowFactor(light, cascadeIndex + 1, worldPos), fade);
+                    }
+                    /*if ((factor.x >= 0.2) && (cascadeIndex < light.cascadesCount)) {
                         float3 nextFactor = shadowFactor(light, cascadeIndex +1, worldPos);
                         if (nextFactor.x < 0.2f) factor = nextFactor;
                     }
+                    if ((factor.x >= 0.2) && ((cascadeIndex+1) < light.cascadesCount)) {
+                        float3 nextFactor = shadowFactor(light, cascadeIndex +2, worldPos);
+                        if (nextFactor.x < 0.2f) factor = nextFactor;
+                    }*/
                     // Get the shadow factor for the cascade
                     // Display the cascade splits for debug
                     /*switch (cascadeIndex) {
