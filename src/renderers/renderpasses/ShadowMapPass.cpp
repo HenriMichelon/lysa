@@ -53,7 +53,7 @@ namespace lysa {
 
         if (isCascaded) {
             subpassesCount = light->shadowMapCascadesCount;
-            if (subpassesCount < 2 || subpassesCount > 4) {
+            if (subpassesCount < 1 || subpassesCount > 4) {
                 throw Exception("Incorrect shadow map cascades count");
             }
         } else {
@@ -145,7 +145,7 @@ namespace lysa {
                     float p          = (i + 1) / static_cast<float>(subpassesCount);
                     float log        = minZ * std::pow(ratio, p);
                     float uniform    = minZ + range * p;
-                    float d          = light->cascadeSplitLambda * (log - uniform) + uniform;
+                    float d          = light->shadowMapCascadesSplitLambda * (log - uniform) + uniform;
                     cascadeSplits[i] = (d - nearClip) / clipRange;
                 }
 
@@ -194,34 +194,28 @@ namespace lysa {
                         const float distance = length(frustumCorners[j] - frustumCenter);
                         radius = std::max(radius, distance);
                     }
-                    radius = std::ceil(radius * 16.0f) / 16.0f;
+                    radius = std::ceil(radius * subpassesCount) ;
 
                     // Snap the frustum center to the nearest texel grid
                     const auto shadowMapResolution = static_cast<float>(subpassData[cascadeIndex].shadowMap->getImage()->getWidth());
-                    const float worldUnitsPerTexel = (2.0f * radius) / shadowMapResolution;
-                    frustumCenter.x = std::floor(frustumCenter.x / worldUnitsPerTexel) * worldUnitsPerTexel;
-                    frustumCenter.y = std::floor(frustumCenter.y / worldUnitsPerTexel) * worldUnitsPerTexel;
-                    frustumCenter.z = std::floor(frustumCenter.z / worldUnitsPerTexel) * worldUnitsPerTexel;
 
                     // Split the bounding box
                     const auto maxExtents = float3(radius);
                     const auto minExtents = -maxExtents;
-                    const float depth = maxExtents.z - minExtents.z;
+                    const float depth = (maxExtents.z - minExtents.z) * 2;
 
                     // View & projection matrices
-                    const auto eye = frustumCenter - lightDirection * -minExtents.z ;
+                    const auto eye = frustumCenter - lightDirection * radius;
                     const auto viewMatrix = look_at(eye, frustumCenter, AXIS_UP);
                     auto lightProjection = orthographic(
                         minExtents.x, maxExtents.x,
                         maxExtents.y, minExtents.y,
                         -depth, depth);
 
-                    // https://stackoverflow.com/questions/33499053/cascaded-shadow-map-shimmering
-                    // Create the rounding matrix by projecting the world-space origin and determining
-                    // the fractional offset in texel space
                     const auto shadowMatrix = mul(viewMatrix, lightProjection);
-                    const float4 shadowOrigin =
-                        mul(float4(0, 0, 0, 1), shadowMatrix) * (shadowMapResolution * 0.5f);
+                    float4 shadowOrigin = mul(float4(0, 0, 0, 1), shadowMatrix);
+                    shadowOrigin *= (shadowMapResolution * 0.5f);
+
                     const auto roundedOrigin = round(shadowOrigin);
                     auto roundOffset = roundedOrigin - shadowOrigin;
                     roundOffset = roundOffset * 2.0f / shadowMapResolution;
@@ -243,7 +237,7 @@ namespace lysa {
             case LightType::LIGHT_OMNI: {
                 const auto lightPosition= light->getPosition();
                 if (any(lastLightPosition != lightPosition)) {
-                    const auto near = light->nearShadowClipDistance;
+                    const auto near = light->shadowMapNearClipDistance;
                     const auto far = light->range;
                     float4x4 viewMatrix[6];
                     viewMatrix[0] = look_at(
@@ -290,7 +284,7 @@ namespace lysa {
                 subpassData[0].projection = perspective(
                     light->outerCutOff, // FOV
                     aspectRatio,
-                    light->nearShadowClipDistance,
+                    light->shadowMapNearClipDistance,
                     light->range);
                 const auto viewMatrix = look_at(lightPosition, target, AXIS_UP);
                 subpassData[0].inverseViewMatrix = inverse(viewMatrix);

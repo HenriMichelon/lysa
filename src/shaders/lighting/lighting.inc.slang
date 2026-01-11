@@ -134,13 +134,13 @@ float3 calcLight(
                         float fade = smoothstep(maxDepth - 0.5, maxDepth, -viewPosZ);
                         factor = lerp(shadowFactor(light, cascadeIndex-1, worldPos), factor, fade);
                     }
-                     if ((factor.x >= 0.2) && (cascadeIndex < light.cascadesCount)) {
+                    if ((factor.x >= 0.2) && (cascadeIndex < light.cascadesCount)) {
                         float3 nextFactor = shadowFactor(light, cascadeIndex +1, worldPos);
                         if (nextFactor.x < 0.2f) factor = nextFactor;
                     }
                     // Get the shadow factor for the cascade
                     // Display the cascade splits for debug
-                    /*switch (cascadeIndex) {
+                    switch (cascadeIndex) {
                         case 0 :
                             color.rgb *= float3(1.0f, 0.25f, 0.25f);
                             break;
@@ -153,7 +153,7 @@ float3 calcLight(
                         case 3 :
                             color.rgb *= float3(1.0f, 1.0f, 0.25f);
                             break;
-                    }*/
+                    }
                 }
                 diffuse += factor * calcDirectionalLight(
                     light, color.rgb, normal, metallic, roughness,

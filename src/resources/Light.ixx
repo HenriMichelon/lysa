@@ -55,9 +55,9 @@ export namespace lysa {
         bool castShadows;
         uint32 shadowMapSize;
         bool visible{true};
-        float nearShadowClipDistance{0.01f};
+        float shadowMapNearClipDistance{0.01f};
         uint32 shadowMapCascadesCount{3};
-        float cascadeSplitLambda{.98f};
+        float shadowMapCascadesSplitLambda{.85f};
         float shadowTransparencyScissors{0.25f};
         float shadowTransparencyColorScissors{0.75f};
 
@@ -93,7 +93,8 @@ export namespace lysa {
                 .outerCutOff = std::cos(outerCutOff),
                 .position = float4{getPosition(), 0.0f},
                 .direction = float4(getFrontVector(), 0.0f),
-                .color = float4(color, intensity)
+                .color = float4(color, intensity),
+                .cascadesCount = shadowMapCascadesCount
             };
         }
     };
