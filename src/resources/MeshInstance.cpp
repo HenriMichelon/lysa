@@ -20,7 +20,7 @@ namespace lysa {
         meshManager.use(mesh.id);
     }
 
-    MeshInstance::MeshInstance(const Context&, const MeshInstance& mi, const std::string& name) :
+    MeshInstance::MeshInstance(const MeshInstance& mi, const std::string& name) :
         materialManager(materialManager),
         meshManager(meshManager),
         mesh(mi.mesh),
@@ -29,6 +29,18 @@ namespace lysa {
         castShadows(mi.castShadows),
         worldAABB(mi.worldAABB),
         worldTransform(mi.worldTransform) {
+        meshManager.use(mesh.id);
+    }
+
+    MeshInstance::MeshInstance(const MeshInstance& orig) :
+        materialManager(orig.materialManager),
+        meshManager(orig.meshManager),
+        mesh(orig.mesh),
+        name(orig.name),
+        visible(orig.visible),
+        castShadows(orig.castShadows),
+        worldAABB(orig.worldAABB),
+        worldTransform(orig.worldTransform) {
         meshManager.use(mesh.id);
     }
 
