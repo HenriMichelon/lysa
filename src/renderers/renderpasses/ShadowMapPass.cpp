@@ -67,9 +67,9 @@ namespace lysa {
             data.descriptorSet = vireo.createDescriptorSet(descriptorLayout);
             data.descriptorSet->update(BINDING_GLOBAL, data.globalUniformBuffer);
             int size = light->shadowMapSize;
-            if (isCascaded) {
-                size = std::max(512, size >> i);
-            }
+            // if (isCascaded) {
+            //     size = std::max(512, size >> i);
+            // }
             data.shadowMap = vireo.createRenderTarget(
                 pipelineConfig.depthStencilImageFormat,
                 size,
@@ -157,15 +157,8 @@ namespace lysa {
 
                     // Camera frustum corners in NDC space
                     float3 frustumCorners[] = {
-                        float3(-1.0f, 1.0f, -1.0f),
-                        float3(1.0f, 1.0f, -1.0f),
-                        float3(1.0f, -1.0f, -1.0f),
-                        float3(-1.0f, -1.0f, -1.0f),
-
-                        float3(-1.0f, 1.0f, 1.0f),
-                        float3(1.0f, 1.0f, 1.0f),
-                        float3(1.0f, -1.0f, 1.0f),
-                        float3(-1.0f, -1.0f, 1.0f),
+                        {-1,  1, 0}, { 1,  1, 0}, { 1, -1, 0}, {-1, -1, 0}, // near
+                        {-1,  1, 1}, { 1,  1, 1}, { 1, -1, 1}, {-1, -1, 1}, // far
                     };
 
                     // Camera frustum corners into world space
@@ -194,7 +187,7 @@ namespace lysa {
                         const float distance = length(frustumCorners[j] - frustumCenter);
                         radius = std::max(radius, distance);
                     }
-                    radius = std::ceil(radius * subpassesCount) ;
+                    radius = std::ceil(radius * 16.0f) / 16.0f ;
 
                     // Snap the frustum center to the nearest texel grid
                     const auto shadowMapResolution = static_cast<float>(subpassData[cascadeIndex].shadowMap->getImage()->getWidth());
@@ -202,7 +195,7 @@ namespace lysa {
                     // Split the bounding box
                     const auto maxExtents = float3(radius);
                     const auto minExtents = -maxExtents;
-                    const float depth = (maxExtents.z - minExtents.z) * 2;
+                    const float depth = (maxExtents.z - minExtents.z);
 
                     // View & projection matrices
                     const auto eye = frustumCenter - lightDirection * radius;

@@ -140,7 +140,7 @@ float3 calcLight(
                     }
                     // Get the shadow factor for the cascade
                     // Display the cascade splits for debug
-                    switch (cascadeIndex) {
+                    /*switch (cascadeIndex) {
                         case 0 :
                             color.rgb *= float3(1.0f, 0.25f, 0.25f);
                             break;
@@ -153,7 +153,7 @@ float3 calcLight(
                         case 3 :
                             color.rgb *= float3(1.0f, 1.0f, 0.25f);
                             break;
-                    }
+                    }*/
                 }
                 diffuse += factor * calcDirectionalLight(
                     light, color.rgb, normal, metallic, roughness,

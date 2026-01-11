@@ -46,7 +46,7 @@ void main(uint3 id : SV_DispatchThreadID) {
     }
 
     DrawCommand command = input[id.x];
-    Instance instance = instances[command.instanceIndex];
+    /*Instance instance = instances[command.instanceIndex];
     MeshInstance meshInstance = meshInstances[instance.meshInstanceIndex];
     if (meshInstance.visible == 0 || meshInstance.castShadows == 0) {
         return;
@@ -63,7 +63,7 @@ void main(uint3 id : SV_DispatchThreadID) {
         if (plane.signedDistance(positiveVertex) < -0.0f) {
             return;
         }
-    }
+    }*/
 
     output.Append(command);
 }
