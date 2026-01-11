@@ -93,7 +93,7 @@ set(SHADERS_SOURCE_FILES
         "${SHADERS_SRC_DIR}/depth_prepass.vert.slang"
         "${SHADERS_SRC_DIR}/frustum_culling.comp.slang"
         "${SHADERS_SRC_DIR}/frustum_culling_shadowmap.comp.slang"
-#        "${SHADERS_SRC_DIR}/quad.vert.slang"
+        "${SHADERS_SRC_DIR}/quad.vert.slang"
 #        "${SHADERS_SRC_DIR}/vector.slang"
 #        "${SHADERS_SRC_DIR}/vector_ui.slang"
 #        "${SHADERS_SRC_DIR}/glyph.slang"
@@ -104,8 +104,8 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/deferred/ssao.frag.slang"
         "${SHADERS_SRC_DIR}/forward/forward.frag.slang"
 #        "${SHADERS_SRC_DIR}/forward/forward_bloom.frag.slang"
-#        "${SHADERS_SRC_DIR}/forward/transparency_oit.frag.slang"
-#        "${SHADERS_SRC_DIR}/forward/transparency_oit_composite.frag.slang"
+        "${SHADERS_SRC_DIR}/forward/transparency_oit.frag.slang"
+        "${SHADERS_SRC_DIR}/forward/transparency_oit_composite.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/greyscale.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/bloom_blur.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/ssao_blur.frag.slang"
@@ -214,7 +214,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.cpp
-#        ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.cpp
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.cpp
 
         ${ENGINE_SRC_DIR}/resources/Image.cpp
         ${ENGINE_SRC_DIR}/resources/Material.cpp
@@ -266,7 +266,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.ixx
-#        ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.ixx
 
         ${ENGINE_SRC_DIR}/resources/Camera.ixx
         ${ENGINE_SRC_DIR}/resources/Environment.ixx

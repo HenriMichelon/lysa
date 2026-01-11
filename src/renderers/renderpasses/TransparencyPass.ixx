@@ -6,22 +6,31 @@
 */
 export module lysa.renderers.renderpasses.transparency_pass;
 
+import vireo;
+import lysa.context;
+import lysa.resources.material;
+import lysa.renderers.configuration;
+import lysa.renderers.scene_frame_data;
 import lysa.renderers.renderpasses.renderpass;
 
 export namespace lysa {
 
     class TransparencyPass : public Renderpass {
     public:
-        TransparencyPass(const RenderingConfiguration& config);
+        TransparencyPass(
+            const Context& ctx,
+            const RendererConfiguration& config);
 
         void updatePipelines(
-           const std::unordered_map<pipeline_id, std::vector<std::shared_ptr<Material>>>& pipelineIds);
+           const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
-        void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
+        void resize(
+            const vireo::Extent& extent,
+            const std::shared_ptr<vireo::CommandList>& commandList) override;
 
         void render(
             vireo::CommandList& commandList,
-            const Scene& scene,
+            const SceneFrameData& scene,
             const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             bool clearAttachment,
@@ -108,6 +117,7 @@ export namespace lysa {
             .depthTestEnable = compositePipelineConfig.depthTestEnable,
         };
 
+        const MaterialManager& materialManager;
         std::vector<FrameData> framesData;
         std::shared_ptr<vireo::Pipeline> compositePipeline;
         std::shared_ptr<vireo::DescriptorLayout> compositeDescriptorLayout;

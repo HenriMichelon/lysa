@@ -34,6 +34,7 @@ namespace lysa {
         withStencil(withStencil),
         config(config),
         depthPrePass(ctx, config, withStencil),
+        transparencyPass(ctx, config),
         meshManager(ctx.res.get<MeshManager>()) {
         framesData.resize(ctx.config.framesInFlight);
     }
@@ -50,7 +51,7 @@ namespace lysa {
     void Renderer::updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
         depthPrePass.updatePipelines(pipelineIds);
         // shaderMaterialPass.updatePipelines(pipelineIds);
-        // transparencyPass.updatePipelines(pipelineIds);
+        transparencyPass.updatePipelines(pipelineIds);
     }
 
     void Renderer::prepare(
@@ -80,7 +81,19 @@ namespace lysa {
         commandList.bindIndexBuffer(meshManager.getIndexBuffer());
         commandList.setViewport(viewport);
         commandList.setScissors(scissors);
-        colorPass(commandList, scene, clearAttachment, frameIndex);
+        colorPass(
+            commandList,
+            scene,
+            clearAttachment,
+            frameIndex);
+        const auto& frame = framesData[frameIndex];
+        transparencyPass.render(
+            commandList,
+            scene,
+            frame.colorAttachment,
+            frame.depthAttachment,
+            false,
+            frameIndex);
     }
 
     void Renderer::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
@@ -113,6 +126,7 @@ namespace lysa {
                 depthStage);
         }
         depthPrePass.resize(extent, commandList);
+        transparencyPass.resize(extent, commandList);
     }
 
     std::shared_ptr<vireo::RenderTarget> Renderer::getCurrentColorAttachment(const uint32 frameIndex) const {
