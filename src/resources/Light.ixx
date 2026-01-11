@@ -74,7 +74,7 @@ export namespace lysa {
             const float cutOff = 1.3, // 75
             const float outerCutOff= 1.4, // 80
             const bool castShadows = false,
-            const uint32 shadowMapSize = 512) :
+            const uint32 shadowMapSize = 1024) :
             type(type),
             color(color),
             intensity(intensity),
