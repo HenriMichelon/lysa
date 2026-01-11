@@ -7,27 +7,24 @@
 cmake_minimum_required(VERSION 3.29)
 
 #######################################################
-project(lysa)
-message(${VIREO_PROJECT_DIR})
-if (NOT DEFINED VIREO_PROJECT_DIR)
+project(lysa_engine)
+if (NOT DEFINED VIREO_RHI_PROJECT_DIR)
     if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.env.cmake")
-        message(FATAL_ERROR "Please create a .env.cmake file with the VIREO_PROJECT_DIR variable")
+        message(FATAL_ERROR "Please create a .env.cmake file with the VIREO_RHI_PROJECT_DIR variable")
     else()
         include(.env.cmake)
     endif ()
 endif ()
-if (NOT DEFINED VIREO_PROJECT_DIR)
-    message(FATAL_ERROR "Please set VIREO_PROJECT_DIR in the .env.cmake file")
+if (NOT DEFINED VIREO_RHI_PROJECT_DIR)
+    message(FATAL_ERROR "Please set VIREO_RHI_PROJECT_DIR in the .env.cmake file")
 endif()
 
 #######################################################
-set(LYSA_TARGET ${PROJECT_NAME})
-if (NOT LYSA_AS_DEPENDENCY)
-    message("Building Lysa as standalone project")
+set(LYSA_ENGINE_TARGET ${PROJECT_NAME})
+if (NOT LYSA_ENGINE_AS_DEPENDENCY)
+    message("Building Lysa Engine as standalone project")
     set(DIRECTX_BACKEND ON)
     set(LUA_BINDING ON)
-    set(PHYSIC_ENGINE_JOLT ON)
-    set(PHYSIC_ENGINE_PHYSX OFF)
     set(FORWARD_RENDERER ON)
     set(DEFERRED_RENDERER OFF)
 endif()
@@ -64,32 +61,10 @@ if(WIN32)
 endif ()
 
 #######################################################
-function(lysa_compile_options TARGET_NAME )
+function(lysa_compile_options TARGET_NAME)
     compile_options(${TARGET_NAME})
     target_compile_options(${TARGET_NAME} PRIVATE /wd4291) # for Flecs 'new' placement operator
 endfunction()
-
-#######################################################
-if(NOT PHYSIC_ENGINE_JOLT AND NOT PHYSIC_ENGINE_PHYSX)
-    message(FATAL_ERROR "Please activate a physics library with PHYSIC_ENGINE_JOLT or PHYSIC_ENGINE_PHYSX")
-endif()
-if(PHYSIC_ENGINE_JOLT AND PHYSIC_ENGINE_PHYSX)
-    message(FATAL_ERROR "Please deactivate a physics library")
-endif()
-if(PHYSIC_ENGINE_JOLT)
-    add_compile_definitions(PHYSIC_ENGINE_JOLT)
-    add_compile_definitions(JPH_DISABLE_CUSTOM_ALLOCATOR)
-    #add_compile_definitions(JPH_USE_STD_VECTOR)
-endif()
-if (PHYSIC_ENGINE_PHYSX)
-    if (NOT PHYSX_ROOT)
-        message(FATAL_ERROR "Please set PHYSX_ROOT in the .env.cmake file")
-    endif()
-    if (NOT PHYSX_LIBRARIES)
-        message(FATAL_ERROR "Please set PHYSX_LIBRARIES in the .env.cmake file")
-    endif()
-    add_compile_definitions(PHYSIC_ENGINE_PHYSX PX_PHYSX_STATIC_LIB PX_FOUNDATION_STATIC_LIB PX_PHYSX_COMMON_STATIC_LIB)
-endif()
 
 #######################################################
 include(FetchContent)
@@ -97,8 +72,8 @@ include(cmake/libraries.cmake)
 include(cmake/shaders.cmake)
 
 #######################################################
-set(VIREO_TARGET "vireo_rhi")
-add_subdirectory(${VIREO_PROJECT_DIR} external_lib_build/${VIREO_TARGET})
+set(VIREO_RHI_TARGET "vireo_rhi")
+add_subdirectory(${VIREO_RHI_PROJECT_DIR} external_lib_build/${VIREO_RHI_TARGET})
 
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(ENGINE_SRC_DIR ${SRC_DIR})
@@ -145,7 +120,7 @@ set(SHADERS_SOURCE_FILES
         "${SHADERS_SRC_DIR}/shadows/shadowmap.frag.slang"
         "${SHADERS_SRC_DIR}/shadows/shadowmap_cubemap.frag.slang"
 )
-add_shaders(${LYSA_TARGET}_shaders ${SHADERS_BUILD_DIR} ${SHADERS_INCLUDE_DIR} ${SHADERS_SOURCE_FILES})
+add_shaders(${LYSA_ENGINE_TARGET}_shaders ${SHADERS_BUILD_DIR} ${SHADERS_INCLUDE_DIR} ${SHADERS_SOURCE_FILES})
 
 #######################################################
 # xxHash library
@@ -166,21 +141,6 @@ if(WIN32)
             ${ENGINE_SRC_DIR}/os/win32/RenderingWindow.cpp
     )
     set(OS_MODULES ""
-    )
-endif ()
-
-#######################################################
-if(PHYSIC_ENGINE_JOLT)
-    set(PHYSICS_SRC
-
-    )
-    set(PHYSICS_MODULES
-    )
-endif ()
-if(PHYSIC_ENGINE_PHYSX)
-    set(PHYSICS_SRC
-    )
-    set(PHYSICS_MODULES
     )
 endif ()
 
@@ -226,7 +186,7 @@ if(DEFERRED_RENDERER)
 endif ()
 
 #######################################################
-add_library(${LYSA_TARGET} STATIC
+add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/AABB.cpp
         ${ENGINE_SRC_DIR}/AsyncQueue.cpp
         ${ENGINE_SRC_DIR}/AssetsPack.cpp
@@ -269,7 +229,7 @@ add_library(${LYSA_TARGET} STATIC
         ${LUA_BINDINGS_SRC}
         ${DEPENDS_SRC_DIR}/stb/stb.cpp
 )
-target_sources(${LYSA_TARGET}
+target_sources(${LYSA_ENGINE_TARGET}
     PUBLIC
     FILE_SET CXX_MODULES
     FILES
@@ -327,8 +287,8 @@ target_sources(${LYSA_TARGET}
         ${PHYSICS_MODULES}
         ${LUA_BINDINGS_MODULES}
 )
-lysa_compile_options(${LYSA_TARGET})
-target_include_directories(${LYSA_TARGET} PUBLIC
+lysa_compile_options(${LYSA_ENGINE_TARGET})
+target_include_directories(${LYSA_ENGINE_TARGET} PUBLIC
         ${INCLUDE_DIR}
         ${HLSLPP_SRC_DIR}/include
         ${xxhash_SOURCE_DIR}
@@ -340,61 +300,39 @@ target_include_directories(${LYSA_TARGET} PUBLIC
         ${msdfgen_SOURCE_DIR}
         ${msdf_atlas_gen_SOURCE_DIR}
 )
-target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
+target_link_libraries(${LYSA_ENGINE_TARGET} ${VIREO_RHI_TARGET}
         std-cxx-modules
         xxhash
         Freetype::Freetype
         harfbuzz
 )
 if(LUA_BINDING)
-    target_link_libraries(${LYSA_TARGET} ${VIREO_TARGET}
+    target_link_libraries(${LYSA_ENGINE_TARGET} ${VIREO_RHI_TARGET}
         lua
     )
-    target_include_directories(${LYSA_TARGET} PUBLIC
+    target_include_directories(${LYSA_ENGINE_TARGET} PUBLIC
         ${LUA_INCLUDE_DIR} # defined in Vireo
     )
 endif ()
-add_dependencies(${LYSA_TARGET} ${VIREO_TARGET})
-target_precompile_headers(${LYSA_TARGET} PRIVATE
+add_dependencies(${LYSA_ENGINE_TARGET} ${VIREO_RHI_TARGET})
+target_precompile_headers(${LYSA_ENGINE_TARGET} PRIVATE
     "<intrin.h>"
 )
-set_property(TARGET ${LYSA_TARGET} PROPERTY COMPILE_WARNING_AS_ERROR ON)
+set_property(TARGET ${LYSA_ENGINE_TARGET} PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 #######################################################
 if(WIN32)
-    target_compile_definitions(${LYSA_TARGET} PRIVATE WIN32_LEAN_AND_MEAN)
-    target_link_libraries(${LYSA_TARGET} Ws2_32)
+    target_compile_definitions(${LYSA_ENGINE_TARGET} PRIVATE WIN32_LEAN_AND_MEAN)
+    target_link_libraries(${LYSA_ENGINE_TARGET} Ws2_32)
     if (DIRECTX_BACKEND)
-        target_link_libraries(${LYSA_TARGET} d3d12)
+        target_link_libraries(${LYSA_ENGINE_TARGET} d3d12)
     endif ()
     if(MINGW)
-        target_link_options(${LYSA_TARGET} PRIVATE "-mwindows")
+        target_link_options(${LYSA_ENGINE_TARGET} PRIVATE "-mwindows")
     endif()
-    set_target_properties(${LYSA_TARGET} PROPERTIES
+    set_target_properties(${LYSA_ENGINE_TARGET} PROPERTIES
             WIN32_EXECUTABLE TRUE)
 endif()
-
-#######################################################
-if(PHYSIC_ENGINE_JOLT)
-    target_include_directories(${LYSA_TARGET} PUBLIC ${JoltPhysics_SOURCE_DIR}/..)
-    target_link_libraries(${LYSA_TARGET} Jolt)
-endif()
-if (PHYSIC_ENGINE_PHYSX)
-    target_include_directories(${LYSA_TARGET} PUBLIC
-        ${PHYSX_ROOT}/include
-    )
-    target_link_directories(${LYSA_TARGET} PUBLIC ${PHYSX_LIBRARIES})
-    target_link_libraries(${LYSA_TARGET}
-        PhysX_static_64
-        PhysXCharacterKinematic_static_64
-        PhysXCommon_static_64
-        PhysXCooking_static_64
-        PhysXExtensions_static_64
-        PhysXFoundation_static_64
-        PhysXPvdSDK_static_64
-    )
-endif()
-
 
 #######################################################
 find_program(DOXYPRESS_EXECUTABLE doxypress)

@@ -5,10 +5,6 @@
 # https://opensource.org/licenses/MIT
 #
 ########################################################################################################################
-if(PHYSIC_ENGINE_JOLT)
-    include(cmake/jolt.cmake)
-endif()
-
 message(NOTICE "Fetching xxHash...")
 FetchContent_Declare(
         xxhash
