@@ -56,7 +56,6 @@ export namespace lysa {
             bool clearAttachment,
             uint32 frameIndex) override;
 
-
     private:
         /** Opaque/alpha-tested color pass used by forward rendering. */
         ForwardColorPass forwardColorPass;

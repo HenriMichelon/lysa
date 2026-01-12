@@ -46,6 +46,13 @@ namespace lysa {
         bloomBlurData{ .kernelSize = config.bloomBlurKernelSize },
         shaderMaterialPass(ctx, config),
         transparencyPass(ctx, config) {
+        const auto needToneMapping =
+            config.colorRenderingFormat == vireo::ImageFormat::R16G16B16A16_UNORM ||
+            config.colorRenderingFormat == vireo::ImageFormat::R32G32B32A32_SFLOAT ||
+            config.colorRenderingFormat == vireo::ImageFormat::R16G16B16A16_SFLOAT;
+        const auto needGammaCorrection =
+            config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_UNORM ||
+            config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_SNORM;
         if (config.bloomEnabled) {
             bloomBlurPass = std::make_unique<PostProcessing>(
                 ctx,
@@ -55,19 +62,12 @@ namespace lysa {
                 &bloomBlurData,
                 sizeof(bloomBlurData),
                 "Bloom blur");
-        }
-        const auto needToneMapping =
-            config.colorRenderingFormat == vireo::ImageFormat::R16G16B16A16_UNORM ||
-            config.colorRenderingFormat == vireo::ImageFormat::R32G32B32A32_SFLOAT ||
-            config.colorRenderingFormat == vireo::ImageFormat::R16G16B16A16_SFLOAT;
-        const auto needGammaCorrection =
-            config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_UNORM ||
-            config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_SNORM;
-        if (!needGammaCorrection && !needToneMapping && config.bloomEnabled) {
-            addPostprocessing(
-               "bloom",
-               config.colorRenderingFormat,
-               nullptr);
+            if (!needGammaCorrection && !needToneMapping) {
+                addPostprocessing(
+                   "bloom",
+                   config.colorRenderingFormat,
+                   nullptr);
+            }
         }
 
         framesData.resize(ctx.config.framesInFlight);

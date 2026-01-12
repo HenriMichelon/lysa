@@ -27,11 +27,11 @@ namespace lysa {
         descriptorLayout->build();
 
         pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat);
-        // if (config.bloomEnabled) {
-        //     pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat); // Brightness
-        //     pipelineConfig.colorBlendDesc.push_back({});
-        //     renderingConfig.colorRenderTargets.push_back({ .clear = true });
-        // }
+        if (config.bloomEnabled) {
+            pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat); // Brightness
+            pipelineConfig.colorBlendDesc.push_back({});
+            renderingConfig.colorRenderTargets.push_back({ .clear = true });
+        }
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
         pipelineConfig.backStencilOpState = pipelineConfig.frontStencilOpState;
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
@@ -45,7 +45,7 @@ namespace lysa {
             },
             {}, name);
         pipelineConfig.vertexShader = loadShader(VERTEX_SHADER);
-        pipelineConfig.fragmentShader = loadShader(FRAGMENT_SHADER); //loadShader(config.bloomEnabled ? FRAGMENT_SHADER_BLOOM : FRAGMENT_SHADER);
+        pipelineConfig.fragmentShader = loadShader(config.bloomEnabled ? FRAGMENT_SHADER_BLOOM : FRAGMENT_SHADER);
         pipeline = ctx.vireo->createGraphicPipeline(pipelineConfig, name);
 
         framesData.resize(ctx.config.framesInFlight);
@@ -81,10 +81,10 @@ namespace lysa {
 
         renderingConfig.colorRenderTargets[0].renderTarget = colorAttachment;
         renderingConfig.colorRenderTargets[0].clear = clearAttachment;
-        // if (config.bloomEnabled) {
-            // renderingConfig.colorRenderTargets[1].renderTarget = frame.brightnessBuffer;
-            // renderingConfig.colorRenderTargets[1].clear = clearAttachment;
-        // }
+        if (config.bloomEnabled) {
+            renderingConfig.colorRenderTargets[1].renderTarget = frame.brightnessBuffer;
+            renderingConfig.colorRenderTargets[1].clear = clearAttachment;
+        }
         renderingConfig.depthStencilRenderTarget = depthAttachment;
 
         commandList.barrier(
@@ -121,17 +121,16 @@ namespace lysa {
 
     void LightingPass::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
         for (auto& frame : framesData) {
-            // if (config.bloomEnabled) {
-            //     frame.brightnessBuffer = ctx.vireo->createRenderTarget(
-            //         pipelineConfig.colorRenderFormats[1],
-            //         extent.width,extent.height,
-            //         vireo::RenderTargetType::COLOR,
-            //         renderingConfig.colorRenderTargets[1].clearValue,
-            //         1,
-            //         vireo::MSAA::NONE,
-            //         "Brightness");
-            // } else
-                {
+            if (config.bloomEnabled) {
+                frame.brightnessBuffer = ctx.vireo->createRenderTarget(
+                    pipelineConfig.colorRenderFormats[1],
+                    extent.width,extent.height,
+                    vireo::RenderTargetType::COLOR,
+                    renderingConfig.colorRenderTargets[1].clearValue,
+                    1,
+                    vireo::MSAA::NONE,
+                    "Brightness");
+            } else {
                 frame.brightnessBuffer = ctx.vireo->createRenderTarget(
                     pipelineConfig.colorRenderFormats[0],
                     1, 1,
