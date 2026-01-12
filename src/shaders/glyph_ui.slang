@@ -9,7 +9,7 @@
 #include "samplers.inc.slang"
 
 [[vk::binding(0, 0)]] Texture2D textures[] : register(t0, space0);
-[[vk::binding(0, 2)]] ConstantBuffer<Fonts> fonts : register(t0, space2);
+[[vk::binding(0, 2)]] ConstantBuffer<Fonts> fonts : register(b0, space2);
 
 VertexOutput vertexMain(VertexInput input) {
     VertexOutput output;

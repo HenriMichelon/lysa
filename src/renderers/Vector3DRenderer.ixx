@@ -12,11 +12,15 @@ import vireo;
 import lysa.context;
 import lysa.math;
 import lysa.renderers.configuration;
+import lysa.renderers.scene_frame_data;
+import lysa.resources.camera;
+import lysa.resources.font;
+import lysa.resources.image;
 
 export namespace lysa {
 
     /**
-     * Immediate-style 2D/3D vector renderer used for debug and UI primitives.
+     * Immediate-style 3D vector renderer
      *  - Accumulate simple geometric primitives (lines, triangles, glyph quads)
      *    into CPU-side vertex arrays and stream them to the GPU when required.
      *  - Provide minimal state (colors, textures, fonts) and pipelines to draw
@@ -27,7 +31,7 @@ export namespace lysa {
      *  - Thread-safety: calls are expected from the render thread only.
      *  - Call restart() between frames to clear accumulated geometry.
      */
-    class VectorRenderer {
+    class Vector3DRenderer {
     public:
         /**
          * Constructs a vector renderer.
@@ -42,7 +46,7 @@ export namespace lysa {
          * @param filledTriangles    True to use triangle pipeline; false for wireframe only.
          * @param useCamera          True to apply Scene view/projection.
          */
-        VectorRenderer(
+        Vector3DRenderer(
             const Context& ctx,
             const RendererConfiguration& config,
             bool depthTestEnable,
@@ -88,14 +92,14 @@ export namespace lysa {
         /**
          * Renders accumulated primitives using the given Scene (with camera).
          * @param commandList     Command buffer to record into.
-         * @param scene           Scene providing camera matrices.
+         * @param camera          Current camera
          * @param colorAttachment Target color surface.
          * @param depthAttachment Target depth surface (may be null if no depth).
          * @param frameIndex      Index of the current frame in flight.
          */
         void render(
             vireo::CommandList& commandList,
-            const Scene& scene,
+            const Camera& camera,
             const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             uint32 frameIndex);
@@ -110,9 +114,9 @@ export namespace lysa {
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             uint32 frameIndex);
 
-        virtual ~VectorRenderer() = default;
-        VectorRenderer(VectorRenderer&) = delete;
-        VectorRenderer& operator=(VectorRenderer&) = delete;
+        virtual ~Vector3DRenderer() = default;
+        Vector3DRenderer(Vector3DRenderer&) = delete;
+        Vector3DRenderer& operator=(Vector3DRenderer&) = delete;
 
     protected:
         struct Vertex {
@@ -123,7 +127,7 @@ export namespace lysa {
             alignas(16) int fontIndex{-1};
         };
 
-        const RenderingConfiguration& config;
+        const RendererConfiguration& config;
         // Vertex buffer needs to be re-uploaded to GPU
         bool vertexBufferDirty{true};
         // All the vertices for lines
@@ -133,7 +137,7 @@ export namespace lysa {
         // All the vertices for the texts
         std::vector<Vertex> glyphVertices;
 
-        int32 addTexture(const std::shared_ptr<Image> &texture);
+        int32 addTexture(const Image &texture);
 
         int32 addFont(const Font &font);
 
@@ -144,6 +148,7 @@ export namespace lysa {
         static constexpr vireo::DescriptorIndex FONT_PARAMS_BINDING{0};
         static constexpr vireo::DescriptorIndex FONT_PARAMS_SET{2};
 
+        const Context& ctx;
         const std::string name;
         const bool useCamera;
         const bool useTextures;

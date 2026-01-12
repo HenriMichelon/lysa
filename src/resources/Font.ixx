@@ -67,20 +67,20 @@ export namespace lysa {
         /**
          * Returns the font size in the atlas
          */
-        auto getFontSize() const { return size; }
+        uint32 getFontSize() const { return size; }
 
         //Relative to the font size
-        auto getLineHeight() const { return lineHeight; }
+        float getLineHeight() const { return lineHeight; }
 
-        auto getAscender() const { return ascender; }
+        float getAscender() const { return ascender; }
 
-        auto getDescender() const { return descender; }
+        float getDescender() const { return descender; }
 
         const GlyphInfo& getGlyphInfo(uint32 index) const;
 
-        const auto& getAtlas() const { return atlas; }
+        const Image& getAtlas() const { return atlas; }
 
-        const auto& getFontParams() const { return params; }
+        const FontParams& getFontParams() const { return params; }
 
         void setOutlineColor(const float4 &color) {
             params.outlineColor = color;

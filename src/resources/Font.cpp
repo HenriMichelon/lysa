@@ -14,6 +14,7 @@ module lysa.resources.font;
 
 import vireo;
 import lysa.exception;
+import lysa.log;
 
 namespace lysa {
 
@@ -107,8 +108,7 @@ namespace lysa {
             }
             glyphs[glyphInfo.index] = glyphInfo;
         }
-
-        // INFO("Loaded ", glyphs.size(), " glyphs from ", path);
+        Log::info("Loaded ", glyphs.size(), " glyphs from ", path);
     }
 
     const Font::GlyphInfo& Font::getGlyphInfo(const uint32 index) const {

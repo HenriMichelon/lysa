@@ -10,7 +10,7 @@
 
 [[vk::binding(0, 0)]] ConstantBuffer<GlobalUniform> global  : register(b0, space0);
 [[vk::binding(1, 0)]] Texture2D textures[] : register(t1, space0);
-[[vk::binding(0, 2)]] ConstantBuffer<Fonts> fonts : register(t0, space2);
+[[vk::binding(0, 2)]] ConstantBuffer<Fonts> fonts : register(b0, space2);
 
 VertexOutput vertexMain(VertexInput input) {
     VertexOutput output;

@@ -97,10 +97,10 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/frustum_culling.comp.slang"
 #        "${SHADERS_SRC_DIR}/frustum_culling_shadowmap.comp.slang"
 #        "${SHADERS_SRC_DIR}/quad.vert.slang"
-#        "${SHADERS_SRC_DIR}/vector.slang"
-#        "${SHADERS_SRC_DIR}/vector_ui.slang"
-#        "${SHADERS_SRC_DIR}/glyph.slang"
-#        "${SHADERS_SRC_DIR}/glyph_ui.slang"
+        "${SHADERS_SRC_DIR}/vector.slang"
+        "${SHADERS_SRC_DIR}/vector_ui.slang"
+        "${SHADERS_SRC_DIR}/glyph.slang"
+        "${SHADERS_SRC_DIR}/glyph_ui.slang"
 #        "${SHADERS_SRC_DIR}/deferred/gbuffers.frag.slang"
 #        "${SHADERS_SRC_DIR}/deferred/glighting.frag.slang"
 #        "${SHADERS_SRC_DIR}/deferred/glighting_bloom.frag.slang"
@@ -113,10 +113,10 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/postprocess/bloom.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/bloom_blur.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/ssao_blur.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/fxaa.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/smaa_edge_detect.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/smaa_blend_weight.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/smaa_neighborhood_blend.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/fxaa.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/smaa_edge_detect.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/smaa_blend_weight.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/smaa_neighborhood_blend.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/gamma_correction.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/reinhard.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/aces.frag.slang"
@@ -222,7 +222,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.cpp
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
         ${ENGINE_SRC_DIR}/renderers/SceneFrameData.cpp
-#        ${ENGINE_SRC_DIR}/renderers/VectorRenderer.cpp
+        ${ENGINE_SRC_DIR}/renderers/Vector3DRenderer.cpp
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/PostProcessing.cpp
@@ -279,7 +279,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.ixx
         ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
         ${ENGINE_SRC_DIR}/renderers/SceneFrameData.ixx
-#        ${ENGINE_SRC_DIR}/renderers/VectorRenderer.ixx
+        ${ENGINE_SRC_DIR}/renderers/Vector3DRenderer.ixx
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/PostProcessing.ixx
