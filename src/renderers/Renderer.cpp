@@ -37,11 +37,12 @@ namespace lysa {
     Renderer::Renderer(
         const Context& ctx,
         const RendererConfiguration& config,
-        const bool withStencil):
+        const bool withStencil) :
         ctx(ctx),
         withStencil(withStencil),
         config(config),
         depthPrePass(ctx, config, withStencil),
+        gammaCorrectionData{ .gamma = config.gamma, .exposure = config.exposure },
         meshManager(ctx.res.get<MeshManager>()),
         bloomBlurData{ .kernelSize = config.bloomBlurKernelSize },
         shaderMaterialPass(ctx, config),
@@ -53,6 +54,21 @@ namespace lysa {
         const auto needGammaCorrection =
             config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_UNORM ||
             config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_SNORM;
+        if (needToneMapping) {
+            addPostprocessing(
+                config.toneMappingType == ToneMappingType::REINHARD ? "reinhard" :
+                config.toneMappingType == ToneMappingType::ACES ? "aces" :
+                "gamma_correction",
+                config.swapChainFormat,
+                &gammaCorrectionData,
+                sizeof(gammaCorrectionData));
+        } else if (needGammaCorrection) {
+            addPostprocessing(
+                "gamma_correction",
+                config.swapChainFormat,
+                &gammaCorrectionData,
+                sizeof(gammaCorrectionData));
+        }
         if (config.bloomEnabled) {
             bloomBlurPass = std::make_unique<PostProcessing>(
                 ctx,
@@ -65,7 +81,7 @@ namespace lysa {
             if (!needGammaCorrection && !needToneMapping) {
                 addPostprocessing(
                    "bloom",
-                   config.colorRenderingFormat,
+                   config.swapChainFormat,
                    nullptr);
             }
         }
@@ -75,6 +91,9 @@ namespace lysa {
 
     void Renderer::update(const uint32 frameIndex) {
         depthPrePass.update(frameIndex);
+        for (const auto& postProcessingPass : postProcessingPasses) {
+            postProcessingPass->update(frameIndex);
+        }
         if (config.bloomEnabled) {
             bloomBlurPass->update(frameIndex);
         }

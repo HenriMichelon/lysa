@@ -26,7 +26,7 @@ namespace lysa {
             throw Exception("RenderTargetConfiguration : need a least one frame in flight");
         }
         swapChain = ctx.vireo->createSwapChain(
-            configuration.swapChainFormat,
+            configuration.rendererConfiguration.swapChainFormat,
             ctx.graphicQueue,
             renderingWindowHandle,
             configuration.presentMode,

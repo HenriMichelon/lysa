@@ -156,6 +156,12 @@ export namespace lysa {
         void updateBlurData(BlurData& blurData, const vireo::Extent& extent, float strength) const;
 
     private:
+        /** Gamma/exposure parameters used by the tone-mapping/post chain. */
+        struct {
+            float gamma;
+            float exposure;
+        } gammaCorrectionData;
+
         const MeshManager& meshManager;
         vireo::Extent currentExtent{};
         BlurData bloomBlurData;

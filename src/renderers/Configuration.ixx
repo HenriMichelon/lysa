@@ -13,9 +13,15 @@ import lysa.math;
 
 export namespace lysa {
 
-    enum class RendererType : uint32 {
+    enum class RendererType : uint8 {
         FORWARD  = 0,
         DEFERRED = 1,
+    };
+
+    enum class ToneMappingType : uint8 {
+        NONE     = 0,
+        REINHARD = 1,
+        ACES     = 2,
     };
 
     /**
@@ -25,6 +31,8 @@ export namespace lysa {
 
     struct RendererConfiguration {
         RendererType rendererType{static_cast<int>(RendererType::DEFERRED)};
+        //! Postprocessing & swap chain image format
+        vireo::ImageFormat swapChainFormat{vireo::ImageFormat::R8G8B8A8_UNORM};
         //! Main color pass frame buffer format
         vireo::ImageFormat colorRenderingFormat{vireo::ImageFormat::R16G16B16A16_UNORM};
         //! Depth and stencil buffer format
@@ -33,13 +41,12 @@ export namespace lysa {
         float3 clearColor{DEFAULT_CLEAR_COLOR};
         //! MSAA samples count
         vireo::MSAA msaa{vireo::MSAA::NONE};
-        //
-        // //! Gamma correction factor when using *_UNORM, *_SNORM or *_SFLOAT format
-        // float              gamma{2.4f};
-        // //! Exposure correction factor
-        // float              exposure{1.0f};
-        // //! Type of tone mapping shader when using HDR rendering formats R16G16B16A16_UNORM, R16G16B16A16_SFLOAT or R32G32B32A32_SFLOAT
-        // ToneMappingType    toneMappingType{ToneMappingType::ACES};
+        //! Gamma correction factor when using *_UNORM, *_SNORM or *_SFLOAT format
+        float gamma{2.4f};
+        //! Exposure correction factor
+        float exposure{1.0f};
+        //! Type of tone mapping shader when using HDR rendering formats R16G16B16A16_UNORM, R16G16B16A16_SFLOAT or R32G32B32A32_SFLOAT
+        ToneMappingType toneMappingType{ToneMappingType::ACES};
         // //! Type of antialiasing post-processing shader
         // AntiAliasingType   antiAliasingType{AntiAliasingType::SMAA};
         // float              fxaaSpanMax{8.0f};

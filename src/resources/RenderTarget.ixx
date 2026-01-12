@@ -22,8 +22,6 @@ import lysa.resources.scene;
 export namespace lysa {
 
     struct RenderTargetConfiguration {
-        //! Postprocessing & swap chain image format
-        vireo::ImageFormat swapChainFormat{vireo::ImageFormat::R8G8B8A8_UNORM};
         //! Presentation mode
         vireo::PresentMode presentMode{vireo::PresentMode::IMMEDIATE};
         //! Configuration for the rendering path of the target
