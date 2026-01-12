@@ -35,9 +35,14 @@ export namespace lysa {
 
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
+        auto getBrightnessBuffer(const uint32 frameIndex) const {
+            return framesData[frameIndex].brightnessBuffer;
+        }
+
     private:
         const std::string DEFAULT_VERTEX_SHADER{"default.vert"};
         const std::string DEFAULT_FRAGMENT_SHADER{"forward.frag"};
+        const std::string DEFAULT_FRAGMENT_BLOOM_SHADER{"forward_bloom.frag"};
 
         vireo::GraphicPipelineConfiguration pipelineConfig {
             .colorBlendDesc = { { .blendEnable = true }},
@@ -52,6 +57,7 @@ export namespace lysa {
 
         struct FrameData {
             std::shared_ptr<vireo::RenderTarget> multisampledColorAttachment;
+            std::shared_ptr<vireo::RenderTarget> brightnessBuffer;
         };
 
         const MaterialManager& materialManager;

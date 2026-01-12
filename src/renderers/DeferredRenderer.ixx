@@ -48,9 +48,9 @@ export namespace lysa {
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
         /** Returns the brightness buffer used for bloom extraction. */
-        // std::shared_ptr<vireo::RenderTarget> getBloomColorAttachment(const uint32 frameIndex) const override {
-        //     return lightingPass.getBrightnessBuffer(frameIndex);
-        // }
+        std::shared_ptr<vireo::RenderTarget> getBloomColorAttachment(const uint32 frameIndex) const override {
+            return lightingPass.getBrightnessBuffer(frameIndex);
+        }
 
     protected:
         /** Records G-Buffer population then lighting resolve into color attachment. */

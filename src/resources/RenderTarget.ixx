@@ -120,6 +120,8 @@ export namespace lysa {
         std::list<RenderView> views;
         // Protect views to be modifies when render() is called
         std::mutex viewsMutex;
+        vireo::Viewport mainViewport;
+        vireo::Rect mainScissors;
     };
 
 }

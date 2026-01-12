@@ -104,6 +104,13 @@ namespace lysa {
         const auto previousExtent = swapChain->getExtent();
         swapChain->recreate();
         const auto newExtent = swapChain->getExtent();
+        mainViewport = vireo::Viewport{
+            static_cast<float>(newExtent.width),
+            static_cast<float>(newExtent.height)};
+        mainScissors = vireo::Rect {
+            newExtent.width,
+            newExtent.height
+        };
         if (previousExtent.width != newExtent.width || previousExtent.height != newExtent.height) {
             const auto& frame = framesData[0];
             // viewportManager.resize(id, newExtent);
@@ -175,9 +182,20 @@ namespace lysa {
         auto clearAttachment{true};
         for (auto& view : views) {
             auto& data = view.scene.get(frameIndex);
-            renderer->render(*commandList, data, view.viewport, view.scissors, clearAttachment, frameIndex);
+            renderer->render(
+                *commandList,
+                data,
+                view.viewport,
+                view.scissors,
+                clearAttachment,
+                frameIndex);
             clearAttachment = false;
         }
+        renderer->postprocess(
+           *commandList,
+           mainViewport,
+           mainScissors,
+           swapChain->getCurrentFrameIndex());
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
         commandList->barrier(colorAttachment, vireo::ResourceState::UNDEFINED,vireo::ResourceState::COPY_SRC);

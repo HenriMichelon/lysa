@@ -14,7 +14,13 @@ namespace lysa {
         const RendererConfiguration& config):
         Renderpass{ctx, config, "Forward Color"},
         materialManager(ctx.res.get<MaterialManager>()) {
+
         pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat); // Color
+        if (config.bloomEnabled) {
+            pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat); // Brightness
+            pipelineConfig.colorBlendDesc.push_back({});
+            renderingConfig.colorRenderTargets.push_back({ .clear = true });
+        }
 
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
@@ -25,7 +31,7 @@ namespace lysa {
 #ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
            SceneFrameData::sceneDescriptorLayoutOptional1
 #endif
-        },
+            },
            SceneFrameData::instanceIndexConstantDesc, name);
         pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
         renderingConfig.colorRenderTargets[0].clearValue = {
@@ -43,7 +49,7 @@ namespace lysa {
             if (!pipelines.contains(pipelineId)) {
                 const auto& material = materialManager[materials.at(0)];
                 std::string vertShaderName = DEFAULT_VERTEX_SHADER;
-                std::string fragShaderName = /*config.bloomEnabled ? DEFAULT_FRAGMENT_BLOOM_SHADER :*/ DEFAULT_FRAGMENT_SHADER;
+                std::string fragShaderName = config.bloomEnabled ? DEFAULT_FRAGMENT_BLOOM_SHADER : DEFAULT_FRAGMENT_SHADER;
                 if (material.getType() == Material::SHADER) {
                     const auto& shaderMaterial = dynamic_cast<const ShaderMaterial&>(material);
                     if (!shaderMaterial.getVertFileName().empty()) {
@@ -74,6 +80,9 @@ namespace lysa {
 
         renderingConfig.colorRenderTargets[0].clear = clearAttachment;
         renderingConfig.colorRenderTargets[0].renderTarget = colorAttachment;
+        if (config.bloomEnabled) {
+            renderingConfig.colorRenderTargets[1].renderTarget = frame.brightnessBuffer;
+        }
         renderingConfig.depthStencilRenderTarget = depthAttachment;
         if (config.msaa != vireo::MSAA::NONE) {
             renderingConfig.colorRenderTargets[0].multisampledRenderTarget = frame.multisampledColorAttachment;
@@ -87,11 +96,19 @@ namespace lysa {
             colorAttachment,
             vireo::ResourceState::UNDEFINED,
             vireo::ResourceState::RENDER_TARGET_COLOR);
+        commandList.barrier(
+           frame.brightnessBuffer,
+           vireo::ResourceState::SHADER_READ,
+           vireo::ResourceState::RENDER_TARGET_COLOR);
         commandList.beginRendering(renderingConfig);
         scene.drawOpaquesModels(
             commandList,
             pipelines);
         commandList.endRendering();
+        commandList.barrier(
+            frame.brightnessBuffer,
+            vireo::ResourceState::RENDER_TARGET_COLOR,
+            vireo::ResourceState::SHADER_READ);
         commandList.barrier(
             colorAttachment,
             vireo::ResourceState::RENDER_TARGET_COLOR,
@@ -105,8 +122,28 @@ namespace lysa {
     }
 
     void ForwardColorPass::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
-        if (config.msaa != vireo::MSAA::NONE) {
-            for (auto& frame : framesData) {
+        for (auto& frame : framesData) {
+            if (config.bloomEnabled) {
+                frame.brightnessBuffer = ctx.vireo->createRenderTarget(
+                    pipelineConfig.colorRenderFormats[1],
+                    extent.width,extent.height,
+                    vireo::RenderTargetType::COLOR,
+                    renderingConfig.colorRenderTargets[1].clearValue,
+                    1,
+                    vireo::MSAA::NONE,
+                    "Brightness");
+            } else {
+                frame.brightnessBuffer = ctx.vireo->createRenderTarget(
+                    pipelineConfig.colorRenderFormats[0],
+                    1, 1,
+                    vireo::RenderTargetType::COLOR,
+                    renderingConfig.colorRenderTargets[0].clearValue);
+            }
+            commandList->barrier(
+               frame.brightnessBuffer,
+               vireo::ResourceState::UNDEFINED,
+               vireo::ResourceState::SHADER_READ);
+            if (config.msaa != vireo::MSAA::NONE) {
                 frame.multisampledColorAttachment = ctx.vireo->createRenderTarget(
                   config.colorRenderingFormat,
                   extent.width, extent.height,

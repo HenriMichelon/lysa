@@ -172,7 +172,7 @@ namespace lysa {
             .viewInverse = camera.transform,
             .ambientLight = float4(environment.color, environment.intensity),
             .lightsCount = static_cast<uint32>(lights.size()),
-            // .bloomEnabled = renderingConfig.bloomEnabled ? 1u : 0u,
+            .bloomEnabled = config.bloomEnabled ? 1u : 0u,
             .ssaoEnabled = config.ssaoEnabled ? 1u : 0u,
         };
         sceneUniformBuffer->write(&sceneUniform);

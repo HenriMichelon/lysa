@@ -47,12 +47,12 @@ export namespace lysa {
         // float              fxaaReduceMin{1.0f / 128.0f};
         // float              smaaEdgeThreshold{0.15f};
         // int                smaaBlendMaxSteps{4};
-        // //! Enable the bloom post-processing effect
-        // bool               bloomEnabled{true};
-        // //! Bloom effect blur kernel size
-        // uint32             bloomBlurKernelSize{5};
-        // //! Bloom effect blur strength
-        // float              bloomBlurStrength{1.2f};
+        //! Enable the bloom post-processing effect
+        bool               bloomEnabled{true};
+        //! Bloom effect blur kernel size
+        uint32             bloomBlurKernelSize{5};
+        //! Bloom effect blur strength
+        float              bloomBlurStrength{1.2f};
 #ifdef DEFERRED_RENDERER
         //! Enable SSAO in the deferred renderer
         bool               ssaoEnabled{true};

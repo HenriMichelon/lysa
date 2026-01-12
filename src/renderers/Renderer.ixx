@@ -14,6 +14,7 @@ import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_frame_data;
 import lysa.renderers.renderpasses.depth_prepass;
+import lysa.renderers.renderpasses.post_processing;
 import lysa.renderers.renderpasses.shader_material_pass;
 import lysa.renderers.renderpasses.transparency_pass;
 import lysa.resources.camera;
@@ -35,9 +36,6 @@ export namespace lysa {
             Context& ctx,
             const RendererConfiguration& config);
 
-        /** Returns the color attachment of the current renderer for the frame. */
-        std::shared_ptr<vireo::RenderTarget> getCurrentColorAttachment(uint32 frameIndex) const;
-
         /** Accessor for the color render target of the frame. */
         auto getFrameColorAttachment(const uint32 frameIndex) const {
             return framesData[frameIndex].colorAttachment;
@@ -47,6 +45,14 @@ export namespace lysa {
         auto getFrameDepthAttachment(const uint32 frameIndex) const {
             return framesData[frameIndex].depthAttachment;
         }
+
+        /** Returns the color attachment of the current renderer for the frame. */
+        std::shared_ptr<vireo::RenderTarget> getCurrentColorAttachment(uint32 frameIndex) const;
+
+        /**
+          * Returns the color buffer used for bloom extraction for the frame.
+        */
+        virtual std::shared_ptr<vireo::RenderTarget> getBloomColorAttachment(uint32 frameIndex) const = 0;
 
         /**
          * Recreates attachments/pipelines after a resize.
@@ -88,21 +94,21 @@ export namespace lysa {
             uint32 frameIndex);
 
         /** Applies post-processing chain (SMAA, bloom, custom passes). */
-        // void postprocess(
-        //     vireo::CommandList& commandList,
-        //     const vireo::Viewport&viewport,
-        //     const vireo::Rect&scissor,
-        //     uint32 frameIndex);
+        void postprocess(
+            vireo::CommandList& commandList,
+            const vireo::Viewport&viewport,
+            const vireo::Rect&scissor,
+            uint32 frameIndex);
 
         /** Adds a full-screen post-processing pass by fragment shader name. */
-        // void addPostprocessing(
-        //     const std::string& fragShaderName,
-        //     vireo::ImageFormat outputFormat,
-        //     void* data = nullptr,
-        //     uint32 dataSize = 0);
+        void addPostprocessing(
+            const std::string& fragShaderName,
+            vireo::ImageFormat outputFormat,
+            void* data = nullptr,
+            uint32 dataSize = 0);
 
         /** Removes a previously added post-processing pass by fragment name. */
-        // void removePostprocessing(const std::string& fragShaderName);
+        void removePostprocessing(const std::string& fragShaderName);
 
         virtual ~Renderer() = default;
         Renderer(Renderer&) = delete;
@@ -116,21 +122,18 @@ export namespace lysa {
             float2 texelSize;
         };
 
-        const Context& ctx;
-        const bool withStencil;
-        const RendererConfiguration config;
-        // Depth-only pre-pass used by both forward and deferred renderers
-        DepthPrepass depthPrePass;
-        // Renders objects using custom shader materials.
-        ShaderMaterialPass shaderMaterialPass;
-        // Transparent objects pass (sorted/blended).
-        TransparencyPass transparencyPass;
         // Per-frame attachments owned by the renderer.
         struct FrameData {
             std::shared_ptr<vireo::RenderTarget> colorAttachment;
             std::shared_ptr<vireo::RenderTarget> depthAttachment;
         };
+
+        const Context& ctx;
+        const bool withStencil;
+        const RendererConfiguration config;
         std::vector<FrameData> framesData;
+        // Depth-only pre-pass used by both forward and deferred renderers
+        DepthPrepass depthPrePass;
 
         Renderer(
             const Context& ctx,
@@ -155,6 +158,13 @@ export namespace lysa {
     private:
         const MeshManager& meshManager;
         vireo::Extent currentExtent{};
-
+        BlurData bloomBlurData;
+        // Renders objects using custom shader materials.
+        ShaderMaterialPass shaderMaterialPass;
+        // Transparent objects pass (sorted/blended).
+        TransparencyPass transparencyPass;
+        std::unique_ptr<PostProcessing> bloomBlurPass;
+        /** List of active post-processing passes applied after color pass. */
+        std::vector<std::shared_ptr<PostProcessing>> postProcessingPasses;
     };
 }
