@@ -31,6 +31,11 @@ namespace lysa {
             },
             SceneFrameData::instanceIndexConstantDesc, name);
         pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
+        renderingConfig.colorRenderTargets[BUFFER_ALBEDO].clearValue = {
+            config.clearColor.r,
+            config.clearColor.g,
+            config.clearColor.b,
+            1.0f};
         renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
 
         framesData.resize(ctx.config.framesInFlight);
@@ -54,7 +59,7 @@ namespace lysa {
         const SceneFrameData& scene,
         const std::shared_ptr<vireo::RenderTarget>&,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
-        const bool,
+        const bool clearAttachment,
         const uint32 frameIndex) {
         const auto& frame = framesData[frameIndex];
 
@@ -62,6 +67,7 @@ namespace lysa {
         renderingConfig.colorRenderTargets[BUFFER_NORMAL].renderTarget = frame.normalBuffer;
         renderingConfig.colorRenderTargets[BUFFER_ALBEDO].renderTarget = frame.albedoBuffer;
         renderingConfig.colorRenderTargets[BUFFER_EMISSIVE].renderTarget = frame.emissiveBuffer;
+        renderingConfig.colorRenderTargets[BUFFER_ALBEDO].clear = clearAttachment;
         renderingConfig.depthStencilRenderTarget = depthAttachment;
 
         auto renderTargets = std::views::transform(renderingConfig.colorRenderTargets, [](const auto& colorRenderTarget) {

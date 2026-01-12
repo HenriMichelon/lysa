@@ -44,7 +44,7 @@ namespace lysa {
         const SceneFrameData& scene,
         const vireo::Viewport& viewport,
         const vireo::Rect& scissors,
-        const bool,
+        const bool clearAttachment,
         const uint32 frameIndex) {
         const auto& frame = framesData[frameIndex];
         gBufferPass.render(
@@ -52,7 +52,7 @@ namespace lysa {
             scene,
             frame.colorAttachment,
             frame.depthAttachment,
-            false,
+            clearAttachment,
             frameIndex);
         if (config.ssaoEnabled) {
             ssaoPass->render(
