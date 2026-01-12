@@ -11,7 +11,8 @@ namespace lysa {
     SSAOPass::SSAOPass(
         const Context& ctx,
         const RendererConfiguration& config,
-        const GBufferPass& gBufferPass):
+        const GBufferPass& gBufferPass,
+        const bool withStencil):
         Renderpass{ctx, config, "SSAO"},
         params{ .radius = config.ssaoRadius, .bias = config.ssaoBias, .power = config.ssaoStrength, .sampleCount = config.ssaoSampleCount },
         gBufferPass{gBufferPass}{
@@ -24,6 +25,7 @@ namespace lysa {
         descriptorLayout->build();
 
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
+        pipelineConfig.stencilTestEnable = withStencil;
         pipelineConfig.backStencilOpState = pipelineConfig.frontStencilOpState;
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
             ctx.globalDescriptorLayout,
@@ -38,6 +40,7 @@ namespace lysa {
         pipelineConfig.vertexShader = loadShader(VERTEX_SHADER);
         pipelineConfig.fragmentShader = loadShader(FRAGMENT_SHADER);
         pipeline = ctx.vireo->createGraphicPipeline(pipelineConfig, name);
+        renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
 
         framesData.resize(ctx.config.framesInFlight);
         for (auto& frame : framesData) {

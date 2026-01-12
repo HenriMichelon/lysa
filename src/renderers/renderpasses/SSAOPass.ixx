@@ -21,7 +21,8 @@ export namespace lysa {
         SSAOPass(
             const Context& ctx,
             const RendererConfiguration& config,
-            const GBufferPass& gBufferPass);
+            const GBufferPass& gBufferPass,
+            bool withStencil);
 
         void render(
             vireo::CommandList& commandList,
@@ -66,7 +67,6 @@ export namespace lysa {
         vireo::GraphicPipelineConfiguration pipelineConfig {
             .colorRenderFormats = { vireo::ImageFormat::R8_UNORM },
             .colorBlendDesc = {{}},
-            .stencilTestEnable = true,
             .frontStencilOpState = {
                 .failOp = vireo::StencilOp::KEEP,
                 .passOp = vireo::StencilOp::KEEP,
@@ -80,7 +80,6 @@ export namespace lysa {
         vireo::RenderingConfiguration renderingConfig {
             .colorRenderTargets = {{ }},
             .depthTestEnable    = pipelineConfig.depthTestEnable,
-            .stencilTestEnable  = pipelineConfig.stencilTestEnable,
         };
 
         Params params;

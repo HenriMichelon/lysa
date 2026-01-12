@@ -137,8 +137,7 @@ export namespace lysa {
 
         Renderer(
             const Context& ctx,
-            const RendererConfiguration& config,
-            bool withStencil);
+            const RendererConfiguration& config);
 
         /*
         * Records the pipeline-specific color pass for the concrete renderer.

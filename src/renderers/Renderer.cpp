@@ -36,10 +36,12 @@ namespace lysa {
 
     Renderer::Renderer(
         const Context& ctx,
-        const RendererConfiguration& config,
-        const bool withStencil) :
+        const RendererConfiguration& config) :
         ctx(ctx),
-        withStencil(withStencil),
+        withStencil(
+            config.depthStencilFormat == vireo::ImageFormat::D32_SFLOAT_S8_UINT ||
+            config.depthStencilFormat == vireo::ImageFormat::D24_UNORM_S8_UINT
+        ),
         config(config),
         depthPrePass(ctx, config, withStencil),
         gammaCorrectionData{ .gamma = config.gamma, .exposure = config.exposure },

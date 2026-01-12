@@ -14,7 +14,8 @@ namespace lysa {
     LightingPass::LightingPass(
         const Context& ctx,
         const RendererConfiguration& config,
-        const GBufferPass& gBufferPass):
+        const GBufferPass& gBufferPass,
+        const bool withStencil):
         Renderpass{ctx, config, "Deferred Lighting"},
         gBufferPass{gBufferPass} {
 
@@ -33,6 +34,7 @@ namespace lysa {
             renderingConfig.colorRenderTargets.push_back({ .clear = true });
         }
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
+        pipelineConfig.stencilTestEnable = withStencil;
         pipelineConfig.backStencilOpState = pipelineConfig.frontStencilOpState;
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
             ctx.globalDescriptorLayout,
@@ -59,6 +61,7 @@ namespace lysa {
             config.clearColor.g,
             config.clearColor.b,
             1.0f};
+        renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
     }
 
     void LightingPass::render(

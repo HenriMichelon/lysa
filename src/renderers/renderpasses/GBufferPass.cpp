@@ -12,11 +12,13 @@ namespace lysa {
 
     GBufferPass::GBufferPass(
     const Context& ctx,
-        const RendererConfiguration& config):
+        const RendererConfiguration& config,
+        const bool withStencil):
         Renderpass{ctx, config, "GBuffer"},
         materialManager(ctx.res.get<MaterialManager>()) {
 
         pipelineConfig.depthStencilImageFormat = config.depthStencilFormat;
+        pipelineConfig.stencilTestEnable = withStencil;
         pipelineConfig.backStencilOpState = pipelineConfig.frontStencilOpState;
         pipelineConfig.resources = ctx.vireo->createPipelineResources({
             ctx.globalDescriptorLayout,
@@ -29,6 +31,7 @@ namespace lysa {
             },
             SceneFrameData::instanceIndexConstantDesc, name);
         pipelineConfig.vertexInputLayout = ctx.vireo->createVertexLayout(sizeof(VertexData), VertexData::vertexAttributes);
+        renderingConfig.stencilTestEnable = pipelineConfig.stencilTestEnable;
 
         framesData.resize(ctx.config.framesInFlight);
     }

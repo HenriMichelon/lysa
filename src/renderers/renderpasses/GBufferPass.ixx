@@ -19,7 +19,8 @@ export namespace lysa {
     public:
         GBufferPass(
             const Context& ctx,
-            const RendererConfiguration& config);
+            const RendererConfiguration& config,
+            bool withStencil);
 
         void updatePipelines(
             const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
@@ -82,7 +83,6 @@ export namespace lysa {
             .cullMode            = vireo::CullMode::BACK,
             .depthTestEnable     = true,
             .depthWriteEnable    = true,
-            .stencilTestEnable   = true,
             .frontStencilOpState = {
                 .failOp      = vireo::StencilOp::KEEP,
                 .passOp      = vireo::StencilOp::REPLACE,
@@ -101,7 +101,6 @@ export namespace lysa {
                 { .clear = true }, // Emissive
             },
             .depthTestEnable    = pipelineConfig.depthTestEnable,
-            .stencilTestEnable  = pipelineConfig.stencilTestEnable,
         };
 
         std::vector<FrameData> framesData;

@@ -11,12 +11,12 @@ namespace lysa {
     DeferredRenderer::DeferredRenderer(
         const Context& ctx,
         const RendererConfiguration& config) :
-        Renderer{ctx, config, true},
+        Renderer{ctx, config},
         ssaoBlurData{.kernelSize = config.ssaoBlurKernelSize},
-        gBufferPass{ctx, config},
-        lightingPass{ctx, config, gBufferPass} {
+        gBufferPass{ctx, config, withStencil},
+        lightingPass{ctx, config, gBufferPass, withStencil} {
         if (config.ssaoEnabled) {
-            ssaoPass = std::make_unique<SSAOPass>(ctx, config, gBufferPass);
+            ssaoPass = std::make_unique<SSAOPass>(ctx, config, gBufferPass, withStencil);
             ssaoBlurPass = std::make_unique<PostProcessing>(
                 ctx,
                 config,

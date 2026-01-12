@@ -11,7 +11,7 @@ namespace lysa {
     ForwardRenderer::ForwardRenderer(
         const Context& ctx,
         const RendererConfiguration& config) :
-        Renderer(ctx, config, false),
+        Renderer(ctx, config),
         forwardColorPass(ctx, config) {
     }
 
