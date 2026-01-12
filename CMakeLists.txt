@@ -26,7 +26,7 @@ if (NOT LYSA_ENGINE_AS_DEPENDENCY)
     set(DIRECTX_BACKEND ON)
     set(LUA_BINDING ON)
     set(FORWARD_RENDERER ON)
-    set(DEFERRED_RENDERER OFF)
+    set(DEFERRED_RENDERER ON)
 endif()
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -98,9 +98,9 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/vector_ui.slang"
 #        "${SHADERS_SRC_DIR}/glyph.slang"
 #        "${SHADERS_SRC_DIR}/glyph_ui.slang"
-#        "${SHADERS_SRC_DIR}/deferred/gbuffers.frag.slang"
-#        "${SHADERS_SRC_DIR}/deferred/glighting.frag.slang"
-#        "${SHADERS_SRC_DIR}/deferred/glighting_bloom.frag.slang"
+        "${SHADERS_SRC_DIR}/deferred/gbuffers.frag.slang"
+        "${SHADERS_SRC_DIR}/deferred/glighting.frag.slang"
+        "${SHADERS_SRC_DIR}/deferred/glighting_bloom.frag.slang"
 #        "${SHADERS_SRC_DIR}/deferred/ssao.frag.slang"
         "${SHADERS_SRC_DIR}/forward/forward.frag.slang"
 #        "${SHADERS_SRC_DIR}/forward/forward_bloom.frag.slang"
@@ -180,8 +180,14 @@ if(FORWARD_RENDERER)
 endif ()
 if(DEFERRED_RENDERER)
     set(DEFERRED_RENDERER_SRC
+            ${ENGINE_SRC_DIR}/renderers/DeferredRenderer.cpp
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/GBufferPass.cpp
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/LightingPass.cpp
     )
     set(DEFERRED_RENDERER_MODULES
+            ${ENGINE_SRC_DIR}/renderers/DeferredRenderer.ixx
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/GBufferPass.ixx
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/LightingPass.ixx
     )
 endif ()
 

@@ -12,6 +12,9 @@ import lysa.renderers.renderpasses.shadow_map_pass;
 #ifdef FORWARD_RENDERER
 import lysa.renderers.forward_renderer;
 #endif
+#ifdef DEFERRED_RENDERER
+import lysa.renderers.deferred_renderer;
+#endif
 
 namespace lysa {
 
@@ -21,6 +24,11 @@ namespace lysa {
 #ifdef FORWARD_RENDERER
         if (config.rendererType == RendererType::FORWARD) {
             return std::make_unique<ForwardRenderer>(ctx, config);
+        }
+#endif
+#ifdef DEFERRED_RENDERER
+        if (config.rendererType == RendererType::DEFERRED) {
+            return std::make_unique<DeferredRenderer>(ctx, config);
         }
 #endif
         throw Exception("Unknown renderer type");

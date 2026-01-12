@@ -1,0 +1,111 @@
+/*
+* Copyright (c) 2025-present Henri Michelon
+*
+* This software is released under the MIT License.
+* https://opensource.org/licenses/MIT
+*/
+export module lysa.renderers.renderpasses.gbuffer_pass;
+
+import vireo;
+import lysa.context;
+import lysa.renderers.configuration;
+import lysa.renderers.scene_frame_data;
+import lysa.renderers.renderpasses.renderpass;
+import lysa.resources.material;
+
+export namespace lysa {
+
+    class GBufferPass : public Renderpass {
+    public:
+        GBufferPass(
+            const Context& ctx,
+            const RendererConfiguration& config);
+
+        void updatePipelines(
+            const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
+
+        void render(
+            vireo::CommandList& commandList,
+            const SceneFrameData& scene,
+            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+            const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+            bool clearAttachment,
+            uint32 frameIndex);
+
+        void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
+
+        auto getPositionBuffer(const uint32 frameIndex) const {
+            return framesData[frameIndex].positionBuffer;
+        }
+
+        auto getNormalBuffer(const uint32 frameIndex) const {
+            return framesData[frameIndex].normalBuffer;
+        }
+
+        auto getAlbedoBuffer(const uint32 frameIndex) const {
+            return framesData[frameIndex].albedoBuffer;
+        }
+
+        auto getEmissiveBuffer(const uint32 frameIndex) const {
+            return framesData[frameIndex].emissiveBuffer;
+        }
+
+    private:
+        const std::string VERTEX_SHADER{"default.vert"};
+        const std::string FRAGMENT_SHADER{"gbuffers.frag"};
+
+        static constexpr int BUFFER_POSITION{0};
+        static constexpr int BUFFER_NORMAL{1};
+        static constexpr int BUFFER_ALBEDO{2};
+        static constexpr int BUFFER_EMISSIVE{3};
+
+        struct FrameData {
+            std::shared_ptr<vireo::RenderTarget>  positionBuffer;
+            std::shared_ptr<vireo::RenderTarget>  normalBuffer;
+            std::shared_ptr<vireo::RenderTarget>  albedoBuffer;
+            std::shared_ptr<vireo::RenderTarget>  emissiveBuffer;
+        };
+
+        vireo::GraphicPipelineConfiguration pipelineConfig {
+            .colorRenderFormats  = {
+                vireo::ImageFormat::R16G16B16A16_SFLOAT, // RGB: Position, A : View position Z
+                vireo::ImageFormat::R8G8B8A8_SNORM, // RGB: Normal, A: roughness
+                vireo::ImageFormat::R8G8B8A8_UNORM, // RGB: Albedo, A: metallic
+                vireo::ImageFormat::R8G8B8A8_UNORM, // RGB: emissive color
+            },
+            .colorBlendDesc      = {
+                {}, // Position
+                {}, // Normal
+                {}, // Albedo
+                {}  // Emissive
+            },
+            .cullMode            = vireo::CullMode::BACK,
+            .depthTestEnable     = true,
+            .depthWriteEnable    = true,
+            .stencilTestEnable   = true,
+            .frontStencilOpState = {
+                .failOp      = vireo::StencilOp::KEEP,
+                .passOp      = vireo::StencilOp::REPLACE,
+                .depthFailOp = vireo::StencilOp::KEEP,
+                .compareOp   = vireo::CompareOp::ALWAYS,
+                .compareMask = 0xff,
+                .writeMask   = 0xff
+            }
+        };
+
+        vireo::RenderingConfiguration renderingConfig {
+            .colorRenderTargets = {
+                { .clear = true }, // Position
+                { .clear = true }, // Normal
+                { .clear = true }, // Albedo
+                { .clear = true }, // Emissive
+            },
+            .depthTestEnable    = pipelineConfig.depthTestEnable,
+            .stencilTestEnable  = pipelineConfig.stencilTestEnable,
+        };
+
+        std::vector<FrameData> framesData;
+        const MaterialManager& materialManager;
+        std::unordered_map<pipeline_id, std::shared_ptr<vireo::GraphicPipeline>> pipelines;
+    };
+}

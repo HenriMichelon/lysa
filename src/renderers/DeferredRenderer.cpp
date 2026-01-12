@@ -1,0 +1,92 @@
+/*
+* Copyright (c) 2025-present Henri Michelon
+*
+* This software is released under the MIT License.
+* https://opensource.org/licenses/MIT
+*/
+module lysa.renderers.deferred_renderer;
+
+
+namespace lysa {
+    DeferredRenderer::DeferredRenderer(
+        const Context& ctx,
+        const RendererConfiguration& config) :
+        Renderer{ctx, config, true},
+        // ssaoBlurData{.kernelSize = config.ssaoBlurKernelSize},
+        gBufferPass{ctx, config},
+        lightingPass{ctx, config, gBufferPass} {
+        // if (config.ssaoEnabled) {
+        //     ssaoPass = std::make_unique<SSAOPass>(config, gBufferPass);
+        //     ssaoBlurPass = std::make_unique<PostProcessing>(
+        //           config,
+        //           "ssao_blur",
+        //           ssaoPass->getSSAOBufferFormat(),
+        //           &ssaoBlurData,
+        //           sizeof(ssaoBlurData),
+        //           "SSAO Blur");
+        // }
+    }
+
+    void DeferredRenderer::update(const uint32 frameIndex) {
+        Renderer::update(frameIndex);
+        // if (config.ssaoEnabled) { ssaoBlurPass->update(frameIndex); }
+    }
+
+    void DeferredRenderer::updatePipelines(
+        const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds) {
+        Renderer::updatePipelines(pipelineIds);
+        gBufferPass.updatePipelines(pipelineIds);
+    }
+
+    void DeferredRenderer::colorPass(
+        vireo::CommandList& commandList,
+        const SceneFrameData& scene,
+        const bool,
+        const uint32 frameIndex) {
+        const auto& frame = framesData[frameIndex];
+        gBufferPass.render(
+            commandList,
+            scene,
+            frame.colorAttachment,
+            frame.depthAttachment,
+            false,
+            frameIndex);
+        // if (config.ssaoEnabled) {
+        //     ssaoPass->render(commandList, scene, depthAttachment, frameIndex);
+        //     ssaoBlurPass->render(
+        //            frameIndex,
+        //            scene.getViewport(),
+        //            scene.getScissors(),
+        //             ssaoPass->getSSAOColorBuffer(frameIndex),
+        //            nullptr,
+        //            nullptr,
+        //            commandList);
+        // }
+        lightingPass.render(
+            commandList,
+            scene,
+            frame.colorAttachment,
+            frame.depthAttachment,
+            nullptr, //config.ssaoEnabled ? ssaoBlurPass->getColorAttachment(frameIndex) : nullptr,
+            true,
+            frameIndex);
+        // if (config.ssaoEnabled) {
+        //     commandList.barrier(
+        //         ssaoBlurPass->getColorAttachment(frameIndex),
+        //         vireo::ResourceState::SHADER_READ,
+        //         vireo::ResourceState::UNDEFINED);
+        // }
+    }
+
+    void DeferredRenderer::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
+        Renderer::resize(extent, commandList);
+        gBufferPass.resize(extent, commandList);
+        // if (config.ssaoEnabled) {
+        //     updateBlurData(ssaoBlurData, extent, 1.2);
+        //     ssaoPass->resize(extent, commandList);
+        //     ssaoBlurPass->resize(extent, commandList);
+        // }
+        lightingPass.resize(extent, commandList);
+    }
+
+}

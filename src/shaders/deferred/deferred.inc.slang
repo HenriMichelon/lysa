@@ -15,7 +15,7 @@ struct QuadOutput {
 [[vk::binding(1, 3)]] Texture2D normalBuffer    : register(t1, space3);
 [[vk::binding(2, 3)]] Texture2D albedoBuffer    : register(t2, space3);
 [[vk::binding(3, 3)]] Texture2D emissiveBuffer  : register(t3, space3);
-[[vk::binding(4, 3)]] Texture2D aoMap           : register(t4, space3);
+//[[vk::binding(4, 3)]] Texture2D aoMap           : register(t4, space3);
 
 float4 getColor(QuadOutput input) {
     float4 positionValue = positionBuffer.Sample(samplers[SAMPLER_NEAREST_NEAREST_BORDER_LINEAR], input.uv);
@@ -30,7 +30,8 @@ float4 getColor(QuadOutput input) {
     float4 emissiveColorValue = emissiveBuffer.Sample(samplers[SAMPLER_NEAREST_NEAREST_BORDER_LINEAR], input.uv);
     float3 emissiveColor = emissiveColorValue.rgb;
     float3 viewDirection = normalize(scene.cameraPosition - worldPos);
-    float ambientOcclusion = scene.ssaoEnabled == 1 ? aoMap.Sample(samplers[SAMPLER_NEAREST_NEAREST_BORDER_LINEAR], input.uv).r : 1.0;
+    //float ambientOcclusion = scene.ssaoEnabled == 1 ? aoMap.Sample(samplers[SAMPLER_NEAREST_NEAREST_BORDER_LINEAR], input.uv).r : 1.0;
+    float ambientOcclusion = 1.0;
     //return float4(viewposZ, 0.0, 0.0, 1.0);
     return float4(
         calcLight(
