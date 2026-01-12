@@ -222,6 +222,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.cpp
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
         ${ENGINE_SRC_DIR}/renderers/SceneFrameData.cpp
+        ${ENGINE_SRC_DIR}/renderers/Vector2DRenderer.cpp
         ${ENGINE_SRC_DIR}/renderers/Vector3DRenderer.cpp
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
@@ -263,6 +264,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/Lysa.ixx
         ${ENGINE_SRC_DIR}/Math.ixx
         ${ENGINE_SRC_DIR}/Memory.ixx
+        ${ENGINE_SRC_DIR}/Rect.ixx
         ${ENGINE_SRC_DIR}/Types.ixx
         ${ENGINE_SRC_DIR}/VirtualFS.ixx
 
@@ -279,6 +281,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.ixx
         ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
         ${ENGINE_SRC_DIR}/renderers/SceneFrameData.ixx
+        ${ENGINE_SRC_DIR}/renderers/Vector2DRenderer.ixx
         ${ENGINE_SRC_DIR}/renderers/Vector3DRenderer.ixx
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx

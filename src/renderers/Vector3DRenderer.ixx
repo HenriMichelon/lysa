@@ -6,7 +6,7 @@
 */
 module;
 #include <cstdlib>
-export module lysa.renderers.vector;
+export module lysa.renderers.vector_3d;
 
 import vireo;
 import lysa.context;

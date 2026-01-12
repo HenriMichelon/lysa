@@ -6,7 +6,7 @@
 */
 module;
 #include <hb.h>
-module lysa.renderers.vector;
+module lysa.renderers.vector_3d;
 
 import lysa.exception;
 
