@@ -33,27 +33,27 @@ export namespace lysa {
         float3 clearColor{DEFAULT_CLEAR_COLOR};
         //! MSAA samples count
         vireo::MSAA msaa{vireo::MSAA::NONE};
-
-        /*
-        //! Gamma correction factor when using *_UNORM, *_SNORM or *_SFLOAT format
-        float              gamma{2.4f};
-        //! Exposure correction factor
-        float              exposure{1.0f};
-        //! Type of tone mapping shader when using HDR rendering formats R16G16B16A16_UNORM, R16G16B16A16_SFLOAT or R32G32B32A32_SFLOAT
-        ToneMappingType    toneMappingType{ToneMappingType::ACES};
-        //! Type of antialiasing post-processing shader
-        AntiAliasingType   antiAliasingType{AntiAliasingType::SMAA};
-        float              fxaaSpanMax{8.0f};
-        float              fxaaReduceMul{1.0f / 8.0f};
-        float              fxaaReduceMin{1.0f / 128.0f};
-        float              smaaEdgeThreshold{0.15f};
-        int                smaaBlendMaxSteps{4};
-        //! Enable the bloom post-processing effect
-        bool               bloomEnabled{true};
-        //! Bloom effect blur kernel size
-        uint32             bloomBlurKernelSize{5};
-        //! Bloom effect blur strength
-        float              bloomBlurStrength{1.2f};
+        //
+        // //! Gamma correction factor when using *_UNORM, *_SNORM or *_SFLOAT format
+        // float              gamma{2.4f};
+        // //! Exposure correction factor
+        // float              exposure{1.0f};
+        // //! Type of tone mapping shader when using HDR rendering formats R16G16B16A16_UNORM, R16G16B16A16_SFLOAT or R32G32B32A32_SFLOAT
+        // ToneMappingType    toneMappingType{ToneMappingType::ACES};
+        // //! Type of antialiasing post-processing shader
+        // AntiAliasingType   antiAliasingType{AntiAliasingType::SMAA};
+        // float              fxaaSpanMax{8.0f};
+        // float              fxaaReduceMul{1.0f / 8.0f};
+        // float              fxaaReduceMin{1.0f / 128.0f};
+        // float              smaaEdgeThreshold{0.15f};
+        // int                smaaBlendMaxSteps{4};
+        // //! Enable the bloom post-processing effect
+        // bool               bloomEnabled{true};
+        // //! Bloom effect blur kernel size
+        // uint32             bloomBlurKernelSize{5};
+        // //! Bloom effect blur strength
+        // float              bloomBlurStrength{1.2f};
+#ifdef DEFERRED_RENDERER
         //! Enable SSAO in the deferred renderer
         bool               ssaoEnabled{true};
         //! SSAO blur kernel size
@@ -65,7 +65,8 @@ export namespace lysa {
         //! SSAO self-shadowing bias
         float              ssaoBias{0.025f};
         //! SSAO strength
-        float              ssaoStrength{2.0f};*/
+        float              ssaoStrength{2.0f};
+#endif
     };
 
 

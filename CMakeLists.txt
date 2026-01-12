@@ -101,14 +101,14 @@ set(SHADERS_SOURCE_FILES
         "${SHADERS_SRC_DIR}/deferred/gbuffers.frag.slang"
         "${SHADERS_SRC_DIR}/deferred/glighting.frag.slang"
         "${SHADERS_SRC_DIR}/deferred/glighting_bloom.frag.slang"
-#        "${SHADERS_SRC_DIR}/deferred/ssao.frag.slang"
+        "${SHADERS_SRC_DIR}/deferred/ssao.frag.slang"
         "${SHADERS_SRC_DIR}/forward/forward.frag.slang"
 #        "${SHADERS_SRC_DIR}/forward/forward_bloom.frag.slang"
         "${SHADERS_SRC_DIR}/forward/transparency_oit.frag.slang"
         "${SHADERS_SRC_DIR}/forward/transparency_oit_composite.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/greyscale.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/bloom_blur.frag.slang"
-#        "${SHADERS_SRC_DIR}/postprocess/ssao_blur.frag.slang"
+        "${SHADERS_SRC_DIR}/postprocess/ssao_blur.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/fxaa.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/smaa_edge_detect.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/smaa_blend_weight.frag.slang"
@@ -183,11 +183,13 @@ if(DEFERRED_RENDERER)
             ${ENGINE_SRC_DIR}/renderers/DeferredRenderer.cpp
             ${ENGINE_SRC_DIR}/renderers/renderpasses/GBufferPass.cpp
             ${ENGINE_SRC_DIR}/renderers/renderpasses/LightingPass.cpp
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/SSAOPass.cpp
     )
     set(DEFERRED_RENDERER_MODULES
             ${ENGINE_SRC_DIR}/renderers/DeferredRenderer.ixx
             ${ENGINE_SRC_DIR}/renderers/renderpasses/GBufferPass.ixx
             ${ENGINE_SRC_DIR}/renderers/renderpasses/LightingPass.ixx
+            ${ENGINE_SRC_DIR}/renderers/renderpasses/SSAOPass.ixx
     )
 endif ()
 
@@ -218,6 +220,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/SceneFrameData.cpp
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/PostProcessing.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShaderMaterialPass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.cpp
@@ -271,6 +274,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/SceneFrameData.ixx
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/PostProcessing.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShaderMaterialPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.ixx

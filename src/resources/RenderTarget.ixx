@@ -107,6 +107,7 @@ export namespace lysa {
         };
 
         Context& ctx;
+        const RendererConfiguration rendererConfiguration;
         // Set to true to pause the rendering in this target
         bool paused{false};
         // Array of per‑frame resource bundles (size = frames in flight).

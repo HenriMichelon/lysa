@@ -68,7 +68,7 @@ export namespace lysa {
             this->environment = environment;
         }
         /** Updates CPU/GPU scene state (uniforms, lights, instances, descriptors). */
-        void update(const vireo::CommandList& commandList, const Camera& camera, uint32 frameIndex);
+        void update(const vireo::CommandList& commandList, const Camera& camera, const RendererConfiguration& config, uint32 frameIndex);
 
         /** Executes compute workloads such as frustum culling. */
         void compute(vireo::CommandList& commandList, const Camera& camera) const;

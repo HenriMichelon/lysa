@@ -13,6 +13,8 @@ import lysa.renderers.renderer;
 import lysa.renderers.scene_frame_data;
 import lysa.renderers.renderpasses.gbuffer_pass;
 import lysa.renderers.renderpasses.lighting_pass;
+import lysa.renderers.renderpasses.post_processing;
+import lysa.renderers.renderpasses.ssao_pass;
 
 export namespace lysa {
 
@@ -27,8 +29,8 @@ export namespace lysa {
     public:
         /**
          * Constructs a deferred renderer instance.
+         * @param ctx
          * @param config Rendering configuration (attachments, frames in flight).
-         * @param name   Human-readable name for debugging.
          */
         DeferredRenderer(
             const Context& ctx,
@@ -55,19 +57,21 @@ export namespace lysa {
         void colorPass(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors,
             bool clearAttachment,
             uint32 frameIndex) override;
 
     private:
         /** Constant data used by SSAO blur post-process. */
-        //BlurData ssaoBlurData;
+        BlurData ssaoBlurData;
         /** G-Buffer generation pass. */
         GBufferPass gBufferPass;
         /** Lighting resolve pass consuming the G-Buffer. */
         LightingPass lightingPass;
         /** Optional SSAO pass (created based on configuration). */
-        // std::unique_ptr<SSAOPass> ssaoPass;
+        std::unique_ptr<SSAOPass> ssaoPass;
         /** Optional blur pass applied to the SSAO result. */
-        // std::unique_ptr<PostProcessing> ssaoBlurPass;
+        std::unique_ptr<PostProcessing> ssaoBlurPass;
     };
 }

@@ -25,10 +25,11 @@ namespace lysa {
         forwardColorPass.updatePipelines(pipelineIds);
     }
 
-
     void ForwardRenderer::colorPass(
         vireo::CommandList& commandList,
         const SceneFrameData& scene,
+        const vireo::Viewport&,
+        const vireo::Rect&,
         const bool clearAttachment,
         const uint32 frameIndex) {
         const auto& frame = framesData[frameIndex];
@@ -41,7 +42,6 @@ namespace lysa {
             clearAttachment,
             frameIndex);
     }
-
 
     void ForwardRenderer::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
         Renderer::resize(extent, commandList);

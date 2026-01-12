@@ -4,56 +4,67 @@
 * This software is released under the MIT License.
 * https://opensource.org/licenses/MIT
 */
-export module lysa.renderers.renderpasses.lighting_pass;
+export module lysa.renderers.renderpasses.ssao_pass;
 
 import vireo;
 import lysa.context;
+import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.scene_frame_data;
-import lysa.renderers.renderpasses.renderpass;
 import lysa.renderers.renderpasses.gbuffer_pass;
+import lysa.renderers.renderpasses.renderpass;
 
 export namespace lysa {
 
-    class LightingPass : public Renderpass {
+    class SSAOPass : public Renderpass {
     public:
-        LightingPass(
+        SSAOPass(
             const Context& ctx,
-            const RendererConfiguration& config, const
-            GBufferPass& gBufferPass);
+            const RendererConfiguration& config,
+            const GBufferPass& gBufferPass);
 
         void render(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
-            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
-            const std::shared_ptr<vireo::RenderTarget>& aoMap,
-            bool clearAttachment,
             uint32 frameIndex);
 
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
-        auto getBrightnessBuffer(const uint32 frameIndex) const {
-            return framesData[frameIndex].brightnessBuffer;
+        auto getSSAOColorBuffer(const uint32 frameIndex) const {
+            return framesData[frameIndex].ssaoColorBuffer;
+        }
+
+        auto getSSAOBufferFormat() const {
+            return pipelineConfig.colorRenderFormats[0];
         }
 
     private:
         const std::string VERTEX_SHADER{"quad.vert"};
-        const std::string FRAGMENT_SHADER{"glighting.frag"};
-        // const std::string FRAGMENT_SHADER_BLOOM{"glighting_bloom.frag"};
+        const std::string FRAGMENT_SHADER{"ssao.frag"};
 
-        static constexpr vireo::DescriptorIndex BINDING_POSITION_BUFFER{0};
-        static constexpr vireo::DescriptorIndex BINDING_NORMAL_BUFFER{1};
-        static constexpr vireo::DescriptorIndex BINDING_ALBEDO_BUFFER{2};
-        static constexpr vireo::DescriptorIndex BINDING_EMISSIVE_BUFFER{3};
-        static constexpr vireo::DescriptorIndex BINDING_AO_MAP{4};
+        static constexpr vireo::DescriptorIndex BINDING_PARAMS{0};
+        static constexpr vireo::DescriptorIndex BINDING_POSITION_BUFFER{1};
+        static constexpr vireo::DescriptorIndex BINDING_NORMAL_BUFFER{2};
+        static constexpr vireo::DescriptorIndex BINDING_NOISE_TEXTURE{3};
+
+        struct Params {
+            float2 screenSize;
+            float2 noiseScale;
+            float  radius;
+            float  bias;
+            float  power;
+            uint   sampleCount{64};
+            float4 samples[64];
+        };
 
         struct FrameData {
             std::shared_ptr<vireo::DescriptorSet> descriptorSet;
-            std::shared_ptr<vireo::RenderTarget> brightnessBuffer;
+            std::shared_ptr<vireo::RenderTarget> ssaoColorBuffer;
         };
 
         vireo::GraphicPipelineConfiguration pipelineConfig {
+            .colorRenderFormats = { vireo::ImageFormat::R8_UNORM },
             .colorBlendDesc = {{}},
             .stencilTestEnable = true,
             .frontStencilOpState = {
@@ -72,8 +83,11 @@ export namespace lysa {
             .stencilTestEnable  = pipelineConfig.stencilTestEnable,
         };
 
+        Params params;
         const GBufferPass& gBufferPass;
         std::vector<FrameData> framesData;
+        std::shared_ptr<vireo::Buffer> paramsBuffer;
+        std::shared_ptr<vireo::Image> noiseTexture;
         std::shared_ptr<vireo::GraphicPipeline> pipeline;
         std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
     };

@@ -129,6 +129,7 @@ namespace lysa {
     void SceneFrameData::update(
         const vireo::CommandList& commandList,
         const Camera& camera,
+        const RendererConfiguration& config,
         const uint32 frameIndex) {
         if (!removedLights.empty()) {
             for (const auto& light : removedLights) {
@@ -172,7 +173,7 @@ namespace lysa {
             .ambientLight = float4(environment.color, environment.intensity),
             .lightsCount = static_cast<uint32>(lights.size()),
             // .bloomEnabled = renderingConfig.bloomEnabled ? 1u : 0u,
-            // .ssaoEnabled = renderingConfig.ssaoEnabled ? 1u : 0u,
+            .ssaoEnabled = config.ssaoEnabled ? 1u : 0u,
         };
         sceneUniformBuffer->write(&sceneUniform);
 

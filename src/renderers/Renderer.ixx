@@ -109,6 +109,13 @@ export namespace lysa {
         Renderer& operator=(Renderer&) = delete;
 
     protected:
+        /** Constant buffer data used by Gaussian blur post-process. */
+        struct BlurData {
+            uint32 kernelSize;
+            float4 weights[9*9]; // float4 for correct alignment
+            float2 texelSize;
+        };
+
         const Context& ctx;
         const bool withStencil;
         const RendererConfiguration config;
@@ -137,8 +144,13 @@ export namespace lysa {
         virtual void colorPass(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors,
             bool clearAttachment,
             uint32 frameIndex) = 0;
+
+        /** Precomputes Gaussian weights and texel size based on extent/strength. */
+        void updateBlurData(BlurData& blurData, const vireo::Extent& extent, float strength) const;
 
     private:
         const MeshManager& meshManager;

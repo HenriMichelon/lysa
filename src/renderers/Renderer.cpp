@@ -93,6 +93,8 @@ namespace lysa {
         colorPass(
             commandList,
             scene,
+            viewport,
+            scissors,
             clearAttachment,
             frameIndex);
         const auto& frame = framesData[frameIndex];
@@ -150,4 +152,24 @@ namespace lysa {
         return getFrameColorAttachment(frameIndex);
     }
 
+    void Renderer::updateBlurData(BlurData& blurData, const vireo::Extent& extent, const float strength) const {
+        // Pre-compute Gaussian weights
+        if (blurData.kernelSize > 9) { blurData.kernelSize = 9; }
+        blurData.texelSize = (1.0 / float2(extent.width, extent.height)) * strength;
+        const int halfKernel = blurData.kernelSize / 2;
+        float sum = 0.0;
+        for (int i = 0; i < blurData.kernelSize; i++) {
+            for (int j = 0; j < blurData.kernelSize; j++) {
+                const int index = i * blurData.kernelSize + j;
+                const float x = static_cast<float>(i - halfKernel) * blurData.texelSize.x;
+                const float y = static_cast<float>(j - halfKernel) * blurData.texelSize.y;
+                blurData.weights[index].x = std::exp(-(x * x + y * y) / 2.0);
+                sum += blurData.weights[index].x;
+            }
+        }
+        // Normalize weights
+        for (int i = 0; i < blurData.kernelSize * blurData.kernelSize; i++) {
+            blurData.weights[i].x /= sum;
+        }
+    }
 }

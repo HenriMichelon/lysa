@@ -46,6 +46,8 @@ export namespace lysa {
         void colorPass(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
+            const vireo::Viewport& viewport,
+            const vireo::Rect& scissors,
             bool clearAttachment,
             uint32 frameIndex) override;
 

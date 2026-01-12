@@ -6,8 +6,8 @@
 */
 module lysa.renderers.renderpasses.lighting_pass;
 
+import lysa.resources.image;
 import lysa.renderers.graphic_pipeline_data;
-
 
 namespace lysa {
 
@@ -23,7 +23,7 @@ namespace lysa {
         descriptorLayout->add(BINDING_NORMAL_BUFFER, vireo::DescriptorType::SAMPLED_IMAGE);
         descriptorLayout->add(BINDING_ALBEDO_BUFFER, vireo::DescriptorType::SAMPLED_IMAGE);
         descriptorLayout->add(BINDING_EMISSIVE_BUFFER, vireo::DescriptorType::SAMPLED_IMAGE);
-        // descriptorLayout->add(BINDING_AO_MAP, vireo::DescriptorType::SAMPLED_IMAGE);
+        descriptorLayout->add(BINDING_AO_MAP, vireo::DescriptorType::SAMPLED_IMAGE);
         descriptorLayout->build();
 
         pipelineConfig.colorRenderFormats.push_back(config.colorRenderingFormat);
@@ -51,7 +51,7 @@ namespace lysa {
         framesData.resize(ctx.config.framesInFlight);
         for (auto& frame : framesData) {
             frame.descriptorSet = ctx.vireo->createDescriptorSet(descriptorLayout);
-            // frame.descriptorSet->update(BINDING_AO_MAP, Application::getResources().getBlankImage());
+            frame.descriptorSet->update(BINDING_AO_MAP, ctx.res.get<ImageManager>().getBlankImage());
         }
 
         renderingConfig.colorRenderTargets[0].clearValue = {
@@ -75,9 +75,9 @@ namespace lysa {
         frame.descriptorSet->update(BINDING_NORMAL_BUFFER, gBufferPass.getNormalBuffer(frameIndex)->getImage());
         frame.descriptorSet->update(BINDING_ALBEDO_BUFFER, gBufferPass.getAlbedoBuffer(frameIndex)->getImage());
         frame.descriptorSet->update(BINDING_EMISSIVE_BUFFER, gBufferPass.getEmissiveBuffer(frameIndex)->getImage());
-        // if (config.ssaoEnabled && aoMap != nullptr) {
-            // frame.descriptorSet->update(BINDING_AO_MAP, aoMap->getImage());
-        // }
+        if (config.ssaoEnabled && aoMap != nullptr) {
+            frame.descriptorSet->update(BINDING_AO_MAP, aoMap->getImage());
+        }
 
         renderingConfig.colorRenderTargets[0].renderTarget = colorAttachment;
         renderingConfig.colorRenderTargets[0].clear = clearAttachment;

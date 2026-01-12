@@ -17,7 +17,8 @@ namespace lysa {
         Context& ctx,
         const RenderTargetConfiguration& configuration,
         const RenderingWindowHandle renderingWindowHandle) :
-        ctx(ctx)  {
+        ctx(ctx),
+        rendererConfiguration(configuration.rendererConfiguration) {
         if (renderingWindowHandle == nullptr) {
             throw Exception("RenderTargetConfiguration : need a least one physical target, window or memory");
         }
@@ -30,7 +31,7 @@ namespace lysa {
             renderingWindowHandle,
             configuration.presentMode,
             ctx.config.framesInFlight);
-        renderer = Renderer::create(ctx, configuration.rendererConfiguration);
+        renderer = Renderer::create(ctx, rendererConfiguration);
         framesData.resize(ctx.config.framesInFlight);
         for (auto& frame : framesData) {
             frame.inFlightFence = ctx.vireo->createFence(true, "inFlightFence");
@@ -136,7 +137,7 @@ namespace lysa {
 
         frame.updateCommandList->begin();
         for (auto& view : views) {
-            view.scene.get(frameIndex).update(*frame.updateCommandList, view.camera, frameIndex);
+            view.scene.get(frameIndex).update(*frame.updateCommandList, view.camera, rendererConfiguration, frameIndex);
         }
         frame.updateCommandList->end();
         ctx.graphicQueue->submit(
@@ -174,7 +175,7 @@ namespace lysa {
         auto clearAttachment{true};
         for (auto& view : views) {
             auto& data = view.scene.get(frameIndex);
-            renderer->render(*commandList, data,  view.viewport, view.scissors, clearAttachment, frameIndex);
+            renderer->render(*commandList, data, view.viewport, view.scissors, clearAttachment, frameIndex);
             clearAttachment = false;
         }
 
