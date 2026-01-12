@@ -15,25 +15,49 @@ import lysa.renderers.renderpasses.renderpass;
 
 export namespace lysa {
 
+    /**
+     * @brief Base class for post-processing render passes
+     */
     class PostProcessing : public Renderpass {
     public:
+        /**
+         * @brief Parameters for the post-processing shader
+         */
         struct PostProcessingParams {
-            uint32 applyBloom;
-            float  time;
-            uint2  imageSize;
+            uint32 applyBloom; /**< Whether to apply bloom effect (0 or 1) */
+            float  time;       /**< Current time for time-based effects */
+            uint2  imageSize;  /**< Size of the image being processed */
         };
 
+        /** @brief Name of the default vertex shader for post-processing */
         inline static const std::string VERTEX_SHADER{"quad.vert"};
 
+        /** @brief Descriptor binding index for parameters uniform buffer */
         static constexpr vireo::DescriptorIndex BINDING_PARAMS{0};
+        /** @brief Descriptor binding index for custom data uniform buffer */
         static constexpr vireo::DescriptorIndex BINDING_DATA{1};
+        /** @brief Descriptor binding index for input textures */
         static constexpr vireo::DescriptorIndex BINDING_TEXTURES{2};
 
+        /** @brief Index for the input color buffer texture */
         static constexpr int INPUT_BUFFER{0};
+        /** @brief Index for the depth buffer texture */
         static constexpr int DEPTH_BUFFER{1};
+        /** @brief Index for the bloom buffer texture */
         static constexpr int BLOOM_BUFFER{2};
+        /** @brief Total number of input textures */
         static constexpr int TEXTURES_COUNT{BLOOM_BUFFER+1};
 
+        /**
+         * @brief Constructs a PostProcessing render pass
+         * @param ctx The engine context
+         * @param config The renderer configuration
+         * @param fragShaderName Name of the fragment shader to use
+         * @param outputFormat Format of the output image
+         * @param data Pointer to custom data for the shader
+         * @param dataSize Size of the custom data
+         * @param name Name of the render pass
+         */
         PostProcessing(
             const Context& ctx,
             const RendererConfiguration& config,
@@ -43,8 +67,22 @@ export namespace lysa {
             uint32 dataSize,
             const std::string& name);
 
+        /**
+         * @brief Updates the render pass state for the current frame
+         * @param frameIndex Index of the current frame
+         */
         void update(uint32 frameIndex) override;
 
+        /**
+         * @brief Renders the post-processing effect
+         * @param frameIndex Index of the current frame
+         * @param viewport The viewport to render into
+         * @param scissor The scissor rectangle
+         * @param colorAttachment The input color attachment
+         * @param depthAttachment The input depth attachment
+         * @param bloomColorAttachment The input bloom color attachment
+         * @param commandList The command list to record rendering commands into
+         */
         void render(
            uint32 frameIndex,
            const vireo::Viewport&viewport,
@@ -54,12 +92,26 @@ export namespace lysa {
            const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
            vireo::CommandList& commandList);
 
+        /**
+         * @brief Resizes the render pass resources
+         * @param extent The new extent
+         * @param commandList Command list for resource transitions if needed
+         */
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
+        /**
+         * @brief Gets the color attachment for a specific frame
+         * @param frameIndex Index of the frame
+         * @return A shared pointer to the render target
+         */
         virtual std::shared_ptr<vireo::RenderTarget> getColorAttachment(const uint32 frameIndex) {
             return framesData[frameIndex].colorAttachment;
         }
 
+        /**
+         * @brief Gets the name of the fragment shader
+         * @return The fragment shader name
+         */
         const auto& getFragShaderName() const { return fragShaderName; }
 
     protected:

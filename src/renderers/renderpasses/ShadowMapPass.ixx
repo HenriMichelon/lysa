@@ -22,44 +22,100 @@ import lysa.renderers.renderpasses.renderpass;
 
 export namespace lysa {
 
+    /**
+     * @brief Render pass for generating shadow maps
+     */
     class ShadowMapPass : public Renderpass {
     public:
+        /**
+         * @brief Constructs a ShadowMapPass
+         * @param ctx The engine context
+         * @param light Pointer to the light source for which shadows are generated
+         * @param meshInstancesDataArray Array of mesh instance data in device memory
+         * @param maxMeshSurfacePerPipeline Maximum number of mesh surfaces per pipeline
+         */
         ShadowMapPass(
             const Context& ctx,
             const Light* light,
             const DeviceMemoryArray& meshInstancesDataArray,
             size_t maxMeshSurfacePerPipeline);
 
+        /**
+         * @brief Computes frustum culling for shadow map generation
+         * @param commandList The command list to record compute commands into
+         * @param pipelinesData Map of pipeline data for mesh rendering
+         */
         void compute(
             vireo::CommandList& commandList,
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const;
 
+        /**
+         * @brief Updates the graphics pipelines based on active pipeline IDs
+         * @param pipelineIds Map of pipeline IDs to unique object IDs
+         */
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
+        /**
+         * @brief Sets the current camera for cascaded shadow maps calculation
+         * @param camera Reference to the current camera
+         */
         void setCurrentCamera(const Camera& camera) {
             currentCamera = const_cast<Camera*>(&camera);
         }
 
+        /**
+         * @brief Updates the shadow map pass state for the current frame
+         * @param frameIndex Index of the current frame
+         */
         void update(uint32 frameIndex) override;
 
+        /**
+         * @brief Renders the shadow maps
+         * @param commandList The command list to record rendering commands into
+         * @param scene The scene frame data
+         */
         void render(
             vireo::CommandList& commandList,
             const SceneFrameData& scene);
 
+        /**
+         * @brief Gets the number of shadow maps (subpasses)
+         * @return The number of shadow maps
+         */
         auto getShadowMapCount() const { return subpassesCount; }
 
+        /**
+         * @brief Gets a shadow map render target
+         * @param index Index of the shadow map
+         * @return A shared pointer to the shadow map render target
+         */
         auto getShadowMap(const uint32 index) const {
             return subpassData[index].shadowMap;
         }
 
+        /**
+         * @brief Gets a transparency color map render target
+         * @param index Index of the shadow map
+         * @return A shared pointer to the transparency color map render target
+         */
         auto getTransparencyColorMap(const uint32 index) const {
             return subpassData[index].transparencyColorMap;
         }
 
+        /**
+         * @brief Gets the light space matrix for a shadow map
+         * @param index Index of the shadow map
+         * @return The light space matrix
+         */
         const auto& getLightSpace(const uint32 index) const {
             return subpassData[index].globalUniform.lightSpace;
         }
 
+        /**
+         * @brief Gets the cascade split depth for a shadow map
+         * @param index Index of the shadow map
+         * @return The split depth
+         */
         auto getCascadeSplitDepth(const uint32 index) const {
             return subpassData[index].globalUniform.splitDepth;
         }

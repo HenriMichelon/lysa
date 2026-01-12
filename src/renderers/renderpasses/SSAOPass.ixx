@@ -16,26 +16,57 @@ import lysa.renderers.renderpasses.renderpass;
 
 export namespace lysa {
 
+    /**
+     * @brief Render pass for Screen Space Ambient Occlusion (SSAO)
+     */
     class SSAOPass : public Renderpass {
     public:
+        /**
+         * @brief Constructs an SSAOPass
+         * @param ctx The engine context
+         * @param config The renderer configuration
+         * @param gBufferPass Reference to the G-buffer pass providing input textures
+         * @param withStencil Whether to enable stencil testing
+         */
         SSAOPass(
             const Context& ctx,
             const RendererConfiguration& config,
             const GBufferPass& gBufferPass,
             bool withStencil);
 
+        /**
+         * @brief Renders the SSAO pass
+         * @param commandList The command list to record rendering commands into
+         * @param scene The scene frame data
+         * @param depthAttachment The target depth attachment
+         * @param frameIndex Index of the current frame
+         */
         void render(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             uint32 frameIndex);
 
+        /**
+         * @brief Resizes the render pass resources
+         * @param extent The new extent
+         * @param commandList Command list for resource transitions if needed
+         */
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
+        /**
+         * @brief Gets the SSAO color buffer for a specific frame
+         * @param frameIndex Index of the current frame
+         * @return A shared pointer to the SSAO color render target
+         */
         auto getSSAOColorBuffer(const uint32 frameIndex) const {
             return framesData[frameIndex].ssaoColorBuffer;
         }
 
+        /**
+         * @brief Gets the image format used for the SSAO buffer
+         * @return The SSAO buffer image format
+         */
         auto getSSAOBufferFormat() const {
             return pipelineConfig.colorRenderFormats[0];
         }

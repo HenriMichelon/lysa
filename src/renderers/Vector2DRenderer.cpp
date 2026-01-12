@@ -133,6 +133,6 @@ namespace lysa {
     }
 
     void Vector2DRenderer::resize(const vireo::Extent& extent) {
-        vectorRatio = static_cast<float>(extent.width) / extent.height;
+        aspectRatio = static_cast<float>(extent.width) / extent.height;
     }
 }

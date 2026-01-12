@@ -29,7 +29,7 @@ export namespace lysa {
     };
 
     /**
-    * Scene node that holds a Mesh.
+    * Instance that holds a Mesh.
     */
     class MeshInstance : public UniqueResource {
     public:

@@ -15,19 +15,45 @@ import lysa.renderers.renderpasses.renderpass;
 
 export namespace lysa {
 
+    /**
+     * @brief Render pass for transparent objects using Order-Independent Transparency (OIT)
+     */
     class TransparencyPass : public Renderpass {
     public:
+        /**
+         * @brief Constructs a TransparencyPass
+         * @param ctx The engine context
+         * @param config The renderer configuration
+         */
         TransparencyPass(
             const Context& ctx,
             const RendererConfiguration& config);
 
+        /**
+         * @brief Updates the OIT graphics pipelines based on active pipeline IDs
+         * @param pipelineIds Map of pipeline IDs to unique object IDs
+         */
         void updatePipelines(
            const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
+        /**
+         * @brief Resizes the render pass resources
+         * @param extent The new extent
+         * @param commandList Command list for resource transitions if needed
+         */
         void resize(
             const vireo::Extent& extent,
             const std::shared_ptr<vireo::CommandList>& commandList) override;
 
+        /**
+         * @brief Renders the transparency pass
+         * @param commandList The command list to record rendering commands into
+         * @param scene The scene frame data
+         * @param colorAttachment The target color attachment
+         * @param depthAttachment The target depth attachment
+         * @param clearAttachment Whether to clear the color attachment
+         * @param frameIndex Index of the current frame
+         */
         void render(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,

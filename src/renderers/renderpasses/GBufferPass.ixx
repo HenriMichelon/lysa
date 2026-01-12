@@ -15,16 +15,38 @@ import lysa.resources.material;
 
 export namespace lysa {
 
+    /**
+     * @brief Render pass for generating G-buffers
+     */
     class GBufferPass : public Renderpass {
     public:
+        /**
+         * @brief Constructs a GBufferPass
+         * @param ctx The engine context
+         * @param config The renderer configuration
+         * @param withStencil Whether to enable stencil testing
+         */
         GBufferPass(
             const Context& ctx,
             const RendererConfiguration& config,
             bool withStencil);
 
+        /**
+         * @brief Updates the graphics pipelines based on active pipeline IDs
+         * @param pipelineIds Map of pipeline IDs to unique object IDs
+         */
         void updatePipelines(
             const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
+        /**
+         * @brief Renders the G-buffer pass
+         * @param commandList The command list to record rendering commands into
+         * @param scene The scene frame data
+         * @param colorAttachment The target color attachment
+         * @param depthAttachment The target depth attachment
+         * @param clearAttachment Whether to clear the color attachment
+         * @param frameIndex Index of the current frame
+         */
         void render(
             vireo::CommandList& commandList,
             const SceneFrameData& scene,
@@ -33,20 +55,45 @@ export namespace lysa {
             bool clearAttachment,
             uint32 frameIndex);
 
+        /**
+         * @brief Resizes the render pass resources
+         * @param extent The new extent
+         * @param commandList Command list for resource transitions if needed
+         */
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
+        /**
+         * @brief Gets the position buffer for a specific frame
+         * @param frameIndex Index of the current frame
+         * @return A shared pointer to the position render target
+         */
         auto getPositionBuffer(const uint32 frameIndex) const {
             return framesData[frameIndex].positionBuffer;
         }
 
+        /**
+         * @brief Gets the normal buffer for a specific frame
+         * @param frameIndex Index of the current frame
+         * @return A shared pointer to the normal render target
+         */
         auto getNormalBuffer(const uint32 frameIndex) const {
             return framesData[frameIndex].normalBuffer;
         }
 
+        /**
+         * @brief Gets the albedo buffer for a specific frame
+         * @param frameIndex Index of the current frame
+         * @return A shared pointer to the albedo render target
+         */
         auto getAlbedoBuffer(const uint32 frameIndex) const {
             return framesData[frameIndex].albedoBuffer;
         }
 
+        /**
+         * @brief Gets the emissive buffer for a specific frame
+         * @param frameIndex Index of the current frame
+         * @return A shared pointer to the emissive render target
+         */
         auto getEmissiveBuffer(const uint32 frameIndex) const {
             return framesData[frameIndex].emissiveBuffer;
         }

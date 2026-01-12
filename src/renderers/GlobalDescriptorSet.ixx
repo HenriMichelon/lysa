@@ -15,40 +15,60 @@ import lysa.resources.image;
 export namespace lysa {
 
     /**
-    * Global descriptor set for GPU-ready shared resources.
-    **/
+     * @brief Global descriptor set for GPU-ready shared resources.
+     *
+     * This class manages a descriptor set that provides access to global resources
+     * such as materials, mesh surfaces, and textures, which are shared across multiple pipelines.
+     */
     class GlobalDescriptorSet {
     public:
-        /** Descriptor set index used by pipelines to bind shared resources. */
+        /** @brief Descriptor set index used by pipelines to bind shared resources. */
         static constexpr uint32 SET{0};
-        /** Descriptor binding index for the materials buffer. */
+        /** @brief Descriptor binding index for the materials buffer. */
         static constexpr vireo::DescriptorIndex BINDING_MATERIALS{0};
-        /** Descriptor binding index for the mesh surfaces buffer. */
+        /** @brief Descriptor binding index for the mesh surfaces buffer. */
         static constexpr vireo::DescriptorIndex BINDING_SURFACES{1};
-        /** Descriptor binding index for the textures array/sampled images. */
+        /** @brief Descriptor binding index for the textures array/sampled images. */
         static constexpr vireo::DescriptorIndex BINDING_TEXTURES{2};
 
+        /**
+         * @brief Constructs a new GlobalDescriptorSet.
+         * @param ctx Reference to the rendering context.
+         */
         GlobalDescriptorSet(Context& ctx);
 
+        /**
+         * @brief Destroys the GlobalDescriptorSet.
+         */
         ~GlobalDescriptorSet();
 
-        /** Returns the descriptor set that exposes resources to shaders. */
+        /**
+         * @brief Returns the descriptor set that exposes resources to shaders.
+         * @return The global descriptor set.
+         */
         auto getDescriptorSet() const { return descriptorSet; }
 
-        /** Returns the descriptor set layout */
+        /**
+         * @brief Returns the descriptor set layout.
+         * @return The global descriptor set layout.
+         */
         auto getDescriptorLayout() const { return descriptorLayout; }
 
-        /** Update descriptor set if needed. */
+        /**
+         * @brief Updates the descriptor set if needed.
+         */
         void update();
 
     private:
+        /* Reference to the engine context. */
         Context& ctx;
+        /*Reference to the image manager. */
         ImageManager& imageManager;
-        // Global descriptor set layout
+        /* Global descriptor set layout. */
         std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
-        // Global Descriptor set bound at SET_GLOBAL
+        /* Global descriptor set bound at SET index. */
         std::shared_ptr<vireo::DescriptorSet> descriptorSet;
-        /** Mutex to guard mutations to the descriptor set. */
+        /* Mutex to guard mutations to the descriptor set. */
         std::mutex mutex;
     };
 }
