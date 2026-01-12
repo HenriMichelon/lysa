@@ -219,6 +219,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.cpp
         ${ENGINE_SRC_DIR}/renderers/Renderer.cpp
         ${ENGINE_SRC_DIR}/renderers/SceneFrameData.cpp
+#        ${ENGINE_SRC_DIR}/renderers/VectorRenderer.cpp
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/PostProcessing.cpp
@@ -228,6 +229,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/renderpasses/SMAAPass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.cpp
 
+        ${ENGINE_SRC_DIR}/resources/Font.cpp
         ${ENGINE_SRC_DIR}/resources/Image.cpp
         ${ENGINE_SRC_DIR}/resources/Material.cpp
         ${ENGINE_SRC_DIR}/resources/Mesh.cpp
@@ -274,6 +276,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/GraphicPipelineData.ixx
         ${ENGINE_SRC_DIR}/renderers/Renderer.ixx
         ${ENGINE_SRC_DIR}/renderers/SceneFrameData.ixx
+#        ${ENGINE_SRC_DIR}/renderers/VectorRenderer.ixx
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/PostProcessing.ixx
@@ -285,6 +288,7 @@ target_sources(${LYSA_ENGINE_TARGET}
 
         ${ENGINE_SRC_DIR}/resources/Camera.ixx
         ${ENGINE_SRC_DIR}/resources/Environment.ixx
+        ${ENGINE_SRC_DIR}/resources/Font.ixx
         ${ENGINE_SRC_DIR}/resources/Image.ixx
         ${ENGINE_SRC_DIR}/resources/Light.ixx
         ${ENGINE_SRC_DIR}/resources/Material.ixx

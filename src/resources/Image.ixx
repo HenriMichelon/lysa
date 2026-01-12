@@ -75,8 +75,6 @@ export namespace lysa {
 
         ~ImageManager() override;
 
-        //void update();
-
         /**
          * Save an image into a file.<br>
          * Supports PNG and HDR formats.
