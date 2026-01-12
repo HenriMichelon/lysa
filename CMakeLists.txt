@@ -110,16 +110,16 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/postprocess/bloom.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/bloom_blur.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/ssao_blur.frag.slang"
-#        "${SHADERS_SRC_DIR}/postprocess/fxaa.frag.slang"
-#        "${SHADERS_SRC_DIR}/postprocess/smaa_edge_detect.frag.slang"
-#        "${SHADERS_SRC_DIR}/postprocess/smaa_blend_weight.frag.slang"
-#        "${SHADERS_SRC_DIR}/postprocess/smaa_neighborhood_blend.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/gamma_correction.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/reinhard.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/aces.frag.slang"
-        "${SHADERS_SRC_DIR}/shadows/shadowmap.vert.slang"
-        "${SHADERS_SRC_DIR}/shadows/shadowmap.frag.slang"
-        "${SHADERS_SRC_DIR}/shadows/shadowmap_cubemap.frag.slang"
+        "${SHADERS_SRC_DIR}/postprocess/fxaa.frag.slang"
+        "${SHADERS_SRC_DIR}/postprocess/smaa_edge_detect.frag.slang"
+        "${SHADERS_SRC_DIR}/postprocess/smaa_blend_weight.frag.slang"
+        "${SHADERS_SRC_DIR}/postprocess/smaa_neighborhood_blend.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/gamma_correction.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/reinhard.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/aces.frag.slang"
+#        "${SHADERS_SRC_DIR}/shadows/shadowmap.vert.slang"
+#        "${SHADERS_SRC_DIR}/shadows/shadowmap.frag.slang"
+#        "${SHADERS_SRC_DIR}/shadows/shadowmap_cubemap.frag.slang"
 )
 add_shaders(${LYSA_ENGINE_TARGET}_shaders ${SHADERS_BUILD_DIR} ${SHADERS_INCLUDE_DIR} ${SHADERS_SOURCE_FILES})
 
@@ -225,6 +225,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShaderMaterialPass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.cpp
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/SMAAPass.cpp
         ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.cpp
 
         ${ENGINE_SRC_DIR}/resources/Image.cpp
@@ -279,6 +280,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShaderMaterialPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShadowMapPass.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/SMAAPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/TransparencyPass.ixx
 
         ${ENGINE_SRC_DIR}/resources/Camera.ixx

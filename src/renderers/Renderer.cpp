@@ -87,6 +87,20 @@ namespace lysa {
                    nullptr);
             }
         }
+        switch (config.antiAliasingType) {
+        case AntiAliasingType::FXAA:
+            addPostprocessing(
+                "fxaa",
+                config.swapChainFormat,
+                &fxaaData,
+                sizeof(fxaaData));
+            break;
+        case AntiAliasingType::SMAA:
+            smaaPass = std::make_unique<SMAAPass>(ctx, config);
+            break;
+        default:
+            break;
+        }
 
         framesData.resize(ctx.config.framesInFlight);
     }
@@ -199,9 +213,9 @@ namespace lysa {
             updateBlurData(bloomBlurData, extent, config.bloomBlurStrength);
             bloomBlurPass->resize(extent, commandList);
         }
-        // if (smaaPass) {
-        //     smaaPass->resize(extent, commandList);
-        // }
+        if (smaaPass) {
+            smaaPass->resize(extent, commandList);
+        }
         for (const auto& postProcessingPass : postProcessingPasses) {
             postProcessingPass->resize(extent, commandList);
         }
@@ -264,16 +278,16 @@ namespace lysa {
                     vireo::ResourceState::UNDEFINED);
             });
         }
-        // if (smaaPass) {
-        //     smaaPass->render(
-        //         commandList,
-        //         colorAttachment,
-        //         frameIndex);
-        //     commandList.barrier(
-        //         smaaPass->getColorAttachment(frameIndex),
-        //        vireo::ResourceState::SHADER_READ,
-        //        vireo::ResourceState::UNDEFINED);
-        // }
+        if (smaaPass) {
+            smaaPass->render(
+                commandList,
+                colorAttachment,
+                frameIndex);
+            commandList.barrier(
+                smaaPass->getColorAttachment(frameIndex),
+               vireo::ResourceState::SHADER_READ,
+               vireo::ResourceState::UNDEFINED);
+        }
         commandList.barrier(
             frame.colorAttachment,
             vireo::ResourceState::SHADER_READ,
@@ -287,9 +301,9 @@ namespace lysa {
     }
 
     std::shared_ptr<vireo::RenderTarget> Renderer::getCurrentColorAttachment(const uint32 frameIndex) const {
-        // if (smaaPass) {
-            // return smaaPass->getColorAttachment(frameIndex);
-        // }
+        if (smaaPass) {
+            return smaaPass->getColorAttachment(frameIndex);
+        }
         if (postProcessingPasses.empty()) {
             return framesData[frameIndex].colorAttachment;
         }

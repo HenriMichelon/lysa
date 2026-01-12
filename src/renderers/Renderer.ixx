@@ -16,6 +16,7 @@ import lysa.renderers.scene_frame_data;
 import lysa.renderers.renderpasses.depth_prepass;
 import lysa.renderers.renderpasses.post_processing;
 import lysa.renderers.renderpasses.shader_material_pass;
+import lysa.renderers.renderpasses.smaa_pass;
 import lysa.renderers.renderpasses.transparency_pass;
 import lysa.resources.camera;
 import lysa.resources.mesh;
@@ -161,6 +162,13 @@ export namespace lysa {
             float exposure;
         } gammaCorrectionData;
 
+        /** FXAA configuration. */
+        struct {
+            float spanMax{8.0f};
+            float reduceMul{1.0f / 8.0f};
+            float reduceMin{1.0f / 128.0f};
+        } fxaaData;
+
         const MeshManager& meshManager;
         vireo::Extent currentExtent{};
         BlurData bloomBlurData;
@@ -168,6 +176,7 @@ export namespace lysa {
         ShaderMaterialPass shaderMaterialPass;
         // Transparent objects pass (sorted/blended).
         TransparencyPass transparencyPass;
+        std::unique_ptr<SMAAPass> smaaPass;
         std::unique_ptr<PostProcessing> bloomBlurPass;
         /** List of active post-processing passes applied after color pass. */
         std::vector<std::shared_ptr<PostProcessing>> postProcessingPasses;

@@ -24,6 +24,12 @@ export namespace lysa {
         ACES     = 2,
     };
 
+    enum class AntiAliasingType : uint8 {
+        NONE     = 0,
+        FXAA     = 1,
+        SMAA     = 2,
+    };
+
     /**
     * Default clear color for windows and color frame buffers
     */
@@ -47,13 +53,13 @@ export namespace lysa {
         float exposure{1.0f};
         //! Type of tone mapping shader when using HDR rendering formats R16G16B16A16_UNORM, R16G16B16A16_SFLOAT or R32G32B32A32_SFLOAT
         ToneMappingType toneMappingType{ToneMappingType::ACES};
-        // //! Type of antialiasing post-processing shader
-        // AntiAliasingType   antiAliasingType{AntiAliasingType::SMAA};
-        // float              fxaaSpanMax{8.0f};
-        // float              fxaaReduceMul{1.0f / 8.0f};
-        // float              fxaaReduceMin{1.0f / 128.0f};
-        // float              smaaEdgeThreshold{0.15f};
-        // int                smaaBlendMaxSteps{4};
+        //! Type of antialiasing post-processing shader
+        AntiAliasingType   antiAliasingType{AntiAliasingType::SMAA};
+        float              fxaaSpanMax{8.0f};
+        float              fxaaReduceMul{1.0f / 8.0f};
+        float              fxaaReduceMin{1.0f / 128.0f};
+        float              smaaEdgeThreshold{0.15f};
+        int                smaaBlendMaxSteps{4};
         //! Enable the bloom post-processing effect
         bool               bloomEnabled{true};
         //! Bloom effect blur kernel size
