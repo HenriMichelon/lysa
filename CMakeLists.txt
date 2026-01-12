@@ -54,9 +54,12 @@ endif ()
 
 #######################################################
 if(WIN32)
-    if(MSVC)
-        set(USE_STATIC_MSVC_RUNTIME_LIBRARY OFF)
-    endif()
+    set(USE_STATIC_MSVC_RUNTIME_LIBRARY ON)
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
+    else ()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+    endif ()
     add_compile_definitions(UNICODE _UNICODE)
 endif ()
 
