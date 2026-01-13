@@ -14,6 +14,8 @@ import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.renderer;
+import lysa.renderers.vector_2d;
+import lysa.renderers.vector_3d;
 import lysa.resources;
 import lysa.resources.render_view;
 import lysa.resources.camera;
@@ -82,6 +84,12 @@ export namespace lysa {
 
         Context& getContext() const { return ctx; }
 
+        const RendererConfiguration& getRendererConfiguration() const { return rendererConfiguration; }
+
+        void addRenderer(Vector3DRenderer& vector3DRenderer) {
+            vector3DRenderers.push_back(&vector3DRenderer);
+        }
+
     private:
         struct FrameData {
             /** Fence signaled when the frame's work has completed on GPU. */
@@ -112,10 +120,12 @@ export namespace lysa {
         std::vector<FrameData> framesData;
         // Swap chain presenting the render target in memory.
         std::shared_ptr<vireo::SwapChain> swapChain{nullptr};
-        // Scene renderer used to draw attached viewports.
-        std::unique_ptr<Renderer> renderer;
         // Views to render in this target
         std::list<RenderView> views;
+        // Scene renderer used to draw attached views.
+        std::unique_ptr<Renderer> renderer;
+        // Additional 3D Vector renderers
+        std::vector<Vector3DRenderer*> vector3DRenderers;
         // Protect views to be modifies when render() is called
         std::mutex viewsMutex;
         vireo::Viewport mainViewport;

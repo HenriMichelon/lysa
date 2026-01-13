@@ -17,13 +17,12 @@ namespace lysa {
             ctx,
             config,
             false,
+            false,
             true,
             true,
             "UI Renderer",
             "vector_ui",
-            "glyph_ui",
-            true,
-            false},
+            "glyph_ui"},
         imageManager(ctx.res.get<ImageManager>()) {
     }
 

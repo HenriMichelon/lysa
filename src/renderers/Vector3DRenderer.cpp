@@ -15,16 +15,14 @@ namespace lysa {
     Vector3DRenderer::Vector3DRenderer(
         const Context& ctx,
         const RendererConfiguration& config,
+        const bool useCamera,
         const bool depthTestEnable,
+        const bool filledTriangles,
         const bool enableAlphaBlending,
-        const bool useTextures,
         const std::string& name,
         const std::string& shadersName,
-        const std::string& glyphShadersName,
-        const bool filledTriangles,
-        const bool useCamera) :
+        const std::string& glyphShadersName) :
         config{config},
-        useTextures{useTextures},
         useCamera{useCamera},
         name{name},
         ctx(ctx) {
@@ -38,13 +36,11 @@ namespace lysa {
             texturesIndex = 0;
         }
 
-        if (useTextures) {
-            textures.resize(MAX_TEXTURES);
-            descriptorLayout->add(texturesIndex, vireo::DescriptorType::SAMPLED_IMAGE, textures.size());
-            blankImage = ctx.res.get<ImageManager>().getBlankImage();
-            for (int i = 0; i < textures.size(); i++) {
-                textures[i] = blankImage;
-            }
+        textures.resize(MAX_TEXTURES);
+        descriptorLayout->add(texturesIndex, vireo::DescriptorType::SAMPLED_IMAGE, textures.size());
+        blankImage = ctx.res.get<ImageManager>().getBlankImage();
+        for (int i = 0; i < textures.size(); i++) {
+            textures[i] = blankImage;
         }
         descriptorLayout->build();
 
@@ -66,9 +62,7 @@ namespace lysa {
                 frameData.globalUniform->map();
                 frameData.descriptorSet->update(globalUniformIndex, frameData.globalUniform);
             }
-            if (useTextures) {
-                frameData.descriptorSet->update(texturesIndex, textures);
-            }
+            frameData.descriptorSet->update(texturesIndex, textures);
         }
         renderingConfig.depthTestEnable = depthTestEnable;
 
@@ -129,7 +123,6 @@ namespace lysa {
         const float3& position,
         const quaternion& rotation,
         const float4& innerColor) {
-        assert([&]{ return useTextures; }, "Can't draw text without textures");
         auto textureIndex = addTexture(font.getAtlas());
         auto fontIndex = addFont(font);
         auto pos = position;
@@ -232,23 +225,16 @@ namespace lysa {
         if (vertexCount == 0) {
             return;
         }
-        const auto globalUbo = GlobalUniform {
-            .projection = camera.projection,
-            .view = inverse(camera.transform),
-        };
-        framesData[frameIndex].globalUniform->write(&globalUbo, sizeof(GlobalUniform));
-        render(commandList, colorAttachment, depthAttachment, frameIndex);
-    }
-
-    void Vector3DRenderer::render(
-        vireo::CommandList& commandList,
-        const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
-        const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
-        const uint32 frameIndex) {
         const auto& frame = framesData[frameIndex];
-        if (vertexCount == 0) {
-            return;
+
+        if (useCamera) {
+            const auto globalUbo = GlobalUniform {
+                .projection = camera.projection,
+                .view = inverse(camera.transform),
+            };
+            frame.globalUniform->write(&globalUbo, sizeof(GlobalUniform));
         }
+
         renderingConfig.colorRenderTargets[0].renderTarget = colorAttachment;
         renderingConfig.depthStencilRenderTarget = depthAttachment;
 

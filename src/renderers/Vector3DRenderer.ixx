@@ -49,14 +49,15 @@ export namespace lysa {
         Vector3DRenderer(
             const Context& ctx,
             const RendererConfiguration& config,
-            bool depthTestEnable,
-            bool enableAlphaBlending,
-            bool useTextures,
+            bool useCamera = true,
+            bool depthTestEnable = true,
+            bool filledTriangles = false,
+            bool enableAlphaBlending = true,
             const std::string& name = "VectorRenderer",
             const std::string& shadersName = "vector",
-            const std::string& glyphShadersName = "glyph",
-            bool filledTriangles = false,
-            bool useCamera = true);
+            const std::string& glyphShadersName = "glyph");
+
+        bool isUseCamera() const { return  useCamera; }
 
         /** Adds a colored line segment to the current batch. */
         void drawLine(const float3& from, const float3& to, const float4& color);
@@ -92,7 +93,7 @@ export namespace lysa {
         /**
          * Renders accumulated primitives using the given Scene (with camera).
          * @param commandList     Command buffer to record into.
-         * @param camera          Current camera
+         * @param camera          Current camera (ignored if useCamera is false)
          * @param colorAttachment Target color surface.
          * @param depthAttachment Target depth surface (may be null if no depth).
          * @param frameIndex      Index of the current frame in flight.
@@ -100,16 +101,6 @@ export namespace lysa {
         void render(
             vireo::CommandList& commandList,
             const Camera& camera,
-            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
-            const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
-            uint32 frameIndex);
-
-        /**
-         * Renders accumulated primitives without referencing a Scene camera.
-         * Useful for UI-like overlays in screen space.
-         */
-        void render(
-            vireo::CommandList& commandList,
             const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
             uint32 frameIndex);
@@ -151,7 +142,6 @@ export namespace lysa {
         const Context& ctx;
         const std::string name;
         const bool useCamera;
-        const bool useTextures;
         std::shared_ptr<vireo::Image> blankImage;
 
         vireo::DescriptorIndex globalUniformIndex;

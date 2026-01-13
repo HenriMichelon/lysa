@@ -146,6 +146,12 @@ namespace lysa {
         for (auto& view : views) {
             view.scene.get(frameIndex).update(*frame.updateCommandList, view.camera, rendererConfiguration, frameIndex);
         }
+        for (auto* vectorRenderer : vector3DRenderers) {
+            vectorRenderer->update(
+                *frame.updateCommandList,
+                frameIndex
+            );
+        }
         frame.updateCommandList->end();
         ctx.graphicQueue->submit(
             vireo::WaitStage::TRANSFER,
@@ -198,6 +204,19 @@ namespace lysa {
            swapChain->getCurrentFrameIndex());
 
         const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
+        const auto depthAttachment = renderer->getFrameDepthAttachment(frameIndex);
+        for (auto& view : views) {
+            for (auto* vectorRenderer : vector3DRenderers) {
+                vectorRenderer->render(
+                    *commandList,
+                    view.camera,
+                    colorAttachment,
+                    depthAttachment,
+                    frameIndex
+                );
+            }
+        }
+
         commandList->barrier(colorAttachment, vireo::ResourceState::UNDEFINED,vireo::ResourceState::COPY_SRC);
         commandList->barrier(swapChain, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);
         commandList->copy(colorAttachment->getImage(), swapChain);
