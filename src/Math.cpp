@@ -8,6 +8,46 @@ module lysa.math;
 
 namespace lysa {
 
+    quaternion to_quaternion(const float4x4& m) {
+        float tr = m[0][0] + m[1][1] + m[2][2];
+        auto q = quaternion::identity();
+
+        if (tr > 0)
+        {
+            float s = std::sqrt(tr + 1.0) * 2; // S=4*qw
+            q.w = 0.25 * s;
+            q.x = (m[2][1] - m[1][2]) / s;
+            q.y = (m[0][2] - m[2][0]) / s;
+            q.z = (m[1][0] - m[0][1]) / s;
+        }
+        else if ((m[0][0] > m[1][1]) && (m[0][0] > m[2][2]))
+        {
+            float s = std::sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // S=4*qx
+            q.w = (m[2][1] - m[1][2]) / s;
+            q.x = 0.25 * s;
+            q.y = (m[0][1] + m[1][0]) / s;
+            q.z = (m[0][2] + m[2][0]) / s;
+        }
+        else if (m[1][1] > m[2][2])
+        {
+            float s = std::sqrt(1.0 + m[1][1] - m[0][0] - m[2][2]) * 2; // S=4*qy
+            q.w = (m[0][2] - m[2][0]) / s;
+            q.x = (m[0][1] + m[1][0]) / s;
+            q.y = 0.25 * s;
+            q.z = (m[1][2] + m[2][1]) / s;
+        }
+        else
+        {
+            float s = std::sqrt(1.0 + m[2][2] - m[0][0] - m[1][1]) * 2; // S=4*qz
+            q.w = (m[1][0] - m[0][1]) / s;
+            q.x = (m[0][2] + m[2][0]) / s;
+            q.y = (m[1][2] + m[2][1]) / s;
+            q.z = 0.25 * s;
+        }
+
+        return q;
+    }
+
     float4x4 look_at(const float3& eye, const float3& center, const float3& up) {
         const auto z = normalize(eye - center);
         const auto x = normalize(cross(up, z));

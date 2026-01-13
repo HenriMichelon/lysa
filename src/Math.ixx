@@ -206,6 +206,8 @@ export namespace lysa {
                           float top, float  bottom,
                           float znear, float zfar);
 
+    quaternion to_quaternion(const float4x4& m);
+
     /**
      * @brief Generate a random unsigned integer in [0, max].
      *
