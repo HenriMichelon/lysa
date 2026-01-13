@@ -206,6 +206,15 @@ export namespace lysa {
                           float top, float  bottom,
                           float znear, float zfar);
 
+    /**
+     * @brief Extract a quaternion from a 4x4 rotation matrix.
+     *
+     * Converts the upper-left 3x3 rotation part of the 4x4 matrix into
+     * a unit quaternion.
+     *
+     * @param m Input 4x4 matrix.
+     * @return Unit quaternion representing the rotation.
+     */
     quaternion to_quaternion(const float4x4& m);
 
     /**
