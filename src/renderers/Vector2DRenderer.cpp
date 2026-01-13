@@ -22,8 +22,7 @@ namespace lysa {
             true,
             "UI Renderer",
             "vector_ui",
-            "glyph_ui"},
-        imageManager(ctx.res.get<ImageManager>()) {
+            "glyph_ui"} {
     }
 
     void Vector2DRenderer::drawLine(const float2& start, const float2& end) {
@@ -71,7 +70,7 @@ namespace lysa {
         const auto v3 = float3{pos.x + size.x, pos.y + size.y, 0.0f};
 
         auto textureIndex{-1};
-        if (texture) {
+        if (texture != INVALID_ID) {
             textureIndex = addTexture(imageManager[texture]);
         }
 

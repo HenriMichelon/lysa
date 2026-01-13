@@ -26,10 +26,8 @@ export namespace lysa {
      *  - Provide minimal state (colors, textures, fonts) and pipelines to draw
      *    primitive batches either in screen space or with a camera.
      *  - Offer helpers to render text using bitmap fonts.
-     *
-     * Notes:
-     *  - Thread-safety: calls are expected from the render thread only.
      *  - Call restart() between frames to clear accumulated geometry.
+     *  - Thread-safety: calls are expected from the render thread only.
      */
     class Vector3DRenderer {
     public:
@@ -63,6 +61,13 @@ export namespace lysa {
 
         /** Adds a filled triangle to the current batch. */
         void drawTriangle(const float3& v1, const float3& v2, const float3& v3, const float4& color);
+
+        void drawImage(
+            unique_id image,
+            const float3& position,
+            const quaternion& rotation,
+            const float2& size,
+            const float4& color);
 
         /**
          * Adds text to the current batch using the provided font.
@@ -117,6 +122,7 @@ export namespace lysa {
             alignas(16) int fontIndex{-1};
         };
 
+        ImageManager& imageManager;
         const RendererConfiguration& config;
         // Vertex buffer needs to be re-uploaded to GPU
         bool vertexBufferDirty{true};
@@ -124,6 +130,8 @@ export namespace lysa {
         std::vector<Vertex> linesVertices;
         // All the vertices for triangles
         std::vector<Vertex> triangleVertices;
+        // All the vertices for images
+        std::vector<Vertex> imagesVertices;
         // All the vertices for the texts
         std::vector<Vertex> glyphVertices;
 
@@ -211,6 +219,7 @@ export namespace lysa {
 
         std::shared_ptr<vireo::GraphicPipeline>  pipelineLines;
         std::shared_ptr<vireo::GraphicPipeline>  pipelineTriangles;
+        std::shared_ptr<vireo::GraphicPipeline>  pipelineImages;
         std::shared_ptr<vireo::GraphicPipeline>  pipelineGlyphs;
         std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
     };

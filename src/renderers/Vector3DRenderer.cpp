@@ -23,6 +23,7 @@ namespace lysa {
         const std::string& shadersName,
         const std::string& glyphShadersName) :
         config{config},
+        imageManager(ctx.res.get<ImageManager>()),
         useCamera{useCamera},
         name{name},
         ctx(ctx) {
@@ -93,13 +94,15 @@ namespace lysa {
         pipelineConfig.primitiveTopology = vireo::PrimitiveTopology::TRIANGLE_LIST;
         pipelineTriangles = ctx.vireo->createGraphicPipeline(pipelineConfig, name + " triangles");
 
+        pipelineConfig.polygonMode = vireo::PolygonMode::FILL;
+        pipelineConfig.depthWriteEnable = false;
+        pipelineConfig.colorBlendDesc = glyphPipelineConfig.colorBlendDesc;
+        pipelineImages = ctx.vireo->createGraphicPipeline(pipelineConfig, name + " images");
+
         ctx.fs.loadShader(glyphShadersName + ".vert", tempBuffer);
         pipelineConfig.vertexShader = ctx.vireo->createShaderModule(tempBuffer, glyphShadersName + ".vert");
         ctx.fs.loadShader(glyphShadersName + ".frag", tempBuffer);
         pipelineConfig.fragmentShader = ctx.vireo->createShaderModule(tempBuffer, glyphShadersName + ".frag");
-        pipelineConfig.polygonMode = vireo::PolygonMode::FILL;
-        pipelineConfig.depthWriteEnable = false;
-        pipelineConfig.colorBlendDesc = glyphPipelineConfig.colorBlendDesc;
         pipelineGlyphs = ctx.vireo->createGraphicPipeline(pipelineConfig, name + " glyphs");
     }
 
@@ -113,6 +116,38 @@ namespace lysa {
         triangleVertices.push_back( {v1, {}, color});
         triangleVertices.push_back( {v2, {}, color});
         triangleVertices.push_back( {v3, {}, color });
+        vertexBufferDirty = true;
+    }
+
+    void Vector3DRenderer::drawImage(
+        unique_id image,
+        const float3& position,
+        const quaternion& rotation,
+        const float2& size,
+        const float4& color) {
+        /*
+        * v1 ---- v3
+        * |  \     |
+        * |    \   |
+        * v0 ---- v2
+        */
+        const auto rm = float4x4{rotation};
+        const float3 v0 = mul({ position.x,  position.y + size.y, position.z, 1.0f }, rm).xyz;
+        const float3 v1 = mul({ position.x,  position.y, position.z, 1.0f }, rm).xyz;
+        const float3 v2 = mul({ position.x + size.x, position.y + size.y, position.z, 1.0f }, rm).xyz;
+        const float3 v3 = mul({ position.x + size.x, position.y, position.z, 1.0f }, rm).xyz;
+
+        auto textureIndex{-1};
+        if (image != INVALID_ID) {
+            textureIndex = addTexture(imageManager[image]);
+        }
+
+        imagesVertices.push_back( {v0, {0.0f, 1.0f}, color, textureIndex });
+        imagesVertices.push_back( {v1, {0.0f, 0.0f}, color, textureIndex });
+        imagesVertices.push_back( {v2, {1.0f, 1.0f}, color, textureIndex });
+        imagesVertices.push_back( {v1, {0.0f, 0.0f}, color, textureIndex });
+        imagesVertices.push_back( {v3, {1.0f, 0.0f}, color, textureIndex });
+        imagesVertices.push_back( {v2, {1.0f, 1.0f}, color, textureIndex });
         vertexBufferDirty = true;
     }
 
@@ -169,6 +204,7 @@ namespace lysa {
     void Vector3DRenderer::restart() {
         linesVertices.clear();
         triangleVertices.clear();
+        imagesVertices.clear();
         glyphVertices.clear();
     }
 
@@ -177,16 +213,17 @@ namespace lysa {
         const uint32) {
         // Destroy the previous buffer when we are sure they aren't used by another frame
         oldBuffers.clear();
-        if (!linesVertices.empty() || !triangleVertices.empty() || !glyphVertices.empty()) {
+        if (!linesVertices.empty() || !triangleVertices.empty() || !imagesVertices.empty() || !glyphVertices.empty()) {
+            const auto totalVertexCount = linesVertices.size() + triangleVertices.size() + imagesVertices.size() + glyphVertices.size();
             // Resize the buffers only if needed by recreating them
             if ((vertexBuffer == nullptr) ||
-                (vertexCount != (linesVertices.size() + triangleVertices.size() + glyphVertices.size()))) {
+                (vertexCount != totalVertexCount)) {
                 // Put the current buffers in the recycle bin since they are currently used
                 // and can't be destroyed now
                 oldBuffers.push_back(stagingBuffer);
                 oldBuffers.push_back(vertexBuffer);
                 // Allocate new buffers to change size
-                vertexCount = linesVertices.size() + triangleVertices.size() + glyphVertices.size();
+                vertexCount = totalVertexCount;
                 stagingBuffer = ctx.vireo->createBuffer(vireo::BufferType::BUFFER_UPLOAD, sizeof(Vertex), vertexCount, name + " vertices staging");
                 stagingBuffer->map();
                 vertexBuffer = ctx.vireo->createBuffer(vireo::BufferType::VERTEX, sizeof(Vertex), vertexCount, name + " vertices");
@@ -203,11 +240,17 @@ namespace lysa {
                         triangleVertices.size() * sizeof(Vertex),
                         linesVertices.size() * sizeof(Vertex));
                 }
+                if (!imagesVertices.empty()) {
+                    stagingBuffer->write(
+                        imagesVertices.data(),
+                        imagesVertices.size() * sizeof(Vertex),
+                        (linesVertices.size() + triangleVertices.size()) * sizeof(Vertex));
+                }
                 if (!glyphVertices.empty()) {
                     stagingBuffer->write(
                         glyphVertices.data(),
                         glyphVertices.size() * sizeof(Vertex),
-                        (linesVertices.size() + triangleVertices.size()) * sizeof(Vertex));
+                        (linesVertices.size() + triangleVertices.size() + imagesVertices.size()) * sizeof(Vertex));
                 }
                 commandList.copy(stagingBuffer, vertexBuffer);
                 commandList.barrier(*vertexBuffer, vireo::ResourceState::COPY_DST, vireo::ResourceState::VERTEX_INPUT);
@@ -244,20 +287,33 @@ namespace lysa {
             vireo::ResourceState::RENDER_TARGET_COLOR);
         commandList.bindVertexBuffer(vertexBuffer);
         commandList.beginRendering(renderingConfig);
-        if (!triangleVertices.empty()) {
-            commandList.bindPipeline(pipelineTriangles);
-            commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
-            commandList.draw(triangleVertices.size(), 1, linesVertices.size(), 0);
-        }
         if (!linesVertices.empty()) {
             commandList.bindPipeline(pipelineLines);
             commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
             commandList.draw(linesVertices.size(), 1, 0, 0);
         }
+        if (!triangleVertices.empty()) {
+            commandList.bindPipeline(pipelineTriangles);
+            commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
+            commandList.draw(triangleVertices.size(), 1, linesVertices.size(), 0);
+        }
+        if (pipelineImages && !imagesVertices.empty()) {
+            commandList.bindPipeline(pipelineImages);
+            commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
+            commandList.draw(
+                imagesVertices.size(),
+                1,
+                linesVertices.size() + triangleVertices.size(),
+                0);
+        }
         if (!glyphVertices.empty()) {
             commandList.bindPipeline(pipelineGlyphs);
             commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
-            commandList.draw(glyphVertices.size(), 1, linesVertices.size() + triangleVertices.size(), 0);
+            commandList.draw(
+                glyphVertices.size(),
+                1,
+                linesVertices.size() + triangleVertices.size() + imagesVertices.size(),
+                0);
         }
         commandList.endRendering();
         commandList.barrier(

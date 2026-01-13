@@ -120,16 +120,6 @@ export namespace lysa {
 
     private:
         /*
-         *  Push constants for the vector renderer
-         */
-        struct PushConstants {
-            /* Index of the texture in the descriptor set */
-            int   textureIndex;
-        };
-
-        ImageManager& imageManager;
-
-        /*
          * Fragment color for the next drawing commands
          */
         float4 penColor{1.0f, 1.0f, 1.0f, 1.0f};
