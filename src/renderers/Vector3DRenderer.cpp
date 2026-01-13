@@ -98,6 +98,7 @@ namespace lysa {
         ctx.fs.loadShader(glyphShadersName + ".frag", tempBuffer);
         pipelineConfig.fragmentShader = ctx.vireo->createShaderModule(tempBuffer, glyphShadersName + ".frag");
         pipelineConfig.polygonMode = vireo::PolygonMode::FILL;
+        pipelineConfig.depthWriteEnable = false;
         pipelineConfig.colorBlendDesc = glyphPipelineConfig.colorBlendDesc;
         pipelineGlyphs = ctx.vireo->createGraphicPipeline(pipelineConfig, name + " glyphs");
     }
