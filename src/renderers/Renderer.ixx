@@ -187,7 +187,7 @@ export namespace lysa {
         std::unique_ptr<SMAAPass> smaaPass;
         std::unique_ptr<PostProcessing> bloomBlurPass;
         /* List of active post-processing passes applied after color pass. */
-        std::vector<std::shared_ptr<PostProcessing>> postProcessingPasses;
+        std::list<std::shared_ptr<PostProcessing>> postProcessingPasses;
         /* Gamma correction pass */
         std::unique_ptr<PostProcessing> gammaCorrectionPass;
     };

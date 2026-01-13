@@ -78,20 +78,6 @@ namespace lysa {
                 sizeof(gammaCorrectionData),
                 "Gamma correction");
         }
-        if (config.bloomEnabled) {
-            bloomBlurPass = std::make_unique<PostProcessing>(
-                ctx,
-                config,
-                "bloom_blur",
-                config.colorRenderingFormat,
-                &bloomBlurData,
-                sizeof(bloomBlurData),
-                "Bloom blur");
-            addPostprocessing(
-               "bloom",
-               config.swapChainFormat,
-               nullptr);
-        }
         switch (config.antiAliasingType) {
         case AntiAliasingType::FXAA:
             addPostprocessing(
@@ -105,6 +91,20 @@ namespace lysa {
             break;
         default:
             break;
+        }
+        if (config.bloomEnabled) {
+            bloomBlurPass = std::make_unique<PostProcessing>(
+                ctx,
+                config,
+                "bloom_blur",
+                config.colorRenderingFormat,
+                &bloomBlurData,
+                sizeof(bloomBlurData),
+                "Bloom blur");
+            addPostprocessing(
+               "bloom",
+               config.swapChainFormat,
+               nullptr);
         }
 
         framesData.resize(ctx.config.framesInFlight);
@@ -263,19 +263,17 @@ namespace lysa {
             frame.colorAttachment,
             vireo::ResourceState::UNDEFINED,
             vireo::ResourceState::SHADER_READ);
-        std::shared_ptr<vireo::RenderTarget> bloomColorAttachment;
+        std::shared_ptr<vireo::RenderTarget> bloomColorAttachment = getBloomColorAttachment(frameIndex);
         if (config.bloomEnabled) {
             bloomBlurPass->render(
                 frameIndex,
                 viewport,
                 scissor,
-                getBloomColorAttachment(frameIndex),
+                bloomColorAttachment,
                 nullptr,
                 nullptr,
                 commandList);
             bloomColorAttachment = bloomBlurPass->getColorAttachment(frameIndex);
-        } else {
-            bloomColorAttachment = getBloomColorAttachment(frameIndex);
         }
         auto colorAttachment = frame.colorAttachment;
         if (!postProcessingPasses.empty()) {
@@ -356,7 +354,7 @@ namespace lysa {
             dataSize,
             fragShaderName);
         postProcessingPass->resize(currentExtent, nullptr);
-        postProcessingPasses.push_back(postProcessingPass);
+        postProcessingPasses.push_front(postProcessingPass);
     }
 
     void Renderer::removePostprocessing(const std::string& fragShaderName) {
