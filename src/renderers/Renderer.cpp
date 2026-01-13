@@ -250,6 +250,10 @@ namespace lysa {
            colorAttachment,
            vireo::ResourceState::SHADER_READ,
            vireo::ResourceState::UNDEFINED);
+        commandList.barrier(
+           gammaCorrectionPass->getColorAttachment(frameIndex),
+           vireo::ResourceState::SHADER_READ,
+           vireo::ResourceState::UNDEFINED);
         return gammaCorrectionPass->getColorAttachment(frameIndex);
     }
 
