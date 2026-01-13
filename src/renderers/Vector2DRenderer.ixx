@@ -96,7 +96,8 @@ export namespace lysa {
             const std::string& text,
             Font& font,
             float fontScale,
-            float x, float y);
+            float x,
+            float y);
 
         /**
          * @brief Changes the color of the fragments for the next drawing commands

@@ -34,10 +34,15 @@ namespace lysa {
         renderTarget.getContext().events.push({id, static_cast<event_type>(RenderingWindowEvent::CLOSING)});
     }
 
-    void RenderingWindow::_resized() {
+    void RenderingWindow::_resized(const Rect& rect) {
         if (closed || renderTarget.isPaused()) { return; }
+        this->rect = rect;
         renderTarget.resize();
-        renderTarget.getContext().events.push({id, static_cast<event_type>(RenderingWindowEvent::RESIZED)});
+        renderTarget.getContext().events.push({
+            id,
+            static_cast<event_type>(RenderingWindowEvent::RESIZED),
+            float2{renderTarget.getWidth(), renderTarget.getHeight()}
+        });
     }
 
 }

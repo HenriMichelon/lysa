@@ -16,6 +16,7 @@ import lysa.context;
 import lysa.event;
 import lysa.input_event;
 import lysa.math;
+import lysa.rect;
 import lysa.resources;
 import lysa.resources.render_target;
 
@@ -115,13 +116,7 @@ export namespace lysa {
 
         void close() const;
 
-        int32 getX() const { return x; }
-
-        int32 getY() const { return y; }
-
-        int32 getWidth() const { return width; }
-
-        int32 getHeight() const { return height; }
+        const Rect& getRect() const { return rect; }
 
         void setTitle(const std::string& title) const;
 
@@ -170,7 +165,7 @@ export namespace lysa {
 
         void _closing();
 
-        void _resized();
+        void _resized(const Rect& rect);
 
         void _input(const InputEvent& inputEvent) const;
 
@@ -187,16 +182,9 @@ export namespace lysa {
         RenderingWindowHandle handle{nullptr};
         //! Associated render target
         RenderTarget renderTarget;
-        //! Top-Left corner x position in pixels
-        int32 x;
-        //! Top-Left corner Y position in pixels
-        int32 y;
-        //! Width in pixels
-        uint32 width;
-        //! Height in pixels
-        uint32 height;
         //! True once the platform window has been requested to close
         bool closed{false};
+        Rect rect;
 
         RenderingWindowHandle openPlatformWindow(const RenderingWindowConfiguration& config);
     };

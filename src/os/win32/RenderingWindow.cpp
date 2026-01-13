@@ -128,10 +128,11 @@ namespace lysa {
         if (hwnd == nullptr) { throw Exception("Error creating window", std::to_string(GetLastError())); }
 
         SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-        this->x = x;
-        this->y = y;
-        this->width = w;
-        this->height = h;
+        rect = {
+            static_cast<float>(_rect.left),
+            static_cast<float>(_rect.top),
+            static_cast<float>(_rect.right  - _rect.left),
+            static_cast<float>(_rect.bottom - _rect.top)};
         return hwnd;
     }
 
@@ -156,7 +157,13 @@ namespace lysa {
                 window->setPause(true);
             } else {
                 window->setPause(false);
-                window->_resized();
+                RECT rect;
+                GetWindowRect(hWnd, &rect);
+                window->_resized({
+                    static_cast<float>(rect.left),
+                      static_cast<float>(rect.top),
+                static_cast<float>(rect.right  - rect.left),
+                static_cast<float>(rect.bottom - rect.top)});
             }
             return 0;
         case WM_CLOSE:
