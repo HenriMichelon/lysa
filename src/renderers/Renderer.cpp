@@ -45,6 +45,7 @@ namespace lysa {
         config(config),
         depthPrePass(ctx, config, withStencil),
         gammaCorrectionData{ .gamma = config.gamma, .exposure = config.exposure },
+
         meshManager(ctx.res.get<MeshManager>()),
         bloomBlurData{ .kernelSize = config.bloomBlurKernelSize },
         shaderMaterialPass(ctx, config),
@@ -57,19 +58,25 @@ namespace lysa {
             config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_UNORM ||
             config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_SNORM;
         if (needToneMapping) {
-            addPostprocessing(
+            gammaCorrectionPass = std::make_unique<PostProcessing>(
+                ctx,
+                config,
                 config.toneMappingType == ToneMappingType::REINHARD ? "reinhard" :
                 config.toneMappingType == ToneMappingType::ACES ? "aces" :
                 "gamma_correction",
                 config.swapChainFormat,
                 &gammaCorrectionData,
-                sizeof(gammaCorrectionData));
+                sizeof(gammaCorrectionData),
+                "Tone mapping");
         } else if (needGammaCorrection) {
-            addPostprocessing(
+            gammaCorrectionPass = std::make_unique<PostProcessing>(
+                ctx,
+                config,
                 "gamma_correction",
                 config.swapChainFormat,
                 &gammaCorrectionData,
-                sizeof(gammaCorrectionData));
+                sizeof(gammaCorrectionData),
+                "Gamma correction");
         }
         if (config.bloomEnabled) {
             bloomBlurPass = std::make_unique<PostProcessing>(
@@ -80,12 +87,10 @@ namespace lysa {
                 &bloomBlurData,
                 sizeof(bloomBlurData),
                 "Bloom blur");
-            if (!needGammaCorrection && !needToneMapping) {
-                addPostprocessing(
-                   "bloom",
-                   config.swapChainFormat,
-                   nullptr);
-            }
+            addPostprocessing(
+               "bloom",
+               config.swapChainFormat,
+               nullptr);
         }
         switch (config.antiAliasingType) {
         case AntiAliasingType::FXAA:
@@ -110,6 +115,7 @@ namespace lysa {
         for (const auto& postProcessingPass : postProcessingPasses) {
             postProcessingPass->update(frameIndex);
         }
+        gammaCorrectionPass->update(frameIndex);
         if (config.bloomEnabled) {
             bloomBlurPass->update(frameIndex);
         }
@@ -219,6 +225,32 @@ namespace lysa {
         for (const auto& postProcessingPass : postProcessingPasses) {
             postProcessingPass->resize(extent, commandList);
         }
+        gammaCorrectionPass->resize(extent, commandList);
+    }
+
+     std::shared_ptr<vireo::RenderTarget> Renderer::gammaCorrection(
+        vireo::CommandList& commandList,
+        const vireo::Viewport&viewport,
+        const vireo::Rect&scissor,
+        const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+        const uint32 frameIndex) const {
+        commandList.barrier(
+           colorAttachment,
+           vireo::ResourceState::UNDEFINED,
+           vireo::ResourceState::SHADER_READ);
+        gammaCorrectionPass->render(
+            frameIndex,
+            viewport,
+            scissor,
+            colorAttachment,
+            nullptr,
+            nullptr,
+            commandList);
+        commandList.barrier(
+           colorAttachment,
+           vireo::ResourceState::SHADER_READ,
+           vireo::ResourceState::UNDEFINED);
+        return gammaCorrectionPass->getColorAttachment(frameIndex);
     }
 
     void Renderer::postprocess(

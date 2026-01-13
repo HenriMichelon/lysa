@@ -49,7 +49,6 @@ namespace lysa {
         for (auto& frame : framesData) {
             frame.paramsUniform = ctx.vireo->createBuffer(vireo::BufferType::UNIFORM, sizeof(PostProcessingParams), 1, name + " Params");
             frame.paramsUniform->map();
-            frame.params.applyBloom = config.bloomEnabled ? 1u : 0u;
             frame.descriptorSet = ctx.vireo->createDescriptorSet(descriptorLayout, name);
             frame.descriptorSet->update(BINDING_PARAMS, frame.paramsUniform);
             if (data) {

@@ -51,6 +51,7 @@ export namespace lysa {
 
         /**
          * Creates a font resource
+         * @param ctx
          * @param path : font file path, relative to the application working directory
          */
         Font(const Context& ctx, const std::string &path);
@@ -63,6 +64,11 @@ export namespace lysa {
          * Returns the size (in pixels) for a string.
          */
         void getSize(const std::string &text, float fontScale, float &width, float &height);
+
+        /**
+         * Returns the size (in pixels) for a string.
+         */
+        float2 getSize(const std::string &text, float fontScale);
 
         /**
          * Returns the font size in the atlas

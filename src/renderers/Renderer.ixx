@@ -94,6 +94,14 @@ export namespace lysa {
             bool clearAttachment,
             uint32 frameIndex);
 
+        /** Applies gamme correction, must be called at the end of the rendering path */
+         std::shared_ptr<vireo::RenderTarget> gammaCorrection(
+            vireo::CommandList& commandList,
+            const vireo::Viewport&viewport,
+            const vireo::Rect&scissor,
+            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+            uint32 frameIndex) const;
+
         /** Applies post-processing chain (SMAA, bloom, custom passes). */
         void postprocess(
             vireo::CommandList& commandList,
@@ -178,7 +186,9 @@ export namespace lysa {
         TransparencyPass transparencyPass;
         std::unique_ptr<SMAAPass> smaaPass;
         std::unique_ptr<PostProcessing> bloomBlurPass;
-        /** List of active post-processing passes applied after color pass. */
+        /* List of active post-processing passes applied after color pass. */
         std::vector<std::shared_ptr<PostProcessing>> postProcessingPasses;
+        /* Gamma correction pass */
+        std::unique_ptr<PostProcessing> gammaCorrectionPass;
     };
 }

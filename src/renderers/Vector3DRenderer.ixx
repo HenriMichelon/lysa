@@ -35,16 +35,15 @@ export namespace lysa {
     public:
         /**
          * Constructs a vector renderer.
-         * @param ctx
-         * @param config Global rendering config.
+         * @param ctx                Global context
+         * @param config             Rendering config.
+         * @param useCamera          True to apply Scene view/projection.
          * @param depthTestEnable    Enable depth test for 3D primitives.
          * @param enableAlphaBlending Enable alpha blending (for UI/text).
-         * @param useTextures        Allow textured triangles.
+         * @param filledTriangles    True to fill the triangles; false for wireframe only.
          * @param name               Debug name for pipelines.
          * @param shadersName        Base shader name for vector primitives.
          * @param glyphShadersName   Base shader name for glyph rendering.
-         * @param filledTriangles    True to use triangle pipeline; false for wireframe only.
-         * @param useCamera          True to apply Scene view/projection.
          */
         Vector3DRenderer(
             const Context& ctx,

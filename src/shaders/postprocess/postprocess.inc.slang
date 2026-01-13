@@ -12,7 +12,6 @@ struct VertexOutput {
 };
 
 struct Params {
-    uint   applyBloom;
     float  time;
     float2 _pad0;
     uint2  imageSize;

@@ -85,7 +85,6 @@ namespace lysa {
            },
            {},
            name);
-        pipelineConfig.polygonMode = vireo::PolygonMode::WIREFRAME;
         pipelineConfig.primitiveTopology = vireo::PrimitiveTopology::LINE_LIST;
         pipelineLines = ctx.vireo->createGraphicPipeline(pipelineConfig, name + " lines");
         pipelineConfig.polygonMode = filledTriangles ?

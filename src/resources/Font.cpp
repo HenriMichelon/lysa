@@ -20,6 +20,12 @@ namespace lysa {
 
     FT_Library Font::ftLibrary{nullptr};
 
+    float2 Font::getSize(const std::string &text, const float fontScale) {
+        float w, h;
+        getSize(text, fontScale, w, h);
+        return {w, h};
+    }
+
     void Font::getSize(const std::string &text, const float fontScale, float &width, float &height) {
         const auto scale = fontScale * size;
         height = fontScale * lineHeight;

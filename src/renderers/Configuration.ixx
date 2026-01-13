@@ -48,7 +48,7 @@ export namespace lysa {
         //! MSAA samples count
         vireo::MSAA msaa{vireo::MSAA::NONE};
         //! Gamma correction factor when using *_UNORM, *_SNORM or *_SFLOAT format
-        float gamma{2.4f};
+        float gamma{2.2f};
         //! Exposure correction factor
         float exposure{1.0f};
         //! Type of tone mapping shader when using HDR rendering formats R16G16B16A16_UNORM, R16G16B16A16_SFLOAT or R32G32B32A32_SFLOAT

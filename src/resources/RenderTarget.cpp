@@ -201,9 +201,9 @@ namespace lysa {
            *commandList,
            mainViewport,
            mainScissors,
-           swapChain->getCurrentFrameIndex());
+           frameIndex);
 
-        const auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
+        auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
         const auto depthAttachment = renderer->getFrameDepthAttachment(frameIndex);
         for (auto& view : views) {
             for (auto* vectorRenderer : vector3DRenderers) {
@@ -216,6 +216,12 @@ namespace lysa {
                 );
             }
         }
+        colorAttachment = renderer->gammaCorrection(
+            *commandList,
+            mainViewport,
+            mainScissors,
+            colorAttachment,
+            frameIndex);
 
         commandList->barrier(colorAttachment, vireo::ResourceState::UNDEFINED,vireo::ResourceState::COPY_SRC);
         commandList->barrier(swapChain, vireo::ResourceState::UNDEFINED, vireo::ResourceState::COPY_DST);

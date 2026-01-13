@@ -24,7 +24,6 @@ export namespace lysa {
          * @brief Parameters for the post-processing shader
          */
         struct PostProcessingParams {
-            uint32 applyBloom; /**< Whether to apply bloom effect (0 or 1) */
             float  time;       /**< Current time for time-based effects */
             uint2  imageSize;  /**< Size of the image being processed */
         };
