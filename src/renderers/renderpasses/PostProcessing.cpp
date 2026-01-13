@@ -15,7 +15,7 @@ namespace lysa {
         const std::string& fragShaderName,
         const vireo::ImageFormat outputFormat,
         void* data,
-        const uint32 dataSize,
+        uint32 dataSize,
         const std::string& name):
         Renderpass{ctx, config, name},
         fragShaderName{fragShaderName},
@@ -26,12 +26,15 @@ namespace lysa {
             textures[i] = ctx.res.get<ImageManager>().getBlankImage();
         }
 
-        descriptorLayout->add(BINDING_PARAMS, vireo::DescriptorType::UNIFORM);
-        if (data) {
-            descriptorLayout->add(BINDING_DATA, vireo::DescriptorType::UNIFORM);
-            dataUniform = ctx.vireo->createBuffer(vireo::BufferType::UNIFORM, dataSize, 1, name + " Data");
-            dataUniform->map();
+        if (!data) {
+            this->data = &dummyData;
+            dataSize = sizeof(dummyData);
         }
+
+        descriptorLayout->add(BINDING_PARAMS, vireo::DescriptorType::UNIFORM);
+        descriptorLayout->add(BINDING_DATA, vireo::DescriptorType::UNIFORM);
+        dataUniform = ctx.vireo->createBuffer(vireo::BufferType::UNIFORM, dataSize, 1, name + " Data");
+        dataUniform->map();
         descriptorLayout->add(BINDING_TEXTURES, vireo::DescriptorType::SAMPLED_IMAGE, TEXTURES_COUNT);
         descriptorLayout->build();
 
@@ -51,9 +54,7 @@ namespace lysa {
             frame.paramsUniform->map();
             frame.descriptorSet = ctx.vireo->createDescriptorSet(descriptorLayout, name);
             frame.descriptorSet->update(BINDING_PARAMS, frame.paramsUniform);
-            if (data) {
-                frame.descriptorSet->update(BINDING_DATA, dataUniform);
-            }
+            frame.descriptorSet->update(BINDING_DATA, dataUniform);
         }
     }
 

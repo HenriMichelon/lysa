@@ -130,6 +130,7 @@ export namespace lysa {
         };
 
         const std::string fragShaderName;
+        uint8 dummyData{0};
         void* data{nullptr};
         std::shared_ptr<vireo::Buffer> dataUniform{nullptr};
         std::vector<FrameData> framesData;

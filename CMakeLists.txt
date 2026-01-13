@@ -98,7 +98,6 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/frustum_culling_shadowmap.comp.slang"
 #        "${SHADERS_SRC_DIR}/quad.vert.slang"
         "${SHADERS_SRC_DIR}/vector.slang"
-        "${SHADERS_SRC_DIR}/vector_image.slang"
         "${SHADERS_SRC_DIR}/vector_ui.slang"
         "${SHADERS_SRC_DIR}/glyph.slang"
         "${SHADERS_SRC_DIR}/glyph_ui.slang"

@@ -103,8 +103,7 @@ namespace lysa {
                 "Bloom blur");
             addPostprocessing(
                "bloom",
-               config.swapChainFormat,
-               nullptr);
+               config.swapChainFormat);
         }
 
         framesData.resize(ctx.config.framesInFlight);
@@ -345,10 +344,10 @@ namespace lysa {
     }
 
     void Renderer::addPostprocessing(
-       const std::string& fragShaderName,
-       const vireo::ImageFormat outputFormat,
-       void* data,
-       const uint32 dataSize) {
+        const std::string& fragShaderName,
+        const vireo::ImageFormat outputFormat,
+        void* data,
+        const uint32 dataSize) {
         const auto postProcessingPass = std::make_shared<PostProcessing>(
             ctx,
             config,
