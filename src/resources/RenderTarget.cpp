@@ -53,6 +53,14 @@ namespace lysa {
         frame.prepareCommandList->end();
         ctx.graphicQueue->submit({frame.prepareCommandList});
         ctx.graphicQueue->waitIdle();
+
+        const auto extent = swapChain->getExtent();
+        mainViewport = vireo::Viewport{
+            static_cast<float>(extent.width),
+            static_cast<float>(extent.height)};
+        mainScissors = vireo::Rect {
+            extent.width,
+            extent.height};
     }
 
     RenderTarget::~RenderTarget() {
@@ -104,13 +112,15 @@ namespace lysa {
         const auto previousExtent = swapChain->getExtent();
         swapChain->recreate();
         const auto newExtent = swapChain->getExtent();
+        if (newExtent.width == 0 || newExtent.height == 0) {
+            return;
+        }
         mainViewport = vireo::Viewport{
             static_cast<float>(newExtent.width),
             static_cast<float>(newExtent.height)};
         mainScissors = vireo::Rect {
             newExtent.width,
-            newExtent.height
-        };
+            newExtent.height};
         if (previousExtent.width != newExtent.width || previousExtent.height != newExtent.height) {
             const auto& frame = framesData[0];
             // viewportManager.resize(id, newExtent);
