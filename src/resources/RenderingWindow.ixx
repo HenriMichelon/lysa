@@ -165,8 +165,6 @@ export namespace lysa {
 
         bool isPaused() const { return renderTarget.isPaused(); }
 
-        Context& getContext() { return renderTarget.getContext(); }
-
         void _closing();
 
         void _resized(const Rect& rect);
