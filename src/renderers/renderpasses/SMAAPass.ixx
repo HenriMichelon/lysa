@@ -55,6 +55,15 @@ export namespace lysa {
             return framesData[frameIndex].colorBuffer;
         }
 
+        auto getEdgeDetectBuffer(const uint32 frameIndex) {
+            return framesData[frameIndex].edgeDetectBuffer;
+        }
+
+        auto getBlendWeightBuffer(const uint32 frameIndex) {
+            return framesData[frameIndex].blendWeightBuffer;
+        }
+
+
     private:
         const std::string EDGE_DETECT_FRAGMENT_SHADER{"smaa_edge_detect.frag"};
         const std::string BLEND_WEIGHT_FRAGMENT_SHADER{"smaa_blend_weight.frag"};

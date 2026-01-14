@@ -41,12 +41,12 @@ export namespace lysa {
             const RendererConfiguration& config);
 
         /** Accessor for the color render target of the frame. */
-        auto getFrameColorAttachment(const uint32 frameIndex) const {
+        auto getColorAttachment(const uint32 frameIndex) const {
             return framesData[frameIndex].colorAttachment;
         }
 
         /** Accessor for the depth render target of the frame. */
-        auto getFrameDepthAttachment(const uint32 frameIndex) const {
+        auto getDepthAttachment(const uint32 frameIndex) const {
             return framesData[frameIndex].depthAttachment;
         }
 
@@ -122,6 +122,10 @@ export namespace lysa {
         void removePostprocessing(const PostProcessing& postProcessingPass) {
             removePostprocessing(postProcessingPass.getFragShaderName());
         }
+
+        TransparencyPass& getTransparencyPass() { return transparencyPass; }
+
+        SMAAPass& getSMAAPass() const { return *smaaPass; }
 
         virtual ~Renderer() = default;
         Renderer(Renderer&) = delete;

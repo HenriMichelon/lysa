@@ -214,7 +214,7 @@ namespace lysa {
            frameIndex);
 
         auto colorAttachment = renderer->getCurrentColorAttachment(frameIndex);
-        const auto depthAttachment = renderer->getFrameDepthAttachment(frameIndex);
+        const auto depthAttachment = renderer->getDepthAttachment(frameIndex);
         for (auto& view : views) {
             for (auto* vectorRenderer : vector3DRenderers) {
                 vectorRenderer->render(

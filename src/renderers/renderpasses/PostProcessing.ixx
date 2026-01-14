@@ -150,11 +150,19 @@ export namespace lysa {
          * @param bloomColorAttachment The input bloom color attachment
          * @param commandList The command list to record rendering commands into
          */
-        void render(
+        virtual void render(
            vireo::CommandList& commandList,
            const vireo::Viewport&viewport,
            const vireo::Rect&scissor,
            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+           const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+           const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
+           uint32 frameIndex);
+
+        void _render(
+           vireo::CommandList& commandList,
+           const vireo::Viewport&viewport,
+           const vireo::Rect&scissor,
            const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
            const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
            uint32 frameIndex);

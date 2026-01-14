@@ -38,6 +38,7 @@ export import lysa.renderers.vector_3d;
 export import lysa.renderers.pipelines.frustum_culling;
 export import lysa.renderers.renderpasses.bloom_pass;
 export import lysa.renderers.renderpasses.depth_prepass;
+export import lysa.renderers.renderpasses.display_attachment;
 export import lysa.renderers.renderpasses.forward_color_pass;
 export import lysa.renderers.renderpasses.fxaa_pass;
 export import lysa.renderers.renderpasses.gamma_correction_pass;

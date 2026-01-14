@@ -62,6 +62,10 @@ export namespace lysa {
             bool clearAttachment,
             uint32 frameIndex);
 
+        auto getAccumBuffer(const uint32 frameIndex) { return framesData[frameIndex].accumBuffer; }
+
+        auto getRevealageBuffer(const uint32 frameIndex) { return framesData[frameIndex].revealageBuffer; }
+
     private:
         const std::string VERTEX_SHADER_OIT{"default.vert"};
         const std::string FRAGMENT_SHADER_OIT{"transparency_oit.frag"};

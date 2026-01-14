@@ -110,8 +110,10 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/forward/transparency_oit.frag.slang"
 #        "${SHADERS_SRC_DIR}/forward/transparency_oit_composite.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/bloom.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/blur.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/greyscale.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/blur.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/passthrough.frag.slang"
+        "${SHADERS_SRC_DIR}/postprocess/depth_buffer.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/greyscale.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/ssao_blur.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/fxaa.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/smaa_edge_detect.frag.slang"
@@ -288,6 +290,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/BloomPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/DisplayAttachment.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/FXAAPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/GammaCorrectionPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/PostProcessing.ixx

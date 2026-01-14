@@ -86,9 +86,19 @@ namespace lysa {
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
         const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
         const uint32 frameIndex) {
-        auto& frame = framesData[frameIndex];
-
         textures[INPUT_BUFFER] = colorAttachment->getImage();
+        _render(commandList, viewport, scissor, depthAttachment, bloomColorAttachment, frameIndex);
+    }
+
+    void PostProcessing::_render(
+       vireo::CommandList& commandList,
+       const vireo::Viewport& viewport,
+       const vireo::Rect& scissor,
+       const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+       const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
+       const uint32 frameIndex) {
+
+        auto& frame = framesData[frameIndex];
         if (depthAttachment) { textures[DEPTH_BUFFER] = depthAttachment->getImage(); }
         if (bloomColorAttachment) { textures[BLOOM_BUFFER] = bloomColorAttachment->getImage(); }
         frame.descriptorSet->update(BINDING_TEXTURES, textures);

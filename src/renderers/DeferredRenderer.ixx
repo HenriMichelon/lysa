@@ -53,6 +53,13 @@ export namespace lysa {
             return lightingPass.getBrightnessBuffer(frameIndex);
         }
 
+        GBufferPass& getGBufferPass() { return gBufferPass; }
+
+        SSAOPass& getSSAOPass() const { return *ssaoPass; }
+
+        PostProcessing& getSSAOBlurPass() const { return *ssaoBlurPass; }
+
+
     protected:
         /** Records G-Buffer population then lighting resolve into color attachment. */
         void colorPass(
