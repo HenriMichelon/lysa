@@ -428,7 +428,7 @@ namespace lysa {
                 mouseButtonJustReleasedStates[MouseButton::LEFT] = false;
                 auto event = InputEventMouseButton {
                     float2( static_cast<float>(GET_X_LPARAM(lParam)),
-                        window->getRect().height-GET_Y_LPARAM(lParam)),
+                        window->getRenderTarget().getHeight()-GET_Y_LPARAM(lParam)),
                     _getMouseButtonState(wParam),
                     _getKeyboardModifiers(),
                     MouseButton::LEFT,
@@ -443,7 +443,7 @@ namespace lysa {
                 mouseButtonJustReleasedStates[MouseButton::LEFT] = false;
                 auto event = InputEventMouseButton {
                     float2( static_cast<float>(GET_X_LPARAM(lParam)),
-                        window->getRect().height-GET_Y_LPARAM(lParam)),
+                        window->getRenderTarget().getHeight()-GET_Y_LPARAM(lParam)),
                     _getMouseButtonState(wParam),
                     _getKeyboardModifiers(),
                     MouseButton::LEFT,
@@ -458,7 +458,7 @@ namespace lysa {
                 mouseButtonJustReleasedStates[MouseButton::RIGHT] = false;
                 auto event = InputEventMouseButton {
                     float2( static_cast<float>(GET_X_LPARAM(lParam)),
-                        window->getRect().height-GET_Y_LPARAM(lParam)),
+                        window->getRenderTarget().getHeight()-GET_Y_LPARAM(lParam)),
                     _getMouseButtonState(wParam),
                     _getKeyboardModifiers(),
                     MouseButton::RIGHT,
@@ -473,7 +473,7 @@ namespace lysa {
                 mouseButtonJustReleasedStates[MouseButton::RIGHT] = false;
                 auto event = InputEventMouseButton {
                     float2( static_cast<float>(GET_X_LPARAM(lParam)),
-                        window->getRect().height-GET_Y_LPARAM(lParam)),
+                        window->getRenderTarget().getHeight()-GET_Y_LPARAM(lParam)),
                     _getMouseButtonState(wParam),
                     _getKeyboardModifiers(),
                     MouseButton::RIGHT,
@@ -488,7 +488,7 @@ namespace lysa {
                 mouseButtonJustReleasedStates[MouseButton::MIDDLE] = false;
                 auto event = InputEventMouseButton {
                     float2( static_cast<float>(GET_X_LPARAM(lParam)),
-                        window->getRect().height-GET_Y_LPARAM(lParam)),
+                        window->getRenderTarget().getHeight()-GET_Y_LPARAM(lParam)),
                     _getMouseButtonState(wParam),
                     _getKeyboardModifiers(),
                     MouseButton::MIDDLE,
@@ -503,7 +503,7 @@ namespace lysa {
                 mouseButtonJustReleasedStates[MouseButton::MIDDLE] = false;
                 auto event = InputEventMouseButton {
                     float2( static_cast<float>(GET_X_LPARAM(lParam)),
-                        window->getRect().height-GET_Y_LPARAM(lParam)),
+                        window->getRenderTarget().getHeight()-GET_Y_LPARAM(lParam)),
                     _getMouseButtonState(wParam),
                     _getKeyboardModifiers(),
                     MouseButton::MIDDLE,
@@ -518,7 +518,7 @@ namespace lysa {
                 mouseButtonJustReleasedStates[MouseButton::MIDDLE] = false;
                 auto event = InputEventMouseButton {
                     float2( static_cast<float>(GET_X_LPARAM(lParam)),
-                        window->getRect().height-GET_Y_LPARAM(lParam)),
+                        window->getRenderTarget().getHeight()-GET_Y_LPARAM(lParam)),
                     _getMouseButtonState(wParam),
                     _getKeyboardModifiers(),
                     MouseButton::WHEEL,
@@ -531,7 +531,7 @@ namespace lysa {
                 auto xPos = static_cast<float>(GET_X_LPARAM(lParam));
                 auto yPos = 0.0f;
                 auto y = GET_Y_LPARAM(lParam);
-                const auto height = window->getRect().height;
+                const auto height = window->getRenderTarget().getHeight();
                 if (y < height) {
                     yPos = static_cast<float>(height-y);
                 } else if (y < 0){
