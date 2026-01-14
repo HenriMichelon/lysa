@@ -112,15 +112,16 @@ export namespace lysa {
             const vireo::Rect&scissor,
             uint32 frameIndex);
 
-        /** Adds a full-screen post-processing pass by fragment shader name. */
-        void addPostprocessing(
-            const std::string& fragShaderName,
-            vireo::ImageFormat outputFormat,
-            void* data = nullptr,
-            uint32 dataSize = 0);
+        /** Adds a full-screen post-processing pass. */
+        void addPostprocessing(PostProcessing& postProcessingPass);
 
         /** Removes a previously added post-processing pass by fragment name. */
         void removePostprocessing(const std::string& fragShaderName);
+
+        /** Removes a previously added post-processing pass. */
+        void removePostprocessing(const PostProcessing& postProcessingPass) {
+            removePostprocessing(postProcessingPass.getFragShaderName());
+        }
 
         virtual ~Renderer() = default;
         Renderer(Renderer&) = delete;
@@ -168,6 +169,6 @@ export namespace lysa {
         std::unique_ptr<BloomPass> bloomPass;
         std::unique_ptr<PostProcessing> gammaCorrectionPass;
         /* List of active post-processing passes applied after color and bloom pass, but before AA pass. */
-        std::list<std::shared_ptr<PostProcessing>> postProcessingPasses;
+        std::list<PostProcessing*> postProcessingPasses;
     };
 }

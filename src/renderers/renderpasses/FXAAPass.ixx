@@ -32,7 +32,7 @@ export namespace lysa {
                 "fxaa",
                 config.swapChainFormat,
                 &fxaaData, sizeof(fxaaData),
-        "FXAA"),
+            "FXAA"),
             fxaaData{ .spanMax = config.fxaaSpanMax, .reduceMul = config.fxaaReduceMul, .reduceMin = config.fxaaReduceMin} {
         }
 

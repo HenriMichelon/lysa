@@ -8,6 +8,7 @@ export module lysa.renderers.renderpasses.post_processing;
 
 import vireo;
 import lysa.context;
+import lysa.exception;
 import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.scene_frame_data;
@@ -61,10 +62,10 @@ export namespace lysa {
             const Context& ctx,
             const RendererConfiguration& config,
             const std::string& fragShaderName,
-            vireo::ImageFormat outputFormat,
-            void* data,
-            uint32 dataSize,
-            const std::string& name);
+            vireo::ImageFormat outputFormat = vireo::ImageFormat::UNDEFINED,
+            void* data = nullptr,
+            uint32 dataSize = 0,
+            const std::string& name = "");
 
         /**
          * @brief Updates the render pass state for the current frame
@@ -92,9 +93,12 @@ export namespace lysa {
         /**
          * @brief Resizes the render pass resources
          * @param extent The new extent
-         * @param commandList Command list for resource transitions if needed
          */
-        void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
+        virtual void resize(const vireo::Extent& extent);
+
+        void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override {
+            throw Exception("Not implemented for post-processing passes");
+        }
 
         /**
          * @brief Gets the color attachment for a specific frame

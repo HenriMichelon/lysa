@@ -187,17 +187,17 @@ namespace lysa {
         shaderMaterialPass.resize(extent, commandList);
         transparencyPass.resize(extent, commandList);
         if (bloomPass) {
-            bloomPass->resize(extent, commandList);
+            bloomPass->resize(extent);
         }
         if (fxaaPass) {
-            fxaaPass->resize(extent, commandList);
+            fxaaPass->resize(extent);
         } else if (smaaPass) {
             smaaPass->resize(extent, commandList);
         }
         for (const auto& postProcessingPass : postProcessingPasses) {
-            postProcessingPass->resize(extent, commandList);
+            postProcessingPass->resize(extent);
         }
-        gammaCorrectionPass->resize(extent, commandList);
+        gammaCorrectionPass->resize(extent);
     }
 
      std::shared_ptr<vireo::RenderTarget> Renderer::gammaCorrection(
@@ -324,25 +324,13 @@ namespace lysa {
         return postProcessingPasses.back()->getColorAttachment(frameIndex);
     }
 
-    void Renderer::addPostprocessing(
-        const std::string& fragShaderName,
-        const vireo::ImageFormat outputFormat,
-        void* data,
-        const uint32 dataSize) {
-        const auto postProcessingPass = std::make_shared<PostProcessing>(
-            ctx,
-            config,
-            fragShaderName,
-            outputFormat,
-            data,
-            dataSize,
-            fragShaderName);
-        postProcessingPass->resize(currentExtent, nullptr);
-        postProcessingPasses.push_back(postProcessingPass);
+    void Renderer::addPostprocessing(PostProcessing& postProcessingPass) {
+        postProcessingPass.resize(currentExtent, nullptr);
+        postProcessingPasses.push_back(&postProcessingPass);
     }
 
     void Renderer::removePostprocessing(const std::string& fragShaderName) {
-        std::erase_if(postProcessingPasses, [&fragShaderName](const std::shared_ptr<PostProcessing>& item) {
+        std::erase_if(postProcessingPasses, [&fragShaderName](const PostProcessing* item) {
             return item->getFragShaderName() == fragShaderName;
         });
     }

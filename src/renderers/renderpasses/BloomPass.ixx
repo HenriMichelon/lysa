@@ -54,9 +54,8 @@ export namespace lysa {
         /**
          * @brief Resizes the render pass resources
          * @param extent The new extent
-         * @param commandList Command list for resource transitions if needed
          */
-        void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
+        void resize(const vireo::Extent& extent) override;
 
     private:
         BlurData blurData;

@@ -69,10 +69,10 @@ namespace lysa {
                 vireo::ResourceState::UNDEFINED);
     }
 
-    void BloomPass::resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) {
-        PostProcessing::resize(extent, commandList);
+    void BloomPass::resize(const vireo::Extent& extent) {
+        PostProcessing::resize(extent);
         blurData.update(extent, config.bloomBlurStrength);
-        blurPass.resize(extent, commandList);
+        blurPass.resize(extent);
     }
 
 

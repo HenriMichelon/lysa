@@ -90,7 +90,7 @@ namespace lysa {
         if (config.ssaoEnabled) {
             ssaoBlurData.update(extent, 1.2);
             ssaoPass->resize(extent, commandList);
-            ssaoBlurPass->resize(extent, commandList);
+            ssaoBlurPass->resize(extent);
         }
         lightingPass.resize(extent, commandList);
     }

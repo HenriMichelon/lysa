@@ -36,7 +36,7 @@ export namespace lysa {
                 "gamma_correction",
                 config.swapChainFormat,
                 &gammaCorrectionData, sizeof(gammaCorrectionData),
-        "Gamma correction"),
+                "Gamma correction"),
             gammaCorrectionData{ .gamma = config.gamma, .exposure = config.exposure } {
         }
 
