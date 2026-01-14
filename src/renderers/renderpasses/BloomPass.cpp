@@ -50,7 +50,6 @@ namespace lysa {
                         scissor,
                         bloomAttachment,
                         nullptr,
-                        nullptr,
                         frameIndex);
         PostProcessing::render(
             commandList,

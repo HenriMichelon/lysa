@@ -68,7 +68,17 @@ namespace lysa {
     }
 
     void PostProcessing::render(
-    vireo::CommandList& commandList,
+           vireo::CommandList& commandList,
+           const vireo::Viewport&viewport,
+           const vireo::Rect&scissor,
+           const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+           const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+           const uint32 frameIndex) {
+        render(commandList, viewport, scissor, colorAttachment, depthAttachment, nullptr, frameIndex);
+    }
+
+    void PostProcessing::render(
+        vireo::CommandList& commandList,
         const vireo::Viewport& viewport,
         const vireo::Rect& scissor,
         const std::shared_ptr<vireo::RenderTarget>& colorAttachment,

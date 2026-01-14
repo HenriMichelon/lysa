@@ -36,9 +36,12 @@ export namespace lysa {
 
         /**
          * @brief Renders the Bloom pass
+        * @param frameIndex Index of the current frame
+         * @param viewport The viewport to render into
+         * @param scissor The scissor rectangle
+         * @param colorAttachment The input color attachment
+         * @param bloomAttachment The input bloom color attachment
          * @param commandList The command list to record rendering commands into
-         * @param colorAttachment The target depth attachment
-         * @param frameIndex Index of the current frame
          */
         void render(
             vireo::CommandList& commandList,
@@ -46,7 +49,7 @@ export namespace lysa {
             const vireo::Rect& scissor,
             const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
             const std::shared_ptr<vireo::RenderTarget>& bloomAttachment,
-            uint32 frameIndex);
+            uint32 frameIndex) override;
 
         /**
          * @brief Resizes the render pass resources

@@ -66,7 +66,6 @@ namespace lysa {
                 scissors,
                 ssaoPass->getSSAOColorBuffer(frameIndex),
                 nullptr,
-                nullptr,
                 frameIndex);
         }
         lightingPass.render(

@@ -216,7 +216,6 @@ namespace lysa {
             scissor,
             colorAttachment,
             nullptr,
-            nullptr,
             frameIndex);
         commandList.barrier(
            colorAttachment,
@@ -267,7 +266,6 @@ namespace lysa {
                     scissor,
                     colorAttachment,
                     frame.depthAttachment,
-                    nullptr,
                     frameIndex);
                 colorAttachment = postProcessingPass->getColorAttachment(frameIndex);
             });
@@ -289,7 +287,6 @@ namespace lysa {
                 scissor,
                 colorAttachment,
                 frame.depthAttachment,
-                nullptr,
                 frameIndex);
             commandList.barrier(
                 fxaaPass->getColorAttachment(frameIndex),

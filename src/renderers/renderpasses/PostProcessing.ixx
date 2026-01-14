@@ -79,16 +79,14 @@ export namespace lysa {
          * @param scissor The scissor rectangle
          * @param colorAttachment The input color attachment
          * @param depthAttachment The input depth attachment
-         * @param bloomColorAttachment The input bloom color attachment
          * @param commandList The command list to record rendering commands into
          */
-        void render(
+        virtual void render(
            vireo::CommandList& commandList,
            const vireo::Viewport&viewport,
            const vireo::Rect&scissor,
            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
            const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
-           const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
            uint32 frameIndex);
 
         /**
@@ -137,5 +135,24 @@ export namespace lysa {
         std::vector<std::shared_ptr<vireo::Image>> textures;
         std::shared_ptr<vireo::DescriptorLayout> descriptorLayout;
         std::shared_ptr<vireo::GraphicPipeline> pipeline;
+
+        /**
+         * @brief Renders the post-processing effect
+         * @param frameIndex Index of the current frame
+         * @param viewport The viewport to render into
+         * @param scissor The scissor rectangle
+         * @param colorAttachment The input color attachment
+         * @param depthAttachment The input depth attachment
+         * @param bloomColorAttachment The input bloom color attachment
+         * @param commandList The command list to record rendering commands into
+         */
+        void render(
+           vireo::CommandList& commandList,
+           const vireo::Viewport&viewport,
+           const vireo::Rect&scissor,
+           const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
+           const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
+           const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
+           uint32 frameIndex);
     };
 }
