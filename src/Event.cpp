@@ -88,7 +88,7 @@ namespace lysa {
                     queue = itType->second;
                 }
                 for (auto& handler : queue) {
-                    handler.fn(event);
+                    handler.fn(const_cast<Event&>(event));
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace lysa {
             processingQueue.swap(queue);
         }
         auto lock = std::lock_guard(handlersMutex);
-        for (const Event& e : processingQueue) {
+        for (Event& e : processingQueue) {
             {
                 const auto itType = handlers.find(e.type);
                 if (itType != handlers.end()) {
@@ -123,6 +123,9 @@ namespace lysa {
                     if (itId != itType->second.end()) {
                         for (auto& handler : itId->second) {
                             handler.fn(e);
+                            if (e.consumed) {
+                                return;
+                            }
                         }
                     }
                 }
@@ -135,6 +138,9 @@ namespace lysa {
                     if (itId != itType->second.end()) {
                         for (auto& handler : itId->second) {
                             handler.fn(e);
+                            if (e.consumed) {
+                                return;
+                            }
                         }
                     }
                 }

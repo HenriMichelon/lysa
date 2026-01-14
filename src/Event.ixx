@@ -28,13 +28,15 @@ export namespace lysa {
         event_type type;
         /** @brief Event payload. */
         std::any payload;
+        /** @brief true if already consumed */
+        bool consumed{false};
     };
 
     /**
      * @brief Callback signature for event handlers.
      * @param e The event received by the handler.
      */
-    using EventHandlerCallback = std::function<void(const Event&)>;
+    using EventHandlerCallback = std::function<void(Event&)>;
 
     /**
      * @brief Internal structure for an event handler.

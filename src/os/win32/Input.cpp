@@ -547,7 +547,7 @@ namespace lysa {
                             _getKeyboardModifiers(),
                             float2(dx, dy),
                         };
-                        window->_input({InputEventType::MOUSE_MOTION, event});
+                        // window->_input({InputEventType::MOUSE_MOTION, event});
                     } else {
                         auto event = InputEventMouseMotion {
                             float2(xPos, yPos),
@@ -555,7 +555,7 @@ namespace lysa {
                             _getKeyboardModifiers(),
                             float2(0, 0),
                         };
-                        window->_input({InputEventType::MOUSE_MOTION, event});
+                        // window->_input({InputEventType::MOUSE_MOTION, event});
                     }
                 } else {
                     RenderingWindow::_resettingMousePosition = false;
