@@ -204,7 +204,6 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
         ${ENGINE_SRC_DIR}/AssetsPack.cpp
         ${ENGINE_SRC_DIR}/Context.cpp
         ${ENGINE_SRC_DIR}/Event.cpp
-        ${ENGINE_SRC_DIR}/Frustum.cpp
         ${ENGINE_SRC_DIR}/Input.cpp
         ${ENGINE_SRC_DIR}/Lysa.cpp
         ${ENGINE_SRC_DIR}/Math.cpp
@@ -213,6 +212,7 @@ add_library(${LYSA_ENGINE_TARGET} STATIC
 
         ${ENGINE_SRC_DIR}/utils/AsyncTasksPool.cpp
         ${ENGINE_SRC_DIR}/utils/DeferredTasksBuffer.cpp
+        ${ENGINE_SRC_DIR}/utils/Frustum.cpp
         ${ENGINE_SRC_DIR}/utils/Log.cpp
         ${ENGINE_SRC_DIR}/utils/Utils.cpp
 
@@ -259,7 +259,6 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/Context.ixx
         ${ENGINE_SRC_DIR}/Event.ixx
         ${ENGINE_SRC_DIR}/Exception.ixx
-        ${ENGINE_SRC_DIR}/Frustum.ixx
         ${ENGINE_SRC_DIR}/Input.ixx
         ${ENGINE_SRC_DIR}/InputEvent.ixx
         ${ENGINE_SRC_DIR}/Lysa.ixx
@@ -272,6 +271,7 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/utils/BlurData.ixx
         ${ENGINE_SRC_DIR}/utils/DeferredTasksBuffer.ixx
         ${ENGINE_SRC_DIR}/utils/DirectoryWatcher.ixx
+        ${ENGINE_SRC_DIR}/utils/Frustum.ixx
         ${ENGINE_SRC_DIR}/utils/Log.ixx
         ${ENGINE_SRC_DIR}/utils/Rect.ixx
         ${ENGINE_SRC_DIR}/utils/Utils.ixx
