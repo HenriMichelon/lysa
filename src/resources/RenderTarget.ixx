@@ -90,6 +90,8 @@ export namespace lysa {
             vector3DRenderers.push_back(&vector3DRenderer);
         }
 
+        Renderer& getRenderer() const { return *renderer; }
+
     private:
         struct FrameData {
             /** Fence signaled when the frame's work has completed on GPU. */

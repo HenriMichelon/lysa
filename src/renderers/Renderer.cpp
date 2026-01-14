@@ -259,7 +259,7 @@ namespace lysa {
                frame.depthAttachment,
                depthStage,
                vireo::ResourceState::SHADER_READ);
-            std::ranges::for_each(postProcessingPasses, [&](const auto& postProcessingPass) {
+            std::ranges::for_each(postProcessingPasses, [&](auto* postProcessingPass) {
                 postProcessingPass->render(
                     commandList,
                     viewport,
@@ -325,7 +325,7 @@ namespace lysa {
     }
 
     void Renderer::addPostprocessing(PostProcessing& postProcessingPass) {
-        postProcessingPass.resize(currentExtent, nullptr);
+        postProcessingPass.resize(currentExtent);
         postProcessingPasses.push_back(&postProcessingPass);
     }
 
