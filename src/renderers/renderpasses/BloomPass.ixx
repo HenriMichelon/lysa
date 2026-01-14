@@ -57,6 +57,8 @@ export namespace lysa {
          */
         void resize(const vireo::Extent& extent) override;
 
+        PostProcessing& getBlurPass() { return blurPass; }
+
     private:
         BlurData blurData;
         PostProcessing blurPass;

@@ -127,6 +127,8 @@ export namespace lysa {
 
         SMAAPass& getSMAAPass() const { return *smaaPass; }
 
+        BloomPass& getBloomPass() const { return *bloomPass; }
+
         virtual ~Renderer() = default;
         Renderer(Renderer&) = delete;
         Renderer& operator=(Renderer&) = delete;
