@@ -23,7 +23,7 @@ namespace lysa {
         blurData{ .kernelSize = config.bloomBlurKernelSize },
         blurPass(ctx,
             config,
-            "bloom_blur",
+            "blur",
             &blurData,
             sizeof(blurData),
             config.colorRenderingFormat,
