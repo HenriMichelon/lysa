@@ -34,8 +34,8 @@ export namespace lysa {
                 toneMappingType == ToneMappingType::REINHARD ? "reinhard" :
                 toneMappingType == ToneMappingType::ACES ? "aces" :
                 "gamma_correction",
-                config.swapChainFormat,
                 &gammaCorrectionData, sizeof(gammaCorrectionData),
+                config.swapChainFormat,
                 "Gamma correction"),
             gammaCorrectionData{ .gamma = config.gamma, .exposure = config.exposure } {
         }

@@ -21,9 +21,9 @@ namespace lysa {
                 ctx,
                 config,
                 "ssao_blur",
-                ssaoPass->getSSAOBufferFormat(),
                 &ssaoBlurData,
                 sizeof(ssaoBlurData),
+                ssaoPass->getSSAOBufferFormat(),
                 "SSAO Blur");
         }
     }

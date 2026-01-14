@@ -41,7 +41,7 @@ namespace lysa {
         renderTarget.getContext().events.push({
             id,
             static_cast<event_type>(RenderingWindowEvent::RESIZED),
-            float2{renderTarget.getWidth(), renderTarget.getHeight()}
+            renderTarget.getSwapChain()->getExtent()
         });
     }
 

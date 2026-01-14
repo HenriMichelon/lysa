@@ -13,9 +13,9 @@ namespace lysa {
         const Context& ctx,
         const RendererConfiguration& config,
         const std::string& fragShaderName,
-        const vireo::ImageFormat outputFormat,
         void* data,
         uint32 dataSize,
+        const vireo::ImageFormat outputFormat,
         const std::string& name):
         Renderpass{ctx, config, name.empty() ? fragShaderName : name},
         fragShaderName{fragShaderName},
@@ -120,7 +120,7 @@ namespace lysa {
                 pipelineConfig.colorRenderFormats[0],
                 extent.width, extent.height,
                 vireo::RenderTargetType::COLOR,
-    {},
+                {},
                 1,
                 config.msaa,
                 name);

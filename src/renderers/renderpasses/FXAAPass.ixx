@@ -30,8 +30,8 @@ export namespace lysa {
                 ctx,
                 config,
                 "fxaa",
-                config.swapChainFormat,
                 &fxaaData, sizeof(fxaaData),
+                config.swapChainFormat,
             "FXAA"),
             fxaaData{ .spanMax = config.fxaaSpanMax, .reduceMul = config.fxaaReduceMul, .reduceMin = config.fxaaReduceMin} {
         }

@@ -62,9 +62,9 @@ export namespace lysa {
             const Context& ctx,
             const RendererConfiguration& config,
             const std::string& fragShaderName,
-            vireo::ImageFormat outputFormat = vireo::ImageFormat::UNDEFINED,
             void* data = nullptr,
             uint32 dataSize = 0,
+            vireo::ImageFormat outputFormat = vireo::ImageFormat::UNDEFINED,
             const std::string& name = "");
 
         /**

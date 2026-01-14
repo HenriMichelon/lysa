@@ -17,16 +17,16 @@ namespace lysa {
             ctx,
             config,
             "bloom",
-            config.swapChainFormat,
             nullptr, 0,
-    "Bloom"),
+            config.swapChainFormat,
+        "Bloom"),
         blurData{ .kernelSize = config.bloomBlurKernelSize },
         blurPass(ctx,
             config,
             "bloom_blur",
-            config.colorRenderingFormat,
             &blurData,
             sizeof(blurData),
+            config.colorRenderingFormat,
             "Bloom blur")
     {
 

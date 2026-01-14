@@ -14,7 +14,7 @@ export namespace lysa {
 
     /** Constant buffer data used by Gaussian blur post-process. */
     struct BlurData {
-        uint32 kernelSize;
+        uint32 kernelSize{3};
         float4 weights[9*9]; // float4 for correct alignment
         float2 texelSize;
 
