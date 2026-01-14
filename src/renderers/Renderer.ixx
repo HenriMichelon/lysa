@@ -15,6 +15,8 @@ import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_frame_data;
 import lysa.renderers.renderpasses.bloom_pass;
 import lysa.renderers.renderpasses.depth_prepass;
+import lysa.renderers.renderpasses.fxaa_pass;
+import lysa.renderers.renderpasses.gamma_correction_pass;
 import lysa.renderers.renderpasses.post_processing;
 import lysa.renderers.renderpasses.shader_material_pass;
 import lysa.renderers.renderpasses.smaa_pass;
@@ -155,31 +157,17 @@ export namespace lysa {
             uint32 frameIndex) = 0;
 
     private:
-        /** Gamma/exposure parameters used by the tone-mapping/post chain. */
-        struct {
-            float gamma;
-            float exposure;
-        } gammaCorrectionData;
-
-        /** FXAA configuration. */
-        struct {
-            float spanMax{8.0f};
-            float reduceMul{1.0f / 8.0f};
-            float reduceMin{1.0f / 128.0f};
-        } fxaaData;
-
         const MeshManager& meshManager;
         vireo::Extent currentExtent{};
         // Renders objects using custom shader materials.
         ShaderMaterialPass shaderMaterialPass;
         // Transparent objects pass (sorted/blended).
         TransparencyPass transparencyPass;
-        std::unique_ptr<PostProcessing> fxaaPass;
+        std::unique_ptr<FXAAPass> fxaaPass;
         std::unique_ptr<SMAAPass> smaaPass;
         std::unique_ptr<BloomPass> bloomPass;
-        /* Gamma correction pass */
         std::unique_ptr<PostProcessing> gammaCorrectionPass;
-        /* List of active post-processing passes applied after color pass. */
+        /* List of active post-processing passes applied after color and bloom pass, but before AA pass. */
         std::list<std::shared_ptr<PostProcessing>> postProcessingPasses;
     };
 }

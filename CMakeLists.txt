@@ -288,6 +288,8 @@ target_sources(${LYSA_ENGINE_TARGET}
         ${ENGINE_SRC_DIR}/renderers/pipelines/FrustumCulling.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/BloomPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/DepthPrepass.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/FXAAPass.ixx
+        ${ENGINE_SRC_DIR}/renderers/renderpasses/GammaCorrectionPass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/PostProcessing.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/Renderpass.ixx
         ${ENGINE_SRC_DIR}/renderers/renderpasses/ShaderMaterialPass.ixx

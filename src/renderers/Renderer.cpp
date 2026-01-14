@@ -44,8 +44,6 @@ namespace lysa {
         ),
         config(config),
         depthPrePass(ctx, config, withStencil),
-        gammaCorrectionData{ .gamma = config.gamma, .exposure = config.exposure },
-
         meshManager(ctx.res.get<MeshManager>()),
         shaderMaterialPass(ctx, config),
         transparencyPass(ctx, config) {
@@ -56,37 +54,15 @@ namespace lysa {
         const auto needGammaCorrection =
             config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_UNORM ||
             config.colorRenderingFormat == vireo::ImageFormat::R8G8B8A8_SNORM;
-        if (needToneMapping) {
-            gammaCorrectionPass = std::make_unique<PostProcessing>(
+        if (needGammaCorrection || needToneMapping) {
+            gammaCorrectionPass = std::make_unique<GammaCorrectionPass>(
                 ctx,
                 config,
-                config.toneMappingType == ToneMappingType::REINHARD ? "reinhard" :
-                config.toneMappingType == ToneMappingType::ACES ? "aces" :
-                "gamma_correction",
-                config.swapChainFormat,
-                &gammaCorrectionData,
-                sizeof(gammaCorrectionData),
-                "Tone mapping");
-        } else if (needGammaCorrection) {
-            gammaCorrectionPass = std::make_unique<PostProcessing>(
-                ctx,
-                config,
-                "gamma_correction",
-                config.swapChainFormat,
-                &gammaCorrectionData,
-                sizeof(gammaCorrectionData),
-                "Gamma correction");
+                needToneMapping ? config.toneMappingType : ToneMappingType::NONE);
         }
         switch (config.antiAliasingType) {
         case AntiAliasingType::FXAA:
-            fxaaPass = std::make_unique<PostProcessing>(
-                ctx,
-                config,
-                "fxaa",
-                config.swapChainFormat,
-                &fxaaData,
-                sizeof(fxaaData),
-                "FXAA");
+            fxaaPass = std::make_unique<FXAAPass>(ctx, config);
             break;
         case AntiAliasingType::SMAA:
             smaaPass = std::make_unique<SMAAPass>(ctx, config);

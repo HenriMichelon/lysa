@@ -9,9 +9,7 @@ export module lysa.renderers.renderpasses.bloom_pass;
 import vireo;
 import lysa.blur_data;
 import lysa.context;
-import lysa.math;
 import lysa.renderers.configuration;
-import lysa.renderers.scene_frame_data;
 import lysa.renderers.renderpasses.post_processing;
 
 export namespace lysa {
@@ -58,10 +56,6 @@ export namespace lysa {
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
     private:
-        const std::string VERTEX_SHADER{"quad.vert"};
-        const std::string FRAGMENT_SHADER_BLUR{"bloom_blur.frag"};
-        const std::string FRAGMENT_SHADER{"bloom.frag"};
-
         BlurData blurData;
         PostProcessing blurPass;
     };
