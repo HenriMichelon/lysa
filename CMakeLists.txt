@@ -112,7 +112,7 @@ set(SHADERS_SOURCE_FILES
 #        "${SHADERS_SRC_DIR}/postprocess/bloom.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/blur.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/passthrough.frag.slang"
-        "${SHADERS_SRC_DIR}/postprocess/depth_buffer.frag.slang"
+#        "${SHADERS_SRC_DIR}/postprocess/depth_buffer.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/greyscale.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/ssao_blur.frag.slang"
 #        "${SHADERS_SRC_DIR}/postprocess/fxaa.frag.slang"

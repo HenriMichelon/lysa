@@ -92,6 +92,8 @@ export namespace lysa {
 
         Renderer& getRenderer() const { return *renderer; }
 
+        Context& getContext() { return ctx; }
+
     private:
         struct FrameData {
             /** Fence signaled when the frame's work has completed on GPU. */

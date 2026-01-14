@@ -214,6 +214,14 @@ namespace lysa {
                          _rect.top + (_rect.bottom-_rect.top) / 2);
     }
 
+    bool RenderingWindow::isMouseHidden() const {
+        CURSORINFO ci { .cbSize = sizeof(CURSORINFO) };
+        if (GetCursorInfo(&ci)) {
+            return ci.flags == 0;
+        }
+        return false;
+    }
+
     void RenderingWindow::setMouseMode(const MouseMode mode) const {
         MSG msg;
         while (PeekMessageW(&msg, static_cast<HWND>(handle), 0, 0, PM_REMOVE)) {

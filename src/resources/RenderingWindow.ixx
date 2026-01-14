@@ -141,6 +141,8 @@ export namespace lysa {
          */
         void resetMousePosition() const;
 
+        bool isMouseHidden() const;
+
         /**
          * Returns the mouse position
          *
@@ -162,6 +164,8 @@ export namespace lysa {
         void setPause(const bool pause) { renderTarget.setPause(pause); }
 
         bool isPaused() const { return renderTarget.isPaused(); }
+
+        Context& getContext() { return renderTarget.getContext(); }
 
         void _closing();
 
