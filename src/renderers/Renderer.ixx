@@ -13,6 +13,7 @@ import lysa.math;
 import lysa.renderers.configuration;
 import lysa.renderers.graphic_pipeline_data;
 import lysa.renderers.scene_frame_data;
+import lysa.renderers.renderpasses.bloom_pass;
 import lysa.renderers.renderpasses.depth_prepass;
 import lysa.renderers.renderpasses.post_processing;
 import lysa.renderers.renderpasses.shader_material_pass;
@@ -124,13 +125,6 @@ export namespace lysa {
         Renderer& operator=(Renderer&) = delete;
 
     protected:
-        /** Constant buffer data used by Gaussian blur post-process. */
-        struct BlurData {
-            uint32 kernelSize;
-            float4 weights[9*9]; // float4 for correct alignment
-            float2 texelSize;
-        };
-
         // Per-frame attachments owned by the renderer.
         struct FrameData {
             std::shared_ptr<vireo::RenderTarget> colorAttachment;
@@ -160,9 +154,6 @@ export namespace lysa {
             bool clearAttachment,
             uint32 frameIndex) = 0;
 
-        /** Precomputes Gaussian weights and texel size based on extent/strength. */
-        void updateBlurData(BlurData& blurData, const vireo::Extent& extent, float strength) const;
-
     private:
         /** Gamma/exposure parameters used by the tone-mapping/post chain. */
         struct {
@@ -179,18 +170,16 @@ export namespace lysa {
 
         const MeshManager& meshManager;
         vireo::Extent currentExtent{};
-        BlurData bloomBlurData;
         // Renders objects using custom shader materials.
         ShaderMaterialPass shaderMaterialPass;
         // Transparent objects pass (sorted/blended).
         TransparencyPass transparencyPass;
         std::unique_ptr<PostProcessing> fxaaPass;
         std::unique_ptr<SMAAPass> smaaPass;
-        std::unique_ptr<PostProcessing> bloomBlurPass;
-        std::unique_ptr<PostProcessing> bloomPass;
-        /* List of active post-processing passes applied after color pass. */
-        std::list<std::shared_ptr<PostProcessing>> postProcessingPasses;
+        std::unique_ptr<BloomPass> bloomPass;
         /* Gamma correction pass */
         std::unique_ptr<PostProcessing> gammaCorrectionPass;
+        /* List of active post-processing passes applied after color pass. */
+        std::list<std::shared_ptr<PostProcessing>> postProcessingPasses;
     };
 }

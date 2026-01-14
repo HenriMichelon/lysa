@@ -89,7 +89,7 @@ namespace lysa {
         Renderer::resize(extent, commandList);
         gBufferPass.resize(extent, commandList);
         if (config.ssaoEnabled) {
-            updateBlurData(ssaoBlurData, extent, 1.2);
+            ssaoBlurData.update(extent, 1.2);
             ssaoPass->resize(extent, commandList);
             ssaoBlurPass->resize(extent, commandList);
         }

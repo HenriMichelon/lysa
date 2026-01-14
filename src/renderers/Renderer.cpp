@@ -47,7 +47,6 @@ namespace lysa {
         gammaCorrectionData{ .gamma = config.gamma, .exposure = config.exposure },
 
         meshManager(ctx.res.get<MeshManager>()),
-        bloomBlurData{ .kernelSize = config.bloomBlurKernelSize },
         shaderMaterialPass(ctx, config),
         transparencyPass(ctx, config) {
         const auto needToneMapping =
@@ -96,29 +95,16 @@ namespace lysa {
             break;
         }
         if (config.bloomEnabled) {
-            bloomBlurPass = std::make_unique<PostProcessing>(
-                ctx,
-                config,
-                "bloom_blur",
-                config.colorRenderingFormat,
-                &bloomBlurData,
-                sizeof(bloomBlurData),
-                "Bloom blur");
-            bloomPass = std::make_unique<PostProcessing>(
-                ctx,
-                config,
-                "bloom",
-                config.swapChainFormat,
-                nullptr,
-                0,
-                "Bloom");
+            bloomPass = std::make_unique<BloomPass>(ctx, config);
         }
-
         framesData.resize(ctx.config.framesInFlight);
     }
 
     void Renderer::update(const uint32 frameIndex) {
         depthPrePass.update(frameIndex);
+        if (bloomPass) {
+            bloomPass->update(frameIndex);
+        }
         for (const auto& postProcessingPass : postProcessingPasses) {
             postProcessingPass->update(frameIndex);
         }
@@ -128,10 +114,6 @@ namespace lysa {
             smaaPass->update(frameIndex);
         }
         gammaCorrectionPass->update(frameIndex);
-        if (config.bloomEnabled) {
-            bloomBlurPass->update(frameIndex);
-            bloomPass->update(frameIndex);
-        }
     }
 
     void Renderer::updatePipelines(const SceneFrameData& scene) {
@@ -228,9 +210,7 @@ namespace lysa {
         depthPrePass.resize(extent, commandList);
         shaderMaterialPass.resize(extent, commandList);
         transparencyPass.resize(extent, commandList);
-        if (bloomBlurPass) {
-            updateBlurData(bloomBlurData, extent, config.bloomBlurStrength);
-            bloomBlurPass->resize(extent, commandList);
+        if (bloomPass) {
             bloomPass->resize(extent, commandList);
         }
         if (fxaaPass) {
@@ -284,32 +264,15 @@ namespace lysa {
             vireo::ResourceState::UNDEFINED,
             vireo::ResourceState::SHADER_READ);
         auto colorAttachment = frame.colorAttachment;
-        if (config.bloomEnabled) {
-            bloomBlurPass->render(
-                commandList,
-                viewport,
-                scissor,
-                getBloomColorAttachment(frameIndex),
-                nullptr,
-                nullptr,
-                frameIndex);
+        if (bloomPass) {
             bloomPass->render(
                 commandList,
                 viewport,
                 scissor,
                 colorAttachment,
-                nullptr,
-                bloomBlurPass->getColorAttachment(frameIndex),
+                getBloomColorAttachment(frameIndex),
                 frameIndex);
             colorAttachment = bloomPass->getColorAttachment(frameIndex);
-            commandList.barrier(
-                    colorAttachment,
-                    vireo::ResourceState::SHADER_READ,
-                    vireo::ResourceState::UNDEFINED);
-            commandList.barrier(
-                bloomBlurPass->getColorAttachment(frameIndex),
-                vireo::ResourceState::SHADER_READ,
-                vireo::ResourceState::UNDEFINED);
         }
         if (!postProcessingPasses.empty()) {
             const auto depthStage =
@@ -409,26 +372,5 @@ namespace lysa {
         std::erase_if(postProcessingPasses, [&fragShaderName](const std::shared_ptr<PostProcessing>& item) {
             return item->getFragShaderName() == fragShaderName;
         });
-    }
-
-    void Renderer::updateBlurData(BlurData& blurData, const vireo::Extent& extent, const float strength) const {
-        // Pre-compute Gaussian weights
-        if (blurData.kernelSize > 9) { blurData.kernelSize = 9; }
-        blurData.texelSize = (1.0 / float2(extent.width, extent.height)) * strength;
-        const int halfKernel = blurData.kernelSize / 2;
-        float sum = 0.0;
-        for (int i = 0; i < blurData.kernelSize; i++) {
-            for (int j = 0; j < blurData.kernelSize; j++) {
-                const int index = i * blurData.kernelSize + j;
-                const float x = static_cast<float>(i - halfKernel) * blurData.texelSize.x;
-                const float y = static_cast<float>(j - halfKernel) * blurData.texelSize.y;
-                blurData.weights[index].x = std::exp(-(x * x + y * y) / 2.0);
-                sum += blurData.weights[index].x;
-            }
-        }
-        // Normalize weights
-        for (int i = 0; i < blurData.kernelSize * blurData.kernelSize; i++) {
-            blurData.weights[i].x /= sum;
-        }
     }
 }
