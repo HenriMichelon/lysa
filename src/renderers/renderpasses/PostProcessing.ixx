@@ -83,13 +83,13 @@ export namespace lysa {
          * @param commandList The command list to record rendering commands into
          */
         void render(
-           uint32 frameIndex,
+           vireo::CommandList& commandList,
            const vireo::Viewport&viewport,
            const vireo::Rect&scissor,
            const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
            const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
            const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
-           vireo::CommandList& commandList);
+           uint32 frameIndex);
 
         /**
          * @brief Resizes the render pass resources

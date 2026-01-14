@@ -184,8 +184,10 @@ export namespace lysa {
         ShaderMaterialPass shaderMaterialPass;
         // Transparent objects pass (sorted/blended).
         TransparencyPass transparencyPass;
+        std::unique_ptr<PostProcessing> fxaaPass;
         std::unique_ptr<SMAAPass> smaaPass;
         std::unique_ptr<PostProcessing> bloomBlurPass;
+        std::unique_ptr<PostProcessing> bloomPass;
         /* List of active post-processing passes applied after color pass. */
         std::list<std::shared_ptr<PostProcessing>> postProcessingPasses;
         /* Gamma correction pass */

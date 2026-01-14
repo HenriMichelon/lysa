@@ -68,13 +68,13 @@ namespace lysa {
     }
 
     void PostProcessing::render(
-        const uint32 frameIndex,
+    vireo::CommandList& commandList,
         const vireo::Viewport& viewport,
         const vireo::Rect& scissor,
         const std::shared_ptr<vireo::RenderTarget>& colorAttachment,
         const std::shared_ptr<vireo::RenderTarget>& depthAttachment,
         const std::shared_ptr<vireo::RenderTarget>& bloomColorAttachment,
-        vireo::CommandList& commandList) {
+        const uint32 frameIndex) {
         auto& frame = framesData[frameIndex];
 
         textures[INPUT_BUFFER] = colorAttachment->getImage();

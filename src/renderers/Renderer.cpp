@@ -80,11 +80,14 @@ namespace lysa {
         }
         switch (config.antiAliasingType) {
         case AntiAliasingType::FXAA:
-            addPostprocessing(
+            fxaaPass = std::make_unique<PostProcessing>(
+                ctx,
+                config,
                 "fxaa",
                 config.swapChainFormat,
                 &fxaaData,
-                sizeof(fxaaData));
+                sizeof(fxaaData),
+                "FXAA");
             break;
         case AntiAliasingType::SMAA:
             smaaPass = std::make_unique<SMAAPass>(ctx, config);
@@ -101,9 +104,14 @@ namespace lysa {
                 &bloomBlurData,
                 sizeof(bloomBlurData),
                 "Bloom blur");
-            addPostprocessing(
-               "bloom",
-               config.swapChainFormat);
+            bloomPass = std::make_unique<PostProcessing>(
+                ctx,
+                config,
+                "bloom",
+                config.swapChainFormat,
+                nullptr,
+                0,
+                "Bloom");
         }
 
         framesData.resize(ctx.config.framesInFlight);
@@ -114,9 +122,15 @@ namespace lysa {
         for (const auto& postProcessingPass : postProcessingPasses) {
             postProcessingPass->update(frameIndex);
         }
+        if (fxaaPass) {
+            fxaaPass->update(frameIndex);
+        } else if (smaaPass) {
+            smaaPass->update(frameIndex);
+        }
         gammaCorrectionPass->update(frameIndex);
         if (config.bloomEnabled) {
             bloomBlurPass->update(frameIndex);
+            bloomPass->update(frameIndex);
         }
     }
 
@@ -217,8 +231,11 @@ namespace lysa {
         if (bloomBlurPass) {
             updateBlurData(bloomBlurData, extent, config.bloomBlurStrength);
             bloomBlurPass->resize(extent, commandList);
+            bloomPass->resize(extent, commandList);
         }
-        if (smaaPass) {
+        if (fxaaPass) {
+            fxaaPass->resize(extent, commandList);
+        } else if (smaaPass) {
             smaaPass->resize(extent, commandList);
         }
         for (const auto& postProcessingPass : postProcessingPasses) {
@@ -238,13 +255,13 @@ namespace lysa {
            vireo::ResourceState::UNDEFINED,
            vireo::ResourceState::SHADER_READ);
         gammaCorrectionPass->render(
-            frameIndex,
+            commandList,
             viewport,
             scissor,
             colorAttachment,
             nullptr,
             nullptr,
-            commandList);
+            frameIndex);
         commandList.barrier(
            colorAttachment,
            vireo::ResourceState::SHADER_READ,
@@ -266,19 +283,34 @@ namespace lysa {
             frame.colorAttachment,
             vireo::ResourceState::UNDEFINED,
             vireo::ResourceState::SHADER_READ);
-        std::shared_ptr<vireo::RenderTarget> bloomColorAttachment = getBloomColorAttachment(frameIndex);
+        auto colorAttachment = frame.colorAttachment;
         if (config.bloomEnabled) {
             bloomBlurPass->render(
-                frameIndex,
+                commandList,
                 viewport,
                 scissor,
-                bloomColorAttachment,
+                getBloomColorAttachment(frameIndex),
                 nullptr,
                 nullptr,
-                commandList);
-            bloomColorAttachment = bloomBlurPass->getColorAttachment(frameIndex);
+                frameIndex);
+            bloomPass->render(
+                commandList,
+                viewport,
+                scissor,
+                colorAttachment,
+                nullptr,
+                bloomBlurPass->getColorAttachment(frameIndex),
+                frameIndex);
+            colorAttachment = bloomPass->getColorAttachment(frameIndex);
+            commandList.barrier(
+                    colorAttachment,
+                    vireo::ResourceState::SHADER_READ,
+                    vireo::ResourceState::UNDEFINED);
+            commandList.barrier(
+                bloomBlurPass->getColorAttachment(frameIndex),
+                vireo::ResourceState::SHADER_READ,
+                vireo::ResourceState::UNDEFINED);
         }
-        auto colorAttachment = frame.colorAttachment;
         if (!postProcessingPasses.empty()) {
             const auto depthStage =
                config.depthStencilFormat == vireo::ImageFormat::D32_SFLOAT_S8_UINT ||
@@ -291,13 +323,13 @@ namespace lysa {
                vireo::ResourceState::SHADER_READ);
             std::ranges::for_each(postProcessingPasses, [&](const auto& postProcessingPass) {
                 postProcessingPass->render(
-                    frameIndex,
+                    commandList,
                     viewport,
                     scissor,
                     colorAttachment,
                     frame.depthAttachment,
-                    bloomColorAttachment,
-                    commandList);
+                    nullptr,
+                    frameIndex);
                 colorAttachment = postProcessingPass->getColorAttachment(frameIndex);
             });
             commandList.barrier(
@@ -311,7 +343,20 @@ namespace lysa {
                     vireo::ResourceState::UNDEFINED);
             });
         }
-        if (smaaPass) {
+        if (fxaaPass) {
+            fxaaPass->render(
+                commandList,
+                viewport,
+                scissor,
+                colorAttachment,
+                frame.depthAttachment,
+                nullptr,
+                frameIndex);
+            commandList.barrier(
+                fxaaPass->getColorAttachment(frameIndex),
+               vireo::ResourceState::SHADER_READ,
+               vireo::ResourceState::UNDEFINED);
+        } else if (smaaPass) {
             smaaPass->render(
                 commandList,
                 colorAttachment,
@@ -325,19 +370,19 @@ namespace lysa {
             frame.colorAttachment,
             vireo::ResourceState::SHADER_READ,
             vireo::ResourceState::UNDEFINED);
-        if (config.bloomEnabled) {
-            commandList.barrier(
-                bloomColorAttachment,
-                vireo::ResourceState::SHADER_READ,
-                vireo::ResourceState::UNDEFINED);
-        }
     }
 
     std::shared_ptr<vireo::RenderTarget> Renderer::getCurrentColorAttachment(const uint32 frameIndex) const {
+        if (fxaaPass) {
+            return fxaaPass->getColorAttachment(frameIndex);
+        }
         if (smaaPass) {
             return smaaPass->getColorAttachment(frameIndex);
         }
         if (postProcessingPasses.empty()) {
+            if (bloomPass) {
+                return bloomPass->getColorAttachment(frameIndex);
+            }
             return framesData[frameIndex].colorAttachment;
         }
         return postProcessingPasses.back()->getColorAttachment(frameIndex);
@@ -357,7 +402,7 @@ namespace lysa {
             dataSize,
             fragShaderName);
         postProcessingPass->resize(currentExtent, nullptr);
-        postProcessingPasses.push_front(postProcessingPass);
+        postProcessingPasses.push_back(postProcessingPass);
     }
 
     void Renderer::removePostprocessing(const std::string& fragShaderName) {

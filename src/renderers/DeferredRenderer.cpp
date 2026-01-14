@@ -61,13 +61,13 @@ namespace lysa {
                 frame.depthAttachment,
                 frameIndex);
             ssaoBlurPass->render(
-                frameIndex,
+                commandList,
                 viewport,
                 scissors,
                 ssaoPass->getSSAOColorBuffer(frameIndex),
                 nullptr,
                 nullptr,
-                commandList);
+                frameIndex);
         }
         lightingPass.render(
             commandList,
