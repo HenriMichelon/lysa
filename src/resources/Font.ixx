@@ -17,23 +17,39 @@ import lysa.resources.image;
 
 export namespace lysa {
 
+    /**
+     * @brief Parameters controlling font rendering and outline.
+     * @details These parameters influence SDF/MSDF sampling and outline appearance when rendering text.
+     */
     struct FontParams {
+        /** @brief Pixel range used by the SDF/MSDF in the atlas (x = lower, y = upper). */
         float2 pxRange{FLOAT2ZERO};
+        /** @brief RGBA outline color. */
         float4 outlineColor{0.0f, 0.0f, 0.0f, 1.0f};
+        /** @brief Threshold used to classify inside/outside for the distance field. */
         float threshold{0.5f};
+        /** @brief Bias applied to the outline distance. */
         float outlineBias{1.0f/4.0f};
+        /** @brief Absolute outline width in pixels. */
         float outlineWidthAbsolute{1.0f/16.0f};
+        /** @brief Relative outline width with respect to font size. */
         float outlineWidthRelative{1.0f/50.0f};
+        /** @brief Outline blur factor for soft edges. */
         float outlineBlur{0.1f};
+        /** @brief Gamma correction applied during sampling. */
         float gamma{1.0f};
     };
 
     /**
-     * %A font resource to render text
-     * %A font is a combination of a font file name and a size.
+     * @brief Font resource used to render text.
+     * @details A font is defined by a font file and a size. Glyphs are packed into an atlas
+     *          and common metrics (ascender, descender, line height) are exposed for text layout.
      */
     class Font : public UnmanagedResource {
     public:
+        /**
+         * @brief Bounds of a glyph in the font plane (em units relative to font size).
+         */
         struct GlyphBounds {
             float left{0.0f};
             float bottom{0.0f};
@@ -41,6 +57,14 @@ export namespace lysa {
             float top{0.0f};
         };
 
+        /**
+         * @brief Information for a single glyph packed in the atlas.
+         * @param index Glyph index in the font (HB/FreeType index).
+         * @param advance Advance width in pixels for the current font size.
+         * @param planeBounds Bounds in font plane units.
+         * @param uv0 Top-left texture coordinate in the atlas.
+         * @param uv1 Bottom-right texture coordinate in the atlas.
+         */
         struct GlyphInfo {
             uint32 index{0};
             float advance{0.0f};
@@ -50,9 +74,9 @@ export namespace lysa {
         };
 
         /**
-         * Creates a font resource
-         * @param ctx
-         * @param path : font file path, relative to the application working directory
+         * @brief Construct a font resource from a font file.
+         * @param ctx Application context used to access resources and GPU.
+         * @param path Font file path, relative to the application working directory.
          */
         Font(const Context& ctx, const std::string &path);
 
@@ -61,57 +85,80 @@ export namespace lysa {
         ~Font() override;
 
         /**
-         * Returns the size (in pixels) for a string.
+         * @brief Compute the size in pixels for a UTF-8 string.
+         * @param text Input text.
+         * @param fontScale Scale factor applied to the base font size (1.0 = atlas size).
+         * @param width Output total width in pixels.
+         * @param height Output total height in pixels.
          */
         void getSize(const std::string &text, float fontScale, float &width, float &height);
 
         /**
-         * Returns the size (in pixels) for a string.
+         * @brief Compute the size in pixels for a UTF-8 string.
+         * @param text Input text.
+         * @param fontScale Scale factor applied to the base font size (1.0 = atlas size).
+         * @return Width (x) and height (y) in pixels.
          */
         float2 getSize(const std::string &text, float fontScale);
 
         /**
-         * Returns the font size in the atlas
+         * @brief Get the font size used to build the atlas (in pixels).
+         * @return Atlas font size in pixels.
          */
         uint32 getFontSize() const { return size; }
 
-        //Relative to the font size
+        /** @brief Line height relative to the font size. */
         float getLineHeight() const { return lineHeight; }
 
+        /** @brief Ascender in pixels (above the baseline). */
         float getAscender() const { return ascender; }
 
+        /** @brief Descender in pixels (below the baseline). */
         float getDescender() const { return descender; }
 
+        /**
+         * @brief Retrieve glyph information by glyph index.
+         * @param index Glyph index as returned by the shaper.
+         */
         const GlyphInfo& getGlyphInfo(uint32 index) const;
 
+        /** @brief Get the underlying glyph atlas image. */
         const Image& getAtlas() const { return atlas; }
 
+        /** @brief Get current font rendering parameters. */
         const FontParams& getFontParams() const { return params; }
 
+        /** @brief Set the outline color. */
         void setOutlineColor(const float4 &color) {
             params.outlineColor = color;
         }
 
+        /** @brief Set the outline bias. */
         void setOutlineBias(const float bias) {
             params.outlineBias = bias;
         }
 
+        /** @brief Set the absolute outline width (in pixels). */
         void setOutlineWidthAbsolute(const float width) {
             params.outlineWidthAbsolute = width;
         }
 
+        /** @brief Set the relative outline width (scaled by font size). */
         void setOutlineWidthRelative(const float width) {
             params.outlineWidthRelative = width;
         }
 
+        /** @brief Set the outline blur factor. */
         void setOutlineBlur(const float blur) {
             params.outlineBlur = blur;
         }
 
+        /** @brief Set the SDF/MSDF threshold. */
         void setOutlineThreshold(const float threshold) {
             params.threshold = threshold;
         }
 
+        /** @brief Access the underlying HarfBuzz font handle. */
         auto getHarfBuzzFont() const { return hbFont; }
 
     private:
