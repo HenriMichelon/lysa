@@ -16,12 +16,12 @@ import lysa.renderers.renderpasses.renderpass;
 export namespace lysa {
 
     /**
-     * @brief Render pass for Subpixel Morphological Antialiasing (SMAA)
+     * Render pass for Subpixel Morphological Antialiasing (SMAA)
      */
     class SMAAPass : public Renderpass {
     public:
         /**
-         * @brief Constructs an SMAAPass
+         * Constructs an SMAAPass
          * @param ctx The engine context
          * @param config The renderer configuration
          */
@@ -29,7 +29,7 @@ export namespace lysa {
             const RendererConfiguration& config);
 
         /**
-         * @brief Renders the SMAA pass
+         * Renders the SMAA pass
          * @param commandList The command list to record rendering commands into
          * @param colorAttachment The input color attachment to antialias
          * @param frameIndex Index of the current frame
@@ -40,14 +40,14 @@ export namespace lysa {
             uint32 frameIndex);
 
         /**
-         * @brief Resizes the render pass resources
+         * Resizes the render pass resources
          * @param extent The new extent
          * @param commandList Command list for resource transitions if needed
          */
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
         /**
-         * @brief Gets the color attachment for a specific frame
+         * Gets the color attachment for a specific frame
          * @param frameIndex Index of the current frame
          * @return A shared pointer to the resulting antialiased color render target
          */

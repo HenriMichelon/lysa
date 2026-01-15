@@ -24,7 +24,7 @@ import lysa.renderers.renderpasses.renderpass;
 export namespace lysa {
 
     /**
-     * @brief Manages per-frame scene data for rendering.
+     * Manages per-frame scene data for rendering.
      *
      * SceneFrameData handles the storage and update of scene-wide information,
      * including cameras, lights, environment settings, and mesh instance data.
@@ -32,50 +32,49 @@ export namespace lysa {
      */
     class SceneFrameData {
     public:
-         /** @brief Descriptor binding for SceneData uniform buffer. */
+         /** Descriptor binding for SceneData uniform buffer. */
         static constexpr vireo::DescriptorIndex BINDING_SCENE{0};
-        /** @brief Descriptor binding for per-model/instance data buffer. */
+        /** Descriptor binding for per-model/instance data buffer. */
         static constexpr vireo::DescriptorIndex BINDING_MODELS{1};
-        /** @brief Descriptor binding for lights buffer. */
+        /** Descriptor binding for lights buffer. */
         static constexpr vireo::DescriptorIndex BINDING_LIGHTS{2};
-        /** @brief Descriptor binding for shadow maps array. */
+        /** Descriptor binding for shadow maps array. */
         static constexpr vireo::DescriptorIndex BINDING_SHADOW_MAPS{3};
-        /** @brief Shared descriptor layout for the main scene set. */
+        /** Shared descriptor layout for the main scene set. */
         inline static std::shared_ptr<vireo::DescriptorLayout> sceneDescriptorLayout{nullptr};
 
-        /** @brief Optional descriptor binding: transparency color for shadow maps. */
+        /** Optional descriptor binding: transparency color for shadow maps. */
         static constexpr vireo::DescriptorIndex BINDING_SHADOW_MAP_TRANSPARENCY_COLOR{0};
 #ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
-        /** @brief Optional descriptor layout (set used when transparency color is needed). */
+        /** Optional descriptor layout (set used when transparency color is needed). */
         inline static std::shared_ptr<vireo::DescriptorLayout> sceneDescriptorLayoutOptional1{nullptr};
 #endif
 
         /**
-         * @brief Creates all static descriptor layouts used by scenes and pipelines.
-         * @param ctx Reference to the rendering context.
+         * Creates all static descriptor layouts used by scenes and pipelines.
          */
         static void createDescriptorLayouts(const Context& ctx);
-        /** @brief Destroys static descriptor layouts created by createDescriptorLayouts(). */
+        /** Destroys static descriptor layouts created by createDescriptorLayouts(). */
         static void destroyDescriptorLayouts();
 
         /**
-         * @brief Defines the structure for the instance index push constant.
+         * Defines the structure for the instance index push constant.
          */
         struct InstanceIndexConstant {
-            /** @brief Index of the instance to be fetched by the vertex shader via push constants. */
+            /** Index of the instance to be fetched by the vertex shader via push constants. */
             uint32 instanceIndex;
         };
 
-        /** @brief Push constants description for the instance index. */
+        /** Push constants description for the instance index. */
         static constexpr auto instanceIndexConstantDesc = vireo::PushConstantsDesc {
             .stage = vireo::ShaderStage::VERTEX,
             .size = sizeof(InstanceIndexConstant),
         };
 
         /**
-         * @brief Constructs a new SceneFrameData object.
+         * Constructs a new SceneFrameData object.
          * 
-         * @param ctx Reference to the rendering context.
+         * @param ctx Reference to the global context.
          * @param maxLights Maximum number of lights supported.
          * @param maxMeshInstancesPerScene Maximum number of mesh instances per scene.
          * @param maxMeshSurfacePerPipeline Maximum number of mesh surfaces per pipeline.
@@ -87,14 +86,15 @@ export namespace lysa {
             uint32 maxMeshSurfacePerPipeline);
 
         /**
-         * @brief Sets the scene's environment settings.
+         * Sets the scene's environment settings.
          * @param environment The environment to set (e.g., skybox, ambient lighting).
          */
         void setEnvironment(const Environment& environment) {
             this->environment = environment;
         }
+
         /**
-         * @brief Updates CPU/GPU scene state.
+         * Updates CPU/GPU scene state.
          * 
          * Synchronizes uniforms, lights, instances, and descriptors for the current frame.
          * 
@@ -106,7 +106,7 @@ export namespace lysa {
         void update(const vireo::CommandList& commandList, const Camera& camera, const RendererConfiguration& config, uint32 frameIndex);
 
         /**
-         * @brief Executes compute workloads.
+         * Executes compute workloads.
          * 
          * Performs operations such as frustum culling.
          * 
@@ -116,37 +116,37 @@ export namespace lysa {
         void compute(vireo::CommandList& commandList, const Camera& camera) const;
 
         /**
-         * @brief Adds a mesh instance to the scene.
+         * Adds a mesh instance to the scene.
          * @param meshInstance Pointer to the mesh instance to add.
          */
         void addInstance(const MeshInstance* meshInstance);
 
         /**
-         * @brief Updates an existing mesh instance in the scene.
+         * Updates an existing mesh instance in the scene.
          * @param meshInstance Pointer to the mesh instance to update.
          */
         void updateInstance(const MeshInstance* meshInstance);
 
         /**
-         * @brief Removes a mesh instance from the scene.
+         * Removes a mesh instance from the scene.
          * @param meshInstance Pointer to the mesh instance to remove.
          */
         void removeInstance(const MeshInstance* meshInstance);
 
         /**
-         * @brief Adds a light to the scene.
+         * Adds a light to the scene.
          * @param light Pointer to the light to add.
          */
         void addLight(const Light* light);
 
         /**
-         * @brief Removes a light from the scene.
+         * Removes a light from the scene.
          * @param light Pointer to the light to remove.
          */
         void removeLight(const Light* light);
 
         /**
-         * @brief Issues draw calls for opaque models.
+         * Issues draw calls for opaque models.
          * @param commandList Command buffer to record into.
          * @param pipelines   Map of material/pipeline identifiers to pipelines.
          */
@@ -155,7 +155,7 @@ export namespace lysa {
            const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const;
 
         /**
-         * @brief Issues draw calls for transparent models.
+         * Issues draw calls for transparent models.
          * @param commandList Command buffer to record into.
          * @param pipelines   Map of material/pipeline identifiers to pipelines.
          */
@@ -164,7 +164,7 @@ export namespace lysa {
            const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const;
 
         /**
-         * @brief Issues draw calls for models driven by shader materials/special passes.
+         * Issues draw calls for models driven by shader materials/special passes.
          * @param commandList Command buffer to record into.
          * @param pipelines   Map of material/pipeline identifiers to pipelines.
          */
@@ -173,7 +173,7 @@ export namespace lysa {
            const std::unordered_map<uint32, std::shared_ptr<vireo::GraphicPipeline>>& pipelines) const;
 
         /**
-         * @brief Issues multi-draw indirect calls for models.
+         * Issues multi-draw indirect calls for models.
          * 
          * @param commandList Command buffer to record into.
          * @param set Descriptor set index.
@@ -189,38 +189,38 @@ export namespace lysa {
            const std::map<pipeline_id, std::shared_ptr<FrustumCulling>>& frustumCullingPipelines) const;
 
         /**
-         * @brief Returns the mapping of pipeline identifiers to their materials.
+         * Returns the mapping of pipeline identifiers to their materials.
          * @return A reference to the pipeline to materials map.
          */
         const auto& getPipelineIds() const { return pipelineIds; }
 
         /**
-         * @brief Checks if materials have been updated.
+         * Checks if materials have been updated.
          * @return True if materials were updated and pipelines/descriptors must be refreshed.
          */
         auto isMaterialsUpdated() const { return materialsUpdated; }
 
         /**
-         * @brief Resets the materials updated flag.
+         * Resets the materials updated flag.
          */
         void resetMaterialsUpdated() { materialsUpdated = false; }
 
         /**
-         * @brief Returns the main descriptor set.
+         * Returns the main descriptor set.
          * @return The main descriptor set containing scene resources.
          */
         auto getDescriptorSet() const { return descriptorSet; }
 
 #ifdef SHADOW_TRANSPARENCY_COLOR_ENABLED
         /**
-         * @brief Returns the optional descriptor set.
+         * Returns the optional descriptor set.
          * @return The optional descriptor set used for shadow map transparency color.
          */
         auto getDescriptorSetOptional1() const { return descriptorSetOpt1; }
 #endif
 
         /**
-         * @brief Returns the shadow map renderers.
+         * Returns the shadow map renderers.
          * @return A view over the shadow map renderer values.
          */
         auto getShadowMapRenderers() const { return std::views::values(shadowMapRenderers); }

@@ -23,12 +23,12 @@ import lysa.renderers.renderpasses.renderpass;
 export namespace lysa {
 
     /**
-     * @brief Render pass for generating shadow maps
+     * Render pass for generating shadow maps
      */
     class ShadowMapPass : public Renderpass {
     public:
         /**
-         * @brief Constructs a ShadowMapPass
+         * Constructs a ShadowMapPass
          * @param ctx The engine context
          * @param light Pointer to the light source for which shadows are generated
          * @param meshInstancesDataArray Array of mesh instance data in device memory
@@ -41,7 +41,7 @@ export namespace lysa {
             size_t maxMeshSurfacePerPipeline);
 
         /**
-         * @brief Computes frustum culling for shadow map generation
+         * Computes frustum culling for shadow map generation
          * @param commandList The command list to record compute commands into
          * @param pipelinesData Map of pipeline data for mesh rendering
          */
@@ -50,13 +50,13 @@ export namespace lysa {
             const std::unordered_map<uint32, std::unique_ptr<GraphicPipelineData>>& pipelinesData) const;
 
         /**
-         * @brief Updates the graphics pipelines based on active pipeline IDs
+         * Updates the graphics pipelines based on active pipeline IDs
          * @param pipelineIds Map of pipeline IDs to unique object IDs
          */
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
         /**
-         * @brief Sets the current camera for cascaded shadow maps calculation
+         * Sets the current camera for cascaded shadow maps calculation
          * @param camera Reference to the current camera
          */
         void setCurrentCamera(const Camera& camera) {
@@ -64,13 +64,13 @@ export namespace lysa {
         }
 
         /**
-         * @brief Updates the shadow map pass state for the current frame
+         * Updates the shadow map pass state for the current frame
          * @param frameIndex Index of the current frame
          */
         void update(uint32 frameIndex) override;
 
         /**
-         * @brief Renders the shadow maps
+         * Renders the shadow maps
          * @param commandList The command list to record rendering commands into
          * @param scene The scene frame data
          */
@@ -79,13 +79,13 @@ export namespace lysa {
             const SceneFrameData& scene);
 
         /**
-         * @brief Gets the number of shadow maps (subpasses)
+         * Gets the number of shadow maps (subpasses)
          * @return The number of shadow maps
          */
         auto getShadowMapCount() const { return subpassesCount; }
 
         /**
-         * @brief Gets a shadow map render target
+         * Gets a shadow map render target
          * @param index Index of the shadow map
          * @return A shared pointer to the shadow map render target
          */
@@ -94,7 +94,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Gets a transparency color map render target
+         * Gets a transparency color map render target
          * @param index Index of the shadow map
          * @return A shared pointer to the transparency color map render target
          */
@@ -103,7 +103,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Gets the light space matrix for a shadow map
+         * Gets the light space matrix for a shadow map
          * @param index Index of the shadow map
          * @return The light space matrix
          */
@@ -112,7 +112,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Gets the cascade split depth for a shadow map
+         * Gets the cascade split depth for a shadow map
          * @param index Index of the shadow map
          * @return The split depth
          */

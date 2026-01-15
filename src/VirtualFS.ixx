@@ -12,7 +12,7 @@ import lysa.types;
 export namespace lysa {
 
     /**
-    * @brief Configuration object used to initialize a Lysa instance.
+    * Configuration object used to initialize a Lysa instance.
     */
     struct VirtualFSConfiguration {
         //! Path for the app:// URI

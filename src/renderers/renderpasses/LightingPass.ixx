@@ -16,12 +16,12 @@ import lysa.renderers.renderpasses.gbuffer_pass;
 export namespace lysa {
 
     /**
-     * @brief Render pass for deferred lighting
+     * Render pass for deferred lighting
      */
     class LightingPass : public Renderpass {
     public:
         /**
-         * @brief Constructs a LightingPass
+         * Constructs a LightingPass
          * @param ctx The engine context
          * @param config The renderer configuration
          * @param gBufferPass Reference to the G-buffer pass providing input textures
@@ -34,7 +34,7 @@ export namespace lysa {
             bool withStencil);
 
         /**
-         * @brief Renders the deferred lighting pass
+         * Renders the deferred lighting pass
          * @param commandList The command list to record rendering commands into
          * @param scene The scene frame data
          * @param colorAttachment The target color attachment
@@ -53,14 +53,14 @@ export namespace lysa {
             uint32 frameIndex);
 
         /**
-         * @brief Resizes the render pass resources
+         * Resizes the render pass resources
          * @param extent The new extent
          * @param commandList Command list for resource transitions if needed
          */
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
         /**
-         * @brief Gets the brightness buffer for a specific frame
+         * Gets the brightness buffer for a specific frame
          * @param frameIndex Index of the current frame
          * @return A shared pointer to the brightness render target
          */

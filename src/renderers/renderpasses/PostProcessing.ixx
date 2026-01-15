@@ -17,39 +17,39 @@ import lysa.renderers.renderpasses.renderpass;
 export namespace lysa {
 
     /**
-     * @brief Base class for post-processing render passes
+     * Base class for post-processing render passes
      */
     class PostProcessing : public Renderpass {
     public:
         /**
-         * @brief Parameters for the post-processing shader
+         * Parameters for the post-processing shader
          */
         struct PostProcessingParams {
             float  time;       /**< Current time for time-based effects */
             uint2  imageSize;  /**< Size of the image being processed */
         };
 
-        /** @brief Name of the default vertex shader for post-processing */
+        /** Name of the default vertex shader for post-processing */
         inline static const std::string VERTEX_SHADER{"quad.vert"};
 
-        /** @brief Descriptor binding index for parameters uniform buffer */
+        /** Descriptor binding index for parameters uniform buffer */
         static constexpr vireo::DescriptorIndex BINDING_PARAMS{0};
-        /** @brief Descriptor binding index for custom data uniform buffer */
+        /** Descriptor binding index for custom data uniform buffer */
         static constexpr vireo::DescriptorIndex BINDING_DATA{1};
-        /** @brief Descriptor binding index for input textures */
+        /** Descriptor binding index for input textures */
         static constexpr vireo::DescriptorIndex BINDING_TEXTURES{2};
 
-        /** @brief Index for the input color buffer texture */
+        /** Index for the input color buffer texture */
         static constexpr int INPUT_BUFFER{0};
-        /** @brief Index for the depth buffer texture */
+        /** Index for the depth buffer texture */
         static constexpr int DEPTH_BUFFER{1};
-        /** @brief Index for the bloom buffer texture */
+        /** Index for the bloom buffer texture */
         static constexpr int BLOOM_BUFFER{2};
-        /** @brief Total number of input textures */
+        /** Total number of input textures */
         static constexpr int TEXTURES_COUNT{BLOOM_BUFFER+1};
 
         /**
-         * @brief Constructs a PostProcessing render pass
+         * Constructs a PostProcessing render pass
          * @param ctx The engine context
          * @param config The renderer configuration
          * @param fragShaderName Name of the fragment shader to use
@@ -68,13 +68,13 @@ export namespace lysa {
             const std::string& name = "");
 
         /**
-         * @brief Updates the render pass state for the current frame
+         * Updates the render pass state for the current frame
          * @param frameIndex Index of the current frame
          */
         void update(uint32 frameIndex) override;
 
         /**
-         * @brief Renders the post-processing effect
+         * Renders the post-processing effect
          * @param frameIndex Index of the current frame
          * @param viewport The viewport to render into
          * @param scissor The scissor rectangle
@@ -91,7 +91,7 @@ export namespace lysa {
            uint32 frameIndex);
 
         /**
-         * @brief Resizes the render pass resources
+         * Resizes the render pass resources
          * @param extent The new extent
          */
         virtual void resize(const vireo::Extent& extent);
@@ -101,7 +101,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Gets the color attachment for a specific frame
+         * Gets the color attachment for a specific frame
          * @param frameIndex Index of the frame
          * @return A shared pointer to the render target
          */
@@ -110,7 +110,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Gets the name of the fragment shader
+         * Gets the name of the fragment shader
          * @return The fragment shader name
          */
         const auto& getFragShaderName() const { return fragShaderName; }
@@ -141,7 +141,7 @@ export namespace lysa {
         std::shared_ptr<vireo::GraphicPipeline> pipeline;
 
         /**
-         * @brief Renders the post-processing effect
+         * Renders the post-processing effect
          * @param frameIndex Index of the current frame
          * @param viewport The viewport to render into
          * @param scissor The scissor rectangle

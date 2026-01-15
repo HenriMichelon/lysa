@@ -17,25 +17,25 @@ import lysa.resources.manager;
 export namespace lysa {
 
     /**
-     * @brief Represents an image-based texture resource.
+     * Represents an image-based texture resource.
      *
      * Combines an image with a sampler and an optional transformation matrix.
      */
     struct ImageTexture : UnmanagedResource {
-        /** @brief Unique identifier of the associated image resource. */
+        /** Unique identifier of the associated image resource. */
         unique_id image{INVALID_ID};
 
-        /** @brief Index of the sampler to be used for this texture. */
+        /** Index of the sampler to be used for this texture. */
         uint32 samplerIndex{0};
 
-        /** @brief 3x3 transformation matrix for texture coordinates. */
+        /** 3x3 transformation matrix for texture coordinates. */
         float3x3 transform{float3x3::identity()};
 
-        /** @brief Default constructor for ImageTexture. */
+        /** Default constructor for ImageTexture. */
         ImageTexture() = default;
 
         /**
-         * @brief Constructs an ImageTexture with a specific image and sampler.
+         * Constructs an ImageTexture with a specific image and sampler.
          * @param image Unique identifier of the image resource.
          * @param samplerIndex Index of the sampler to use.
          */

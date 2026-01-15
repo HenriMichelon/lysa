@@ -14,7 +14,7 @@ import lysa.resources;
 export namespace lysa {
 
     /**
-     * @brief Generic object/resources manager using ID-based access.
+     * Generic object/resources manager using ID-based access.
      *
      * Manages a contiguous pool (vector) of resources of type T addressed by a small integral
      * unique identifier (unique_id). Instances are created into available slots and retrieved
@@ -31,7 +31,7 @@ export namespace lysa {
     class ResourcesManager {
     public:
         /**
-       * @brief Create a new unique resource
+       * Create a new unique resource
        */
         template<typename... Args>
         T& create(Args&&... args) {
@@ -39,7 +39,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Bracket operator for mutable access without bounds checking.
+         * Bracket operator for mutable access without bounds checking.
          * @param id The unique identifier of the resource.
          * @return T& Reference to the resource.
          */
@@ -49,7 +49,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Bracket operator for const access without bounds checking.
+         * Bracket operator for const access without bounds checking.
          * @param id The unique identifier of the resource.
          * @return const T& Const reference to the resource.
          */

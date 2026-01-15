@@ -12,19 +12,19 @@ import lysa.resources;
 export namespace lysa {
 
     /**
-     * @brief Represents the environmental settings of the scene.
+     * Represents the environmental settings of the scene.
      */
     struct Environment : UnmanagedResource {
-        /** @brief The color of the ambient light. */
+        /** The color of the ambient light. */
         float3 color{1.0f, 1.0f, 1.0f};
-        /** @brief The intensity of the ambient light. */
+        /** The intensity of the ambient light. */
         float intensity{0.0f};
 
-        /** @brief Default constructor for Environment. */
+        /** Default constructor for Environment. */
         Environment() = default;
 
         /**
-         * @brief Constructs an Environment with specific color and intensity.
+         * Constructs an Environment with specific color and intensity.
          * @param color The color of the ambient light.
          * @param intensity The intensity of the ambient light.
          */

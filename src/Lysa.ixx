@@ -88,7 +88,7 @@ export namespace  lysa {
     };
 
     /**
-     * @brief Main entry class of the Lysa runtime.
+     * Main entry class of the Lysa runtime.
      *
      * This class owns the application @ref Context and the embedded @ref Lua
      * scripting environment. It provides the run loop and basic integration
@@ -100,7 +100,7 @@ export namespace  lysa {
         Context ctx;
 
         /**
-         * @brief Construct the runtime and initialize subsystems.
+         * Construct the runtime and initialize subsystems.
          * @param config Configuration values used during startup.
          */
         Lysa(const ContextConfiguration& config = {});
@@ -108,7 +108,7 @@ export namespace  lysa {
         ~Lysa();
 
         /**
-         * @brief Run the main loop until quit is requested.
+         * Run the main loop until quit is requested.
          */
         void run();
 

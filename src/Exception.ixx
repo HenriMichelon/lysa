@@ -15,7 +15,7 @@ import std;
 export namespace lysa {
 
     /**
-     * @brief Lightweight exception type.
+     * Lightweight exception type.
      *
      * This class is a small convenience wrapper around std::exception that
      * stores a formatted message assembled from any streamable arguments.
@@ -26,7 +26,7 @@ export namespace lysa {
     class Exception final : public std::exception {
     public:
         /**
-         * @brief Construct an Exception from streamable parts.
+         * Construct an Exception from streamable parts.
          *
          * The message is created by streaming all provided arguments into an
          * internal std::ostringstream, in order. Each argument must be
@@ -62,7 +62,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Get a C-string describing the error.
+         * Get a C-string describing the error.
          * @return Null-terminated string containing the stored message.
          */
         const char* what() const noexcept override {
@@ -77,7 +77,7 @@ export namespace lysa {
 #ifdef _DEBUG
 
     /**
-     * @brief Debug-only assertion helper.
+     * Debug-only assertion helper.
      *
      * Evaluates the provided callable expression. If it returns false, throws
      * lysa::Exception with a detailed message including the file and line.
@@ -100,7 +100,7 @@ export namespace lysa {
 #else
 
     /**
-     * @brief No-op placeholder for release builds.
+     * No-op placeholder for release builds.
      */
     template<typename Expr>
     constexpr void assert_expr(

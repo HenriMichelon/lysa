@@ -13,13 +13,13 @@ import lysa.resources.manager;
 export namespace lysa {
 
     /**
-     * @brief Top level registry to locate resource managers at runtime.
+     * Top level registry to locate resource managers at runtime.
      *
      */
     class ResourcesRegistry {
     public:
         /**
-         * @brief Retrieve a previously enrolled resources manager by type.
+         * Retrieve a previously enrolled resources manager by type.
          *
          * Looks up the manager registered under the given name and returns it as type T.
          *
@@ -36,7 +36,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Enroll a resources manager instance under a given type.
+         * Enroll a resources manager instance under a given type.
          *
          * Registers the address of the provided ResourcesManager<T> so it can later be
          * retrieved via get<T>().

@@ -12,20 +12,20 @@ import lysa.resources;
 export namespace lysa {
 
     /**
-     * @brief Represents a camera in the 3D scene.
+     * Represents a camera in the 3D scene.
      */
     struct Camera : UnmanagedResource {
-        /** @brief World-space transformation matrix (world-from-local). */
+        /** World-space transformation matrix (world-from-local). */
         float4x4 transform;
-        /** @brief Projection matrix (clip-from-view). */
+        /** Projection matrix (clip-from-view). */
         float4x4 projection;
-        /** @brief Near clipping plane distance. */
+        /** Near clipping plane distance. */
         float near;
-        /** @brief Far clipping plane distance. */
+        /** Far clipping plane distance. */
         float far;
 
         /**
-         * @brief Constructs a new Camera object.
+         * Constructs a new Camera object.
          * @param transform World-space transformation matrix.
          * @param projection Projection matrix.
          * @param near Near clipping plane distance.

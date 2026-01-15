@@ -15,12 +15,12 @@ import lysa.renderers.renderpasses.post_processing;
 export namespace lysa {
 
     /**
-     * @brief Render pass for bloom effect
+     * Render pass for bloom effect
      */
     class BloomPass : public PostProcessing {
     public:
         /**
-         * @brief Constructs a BloomPass
+         * Constructs a BloomPass
          * @param ctx The engine context
          * @param config The renderer configuration
          */
@@ -29,13 +29,13 @@ export namespace lysa {
             const RendererConfiguration& config);
 
         /**
-          * @brief Updates the render pass state for the current frame
+          * Updates the render pass state for the current frame
           * @param frameIndex Index of the current frame
           */
         void update(uint32 frameIndex) override;
 
         /**
-         * @brief Renders the Bloom pass
+         * Renders the Bloom pass
         * @param frameIndex Index of the current frame
          * @param viewport The viewport to render into
          * @param scissor The scissor rectangle
@@ -52,7 +52,7 @@ export namespace lysa {
             uint32 frameIndex) override;
 
         /**
-         * @brief Resizes the render pass resources
+         * Resizes the render pass resources
          * @param extent The new extent
          */
         void resize(const vireo::Extent& extent) override;

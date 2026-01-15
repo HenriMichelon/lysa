@@ -14,12 +14,12 @@ import lysa.renderers.renderpasses.post_processing;
 export namespace lysa {
 
     /**
-     * @brief Render pass for Fast Approximate Anti-Aliasing
+     * Render pass for Fast Approximate Anti-Aliasing
      */
     class FXAAPass : public PostProcessing {
     public:
         /**
-         * @brief Constructs a FXAAPass
+         * Constructs a FXAAPass
          * @param ctx The engine context
          * @param config The renderer configuration
          */

@@ -67,7 +67,7 @@ export namespace lysa {
 
 #else
 
-    /// @brief Indicates at compile-time that logging is enabled.
+    /// Indicates at compile-time that logging is enabled.
     constexpr bool ENABLE_LOG = true;
 
     class LogStreamBuf : public std::streambuf {
@@ -94,7 +94,7 @@ export namespace lysa {
 #endif
 
     /**
-     * @brief Global manager exposing one stream per log level.
+     * Global manager exposing one stream per log level.
      *
      * The effective outputs (stdout/file) are controlled by the first Lysa instance configuration
      */
@@ -105,7 +105,7 @@ export namespace lysa {
         static void shutdown();
 
         /**
-         * @brief Compile-time switch indicating whether logging produces output.
+         * Compile-time switch indicating whether logging produces output.
          * @return true when logging helpers emit; false when compiled out.
          */
         static consteval bool isLoggingEnabled() {
@@ -113,14 +113,14 @@ export namespace lysa {
         }
 
         /**
-         * @brief Internal helper to write to the INTERNAL stream.
+         * Internal helper to write to the INTERNAL stream.
          * @param args Elements to write.
          */
         template <typename... Args>
         static void log(Args... args) { if constexpr (isLoggingEnabled()) { (loggingStreams->_internal << ... << args) << std::endl; } }
 
         /**
-         * @brief Emit a short trace with the calling function name and line.
+         * Emit a short trace with the calling function name and line.
          * @param location Automatically provided via std::source_location.
          */
         static void trace(const std::source_location& location = std::source_location::current()) {

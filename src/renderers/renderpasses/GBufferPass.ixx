@@ -16,12 +16,12 @@ import lysa.resources.material;
 export namespace lysa {
 
     /**
-     * @brief Render pass for generating G-buffers
+     * Render pass for generating G-buffers
      */
     class GBufferPass : public Renderpass {
     public:
         /**
-         * @brief Constructs a GBufferPass
+         * Constructs a GBufferPass
          * @param ctx The engine context
          * @param config The renderer configuration
          * @param withStencil Whether to enable stencil testing
@@ -32,14 +32,14 @@ export namespace lysa {
             bool withStencil);
 
         /**
-         * @brief Updates the graphics pipelines based on active pipeline IDs
+         * Updates the graphics pipelines based on active pipeline IDs
          * @param pipelineIds Map of pipeline IDs to unique object IDs
          */
         void updatePipelines(
             const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
         /**
-         * @brief Renders the G-buffer pass
+         * Renders the G-buffer pass
          * @param commandList The command list to record rendering commands into
          * @param scene The scene frame data
          * @param colorAttachment The target color attachment
@@ -56,14 +56,14 @@ export namespace lysa {
             uint32 frameIndex);
 
         /**
-         * @brief Resizes the render pass resources
+         * Resizes the render pass resources
          * @param extent The new extent
          * @param commandList Command list for resource transitions if needed
          */
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
         /**
-         * @brief Gets the position buffer for a specific frame
+         * Gets the position buffer for a specific frame
          * @param frameIndex Index of the current frame
          * @return A shared pointer to the position render target
          */
@@ -72,7 +72,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Gets the normal buffer for a specific frame
+         * Gets the normal buffer for a specific frame
          * @param frameIndex Index of the current frame
          * @return A shared pointer to the normal render target
          */
@@ -81,7 +81,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Gets the albedo buffer for a specific frame
+         * Gets the albedo buffer for a specific frame
          * @param frameIndex Index of the current frame
          * @return A shared pointer to the albedo render target
          */
@@ -90,7 +90,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Gets the emissive buffer for a specific frame
+         * Gets the emissive buffer for a specific frame
          * @param frameIndex Index of the current frame
          * @return A shared pointer to the emissive render target
          */

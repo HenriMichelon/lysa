@@ -14,23 +14,23 @@ import lysa.resources.scene;
 export namespace lysa {
 
     /**
-     * @brief Represents a specific view into a scene for rendering.
+     * Represents a specific view into a scene for rendering.
      *
      * A RenderView combines a camera, a scene, and viewport/scissor dimensions
      * to define how a scene should be rendered to a target.
      */
     struct RenderView : UnmanagedResource {
-        /** @brief The viewport dimensions for rendering. */
+        /** The viewport dimensions for rendering. */
         vireo::Viewport viewport{};
-        /** @brief The scissor rectangle for rendering. */
+        /** The scissor rectangle for rendering. */
         vireo::Rect     scissors{};
-        /** @brief Reference to the camera used for this view. */
+        /** Reference to the camera used for this view. */
         const Camera&   camera;
-        /** @brief Reference to the scene to be rendered. */
+        /** Reference to the scene to be rendered. */
         Scene&          scene;
 
         /**
-         * @brief Constructs a new RenderView.
+         * Constructs a new RenderView.
          * @param camera The camera defining the view transformation and projection.
          * @param scene The scene to be rendered from this view.
          * @param viewport The viewport dimensions (optional).

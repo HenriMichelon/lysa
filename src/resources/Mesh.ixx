@@ -182,7 +182,7 @@ export namespace lysa {
     class MeshManager : public ResourcesManager<Context, Mesh> {
     public:
         /**
-         * @brief Construct a manager bound to the given runtime context.
+         * Construct a manager bound to the given runtime context.
          * @param ctx Instance wide context
          * @param capacity maximum capacity
          * @param vertexCapacity

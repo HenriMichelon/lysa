@@ -1,6 +1,6 @@
 /*
  * @file Vector2DRenderer.ixx
- * @brief Header for the 2D vector renderer
+ * Header for the 2D vector renderer
  * @author Henri Michelon
  * @copyright Copyright (c) 2025-present Henri Michelon
  * @license This software is released under the MIT License. https://opensource.org/licenses/MIT
@@ -19,17 +19,17 @@ import lysa.resources.image;
 export namespace lysa {
 
     /**
-     * @brief The screen size for the 2D vector renderer
+     * The screen size for the 2D vector renderer
      */
     constexpr float VECTOR_2D_SCREEN_SIZE{1000.0f};
 
     /**
-     * @brief Renderer for 2D vector graphics
+     * Renderer for 2D vector graphics
      */
     class Vector2DRenderer : public Vector3DRenderer {
     public:
         /**
-         * @brief Constructs a new Vector2DRenderer
+         * Constructs a new Vector2DRenderer
          * @param ctx The engine context
          * @param config The renderer configuration
          */
@@ -38,32 +38,32 @@ export namespace lysa {
             const RendererConfiguration& config);
 
         /**
-         * @brief Resizes the renderer's viewport
+         * Resizes the renderer's viewport
          * @param extent The new extent
          */
         void resize(const vireo::Extent& extent);
 
         /**
-         * @brief Gets the aspect ratio of the renderer
+         * Gets the aspect ratio of the renderer
          * @return The current aspect ratio
          */
         auto getAspectRatio() const { return aspectRatio; }
 
         /**
-         * @brief Draws a 1-fragment width line
+         * Draws a 1-fragment width line
          * @param start The starting point of the line
          * @param end The ending point of the line
          */
         void drawLine(const float2& start, const float2& end);
 
         /**
-         * @brief Draws a filled rectangle
+         * Draws a filled rectangle
          * @param rect The rectangle to draw
          */
         void drawFilledRect(const Rect &rect);
 
         /**
-         * @brief Draws a filled rectangle with an image texture
+         * Draws a filled rectangle with an image texture
          * @param rect The rectangle to draw
          * @param texture The unique ID of the texture to use
          */
@@ -72,7 +72,7 @@ export namespace lysa {
             unique_id texture);
 
         /**
-         * @brief Draws a filled rectangle with an optional texture
+         * Draws a filled rectangle with an optional texture
          * @param x The x-coordinate of the rectangle
          * @param y The y-coordinate of the rectangle
          * @param w The width of the rectangle
@@ -85,7 +85,7 @@ export namespace lysa {
             unique_id texture = INVALID_ID);
 
         /**
-         * @brief Draws text on the screen
+         * Draws text on the screen
          * @param text The text string to draw
          * @param font The font to use for drawing
          * @param fontScale The scale of the font
@@ -100,19 +100,19 @@ export namespace lysa {
             float y);
 
         /**
-         * @brief Changes the color of the fragments for the next drawing commands
+         * Changes the color of the fragments for the next drawing commands
          * @param color The new pen color
          */
         auto setPenColor(const float4& color) { penColor = color; }
 
         /**
-         * @brief Changes the [x,y] translation for the next drawing commands
+         * Changes the [x,y] translation for the next drawing commands
          * @param t The translation vector
          */
         auto setTranslate(const float2& t) { translate = t; }
 
         /**
-         * @brief Changes the global transparency for the next drawing commands
+         * Changes the global transparency for the next drawing commands
          * @details The value is subtracted from the vertex alpha
          * @param a The transparency value
          */

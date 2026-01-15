@@ -16,12 +16,12 @@ import lysa.resources.material;
 export namespace lysa {
 
     /**
-     * @brief Render pass for shader-based material rendering
+     * Render pass for shader-based material rendering
      */
     class ShaderMaterialPass : public Renderpass {
     public:
         /**
-         * @brief Constructs a ShaderMaterialPass
+         * Constructs a ShaderMaterialPass
          * @param ctx The engine context
          * @param config The renderer configuration
          */
@@ -30,14 +30,14 @@ export namespace lysa {
             const RendererConfiguration& config);
 
         /**
-         * @brief Updates the graphics pipelines based on active pipeline IDs
+         * Updates the graphics pipelines based on active pipeline IDs
          * @param pipelineIds Map of pipeline IDs to unique object IDs
          */
         void updatePipelines(
             const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
         /**
-         * @brief Renders the shader material pass
+         * Renders the shader material pass
          * @param commandList The command list to record rendering commands into
          * @param scene The scene frame data
          * @param colorAttachment The target color attachment

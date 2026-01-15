@@ -11,14 +11,14 @@ import std;
 export namespace lysa {
 
     /**
-     * @brief A pool of asynchronous tasks executed in background threads.
+     * A pool of asynchronous tasks executed in background threads.
      * @details Tasks are pushed to the pool and executed in separate jthreads.
      * The main loop take care of the terminated threads.
      */
     class AsyncTasksPool {
     public:
         /**
-         * @brief Pushes a task to the pool.
+         * Pushes a task to the pool.
          * @tparam L The type of the task (usually a lambda).
          * @param lambda The task to be executed.
          */

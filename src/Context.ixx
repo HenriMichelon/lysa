@@ -38,7 +38,7 @@ export namespace  lysa {
     };
 
     /**
-     * @brief Configuration object used to initialize a Lysa instance.
+     * Configuration object used to initialize a Lysa instance.
      */
     struct ContextConfiguration {
         //! Graphic API used by the graphic backend
@@ -60,7 +60,7 @@ export namespace  lysa {
     };
 
     /**
-     * @brief Lysa instance-wide runtime context.
+     * Lysa instance-wide runtime context.
      */
     struct Context {
         /**

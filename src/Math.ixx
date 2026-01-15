@@ -8,8 +8,7 @@ export module lysa.math;
 
 
 /**
- * @file
- * @brief Math helpers built on top of hlsl++ types.
+ *  Math helpers built on top of hlsl++ types.
  *
  * This module provides common math utilities and matrix/quaternion helpers
  * used across the engine, including view/projection matrix builders, a
@@ -118,7 +117,7 @@ export namespace lysa {
     constexpr float HALF_PI = std::numbers::pi_v<float> / 2.0f;
 
     /**
-     * @brief Convert a unit quaternion to Euler angles (XYZ order).
+     * Convert a unit quaternion to Euler angles (XYZ order).
      *
      * The returned angles are in radians and follow the conventional
      * pitch (X), yaw (Y), roll (Z) ordering.
@@ -132,7 +131,7 @@ export namespace lysa {
     float3 euler_angles(quaternion q);
 
     /**
-     * @brief Convert a scalar angle in degrees to radians.
+     * Convert a scalar angle in degrees to radians.
      *
      * Convenience overload that forwards to the vectorized version.
      *
@@ -142,7 +141,7 @@ export namespace lysa {
     float radians(const float angle) { return radians(float1{angle}); }
 
     /**
-     * @brief Compare two floating-point values with a relative tolerance.
+     * Compare two floating-point values with a relative tolerance.
      *
      * Uses max(abs(a), abs(b)) scaled by 1e-4 as tolerance.
      *
@@ -155,7 +154,7 @@ export namespace lysa {
     }
 
     /**
-     * @brief Approximate equality for quaternions.
+     * Approximate equality for quaternions.
      *
      * Each component is compared using almostEquals(float, float).
      *
@@ -171,7 +170,7 @@ export namespace lysa {
     }
 
     /**
-     * @brief Build a right-handed look-at view matrix.
+     * Build a right-handed look-at view matrix.
      *
      * @param eye Camera position in world space.
      * @param center Target point the camera looks at.
@@ -181,7 +180,7 @@ export namespace lysa {
     float4x4 look_at(const float3& eye, const float3& center, const float3& up);
 
     /**
-     * @brief Build a right-handed perspective projection matrix.
+     * Build a right-handed perspective projection matrix.
      *
      * @param fov Vertical field of view in radians.
      * @param aspect Aspect ratio (width/height).
@@ -192,7 +191,7 @@ export namespace lysa {
     float4x4 perspective(float fov, float aspect, float near, float far);
 
     /**
-     * @brief Build a right-handed orthographic projection matrix.
+     * Build a right-handed orthographic projection matrix.
      *
      * @param left Left plane.
      * @param right Right plane.
@@ -207,7 +206,7 @@ export namespace lysa {
                           float znear, float zfar);
 
     /**
-     * @brief Extract a quaternion from a 4x4 rotation matrix.
+     * Extract a quaternion from a 4x4 rotation matrix.
      *
      * Converts the upper-left 3x3 rotation part of the 4x4 matrix into
      * a unit quaternion.
@@ -218,7 +217,7 @@ export namespace lysa {
     quaternion to_quaternion(const float4x4& m);
 
     /**
-     * @brief Generate a random unsigned integer in [0, max].
+     * Generate a random unsigned integer in [0, max].
      *
      * @param max Inclusive upper bound.
      * @return Pseudo-random value uniformly distributed in [0, max].
@@ -226,7 +225,7 @@ export namespace lysa {
     uint32 randomi(uint32 max);
 
     /**
-     * @brief Generate a random float in [0.0f, max].
+     * Generate a random float in [0.0f, max].
      *
      * @param max Inclusive upper bound.
      * @return Pseudo-random value uniformly distributed in [0.0f, max].

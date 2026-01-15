@@ -18,37 +18,37 @@ import lysa.resources.image;
 export namespace lysa {
 
     /**
-     * @brief Parameters controlling font rendering and outline.
+     * Parameters controlling font rendering and outline.
      * @details These parameters influence SDF/MSDF sampling and outline appearance when rendering text.
      */
     struct FontParams {
-        /** @brief Pixel range used by the SDF/MSDF in the atlas (x = lower, y = upper). */
+        /** Pixel range used by the SDF/MSDF in the atlas (x = lower, y = upper). */
         float2 pxRange{FLOAT2ZERO};
-        /** @brief RGBA outline color. */
+        /** RGBA outline color. */
         float4 outlineColor{0.0f, 0.0f, 0.0f, 1.0f};
-        /** @brief Threshold used to classify inside/outside for the distance field. */
+        /** Threshold used to classify inside/outside for the distance field. */
         float threshold{0.5f};
-        /** @brief Bias applied to the outline distance. */
+        /** Bias applied to the outline distance. */
         float outlineBias{1.0f/4.0f};
-        /** @brief Absolute outline width in pixels. */
+        /** Absolute outline width in pixels. */
         float outlineWidthAbsolute{1.0f/16.0f};
-        /** @brief Relative outline width with respect to font size. */
+        /** Relative outline width with respect to font size. */
         float outlineWidthRelative{1.0f/50.0f};
-        /** @brief Outline blur factor for soft edges. */
+        /** Outline blur factor for soft edges. */
         float outlineBlur{0.1f};
-        /** @brief Gamma correction applied during sampling. */
+        /** Gamma correction applied during sampling. */
         float gamma{1.0f};
     };
 
     /**
-     * @brief Font resource used to render text.
+     * Font resource used to render text.
      * @details A font is defined by a font file and a size. Glyphs are packed into an atlas
      *          and common metrics (ascender, descender, line height) are exposed for text layout.
      */
     class Font : public UnmanagedResource {
     public:
         /**
-         * @brief Bounds of a glyph in the font plane (em units relative to font size).
+         * Bounds of a glyph in the font plane (em units relative to font size).
          */
         struct GlyphBounds {
             float left{0.0f};
@@ -58,7 +58,7 @@ export namespace lysa {
         };
 
         /**
-         * @brief Information for a single glyph packed in the atlas.
+         * Information for a single glyph packed in the atlas.
          * @param index Glyph index in the font (HB/FreeType index).
          * @param advance Advance width in pixels for the current font size.
          * @param planeBounds Bounds in font plane units.
@@ -74,7 +74,7 @@ export namespace lysa {
         };
 
         /**
-         * @brief Construct a font resource from a font file.
+         * Construct a font resource from a font file.
          * @param ctx Application context used to access resources and GPU.
          * @param path Font file path, relative to the application working directory.
          */
@@ -85,7 +85,7 @@ export namespace lysa {
         ~Font() override;
 
         /**
-         * @brief Compute the size in pixels for a UTF-8 string.
+         * Compute the size in pixels for a UTF-8 string.
          * @param text Input text.
          * @param fontScale Scale factor applied to the base font size (1.0 = atlas size).
          * @param width Output total width in pixels.
@@ -94,7 +94,7 @@ export namespace lysa {
         void getSize(const std::string &text, float fontScale, float &width, float &height);
 
         /**
-         * @brief Compute the size in pixels for a UTF-8 string.
+         * Compute the size in pixels for a UTF-8 string.
          * @param text Input text.
          * @param fontScale Scale factor applied to the base font size (1.0 = atlas size).
          * @return Width (x) and height (y) in pixels.
@@ -102,63 +102,63 @@ export namespace lysa {
         float2 getSize(const std::string &text, float fontScale);
 
         /**
-         * @brief Get the font size used to build the atlas (in pixels).
+         * Get the font size used to build the atlas (in pixels).
          * @return Atlas font size in pixels.
          */
         uint32 getFontSize() const { return size; }
 
-        /** @brief Line height relative to the font size. */
+        /** Line height relative to the font size. */
         float getLineHeight() const { return lineHeight; }
 
-        /** @brief Ascender in pixels (above the baseline). */
+        /** Ascender in pixels (above the baseline). */
         float getAscender() const { return ascender; }
 
-        /** @brief Descender in pixels (below the baseline). */
+        /** Descender in pixels (below the baseline). */
         float getDescender() const { return descender; }
 
         /**
-         * @brief Retrieve glyph information by glyph index.
+         * Retrieve glyph information by glyph index.
          * @param index Glyph index as returned by the shaper.
          */
         const GlyphInfo& getGlyphInfo(uint32 index) const;
 
-        /** @brief Get the underlying glyph atlas image. */
+        /** Get the underlying glyph atlas image. */
         const Image& getAtlas() const { return atlas; }
 
-        /** @brief Get current font rendering parameters. */
+        /** Get current font rendering parameters. */
         const FontParams& getFontParams() const { return params; }
 
-        /** @brief Set the outline color. */
+        /** Set the outline color. */
         void setOutlineColor(const float4 &color) {
             params.outlineColor = color;
         }
 
-        /** @brief Set the outline bias. */
+        /** Set the outline bias. */
         void setOutlineBias(const float bias) {
             params.outlineBias = bias;
         }
 
-        /** @brief Set the absolute outline width (in pixels). */
+        /** Set the absolute outline width (in pixels). */
         void setOutlineWidthAbsolute(const float width) {
             params.outlineWidthAbsolute = width;
         }
 
-        /** @brief Set the relative outline width (scaled by font size). */
+        /** Set the relative outline width (scaled by font size). */
         void setOutlineWidthRelative(const float width) {
             params.outlineWidthRelative = width;
         }
 
-        /** @brief Set the outline blur factor. */
+        /** Set the outline blur factor. */
         void setOutlineBlur(const float blur) {
             params.outlineBlur = blur;
         }
 
-        /** @brief Set the SDF/MSDF threshold. */
+        /** Set the SDF/MSDF threshold. */
         void setOutlineThreshold(const float threshold) {
             params.threshold = threshold;
         }
 
-        /** @brief Access the underlying HarfBuzz font handle. */
+        /** Access the underlying HarfBuzz font handle. */
         auto getHarfBuzzFont() const { return hbFont; }
 
     private:

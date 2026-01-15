@@ -14,54 +14,54 @@ import lysa.types;
 export namespace lysa {
 
     /**
-     * @brief Alias representing an application-defined event kind.
+     * Alias representing an application-defined event kind.
      */
     using event_type = std::string;
 
     /**
-     * @brief %Event message.
+     * %Event message.
      */
     struct Event {
-        /** @brief Event type name. */
+        /** Event type name. */
         event_type type;
-        /** @brief Event payload. */
+        /** Event payload. */
         std::any payload;
-        /** @brief Event source or target, if any. */
+        /** Event source or target, if any. */
         unique_id id{INVALID_ID};
-        /** @brief true if already consumed */
+        /** true if already consumed */
         bool consumed{false};
     };
 
     /**
-     * @brief Callback signature for event handlers.
+     * Callback signature for event handlers.
      * @param e The event received by the handler.
      */
     using EventHandlerCallback = std::function<void(Event&)>;
 
     /**
-     * @brief Internal structure for an event handler.
+     * Internal structure for an event handler.
      */
     struct EventHandler {
-        /** @brief The unique identifier of the handler. */
+        /** The unique identifier of the handler. */
         unique_id id;
-        /** @brief The callback function to be executed. */
+        /** The callback function to be executed. */
         EventHandlerCallback fn;
     };
 
 #ifdef LUA_BINDING
     /**
-     * @brief Internal structure for a Lua event handler.
+     * Internal structure for a Lua event handler.
      */
     struct EventHandlerLua {
-        /** @brief The unique identifier of the handler. */
+        /** The unique identifier of the handler. */
         unique_id id;
-        /** @brief The callback function to be executed. */
+        /** The callback function to be executed. */
         luabridge::LuaRef fn;
     };
 #endif
 
     /**
-     * @brief Simple event manager.
+     * Simple event manager.
      *
      * Supports both C++ and %Lua handlers. Events are queued via @ref push
      * and delivered in FIFO order each frame.
@@ -70,13 +70,13 @@ export namespace lysa {
     class EventManager {
     public:
         /**
-         * @brief Enqueue an event to be delivered on next processing.
+         * Enqueue an event to be delivered on next processing.
          * @param e The event to push into the queue.
          */
         void push(const Event& e);
 
         /**
-         * @brief Subscribe a C++ handler to a given event type and target id.
+         * Subscribe a C++ handler to a given event type and target id.
          * @param type The event kind to listen to.
          * @param id The specific target id to filter on.
          * @param callback Reference to a callable receiving the event.
@@ -84,14 +84,14 @@ export namespace lysa {
         unique_id subscribe(const event_type& type, unique_id id, EventHandlerCallback callback);
 
         /**
-         * @brief Subscribe a C++ handler to a given global event type
+         * Subscribe a C++ handler to a given global event type
          * @param type The event kind to listen to.
          * @param callback Reference to a callable receiving the event.
          */
         unique_id subscribe(const event_type& type, EventHandlerCallback callback);
 
         /**
-         * @brief Unsubscribe a C++ handler to a given global event type
+         * Unsubscribe a C++ handler to a given global event type
          * @param id Previously registered handler
          */
         void unsubscribe(unique_id id);
@@ -99,7 +99,7 @@ export namespace lysa {
 
 #ifdef LUA_BINDING
         /**
-         * @brief Subscribe a Lua handler to a given event type and target id.
+         * Subscribe a Lua handler to a given event type and target id.
          * @param type The event kind to listen to.
          * @param id The specific target id to filter on.
          * @param handler Lua function to be called with the event.
@@ -107,7 +107,7 @@ export namespace lysa {
         unique_id subscribe(const event_type& type, unique_id id, const luabridge::LuaRef& handler);
 
         /**
-         * @brief Subscribe a Lua handler to a given global event type
+         * Subscribe a Lua handler to a given global event type
          * @param type The event kind to listen to.
          * @param handler Reference to a callable receiving the event.
          */
@@ -118,13 +118,13 @@ export namespace lysa {
         void _process();
 
         /**
-         * @brief Immediately deliver an event to all interested handlers.
+         * Immediately deliver an event to all interested handlers.
          * @param event The event to fire.
          */
         void fire(Event& event);
 
         /**
-         * @brief Creates an EventManager with an initial capacity for the event queue.
+         * Creates an EventManager with an initial capacity for the event queue.
          * @param reservedCapacity The initial number of events to reserve space for.
          */
         EventManager(size_t reservedCapacity);

@@ -13,7 +13,7 @@ import lysa.renderers.configuration;
 
 export namespace lysa {
     /**
-     * @brief Base class for a single stage in the renderer frame graph.
+     * Base class for a single stage in the renderer frame graph.
      *
      *  - Encapsulate pipelines, descriptor layouts/sets, and render state for
      *    a specific step (e.g., depth pre-pass, G-Buffer, lighting, post FX).

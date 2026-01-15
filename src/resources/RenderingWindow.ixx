@@ -110,7 +110,7 @@ export namespace lysa {
         ~RenderingWindow() override;
 
         /**
-        * @brief Make a previously created window visible on screen.
+        * Make a previously created window visible on screen.
         */
         void show() const;
 

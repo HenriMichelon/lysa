@@ -16,12 +16,12 @@ import lysa.resources.material;
 export namespace lysa {
 
     /**
-     * @brief Render pass for generating the depth pre-pass
+     * Render pass for generating the depth pre-pass
      */
     class DepthPrepass : public Renderpass {
     public:
         /**
-         * @brief Constructs a DepthPrepass render pass
+         * Constructs a DepthPrepass render pass
          * @param ctx The engine context
          * @param config The renderer configuration
          * @param withStencil Whether to enable stencil testing
@@ -32,13 +32,13 @@ export namespace lysa {
             bool withStencil);
 
         /**
-         * @brief Updates the graphics pipelines based on active pipeline IDs
+         * Updates the graphics pipelines based on active pipeline IDs
          * @param pipelineIds Map of pipeline IDs to unique object IDs
          */
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
         /**
-         * @brief Gets the multisampled depth attachment for a specific frame
+         * Gets the multisampled depth attachment for a specific frame
          * @param frameIndex Index of the current frame
          * @return A shared pointer to the multisampled depth render target
          */
@@ -47,7 +47,7 @@ export namespace lysa {
         }
 
         /**
-         * @brief Renders the depth pre-pass
+         * Renders the depth pre-pass
          * @param commandList The command list to record rendering commands into
          * @param scene The scene frame data
          * @param depthAttachment The target depth attachment
@@ -60,7 +60,7 @@ export namespace lysa {
             uint32 frameIndex);
 
         /**
-         * @brief Resizes the render pass resources
+         * Resizes the render pass resources
          * @param extent The new extent
          * @param commandList Command list for resource transitions if needed
          */

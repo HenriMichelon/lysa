@@ -11,16 +11,16 @@ import std;
 export namespace lysa {
 
     /**
-     * @brief A buffer for tasks that need to be deferred and executed later.
+     * A buffer for tasks that need to be deferred and executed later.
      * @details Tasks are queued and processed at the start of the main loop.
      */
     class DeferredTasksBuffer {
     public:
-        /** @brief Type definition for a task command. */
+        /** Type definition for a task command. */
         using Command = std::function<void()>;
 
         /**
-         * @brief Pushes a task to the deferred buffer.
+         * Pushes a task to the deferred buffer.
          * @tparam L The type of the task (usually a lambda).
          * @param lambda The task to be executed.
          */
@@ -32,7 +32,7 @@ export namespace lysa {
         void _process();
 
         /**
-         * @brief Creates a tasks queue with an initial capacity.
+         * Creates a tasks queue with an initial capacity.
          * @param reservedCapacity The initial number of tasks to reserve space for.
          */
         DeferredTasksBuffer(size_t reservedCapacity);

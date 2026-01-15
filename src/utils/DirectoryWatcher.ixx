@@ -18,24 +18,24 @@ import lysa.types;
 export namespace lysa {
 
     /**
-     * @brief Event triggered when a file in the watched directory is modified.
+     * Event triggered when a file in the watched directory is modified.
      */
     struct DirectoryWatcherEvent : Event {
         /**
-         * @brief A file last write date or size changed.
+         * A file last write date or size changed.
          * @details The payload is the file name.
          */
         static inline const event_type FILE_CHANGE{"FILE_CHANGE"};
     };
 
     /**
-     * @brief Monitors a directory for changes and emits events when files are modified.
+     * Monitors a directory for changes and emits events when files are modified.
      * @details This class runs a background thread that uses OS-specific APIs to watch for file changes.
      */
     class DirectoryWatcher {
     public:
         /**
-         * @brief Creates a DirectoryWatcher.
+         * Creates a DirectoryWatcher.
          * @param ctx The application context.
          * @param uri The URI of the directory to watch.
          * @param debounceTimer The time to wait (in milliseconds) before emitting an event after a change is detected
@@ -46,12 +46,12 @@ export namespace lysa {
         ~DirectoryWatcher();
 
         /**
-         * @brief Starts the background thread to watch the directory.
+         * Starts the background thread to watch the directory.
          */
         void start();
 
         /**
-         * @brief Stops the background thread and releases resources.
+         * Stops the background thread and releases resources.
          */
         void stop() noexcept;
 

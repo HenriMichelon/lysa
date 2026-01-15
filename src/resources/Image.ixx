@@ -69,7 +69,7 @@ export namespace lysa {
     class ImageManager : public ResourcesManager<Context, Image> {
     public:
         /**
-         * @brief Construct a manager bound to the given runtime context.
+         * Construct a manager bound to the given runtime context.
          * @param ctx Instance wide context
          * @param capacity Initial capacity
          */

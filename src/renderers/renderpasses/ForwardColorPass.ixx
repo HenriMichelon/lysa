@@ -17,12 +17,12 @@ import lysa.resources.material;
 export namespace lysa {
 
     /**
-     * @brief Render pass for forward color rendering
+     * Render pass for forward color rendering
      */
     class ForwardColorPass : public Renderpass {
     public:
         /**
-         * @brief Constructs a ForwardColorPass
+         * Constructs a ForwardColorPass
          * @param ctx The engine context
          * @param config The renderer configuration
          */
@@ -31,13 +31,13 @@ export namespace lysa {
             const RendererConfiguration& config);
 
         /**
-         * @brief Updates the graphics pipelines based on active pipeline IDs
+         * Updates the graphics pipelines based on active pipeline IDs
          * @param pipelineIds Map of pipeline IDs to unique object IDs
          */
         void updatePipelines(const std::unordered_map<pipeline_id, std::vector<unique_id>>& pipelineIds);
 
         /**
-         * @brief Renders the forward color pass
+         * Renders the forward color pass
          * @param commandList The command list to record rendering commands into
          * @param scene The scene frame data
          * @param colorAttachment The target color attachment
@@ -56,14 +56,14 @@ export namespace lysa {
             uint32 frameIndex);
 
         /**
-         * @brief Resizes the render pass resources
+         * Resizes the render pass resources
          * @param extent The new extent
          * @param commandList Command list for resource transitions if needed
          */
         void resize(const vireo::Extent& extent, const std::shared_ptr<vireo::CommandList>& commandList) override;
 
         /**
-         * @brief Gets the brightness buffer for a specific frame
+         * Gets the brightness buffer for a specific frame
          * @param frameIndex Index of the current frame
          * @return A shared pointer to the brightness render target
          */

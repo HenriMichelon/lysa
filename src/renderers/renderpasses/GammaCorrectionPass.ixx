@@ -14,12 +14,12 @@ import lysa.renderers.renderpasses.post_processing;
 export namespace lysa {
 
     /**
-     * @brief Render pass for gamma correction
+     * Render pass for gamma correction
      */
     class GammaCorrectionPass : public PostProcessing {
     public:
         /**
-         * @brief Constructs a GammaCorrectionPass
+         * Constructs a GammaCorrectionPass
          * @param ctx The engine context
          * @param config The renderer configuration
          * @param toneMappingType
