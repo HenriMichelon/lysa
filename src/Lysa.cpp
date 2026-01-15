@@ -60,21 +60,16 @@ namespace lysa {
             currentTime = newTime;
             accumulator += frameTime;
             while (accumulator >= fixedDeltaTime) {
-                ctx.events.fire({
-                    .type = MainLoopEvent::PHYSICS_PROCESS,
-                    .payload = fixedDeltaTime,
-                });
+                auto event = Event{MainLoopEvent::PHYSICS_PROCESS,fixedDeltaTime };
+                ctx.events.fire(event);
                 accumulator -= fixedDeltaTime;
             }
-            ctx.events.fire({
-                .type = MainLoopEvent::PROCESS,
-                .payload = accumulator / fixedDeltaTime,
-            });
+            auto event = Event{MainLoopEvent::PROCESS,accumulator / fixedDeltaTime };
+            ctx.events.fire(event);
         }
         ctx.defer._process();
-        ctx.events.fire({
-            .type = MainLoopEvent::QUIT,
-        });
+        auto event = Event{ MainLoopEvent::QUIT };
+        ctx.events.fire(event);
         ctx.graphicQueue->waitIdle();
     }
 

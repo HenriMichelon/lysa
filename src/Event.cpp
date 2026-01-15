@@ -78,7 +78,7 @@ namespace lysa {
 
 #endif
 
-    void EventManager::fire(const Event& event) {
+    void EventManager::fire(Event& event) {
         {
             const auto itType = globalHandlers.find(event.type);
             if (itType != globalHandlers.end()) {
@@ -88,7 +88,7 @@ namespace lysa {
                     queue = itType->second;
                 }
                 for (auto& handler : queue) {
-                    handler.fn(const_cast<Event&>(event));
+                    handler.fn(event);
                 }
             }
         }

@@ -114,10 +114,8 @@ namespace lysa {
                 const auto now = std::chrono::steady_clock::now();
                 if ((changed != lastFileName) ||
                     ((now - lastFileTime) > debounceTimer)) {
-                    ctx.events.fire({
-                        .type = DirectoryWatcherEvent::FILE_CHANGE,
-                        .payload = to_string(changed)}
-                    );
+                    auto event = Event{DirectoryWatcherEvent::FILE_CHANGE, to_string(changed)};
+                    ctx.events.fire(event);
                     lastFileName = std::move(changed);
                     lastFileTime = now;
                 }

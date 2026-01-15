@@ -103,8 +103,10 @@ namespace lysa {
 
     void RenderTarget::setPause(const bool pause) {
         paused = pause;
-        ctx.events.push({id, static_cast<event_type>(
-                paused ? RenderTargetEvent::PAUSED : RenderTargetEvent::RESUMED)});
+        const auto event = Event{
+            .type = static_cast<event_type>(paused ? RenderTargetEvent::PAUSED : RenderTargetEvent::RESUMED),
+            .id = id};
+        ctx.events.push(event);
     }
 
     void RenderTarget::resize() {
@@ -130,7 +132,8 @@ namespace lysa {
             frame.prepareCommandList->end();
             ctx.graphicQueue->submit({frame.prepareCommandList});
             ctx.graphicQueue->waitIdle();
-            ctx.events.push({id, static_cast<event_type>(RenderTargetEvent::RESIZED), newExtent});
+            const auto event = Event{static_cast<event_type>(RenderTargetEvent::RESIZED), newExtent, id};
+            ctx.events.push(event);
         }
         setPause(false);
     }

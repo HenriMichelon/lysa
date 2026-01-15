@@ -22,12 +22,12 @@ export namespace lysa {
      * @brief %Event message.
      */
     struct Event {
-        /** @brief Event source or target, if any. */
-        unique_id id{INVALID_ID};
         /** @brief Event type name. */
         event_type type;
         /** @brief Event payload. */
         std::any payload;
+        /** @brief Event source or target, if any. */
+        unique_id id{INVALID_ID};
         /** @brief true if already consumed */
         bool consumed{false};
     };
@@ -121,7 +121,7 @@ export namespace lysa {
          * @brief Immediately deliver an event to all interested handlers.
          * @param event The event to fire.
          */
-        void fire(const Event& event);
+        void fire(Event& event);
 
         /**
          * @brief Creates an EventManager with an initial capacity for the event queue.
