@@ -139,7 +139,7 @@ namespace lysa {
                         for (auto& handler : itId->second) {
                             handler.fn(e);
                             if (e.consumed) {
-                                return;
+                                break;
                             }
                         }
                     }
