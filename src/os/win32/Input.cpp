@@ -413,8 +413,8 @@ namespace lysa {
                 break;
             }
             case WM_KEYUP: {
-                auto scanCode = static_cast<OsKey>((lParam & 0x00FF0000) >> 16);
-                auto key = osKeyToKey(scanCode);
+                const auto scanCode = static_cast<OsKey>((lParam & 0x00FF0000) >> 16);
+                const auto key = osKeyToKey(scanCode);
                 keyPressedStates[key] = false;
                 keyJustPressedStates[key] = false;
                 keyJustReleasedStates[key] = true;
@@ -528,9 +528,9 @@ namespace lysa {
                 break;
             }
             case WM_MOUSEMOVE: {
-                auto xPos = static_cast<float>(GET_X_LPARAM(lParam));
+                const auto xPos = static_cast<float>(GET_X_LPARAM(lParam));
                 auto yPos = 0.0f;
-                auto y = GET_Y_LPARAM(lParam);
+                const auto y = GET_Y_LPARAM(lParam);
                 const auto height = window->getRenderTarget().getHeight();
                 if (y < height) {
                     yPos = static_cast<float>(height-y);
@@ -539,23 +539,23 @@ namespace lysa {
                 }
                 if (!RenderingWindow::_resettingMousePosition) {
                     if ((lastMouseX != -1) && (lastMouseY != -1)) {
-                        auto dx = xPos - lastMouseX;
-                        auto dy = yPos - lastMouseY;
-                        auto event = InputEventMouseMotion {
+                        const auto dx = xPos - lastMouseX;
+                        const auto dy = yPos - lastMouseY;
+                        const auto event = InputEventMouseMotion {
                             float2(xPos, yPos),
                             _getMouseButtonState(wParam),
                             _getKeyboardModifiers(),
                             float2(dx, dy),
                         };
-                        // window->_input({InputEventType::MOUSE_MOTION, event});
+                        window->_input({InputEventType::MOUSE_MOTION, event});
                     } else {
-                        auto event = InputEventMouseMotion {
+                        const auto event = InputEventMouseMotion {
                             float2(xPos, yPos),
                             _getMouseButtonState(wParam),
                             _getKeyboardModifiers(),
                             float2(0, 0),
                         };
-                        // window->_input({InputEventType::MOUSE_MOTION, event});
+                        window->_input({InputEventType::MOUSE_MOTION, event});
                     }
                 } else {
                     RenderingWindow::_resettingMousePosition = false;
