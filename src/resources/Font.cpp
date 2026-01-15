@@ -20,6 +20,22 @@ namespace lysa {
 
     FT_Library Font::ftLibrary{nullptr};
 
+    float Font::getWidth(const char c, const float fontScale) {
+        const auto scale = fontScale * size;
+        std::string text;
+        text += c;
+
+        hb_buffer_t* hb_buffer = hb_buffer_create();
+        hb_buffer_add_utf8(hb_buffer, text.c_str(), -1, 0, -1);
+        hb_buffer_guess_segment_properties(hb_buffer);
+        hb_shape(hbFont, hb_buffer, nullptr, 0);
+
+        unsigned int glyph_count = 0;
+        const hb_glyph_info_t* glyph_info = hb_buffer_get_glyph_infos(hb_buffer, &glyph_count);
+        const auto gi = glyphs[glyph_info[0].codepoint];
+        return gi.advance * scale;
+    }
+
     float2 Font::getSize(const std::string &text, const float fontScale) {
         float w, h;
         getSize(text, fontScale, w, h);
@@ -49,15 +65,15 @@ namespace lysa {
                 gi.planeBounds.top != 0.0f || gi.planeBounds.bottom != 0.0f) {
                 if (gi.planeBounds.top > maxTop) maxTop = gi.planeBounds.top;
                 if (gi.planeBounds.bottom < minBottom) minBottom = gi.planeBounds.bottom;
-            }
+                }
         }
         // If we found valid bounds, use them; otherwise fall back to line height
         if (glyph_count > 0 && maxTop > -std::numeric_limits<float>::infinity() &&
             minBottom < std::numeric_limits<float>::infinity() && maxTop > minBottom) {
             height = (maxTop - minBottom) * scale;
-        } else if (glyph_count > 0) {
-            height = fontScale * lineHeight;
-        }
+            } else if (glyph_count > 0) {
+                height = fontScale * lineHeight;
+            }
 
         hb_buffer_destroy(hb_buffer);
     }

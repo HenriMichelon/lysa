@@ -101,6 +101,8 @@ export namespace lysa {
          */
         float2 getSize(const std::string &text, float fontScale);
 
+        float getWidth(char c, float fontScale);
+
         /**
          * Get the font size used to build the atlas (in pixels).
          * @return Atlas font size in pixels.
