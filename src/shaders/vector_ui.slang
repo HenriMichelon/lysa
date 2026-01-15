@@ -23,7 +23,7 @@ float4 fragmentMain(VertexOutput input) : SV_TARGET {
     if (input.textureIndex == -1) {
         return input.color;
     } else {
-        input.uv.y = 1.0 - input.uv.y;
+        //input.uv.y = 1.0 - input.uv.y;
         float4 color = textures[input.textureIndex].Sample(samplers[SAMPLER_LINEAR_LINEAR_EDGE_LINEAR], input.uv);
         return float4(input.color.rgb * color.rgb, min(color.a, input.color.a));
     }

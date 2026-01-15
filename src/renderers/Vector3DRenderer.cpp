@@ -287,16 +287,6 @@ namespace lysa {
             vireo::ResourceState::RENDER_TARGET_COLOR);
         commandList.bindVertexBuffer(vertexBuffer);
         commandList.beginRendering(renderingConfig);
-        if (!linesVertices.empty()) {
-            commandList.bindPipeline(pipelineLines);
-            commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
-            commandList.draw(linesVertices.size(), 1, 0, 0);
-        }
-        if (!triangleVertices.empty()) {
-            commandList.bindPipeline(pipelineTriangles);
-            commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
-            commandList.draw(triangleVertices.size(), 1, linesVertices.size(), 0);
-        }
         if (pipelineImages && !imagesVertices.empty()) {
             commandList.bindPipeline(pipelineImages);
             commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
@@ -305,6 +295,16 @@ namespace lysa {
                 1,
                 linesVertices.size() + triangleVertices.size(),
                 0);
+        }
+        if (!triangleVertices.empty()) {
+            commandList.bindPipeline(pipelineTriangles);
+            commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
+            commandList.draw(triangleVertices.size(), 1, linesVertices.size(), 0);
+        }
+        if (!linesVertices.empty()) {
+            commandList.bindPipeline(pipelineLines);
+            commandList.bindDescriptors({frame.descriptorSet, ctx.samplers.getDescriptorSet(), fontDescriptorSet});
+            commandList.draw(linesVertices.size(), 1, 0, 0);
         }
         if (!glyphVertices.empty()) {
             commandList.bindPipeline(pipelineGlyphs);

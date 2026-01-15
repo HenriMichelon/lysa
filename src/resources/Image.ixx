@@ -30,6 +30,8 @@ export namespace lysa {
          */
         uint32 getHeight() const { return image->getHeight(); }
 
+        float getAspectRatio() const { return static_cast<float>(image->getWidth()) / image->getHeight(); }
+
         /**
          * Returns the size in number of pixels
          */
