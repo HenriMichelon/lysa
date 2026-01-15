@@ -374,6 +374,37 @@ namespace lysa {
         return (l > 1.0f) ? vector / l : vector;
     }
 
+    std::string Input::keyToChar(const Key key) {
+        const auto sc = keyToOsKey(key);
+        const auto layout = GetKeyboardLayout(0);
+        const auto vk = MapVirtualKeyExW(sc, MAPVK_VSC_TO_VK_EX, layout);
+        if (vk == 0) return "";
+
+        // current state (Shift/Ctrl/Alt, toggles)
+        BYTE keyboardState[256];
+        if (!GetKeyboardState(keyboardState)) {
+            return "";
+        }
+
+        wchar_t buffer[8] = {0};
+        int rc = ToUnicodeEx(
+            vk,
+            sc,
+            keyboardState,
+            buffer,
+            static_cast<int>(std::size(buffer)),
+            0,
+            layout
+        );
+
+        if (rc > 0) {
+            const auto ws = std::wstring(buffer, buffer + rc);
+            return to_string(ws);
+        }
+        return "";
+    }
+
+
 
     // Helper to translate Windows get state to lysa key modifiers
     int _getKeyboardModifiers() {

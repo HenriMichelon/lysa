@@ -185,7 +185,9 @@ export namespace lysa {
          */
         static bool isAction(const std::string& actionName, const InputEvent &inputEvent);
 
-#ifdef _WIN32
+        static std::string keyToChar(Key key);
+
+    #ifdef _WIN32
         /* Updates all input states for the given window (Win32 message pump tick). */
         static void _updateInputStates(RenderingWindow& window);
         /* Win32 window procedure used to intercept input messages. */
