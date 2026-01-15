@@ -28,17 +28,37 @@ namespace lysa {
 
     void Font::getSize(const std::string &text, const float fontScale, float &width, float &height) {
         const auto scale = fontScale * size;
-        height = fontScale * lineHeight;
-        width = 0;
+        width = 0.0f;
+        height = 0.0f;
+
         hb_buffer_t* hb_buffer = hb_buffer_create();
         hb_buffer_add_utf8(hb_buffer, text.c_str(), -1, 0, -1);
         hb_buffer_guess_segment_properties(hb_buffer);
         hb_shape(hbFont, hb_buffer, nullptr, 0);
-        unsigned int glyph_count;
+
+        unsigned int glyph_count = 0;
         const hb_glyph_info_t* glyph_info = hb_buffer_get_glyph_infos(hb_buffer, &glyph_count);
+
+        float maxTop = -std::numeric_limits<float>::infinity();
+        float minBottom = std::numeric_limits<float>::infinity();
         for (unsigned int i = 0; i < glyph_count; i++) {
-            width += glyphs[glyph_info[i].codepoint].advance * scale;
+            const auto gi = glyphs[glyph_info[i].codepoint];
+            width += gi.advance * scale;
+            // Track actual top and bottom bounds among all glyphs to compute tight text height
+            if (gi.planeBounds.right != 0.0f || gi.planeBounds.left != 0.0f ||
+                gi.planeBounds.top != 0.0f || gi.planeBounds.bottom != 0.0f) {
+                if (gi.planeBounds.top > maxTop) maxTop = gi.planeBounds.top;
+                if (gi.planeBounds.bottom < minBottom) minBottom = gi.planeBounds.bottom;
+            }
         }
+        // If we found valid bounds, use them; otherwise fall back to line height
+        if (glyph_count > 0 && maxTop > -std::numeric_limits<float>::infinity() &&
+            minBottom < std::numeric_limits<float>::infinity() && maxTop > minBottom) {
+            height = (maxTop - minBottom) * scale;
+        } else if (glyph_count > 0) {
+            height = fontScale * lineHeight;
+        }
+
         hb_buffer_destroy(hb_buffer);
     }
 
