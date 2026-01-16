@@ -22,10 +22,9 @@ namespace lysa {
 
     float Font::getWidth(const char c, const float fontScale) {
         const auto scale = fontScale * size;
-        std::string text;
-        text += c;
+        const char text[]  = { c, '\0'};
         hb_buffer_t* hb_buffer = hb_buffer_create();
-        hb_buffer_add_utf8(hb_buffer, text.c_str(), -1, 0, -1);
+        hb_buffer_add_utf8(hb_buffer, text, -1, 0, -1);
         hb_buffer_guess_segment_properties(hb_buffer);
         hb_shape(hbFont, hb_buffer, nullptr, 0);
         unsigned int glyph_count = 0;

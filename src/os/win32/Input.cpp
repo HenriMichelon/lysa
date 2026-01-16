@@ -387,7 +387,7 @@ namespace lysa {
         }
 
         wchar_t buffer[8] = {0};
-        int rc = ToUnicodeEx(
+        const int rc = ToUnicodeEx(
             vk,
             sc,
             keyboardState,
