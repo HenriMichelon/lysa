@@ -45,7 +45,6 @@ Then, add it via CMake:
 set(LYSA_ENGINE_AS_DEPENDENCY ON)
 set(LUA_BINDING ON)
 set(DIRECTX_BACKEND ON)
-set(PHYSIC_ENGINE_JOLT ON)
 set(FORWARD_RENDERER ON)
 set(DEFERRED_RENDERER ON)
 add_subdirectory(path/to/lysa_engine)
