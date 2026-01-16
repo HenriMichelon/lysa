@@ -404,8 +404,6 @@ namespace lysa {
         return "";
     }
 
-
-
     // Helper to translate Windows get state to lysa key modifiers
     int _getKeyboardModifiers() {
         int modifiers = 0;
@@ -437,10 +435,8 @@ namespace lysa {
                 keyJustPressedStates[key] = !keyPressedStates[key];
                 keyPressedStates[key] = true;
                 keyJustReleasedStates[key] = false;
-                if (keyJustPressedStates[key]) {
-                    auto event = InputEventKey{key, true, static_cast<int>(lParam & 0xFFFF), _getKeyboardModifiers()};
-                    window->_input({InputEventType::KEY, event});
-                }
+                auto event = InputEventKey{key, true, static_cast<int>(lParam & 0xFFFF), _getKeyboardModifiers()};
+                window->_input({InputEventType::KEY, event});
                 break;
             }
             case WM_KEYUP: {
