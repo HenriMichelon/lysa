@@ -1,3 +1,5 @@
+# <span style='color: red;'>**This is an old repository with a preliminary version. For an up to date projet see [Lysa](https://github.com/LysaEngine)**</span> #
+
 # Lysa Engine
 
 Lysa Engine is a hobby 3D engine created for learning and experimenting with low-level graphics programming and game engine foundations.
